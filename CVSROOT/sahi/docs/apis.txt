@@ -1,0 +1,86 @@
+	
+Accessor methods : Form elements
+--------------------------------
+_textbox(idStr)
+_password(idStr)
+_checkbox(idStr)
+_textarea(idStr)
+_select(idStr)
+_radio(idStr)
+_image(idStr)
+_button(idStr)
+_submit(idStr)
+
+Accessor methods : Link
+-----------------------
+_link(idStr)
+
+
+Accessor methods : Tables
+--------------------------
+_table(idStr)
+_cell(tableEl, rowNo, colNo)
+_cell(cellIdStr)
+
+
+
+Accessor methods : Generic
+--------------------------
+_accessor(idStr)
+
+
+
+Action methods
+--------------
+_click(jsElement)
+_clickImage(jsElement)
+
+_setValue(jsElement, val)
+_setSelected(jsElement, val)
+_check(jsElement, val)
+
+_simulateEvent(jsElement, ev)
+_wait(millis)
+_alert(str)
+
+
+
+Assertion methods
+-----------------
+_assertNotNull(jsElement, msg)
+_assertNull(jsElement, msg)
+_assertEqual(expected, actual, msg)
+_assertNotEqual(expected, actual, msg)
+_assertTrue(condition, msg)
+_assertNotTrue(condition, msg)
+
+
+
+Text Access methods
+-------------------
+_getSelectedText(selectElement) 
+_getCellText(tableCellElement)
+
+
+
+Text Verification boolean methods
+---------------------------------
+_containsText(element, textToSearch)
+_containsHTML(element, htmlToSearch)
+
+
+
+File Inclusion
+--------------
+_include(filePath)
+
+
+
+Utility Methods
+---------------
+_random(maxNo)
+_savedRandom(id, minNo, maxNo)
+
+
+
+

@@ -1,0 +1,172 @@
+<html>
+<head>
+<title>Sahi Controller</title>
+<script src="/_s_/spr/exception.js"></script>
+<script src="/_s_/spr/controller.js"></script>
+<script src="/_s_/dyn/scriptslist.js"></script>
+<script src="/_s_/spr/util.js"></script>
+<script src="/_s_/spr/common.js"></script>
+<script src="/_s_/spr/cookie.js"></script>
+<script src="/_s_/dyn/winopen"></script>
+<script src="util.js"></script>
+<style>
+.hiTab{
+	border-left: solid white 2px;
+	border-right: solid gray 2px;
+	border-top: solid white 2px;
+	font-color: black;
+	cursor:pointer;
+}
+.dimTab{
+	border-left: solid white 1px;
+	border-right: solid gray 1px;
+	border-top: solid white 1px;
+	border-bottom: solid white 1px;
+	font-color: white;
+	font-size: 11pt;
+	cursor:pointer;
+}
+.recPane{
+	display:none;
+	background-color:white;
+	border-left: solid white 2px;
+	border-right: solid gray 2px;
+	border-top: solid white 2px;
+	border-bottom: solid gray 2px;
+	margin:2px solid gray;
+}
+.playbackPane{
+	display:none;
+	background-color:white;
+	border-left: solid white 2px;
+	border-right: solid gray 2px;
+	border-top: solid white 2px;
+	border-bottom: solid gray 2px;
+	margin:2px solid gray;
+}
+
+</style>
+</head>
+<body bgcolor="lightgrey" onload="doOnLoad()" onbeforeunload="doOnUnLoad()">
+<span onclick="showRec()" id="recTab" class="dimTab">&nbsp;Record&nbsp;</span><span onclick="showPlayback()" id="playbackTab" class="hiTab">&nbsp;Playback&nbsp;</span>
+<div id="rec" class="recPane" >
+
+	<table>
+	<tr><td>
+	Record Script:
+	</td></tr>
+	<tr><td bgcolor="">
+	<form name="recordform" action="/_s_/dyn/recordstart" target="channel" onsubmit="return checkFile()">
+	Name: <input type="text" name="file" value="">
+	<input type="submit" value="Record">
+	<input type="button" value="Stop" onclick="return stopRec()">
+	<input type="checkbox" checked onclick="recordAll()">Record All
+	</form>
+	</td>
+	</table>
+
+
+
+<table>
+<tr><td>
+<hr>
+Accessor:
+</td></tr>
+<tr><td bgcolor="">
+<form name="currentForm">
+<table>
+<tr><td>
+Value: </td><td><input name="elValue" value="" size="50"><br>
+</td></tr>
+<tr><td>
+Accessor: </td><td><input name="accessor" value="" size="50"><br>
+</td></tr>
+</table>
+<br>
+<input type="button" value="Add Assertions" onclick="top.opener.doAssert()"> 
+<input type="button" value="Add Wait" onclick="addWait()">
+<input type="input" name="waitTime" value="3000" size="6"> ms 
+<input type="checkbox" name="preview"> Preview
+<br>
+<input type="button" value="Mark" onclick="mark()"> with comment : 
+<input type="input" name="comment" value="" size="20">
+<br><hr>Debug
+<textarea name="debug" rows="4" cols="50" style="white-space:normal"></textarea>
+<input type="button" onclick="evaluateExpr()" value="Test --> "><input type="text" name="result" value="">
+&nbsp;&nbsp;<input type="button" onclick="append()" value="Append to Recording">
+</form>
+</td></tr>
+
+</table>
+</div>
+<div id="playback" class="playbackPane">
+<table>
+<tr><td>
+
+	<table>
+	<tr><td>
+	Set script:
+	</td></tr>
+	<tr><td bgcolor="">
+	<form name="scriptfileform" action="/_s_/dyn/setscriptfile" method="get" target="channel" onsubmit="resetStep();clearLogs()">
+	<select name="file">
+	</select>
+	<input type="submit" value="Set">
+	</form>
+	</td></tr>
+	</table>
+
+</td><td>
+
+	<table>
+	<tr><td>
+	Set script from url:
+	</td></tr>
+	<tr><td bgcolor="">
+	<form name="scripturlform" action="/_s_/dyn/setscripturl" method="get" target="channel" onsubmit="resetStep()">
+	<input type="text" name="url">
+	<input type="submit" value="Set">
+	</form>
+	</td></tr>
+	</table>
+	
+</td><td>
+</table>
+	<hr>
+
+	<table width="100%">
+	<tr><td>
+	Start replay:
+	</td></tr>
+	<tr><td bgcolor="">
+	<form name="playform">
+	<!--input type="text" name="starturl" value=""-->
+	<input type="button" value="Play" onclick="play()">
+	 from step: <input type="text" size="2" name="step" value="0"><input type="button" value="Stop" onclick="stopPlay()">
+	[<a href="#" onclick="resetStep()">Reset</a>]<!--input type="button" value="Step" onclick="stepWisePlay()"-->
+	<!--
+	<br>
+	Speed: <input type="text" size="2" name="step" value="0">ms &nbsp;&nbsp;<input type="button" value="Set" onclick="stopPlay()">
+	-->
+	</form>
+	</td></tr>
+	</table>
+<hr>
+	<form name="logForm">
+	<table>
+	<tr><td bgcolor="">
+	Statements:
+	<br>
+	<textarea name="logs" cols="50" rows="9"></textarea>
+	</td></tr>
+	<tr><td bgcolor="">
+	<a href="/_s_/spr/logs/" target="logs">View Logs</a>
+	</td></tr>
+	</table>
+	</form>
+</div>
+<div style="display:none">
+<iframe height=0 width=0 name="channel"></iframe>
+</div>
+</body>
+</html>

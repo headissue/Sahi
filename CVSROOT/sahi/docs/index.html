@@ -1,0 +1,252 @@
+<html>
+<head>
+    <title>Sahi - Web Automation Tool</title>
+</head>
+<style>
+h4{
+	color:brown;
+	text-decoration:underline;
+}
+</style>
+
+<body>
+
+<a href="http://sourceforge.net">
+<img src="http://sourceforge.net/sflogo.php?group_id=151639&amp;type=3" width="125" height="37" border="0" alt="SourceForge.net Logo" align="right"/>
+</a>
+<h2>Sahi - Web Automation Tool </h2>
+<a href="#intro">Introduction</a></br>
+<a href="#features">Features</a></br>
+<a href="#download">Downloading Sahi</a></br>
+<a href="#install">Installing Sahi</a></br>
+<a href="#started">Getting started</a></br>
+<a href="#record">Recording through Sahi</a></br>
+<a href="#playback">Playing back</a></br>
+<a href="#scripting">Scripting</a></br>
+<a href="#includes">Including files</a></br>
+<a href="#suites">Suites</a></br>
+<a href="#logging">Logging</a></br>
+<a href="#notyet">Not yet supported, but coming in</a></br>
+<a href="apis.html">APIs</a>
+</br></br>
+
+(<a href="#top">Top</a>)
+
+<br/><h4><a name="intro">Introduction</a></h4>
+
+Sahi is a web based test tool with the added facility to record scripts.<br/>
+Developed in java and javascript, this tool uses simple javascript to execute events on the browser.
+<br/><br/>
+
+Sahi runs as a proxy server and the browser needs to use the sahi server as its proxy.<br/>
+Sahi then injects javascript so that it can access elements in the webpage.<br/>
+This makes the tool independant of the website/ web application.<br/>
+
+(<a href="#top">Top</a>)
+
+<br/><h4><a name="features">Features</a></h4>
+
+<ul>
+<li> Recording of browser actions.</li>
+<li> Playback of recorded/scripted actions.</li>
+<li> Accessor Viewer for identifying html elements for scripting</li>
+<li> Easily editable scripts (text files)</li>
+<li> Simple APIs</li>
+<li> Integrates with ant builds</li>
+<li> Logging/reports</li>
+<li> Script is in javascript hence supports concepts and constructs that javascript supports</li>
+<li> Support for global variables stored across pages in a test and across tests in a suite.</li>
+<li> Script refactorable into functions and files.</li>
+<li> Scripts runnable through url.</li>
+Bugs can be recorded by testers and the sahi script can be published on a web server.<br/>
+This url can be included in bug reports.<br/>
+Developers can reproduce the bug by pointing to that url in the bug report.<br/>
+<li> Scripts automatically available to others through HTTP</li>
+<li> Very lightweight</li>
+<li> Tests do not need the browser window to be in focus.</li>
+<li> Suites can run in multiple threads thus reducing the test execution time.</li>
+<li> Supports external proxy and HTTPS.</li>
+</ul>
+
+
+
+
+(<a href="#top">Top</a>)
+
+<br/><h4><a name="download">Downloading Sahi</a></h4>
+
+Download the latest Sahi zip file from <a href="http://sourceforge.net/projects/sahi/">http://sourceforge.net/projects/sahi/</a><br/>
+
+
+
+(<a href="#top">Top</a>)
+
+<br/><h4><a name="install">Installing Sahi</a></h4>
+
+1) Unzip sahi.zip to a desired location<br/>
+
+
+(<a href="#top">Top</a>)
+
+<br/><h4><a name="started">Getting started</a></h4>
+
+<b>Starting Sahi:</b><br/>
+    Windows:<br/>
+    - Go to <sahi_root>\bin and run sahi.bat<br/>
+    Linux<br/>
+    - Go to <sahi_root>/bin and run sahi.sh<br/>
+
+
+<br/>
+
+Configuring the browser:<br/>
+<b>Firefox:</b><br/>
+<ul type="square">
+
+	<li>Go to Tools &gt; Options &gt; General &gt; Connection Settings &gt;</li>
+	<li>Set to "Manual Proxy Configuration"</li>
+	<li>Set "HTTP Proxy" to "localhost"</li>
+	<li>Set "Port" to "9999". (This setting can be modified through &lt;sahi_root&gt;/config/sahi.properties)</li>
+
+	<li>Keep "Use the same proxy for all protocol" unchecked as Sahi does not understand protocols other than HTTP</li>
+	<li>NOTE: "No Proxy for" should NOT have localhost in it.</li>
+</ul>
+<br/>
+<b>Internet Explorer:</b><br/>
+<ul type="square">
+	<li>Go to Tools &gt; Internet Options &gt; Connections &gt; LAN Settings &gt;</li>
+
+	<li>In "Proxy server" section, Check "Use a proxy server for your LAN"</li>
+	<li>Set "Address" to "localhost"</li>
+	<li>Set "Port" to "9999"</li>
+	<li>Leave "Bypass proxy server for local addresses" unchecked</li>
+	<li>OK &gt; OK : )</li>
+
+</ul>
+
+
+
+(<a href="#top">Top</a>)
+
+<br/><h4><a name="record">Recording through Sahi</a></h4>
+
+
+<ul type="square">
+	<li>Press Alt and double click on the window which you want to record.</li>
+	<li>On the popup that appears, give a name for the script you wish to generate, and click 'Record'</li>
+	<li>Most actions on the page will now get recorded.</li>
+	<li>Moving the mouse over any html element while pressing Ctrl key will show the javascript accessor info in the popup.</li>
+	<li>Clicking the "Add Assertions" button adds assertions for the element.</li>
+</ul>
+
+
+
+<br/><br/>The script being generated can be viewed by opening the sah file in the scripts directory.<br/>
+(Open it in textpad. Intellij automatically starts saving and it messes the file);<br/>
+
+<ul type="square">
+	<li>Once done, click stop.</li>
+</ul>
+
+
+(<a href="#top">Top</a>)
+
+<br/><h4><a name="playback">Playing back</a></h4>
+
+<ul type="square">
+	<li>Close and reopen (alt-dblclick) the popup window.</li>
+	<li>Select script file just created from the dropdown, and click 'Set'</li>
+	<li>On the browser, navigate to the page where you started recording. Click 'Play'</li>
+
+</ul>
+
+
+
+(<a href="#top">Top</a>)
+
+<br/><h4><a name="scripting">Scripting</a></h4>
+
+<ul type="square">
+	<li>Statements can be clubbed into javascript functions.</li>
+	<li>Variables can be declared like in javascript. But they need to prefixed with $</li>
+</ul>
+
+
+(<a href="#top">Top</a>)
+
+<br/><h4>Running test from the console</a></h4>
+
+If you wish to run a script called "MySahiScript.sah" on a page like say, http://<b>www.domain.com</b>/dir/page1.jsp do<br/>
+
+<br/><br/>"C:\Program Files\Mozilla Firefox\firefox.exe"<br/>
+"http://<b>www.domain.com</b>/<em>s</em>/dyn/auto?file=MySahiScript.sah&amp;startUrl=http://<b>www.domain.com</b>/dir/page1.jsp" <br/>
+
+
+<br/><br/>Note that the domains in bold should be the same. <br/>
+Yeah, this needs some clean up.<br/>
+
+
+(<a href="#top">Top</a>)
+
+<br/><h4><a name="includes">Including files</a></h4>
+
+One sah file may include other sah files, thus allowing logical separation of code.<br/>
+Syntax: _include(file2.sah)<br/>
+
+
+(<a href="#top">Top</a>)
+
+<br/><h4><a name="suites">Suites</a></h4>
+
+Multiple tests can be run through ant. For each test in the suite, the ant target opens a browser, runs the test and closes the browser, <br/>
+The ant target specifies a suite file, say SuiteName.suite. <br/><br/>
+The syntax of writing the suite file is:<br/><br/>
+&lt;testName.sah&gt; &lt;absolute url or url relative to the baseurl in ant target&gt;
+<br/><br/>
+eg.<br/>
+test1.sah	/startPageForTest1.jsp<br/>
+test2.sah	http://www.d2.com/startPageForTest2.htm<br/>
+test3.sah	abc/startPageForTest3.htm
+
+<br/><br/>The ant target is like:
+
+<pre>
+<b>
+&lt;taskdef name="sahi" classname="com.sahi.ant.RunSahiTask" classpath="${basedir}/sahi/lib/ant-sahi.jar"&gt;
+&lt;/taskdef&gt;
+
+&lt;sahi suite="${basedir}/sahi/scripts/SuiteName.suite"
+	browser="C:\\Program Files\\Internet Explorer\\iexplore.exe"
+	baseurl="http://localhost:8888/path/"
+/&gt;
+</b>
+</pre>
+
+
+(<a href="#top">Top</a>)
+<h4><a name="logging">Logging</a></h4>
+
+Logs are created in "logs/playback/" directory.<br/>
+Log results can be accessed through the browser through http://mydomain/_s_/logs/
+<br/>
+
+(<a href="#top">Top</a>)
+
+<br/><h4><a name="limitations">Limitations</a></h4>
+
+<ul type="square">
+	<li>Multidomains can be used in single user mode only. All actions are treated as if in one global session.</li>
+	<li>Multi threaded playback does not work with multidomains.</li>
+</ul>
+
+(<a href="#top">Top</a>)
+<h4><a name="notyet">Not yet supported, but coming in</a></h4>
+
+<ul type="square">
+	<li>Javascript alerts, confirms and prompts not yet supported</li>
+</ul>
+(<a href="#top">Top</a>)
+<br/><br/>
+<!--Developer: V Narayan Raman-->
+</body>
+</html>

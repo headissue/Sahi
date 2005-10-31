@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<project name="sahi" default="all">
+    <property name="sahi.output.dir" value="classes"/>
+    <property name="sahi.testoutput.dir" value="classes"/>
+    <property name="compiler.debug" value="on"/>
+    <property name="compiler.generate.no.warnings" value="off"/>
+    <property name="compiler.args" value=""/>
+    <property name="compiler.max.memory" value="128m"/>
+    <patternset id="compiler.excluded"/>
+
+    <target name="compile" description="compile module sahi">
+        <mkdir dir="${sahi.output.dir}"/>
+        <javac destdir="${sahi.output.dir}" debug="${compiler.debug}"
+            nowarn="${compiler.generate.no.warnings}"
+            memoryMaximumSize="${compiler.max.memory}" fork="true"
+            srcdir="src" />
+    </target>
+
+    <target name="start" description="starts proxy">
+        <java classname="com.sahi.Proxy" fork="true" dir="bin"
+            jvmargs="-Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5505 
+        	-Djavax.net.ssl.trustStore=../certs/truststore 
+        	-Djavax.net.ssl.trustStorePassword=sahipassword
+        	-Djavax.net.ssl.keyStore=../certs/keystore 
+	     	-Djavax.net.ssl.keyStorePassword=sahipassword
+        	-Djavax.net.debug=all">
+            <classpath path="classes"/>
+        </java>
+    </target>
+	
+    <target name="start-web" description="starts web">
+        <java classname="com.sahi.WebServer" fork="true" dir="bin"
+            jvmargs="-Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5006" >
+            <classpath path="classes"/>
+        </java>
+    </target>
+	
+	<!--taskdef name="sahi" classname="com.sahi.ant.RunSahiTask" classpath="lib/ant-sahi.jar"/-->
+	
+    <target name="stop" description="stop server">
+		<sahi stop="true" sahihost="localhost" sahiport="9999"/>
+	</target>
+	
+    <target name="sahi" description="invoke suite">
+        <sahi suite="../scripts/test.suite" 
+        	browser="C:\\Program Files\\Internet Explorer\\iexplore.exe" 
+        	baseurl="http://localhost/" 
+        	sahihost="localhost" 
+        	threads="2"
+			sahiport="9999"/>
+    </target>
+
+	<target name="sahireport" description="show report">	
+		<exec command="C:\\Program Files\\Internet Explorer\\iexplore.exe http://localhost:8888/_s_/spr/logs/"/>
+    </target>
+
+    <target name="all" depends="clean, compile, jar, jar-ant, deploy, deploy-src"/>
+    
+    <target name="clean" description="cleans up class files only">
+		<delete includeEmptyDirs="true" quiet="true" failonerror="false">
+			<fileset dir="classes" includes="**/*.*"/>
+			<fileset dir="classes" includes="**/*"/>
+		</delete>
+    </target>
+
+    <target name="deploy-src" depends="clean-temp, clean-deploy">
+    	<tstamp/>    	
+        <mkdir dir="temp/sahi"/>
+        <mkdir dir="temp/sahi/logs"/>
+        <mkdir dir="temp/sahi/scripts"/>
+        <mkdir dir="temp/sahi/deploy"/>
+        <copy file="build.xml"  todir="temp/sahi/" />
+        <copy file="lib/sahi.jar"  todir="temp/sahi/lib" />
+        <copy todir="temp/sahi/bin" >
+            <fileset dir="bin" excludes="CVS/**/*.*"/>
+        </copy>    	
+        <copy todir="temp/sahi/htdocs" >
+            <fileset dir="htdocs" excludes="CVS/**/*.*"/>
+        </copy>        
+    	<copy todir="temp/sahi/src" >
+       		<fileset dir="src" excludes="CVS/**/*.*"/>
+	    </copy>
+    	<copy todir="temp/sahi/test" >
+       		<fileset dir="test" excludes="CVS/**/*.*"/>
+	    </copy>
+        <copy todir="temp/sahi/docs" >
+            <fileset dir="docs" excludes="CVS/**/*.*"/>
+        </copy>
+        <copy todir="temp/sahi/config" >
+            <fileset dir="config" excludes="CVS/**/*.*"/>
+        </copy>
+        <zip file="deploy/sahi-src_${DSTAMP}.zip" basedir="temp" >
+        </zip>
+        <antcall target="clean-temp"/>
+    </target>
+
+    <target name="deploy" depends="clean-temp, clean-deploy">
+    	<tstamp/>
+        <mkdir dir="deploy"/>
+        <mkdir dir="temp/sahi"/>
+        <mkdir dir="temp/sahi/logs"/>
+        <mkdir dir="temp/sahi/scripts"/>
+        <copy file="lib/ant-sahi.jar"  todir="temp/sahi/lib" />
+        <copy file="lib/sahi.jar"  todir="temp/sahi/lib" />
+        <copy todir="temp/sahi/bin" >
+            <fileset dir="bin"/>
+        </copy>
+        <copy todir="temp/sahi/htdocs" >
+            <fileset dir="htdocs"/>
+        </copy>
+        <copy todir="temp/sahi/docs" >
+            <fileset dir="docs"/>
+        </copy>
+        <copy todir="temp/sahi/config" >
+            <fileset dir="config"/>
+        </copy>
+        <zip file="deploy/sahi_${DSTAMP}.zip" basedir="temp" >
+        </zip>
+        <antcall target="clean-temp"/>
+    </target>
+
+    <target name="jar">
+        <jar file="lib/sahi.jar">
+            <fileset dir="classes">
+	        	<exclude name="com/sahi/ant/**.*"/>
+            	<exclude name="com/sahi/test/TestRunner.*"/>
+        	</fileset>
+        </jar>
+    </target>
+
+    <target name="jar-ant">
+        <jar file="lib/ant-sahi.jar">
+            <fileset dir="classes">
+            	<include name="com/sahi/ant/**.*"/>
+            	<include name="com/sahi/test/TestRunner.*"/>
+            </fileset>
+        </jar>
+    </target>
+
+    <target name="clean-temp">
+        <delete includeEmptyDirs="true" quiet="true" failonerror="false">
+            <fileset dir="temp" includes="**/*.*"/>
+            <fileset dir="temp" includes="**/*"/>
+        </delete>
+    </target>
+
+    <target name="clean-deploy">
+        <delete includeEmptyDirs="true" quiet="true" failonerror="false">
+            <fileset dir="deploy" includes="**/*.*"/>
+        </delete>    	
+    </target>
+
+    <target name="stopsahi" description="stop sahi server">
+		<sahi stop="true" sahihost="localhost" sahiport="9999"/>
+	</target>	
+</project>
