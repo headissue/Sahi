@@ -1,0 +1,8 @@
+Debugging: ln number script name
+Visual step by step.
+Stop at step number.
+
+
+image
+
+

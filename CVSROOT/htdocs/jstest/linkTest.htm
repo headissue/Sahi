@@ -1,0 +1,39 @@
+<html>
+<head>
+<title>
+Link
+</title>
+</head>
+<script src="/test/jsunit.js"></script>
+<script src="/spr/util.js"></script>
+<script src="/spr/api.js"></script>
+<script src="/spr/apihelper.js"></script>
+<script>
+function testLinkText(){
+    if (document.links[0].innerText)
+        assertEquals("innerText", "link 1", sahiTrim(document.links[0].innerText));
+    if (document.links[0].text){
+        assertEquals("text", "link 1", sahiTrim(document.links[0].text));
+    }
+}
+function testSahiGetLinkWithUrl(){
+    //assertEquals(" ", document.links[0], sahiGetLinkWithUrl("aaa", top));
+}
+function testSahiGetLinkWithTextWithNewLine(){
+    //assertEquals("AAA", document.links[1], sahiGetLinkWithText("Principal / Pers. Guarantors", top));
+}
+
+addTest(testLinkText);
+addTest(testSahiGetLinkWithUrl);
+addTest(testSahiGetLinkWithTextWithNewLine);
+
+</script>
+<body onload="testOnLoad()">
+<a href="http://aaa/bbb/">&nbsp;link 1</a>
+<table><tr><td>
+<a href="http://princi/pers_guar/">
+    &nbsp;&nbsp;&nbsp;Principal / Pers. Guarantors&nbsp;&nbsp;
+</a>
+</td></tr></table>
+</body>
+</html>

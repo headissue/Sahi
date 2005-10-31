@@ -1,0 +1,125 @@
+<html>
+<head>
+    <title>Sahi - Web Automation Tool</title>
+</head>
+<style>
+h4{
+	color:brown;
+	text-decoration:underline;
+}
+</style>
+
+<body>
+
+<a href="http://sourceforge.net">
+<img src="http://sourceforge.net/sflogo.php?group_id=151639&amp;type=3" width="125" height="37" border="0" alt="SourceForge.net Logo" align="right"/>
+</a>
+<h2>Sahi - APIs </h2>
+<br/>
+Even though these APIs are given here, the best way to learn how these work is by recording actions using the Sahi controller and looking at the recorded code.
+(<a href="index.html">Back</a>)<br/><br/>
+<a href="#aform">Accessor methods : Form elements</a><br/>
+<a href="#alink">Accessor methods : Link</a><br/>
+<a href="#atable">Accessor methods : Tables</a><br/>
+<a href="#ageneric">Accessor methods : Generic</a><br/>
+<a href="#action">Action methods</a><br/>
+<a href="#assertion">Assertion methods</a><br/>
+<a href="#textaccess">Text Access methods</a><br/>
+<a href="#textverify">Text Verification boolean methods</a><br/>
+<a href="#include">File Inclusion</a><br/>
+<a href="#utility">Utility Methods</a><br/>
+
+
+(<a href="#top">Top</a>)
+<br>
+<h4><a name="aform"></a>Accessor methods : Form elements</h4>
+_textbox(idStr)<br/>
+_password(idStr)<br/>
+_checkbox(idStr)<br/>
+_textarea(idStr)<br/>
+_select(idStr)<br/>
+_radio(idStr)<br/>
+_image(idStr)<br/>
+_button(idStr)<br/>
+_submit(idStr)<br/>
+
+(<a href="#top">Top</a>)
+<br>
+<h4><a name="alink"></a>Accessor methods : Link</h4>
+_link(idStr)<br/>
+
+(<a href="#top">Top</a>)
+<br>
+<h4><a name="atable"></a>Accessor methods : Tables</h4>
+_table(idStr)<br/>
+_cell(tableEl, rowNo, colNo)<br/>
+_cell(cellIdStr)<br/>
+
+(<a href="#top">Top</a>)
+<br>
+<h4><a name="ageneric"></a>Accessor methods : Generic</h4>
+_accessor(idStr)<br/>
+
+
+
+(<a href="#top">Top</a>)
+<br>
+<h4><a name="action"></a>Action methods</h4>
+_click(jsElement)<br/>
+_clickImage(jsElement)<br/>
+
+_setValue(jsElement, val)<br/>
+_setSelected(jsElement, val)<br/>
+_check(jsElement, val)<br/>
+
+_simulateEvent(jsElement, ev)<br/>
+_wait(millis)<br/>
+_alert(str)<br/>
+
+
+
+(<a href="#top">Top</a>)
+<br>
+<h4><a name="assertion"></a>Assertion methods</h4>
+_assertNotNull(jsElement, msg)<br/>
+_assertNull(jsElement, msg)<br/>
+_assertEqual(expected, actual, msg)<br/>
+_assertNotEqual(expected, actual, msg)<br/>
+_assertTrue(condition, msg)<br/>
+_assertNotTrue(condition, msg)<br/>
+
+
+
+(<a href="#top">Top</a>)
+<br>
+<h4><a name="textaccess"></a>Text Access methods</h4>
+_getSelectedText(selectElement) <br/>
+_getCellText(tableCellElement)<br/>
+
+
+
+(<a href="#top">Top</a>)
+<br>
+<h4><a name="textverify"></a>Text Verification boolean methods</h4>
+_containsText(element, textToSearch)<br/>
+_containsHTML(element, htmlToSearch)<br/>
+
+
+
+(<a href="#top">Top</a>)
+<br>
+<h4><a name="include"></a>File Inclusion</h4>
+_include(filePath)<br/>
+
+
+
+(<a href="#top">Top</a>)
+<br>
+<h4><a name="utility"></a>Utility Methods</h4>
+_random(maxNo)<br/>
+_savedRandom(id, minNo, maxNo)<br/>
+
+
+<!--Developer: V Narayan Raman-->
+</body>
+</html>

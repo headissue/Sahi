@@ -1,0 +1,6 @@
+Statements for SSL key generation:
+keytool -genkey -alias sahi -keyalg RSA -validity 7 -keystore keystore 
+keytool -list -v -keystore keystore
+keytool -export -alias sahi -keystore keystore -rfc -file sahi.cer
+keytool -import -alias sahicert -file sahi.cer -keystore truststore
+keytool -list -v -keystore truststore
