@@ -198,6 +198,10 @@ function canEval(cmd){
             || (top.opener != null && isForPopup(cmd)); // for popups
 }
 function updateControlWinDisplay(s){
+	try{
+		if (window.status) window.status = s;
+	}catch(ex){}
+	
     try{
       var controlWin = getSahiWinHandle();
       if (controlWin && !controlWin.closed){
