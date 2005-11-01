@@ -199,8 +199,8 @@ public class ProxyProcessor implements Runnable {
 				if (session.getScript() != null)
 					session.startPlayBack();
 			} else if (uri.indexOf("/stopplay") != -1) {
-				stopPlay(session);
 				sendResponseToBrowser(new NoCacheHttpResponse(""));
+				stopPlay(session);
 			} else if (uri.indexOf("/startsuite") != -1) {
 				suiteProcessor.startSuite(requestFromBrowser, session);
 				sendResponseToBrowser(new NoCacheHttpResponse(""));

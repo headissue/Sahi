@@ -3,6 +3,9 @@ package com.sahi.test;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.logging.Logger;
+
+import com.sahi.config.Configuration;
 
 class SahiTest {
 	private final String scriptName;
@@ -12,6 +15,9 @@ class SahiTest {
 	Process process;
 	private final String base;
 	private final String browser;
+	private static Logger logger = Configuration
+	.getLogger("com.sahi.test.SahiTest");
+	
 
 	SahiTest(String scriptName, String startURL, String base, String browser, String sessionId) {
 		this.scriptName = scriptName;
@@ -35,7 +41,7 @@ class SahiTest {
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
-		System.out.println("cmd=" + cmd);
+		logger.fine("cmd=" + cmd);
 		return cmd;
 	}
 
@@ -54,7 +60,7 @@ class SahiTest {
 
 	private Process openURL(String url) {
 		String cmd = escapeCommandStringForPlatform(url);
-		System.out.println("cmd=" + cmd);
+		logger.fine("cmd=" + cmd);
 		Process process = null;
 		try {
 			process = Runtime.getRuntime().exec(cmd);
@@ -74,7 +80,7 @@ class SahiTest {
 	}
 
 	public void stop() {
-		System.out.println("Killing " + scriptName);		
+		logger.fine("Killing " + scriptName);		
 		if (process != null) process.destroy();		
 	}
 }

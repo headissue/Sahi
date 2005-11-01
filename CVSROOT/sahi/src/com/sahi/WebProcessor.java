@@ -19,7 +19,7 @@ import com.sahi.response.NoCacheHttpResponse;
 public class WebProcessor implements Runnable {
 	private Socket client;
 	private static Logger logger = Configuration
-			.getLogger("com.sahi.ProxyProcessor");
+			.getLogger("com.sahi.WebProcessor");
 
 	public WebProcessor(Socket client) {
 		this.client = client;
@@ -28,7 +28,12 @@ public class WebProcessor implements Runnable {
 	public void run() {
 		try {
 			HttpRequest requestFromBrowser = getRequestFromBrowser();
-			String fileName = fileNamefromURI(requestFromBrowser.uri());
+			String uri = requestFromBrowser.uri();
+			if (uri.indexOf("/dyn/stopserver") != -1) {
+				sendResponseToBrowser(new NoCacheHttpResponse(200, "OK", "Killing Server"));
+				System.exit(1);
+			}
+			String fileName = fileNamefromURI(uri);
 			sendResponseToBrowser(new HttpFileResponse(fileName));
 		} catch (FileNotFoundRuntimeException fnfre) {
 			try {
@@ -54,7 +59,7 @@ public class WebProcessor implements Runnable {
 		StringBuffer sb = new StringBuffer();
 		sb.append(Configuration.getHtdocsRoot());
 		sb.append(uri.substring(uri.indexOf("/")));
-		System.out.print(sb.toString());
+		logger.fine(sb.toString());
 		return sb.toString();
 	}
 

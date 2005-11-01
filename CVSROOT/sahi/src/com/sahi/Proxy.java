@@ -64,15 +64,5 @@ public class Proxy {
 					server.close();
 			}
 		}
-		
-		public void stopServer() {
-			try {
-				URL url = new URL("http://localhost:"+port+"/_s_/dyn/stopserver");
-				url.openStream().close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			
-		}
 	}
 }
