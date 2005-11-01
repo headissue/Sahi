@@ -3,8 +3,6 @@ package com.sahi;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.URL;
-import java.util.logging.Logger;
 
 import com.sahi.config.Configuration;
 
@@ -14,8 +12,6 @@ import com.sahi.config.Configuration;
  */
 public class Proxy {
 	private int port = 9999;
-	private static Logger logger = Configuration
-	.getLogger("com.sahi.Proxy");
 
 	public Proxy(int port) {
 		this.port = port;

@@ -75,13 +75,12 @@ public class ProxyProcessor implements Runnable {
 				}
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
 			logger.warning(e.getMessage());
 		} finally {
 			try {
 				client.close();
 			} catch (IOException e) {
-				logger.severe(e.getMessage());
+				logger.warning(e.getMessage());
 			}
 		}
 	}
