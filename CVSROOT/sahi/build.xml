@@ -66,12 +66,20 @@
         <mkdir dir="temp/sahi"/>
         <mkdir dir="temp/sahi/logs"/>
         <mkdir dir="temp/sahi/scripts"/>
+        <mkdir dir="temp/sahi/extlib"/>
         <mkdir dir="temp/sahi/deploy"/>
         <copy file="build.xml"  todir="temp/sahi/" />
+        <copy file="lib/ant-sahi.jar"  todir="temp/sahi/lib" />
         <copy file="lib/sahi.jar"  todir="temp/sahi/lib" />
         <copy todir="temp/sahi/bin" >
             <fileset dir="bin" excludes="CVS/**/*.*"/>
         </copy>    	
+        <copy todir="temp/sahi/scripts" >
+            <fileset dir="scripts" excludes="CVS/**/*.*"/>
+        </copy>        
+        <copy todir="temp/sahi/extlib" >
+            <fileset dir="extlib" includes="README.txt"/>
+        </copy>        	
         <copy todir="temp/sahi/htdocs" >
             <fileset dir="htdocs" excludes="CVS/**/*.*"/>
         </copy>        
@@ -98,11 +106,18 @@
         <mkdir dir="temp/sahi"/>
         <mkdir dir="temp/sahi/logs"/>
         <mkdir dir="temp/sahi/scripts"/>
+        <mkdir dir="temp/sahi/extlib"/>
         <copy file="lib/ant-sahi.jar"  todir="temp/sahi/lib" />
         <copy file="lib/sahi.jar"  todir="temp/sahi/lib" />
         <copy todir="temp/sahi/bin" >
             <fileset dir="bin"/>
         </copy>
+        <copy todir="temp/sahi/scripts" >
+            <fileset dir="scripts" excludes="CVS/**/*.*"/>
+        </copy>        	
+        <copy todir="temp/sahi/extlib" >
+            <fileset dir="extlib" excludes="*.jar"/>
+        </copy>        	
         <copy todir="temp/sahi/htdocs" >
             <fileset dir="htdocs"/>
         </copy>
@@ -205,7 +220,8 @@
 			<formatter type="brief" usefile="false"/>
 			<test todir="logs/junit" name="com.sahi.AllTests" failureProperty="junit.failed" />
 		</junit>
-		<fail message="JUnit tests failed" if="junit.failed"/>
+		<delete file="bin/junittestrun.out" failonerror="false"/>
+		<fail message="JUnit tests failed. MAKE SURE THAT junit.jar AND log4j.jar ARE PRESENT IN {sahi}/extlib/ FOLDER" if="junit.failed"/>
 	</target>
 	
 </project>
