@@ -49,6 +49,7 @@
     	<antcall target="compile"/>
     	<antcall target="jar"/>
     	<antcall target="jar-ant"/>
+    	<antcall target="clean-deploy"/>
     	<antcall target="deploy"/>
     	<antcall target="deploy-src"/>
    	</target>
@@ -60,7 +61,7 @@
 		</delete>
     </target>
 
-    <target name="deploy-src" depends="clean-temp, clean-deploy">
+    <target name="deploy-src" depends="clean-temp">
     	<tstamp/>    	
         <mkdir dir="temp/sahi"/>
         <mkdir dir="temp/sahi/logs"/>
@@ -91,7 +92,7 @@
         <antcall target="clean-temp"/>
     </target>
 
-    <target name="deploy" depends="clean-temp, clean-deploy">
+    <target name="deploy" depends="clean-temp">
     	<tstamp/>
         <mkdir dir="deploy"/>
         <mkdir dir="temp/sahi"/>
