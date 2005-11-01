@@ -16,6 +16,14 @@
             srcdir="src" />
     </target>
 
+    <target name="compile-test" description="compile module sahi test">
+        <mkdir dir="${sahi.output.dir}"/>
+        <javac destdir="${sahi.output.dir}" debug="${compiler.debug}"
+            nowarn="${compiler.generate.no.warnings}"
+            memoryMaximumSize="${compiler.max.memory}" fork="true"
+            srcdir="test" />
+    </target>
+
     <target name="start" description="starts proxy">
         <java classname="com.sahi.Proxy" fork="true" dir="bin"
             jvmargs="-Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5505 
@@ -28,33 +36,22 @@
         </java>
     </target>
 	
-    <target name="start-web" description="starts web">
-        <java classname="com.sahi.WebServer" fork="true" dir="bin"
-            jvmargs="-Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5006" >
-            <classpath path="classes"/>
-        </java>
-    </target>
-	
-	<!--taskdef name="sahi" classname="com.sahi.ant.RunSahiTask" classpath="lib/ant-sahi.jar"/-->
-	
-    <target name="stop" description="stop server">
-		<sahi stop="true" sahihost="localhost" sahiport="9999"/>
-	</target>
-	
-    <target name="sahi" description="invoke suite">
-        <sahi suite="../scripts/test.suite" 
-        	browser="C:\\Program Files\\Internet Explorer\\iexplore.exe" 
-        	baseurl="http://localhost/" 
-        	sahihost="localhost" 
-        	threads="2"
-			sahiport="9999"/>
-    </target>
+	<taskdef name="sahi" classname="com.sahi.ant.RunSahiTask" classpath="lib/ant-sahi.jar"/>
 
 	<target name="sahireport" description="show report">	
-		<exec command="C:\\Program Files\\Internet Explorer\\iexplore.exe http://localhost:8888/_s_/spr/logs/"/>
+		<exec command="C:\\Program Files\\Internet Explorer\\iexplore.exe http://localhost:9999/_s_/spr/logs/"/>
     </target>
 
-    <target name="all" depends="clean, compile, jar, jar-ant, deploy, deploy-src"/>
+    <target name="all">
+    	<antcall target="clean"/>
+    	<antcall target="test"/>
+    	<antcall target="clean"/>
+    	<antcall target="compile"/>
+    	<antcall target="jar"/>
+    	<antcall target="jar-ant"/>
+    	<antcall target="deploy"/>
+    	<antcall target="deploy-src"/>
+   	</target>
     
     <target name="clean" description="cleans up class files only">
 		<delete includeEmptyDirs="true" quiet="true" failonerror="false">
@@ -153,4 +150,61 @@
     <target name="stopsahi" description="stop sahi server">
 		<sahi stop="true" sahihost="localhost" sahiport="9999"/>
 	</target>	
+
+	<target name="sahitests" depends="compile" description="start the server and run sahi tests">
+		<parallel>
+			<sequential>
+				<waitfor maxwait="3" maxwaitunit="minute" checkevery="100">
+					<http url="http://localhost:10000/demo/index.htm"/>
+				</waitfor>
+				<sahi suite="../scripts/demo.suite"
+					browser="C:\\Program Files\\Internet Explorer\\iexplore.exe"
+					baseurl="http://localhost:10000/demo/"
+					sahihost="localhost"
+					sahiport="9999"
+					failureproperty="sahi.failed"
+					haltonfailure="false"
+					threads="2"
+					/>
+				<antcall target="stop-web"/>
+				<antcall target="failsahi"/>
+			</sequential>
+			<antcall target="start-web"/>
+		</parallel>
+	</target>	
+
+	<target name="failsahi" if="sahi.failed">
+		<fail message="Sahi tests failed!"/>
+	</target>
+
+	<target name="start-web" description="starts web">
+        <java classname="com.sahi.WebServer" fork="true" dir="bin"
+            jvmargs="-Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5006" >
+            <classpath path="classes"/>
+        </java>
+    </target>
+
+	<target name="stop-web" description="stop web server">
+		<get dest="stopserver.htm" src="http://localhost:10000/dyn/stopserver" ignoreerrors="true" />
+		<delete file="stopserver.htm"/>
+	</target>	
+	
+	
+	<target name="test" depends="compile, compile-test">
+		<junit dir="bin" printsummary="false" fork="true" 
+			maxMemory="128M" failureProperty="junit.failed">
+			<!--
+			<jvmarg line="-Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5050"/>
+			-->
+			<classpath>
+				<path path="classes"/>
+				<pathelement location="extlib/junit.jar"/>
+				<pathelement location="extlib/log4j.jar"/>
+			</classpath>
+			<formatter type="brief" usefile="false"/>
+			<test todir="logs/junit" name="com.sahi.AllTests" failureProperty="junit.failed" />
+		</junit>
+		<fail message="JUnit tests failed" if="junit.failed"/>
+	</target>
+	
 </project>
