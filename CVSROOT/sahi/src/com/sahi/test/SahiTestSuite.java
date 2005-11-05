@@ -19,11 +19,13 @@ public class SahiTestSuite {
 	private int finishedTests = 0;
 	private String suiteLogDir;
 	private static HashMap suites = new HashMap();
+	private final boolean isSuiteMultiThreaded;
 
-	public SahiTestSuite(String suiteURL, String base, String browser, String sessionId) {
+	public SahiTestSuite(String suiteURL, String base, String browser, String sessionId, boolean isSuiteMultiThreaded) {
 		this.suiteURL = suiteURL;
 		this.base = base;
 		this.browser = browser;
+		this.isSuiteMultiThreaded = isSuiteMultiThreaded;
 		this.sessionId = stripSah(sessionId);
 		setNameAndBase(suiteURL);
 		init();
@@ -59,7 +61,7 @@ public class SahiTestSuite {
 			String startURL = line.substring(ix).trim();
 			if (!startURL.startsWith("http://"))
 				startURL = base + startURL;
-			SahiTest sahiTest = new SahiTest(testName, startURL, base, browser, sessionId);
+			SahiTest sahiTest = new SahiTest(testName, startURL, base, browser, sessionId, isSuiteMultiThreaded);
 			tests.add(sahiTest);
 			testsMap.put(testName, sahiTest);
 		}

@@ -17,14 +17,16 @@ class SahiTest {
 	private final String browser;
 	private static Logger logger = Configuration
 	.getLogger("com.sahi.test.SahiTest");
+	private final boolean addPrefixForMultiThreaded;
 	
 
-	SahiTest(String scriptName, String startURL, String base, String browser, String sessionId) {
+	SahiTest(String scriptName, String startURL, String base, String browser, String sessionId, boolean addPrefixForMultiThreaded) {
 		this.scriptName = scriptName;
 		this.startURL = startURL;
 		this.base = base;
 		this.browser = browser;
 		this.sessionId = sessionId;
+		this.addPrefixForMultiThreaded = addPrefixForMultiThreaded;
 	}
 
 	public void execute() {
@@ -46,6 +48,7 @@ class SahiTest {
 	}
 
 	private String addPrefixForSimultaneousSessions(String base, int randomInt) {
+		if (!addPrefixForMultiThreaded) return base; 
 		return base.replaceFirst("://", "://sahix" + randomInt + "x");
 	}
 

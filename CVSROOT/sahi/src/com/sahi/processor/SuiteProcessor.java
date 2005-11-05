@@ -6,7 +6,8 @@ import com.sahi.session.Session;
 import com.sahi.test.SahiTestSuite;
 
 public class SuiteProcessor {
-	public void startSuite(HttpRequest requestFromBrowser, Session session) throws IOException {
+	public void startSuite(HttpRequest requestFromBrowser, Session session)
+			throws IOException {
 		String suiteName = requestFromBrowser.getParameter("suite");
 		String browser = requestFromBrowser.getParameter("browser");
 		String base = requestFromBrowser.getParameter("base");
@@ -14,8 +15,11 @@ public class SuiteProcessor {
 		int threads = 1;
 		try {
 			threads = Integer.parseInt(threadsStr);
-		}catch(Exception e) {}
-		SahiTestSuite suite = new SahiTestSuite(suiteName, base, browser, session.id());
+		} catch (Exception e) {
+		}
+		boolean isSessionMultiThreaded = threads > 1;
+		SahiTestSuite suite = new SahiTestSuite(suiteName, base, browser,
+				session.id(), isSessionMultiThreaded);
 		for (int i = 0; i < threads; i++) {
 			suite.executeNext();
 			try {
@@ -24,5 +28,5 @@ public class SuiteProcessor {
 				e.printStackTrace();
 			}
 		}
-	}	
+	}
 }
