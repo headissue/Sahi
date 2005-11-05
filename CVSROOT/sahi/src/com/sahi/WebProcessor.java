@@ -12,6 +12,8 @@ import com.sahi.request.HttpRequest;
 import com.sahi.response.HttpFileResponse;
 import com.sahi.response.HttpResponse;
 import com.sahi.response.NoCacheHttpResponse;
+import com.sahi.util.FileNotFoundRuntimeException;
+import com.sahi.util.FileIsDirectoryException;;
 
 /**
  * User: nraman Date: May 13, 2005 Time: 7:06:11 PM To
@@ -26,15 +28,23 @@ public class WebProcessor implements Runnable {
 	}
 
 	public void run() {
+		String uri = null;
 		try {
 			HttpRequest requestFromBrowser = getRequestFromBrowser();
-			String uri = requestFromBrowser.uri();
+			uri = requestFromBrowser.uri();
 			if (uri.indexOf("/dyn/stopserver") != -1) {
 				sendResponseToBrowser(new NoCacheHttpResponse(200, "OK", "Killing Server"));
 				System.exit(1);
 			}
 			String fileName = fileNamefromURI(uri);
 			sendResponseToBrowser(new HttpFileResponse(fileName));
+		} catch (FileIsDirectoryException dirEx) {
+			try {
+				sendResponseToBrowser(new NoCacheHttpResponse(200, "OK", "<script>location.href='"+uri+"/index.htm'</script>"));
+			} catch (IOException e) {
+				logger.warning(dirEx.getMessage());			
+			}
+			logger.warning(dirEx.getMessage());						
 		} catch (FileNotFoundRuntimeException fnfre) {
 			try {
 				sendResponseToBrowser(new NoCacheHttpResponse(404, "FileNotFound", "<h2>404 File Not Found</h2>"));
