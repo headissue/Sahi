@@ -61,6 +61,7 @@
         <mkdir dir="temp/sahi/extlib"/>
         <mkdir dir="temp/sahi/deploy"/>
         <copy file="build.xml"  todir="temp/sahi/" />
+        <copy file="demo.xml"  todir="temp/sahi/" />
         <copy file="lib/ant-sahi.jar"  todir="temp/sahi/lib" />
         <copy file="lib/sahi.jar"  todir="temp/sahi/lib" />
         <copy todir="temp/sahi/bin" >
@@ -102,6 +103,7 @@
         <mkdir dir="temp/sahi/logs"/>
         <mkdir dir="temp/sahi/scripts"/>
         <mkdir dir="temp/sahi/extlib"/>
+        <copy file="demo.xml"  todir="temp/sahi/" />    	
         <copy file="lib/ant-sahi.jar"  todir="temp/sahi/lib" />
         <copy file="lib/sahi.jar"  todir="temp/sahi/lib" />
         <copy todir="temp/sahi/bin" >

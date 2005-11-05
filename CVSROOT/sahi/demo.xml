@@ -31,7 +31,7 @@
 	<target name="start-web" description="starts web">
         <java classname="com.sahi.WebServer" fork="true" dir="bin"
             jvmargs="-Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5006" >
-            <classpath path="classes"/>
+			<classpath location="lib/sahi.jar"/>
         </java>
     </target>
 
@@ -44,4 +44,14 @@
 	<target name="sahireport" description="show report">	
 		<exec command="C:\\Program Files\\Internet Explorer\\iexplore.exe http://localhost:9999/_s_/spr/logs/"/>
     </target>
+	
+    <target name="start" description="starts proxy">
+        <java classname="com.sahi.Proxy" fork="true" dir="bin">
+        	<classpath location="lib/sahi.jar"/>
+        </java>
+    </target>
+	
+    <target name="stopsahi" description="stop sahi server">
+		<sahi stop="true" sahihost="localhost" sahiport="9999"/>
+	</target>		
 </project>
