@@ -10,8 +10,6 @@ import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import com.sahi.FileNotFoundRuntimeException;
-
 /**
  * User: nraman Date: Jun 26, 2005 Time: 4:52:58 PM
  */
@@ -62,6 +60,13 @@ public class Utils {
 
 	public static byte[] readFile(String fileName) {
 		File file = new File(fileName);
+		return readFile(file);
+	}
+
+	public static byte[] readFile(File file) {
+		if (file != null && file.isDirectory()) {
+			throw new FileIsDirectoryException();
+		}
 		byte[] data = null;
 		InputStream inputStream = null;
 		try {
@@ -71,7 +76,8 @@ public class Utils {
 			throw new FileNotFoundRuntimeException(e);
 		} finally {
 			try {
-				if (inputStream != null) inputStream.close();
+				if (inputStream != null)
+					inputStream.close();
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -84,5 +90,15 @@ public class Utils {
 		String date = new SimpleDateFormat("ddMMMyyyy__HH_mm_ss")
 				.format(new Date());
 		return scriptFileName.replaceAll("[.].*$", "") + "__" + date;
+	}
+
+	public static String concatPaths(String s1, String s2) {
+		boolean s1HasSlash = (s1.charAt(s1.length() - 1) == '/');
+		boolean s2HasSlash = (s2.charAt(0) == '/');
+		if (!s1HasSlash && !s2HasSlash)
+			return s1 + '/' + s2;
+		if (s1HasSlash && s2HasSlash)
+			return s1 + s2.substring(1);
+		return s1 + s2;
 	}
 }
