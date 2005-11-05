@@ -16,6 +16,7 @@ h4{
 </a>
 <h2>Sahi - Web Automation Tool </h2>
 <a href="#intro">Introduction</a></br>
+
 <a href="#features">Features</a></br>
 <a href="#download">Downloading Sahi</a></br>
 <a href="#install">Installing Sahi</a></br>
@@ -25,6 +26,7 @@ h4{
 <a href="#scripting">Scripting</a></br>
 <a href="#includes">Including files</a></br>
 <a href="#suites">Suites</a></br>
+
 <a href="#logging">Logging</a></br>
 <a href="#notyet">Not yet supported, but coming in</a></br>
 <a href="apis.html">APIs</a>
@@ -36,6 +38,7 @@ h4{
 
 Sahi is a web based test tool with the added facility to record scripts.<br/>
 Developed in java and javascript, this tool uses simple javascript to execute events on the browser.
+
 <br/><br/>
 
 Sahi runs as a proxy server and the browser needs to use the sahi server as its proxy.<br/>
@@ -48,12 +51,14 @@ This makes the tool independant of the website/ web application.<br/>
 
 <ul>
 <li> Recording of browser actions.</li>
+
 <li> Playback of recorded/scripted actions.</li>
 <li> Accessor Viewer for identifying html elements for scripting</li>
 <li> Easily editable scripts (text files)</li>
 <li> Simple APIs</li>
 <li> Integrates with ant builds</li>
 <li> Logging/reports</li>
+
 <li> Script is in javascript hence supports concepts and constructs that javascript supports</li>
 <li> Support for global variables stored across pages in a test and across tests in a suite.</li>
 <li> Script refactorable into functions and files.</li>
@@ -61,13 +66,13 @@ This makes the tool independant of the website/ web application.<br/>
 Bugs can be recorded by testers and the sahi script can be published on a web server.<br/>
 This url can be included in bug reports.<br/>
 Developers can reproduce the bug by pointing to that url in the bug report.<br/>
+
 <li> Scripts automatically available to others through HTTP</li>
 <li> Very lightweight</li>
 <li> Tests do not need the browser window to be in focus.</li>
 <li> Suites can run in multiple threads thus reducing the test execution time.</li>
 <li> Supports external proxy and HTTPS.</li>
 </ul>
-
 
 
 
@@ -81,6 +86,7 @@ Download the latest Sahi zip file from <a href="http://sourceforge.net/projects/
 
 (<a href="#top">Top</a>)
 
+
 <br/><h4><a name="install">Installing Sahi</a></h4>
 
 1) Unzip sahi.zip to a desired location<br/>
@@ -92,6 +98,7 @@ Download the latest Sahi zip file from <a href="http://sourceforge.net/projects/
 
 <b>Starting Sahi:</b><br/>
     Windows:<br/>
+
     - Go to <sahi_root>\bin and run sahi.bat<br/>
     Linux<br/>
     - Go to <sahi_root>/bin and run sahi.sh<br/>
@@ -100,12 +107,14 @@ Download the latest Sahi zip file from <a href="http://sourceforge.net/projects/
 <br/>
 
 Configuring the browser:<br/>
+
 <b>Firefox:</b><br/>
 <ul type="square">
 
 	<li>Go to Tools &gt; Options &gt; General &gt; Connection Settings &gt;</li>
 	<li>Set to "Manual Proxy Configuration"</li>
 	<li>Set "HTTP Proxy" to "localhost"</li>
+
 	<li>Set "Port" to "9999". (This setting can be modified through &lt;sahi_root&gt;/config/sahi.properties)</li>
 
 	<li>Keep "Use the same proxy for all protocol" unchecked as Sahi does not understand protocols other than HTTP</li>
@@ -114,11 +123,13 @@ Configuring the browser:<br/>
 <br/>
 <b>Internet Explorer:</b><br/>
 <ul type="square">
+
 	<li>Go to Tools &gt; Internet Options &gt; Connections &gt; LAN Settings &gt;</li>
 
 	<li>In "Proxy server" section, Check "Use a proxy server for your LAN"</li>
 	<li>Set "Address" to "localhost"</li>
 	<li>Set "Port" to "9999"</li>
+
 	<li>Leave "Bypass proxy server for local addresses" unchecked</li>
 	<li>OK &gt; OK : )</li>
 
@@ -137,6 +148,7 @@ Configuring the browser:<br/>
 	<li>Most actions on the page will now get recorded.</li>
 	<li>Moving the mouse over any html element while pressing Ctrl key will show the javascript accessor info in the popup.</li>
 	<li>Clicking the "Add Assertions" button adds assertions for the element.</li>
+
 </ul>
 
 
@@ -151,6 +163,7 @@ Configuring the browser:<br/>
 
 (<a href="#top">Top</a>)
 
+
 <br/><h4><a name="playback">Playing back</a></h4>
 
 <ul type="square">
@@ -159,7 +172,6 @@ Configuring the browser:<br/>
 	<li>On the browser, navigate to the page where you started recording. Click 'Play'</li>
 
 </ul>
-
 
 
 (<a href="#top">Top</a>)
@@ -202,6 +214,7 @@ Multiple tests can be run through ant. For each test in the suite, the ant targe
 The ant target specifies a suite file, say SuiteName.suite. <br/><br/>
 The syntax of writing the suite file is:<br/><br/>
 &lt;testName.sah&gt; &lt;absolute url or url relative to the baseurl in ant target&gt;
+
 <br/><br/>
 eg.<br/>
 test1.sah	/startPageForTest1.jsp<br/>
@@ -219,9 +232,12 @@ test3.sah	abc/startPageForTest3.htm
 	browser="C:\\Program Files\\Internet Explorer\\iexplore.exe"
 	baseurl="http://localhost:8888/path/"
 /&gt;
+
 </b>
 </pre>
-
+<b>For more details, please look at demo.xml in sahi root folder</b>
+<br/>To run demo.xml, type "ant -f demo.xml"
+<br/>
 
 (<a href="#top">Top</a>)
 <h4><a name="logging">Logging</a></h4>
@@ -240,6 +256,7 @@ Log results can be accessed through the browser through http://mydomain/_s_/logs
 </ul>
 
 (<a href="#top">Top</a>)
+
 <h4><a name="notyet">Not yet supported, but coming in</a></h4>
 
 <ul type="square">
