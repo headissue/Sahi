@@ -1,4 +1,4 @@
-package com.sahi;
+package com.sahi.util;
 
 public class FileNotFoundRuntimeException extends RuntimeException {
 
