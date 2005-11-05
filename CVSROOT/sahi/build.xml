@@ -25,22 +25,14 @@
     </target>
 
     <target name="start" description="starts proxy">
-        <java classname="com.sahi.Proxy" fork="true" dir="bin"
-            jvmargs="-Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5505 
-        	-Djavax.net.ssl.trustStore=../certs/truststore 
-        	-Djavax.net.ssl.trustStorePassword=sahipassword
-        	-Djavax.net.ssl.keyStore=../certs/keystore 
-	     	-Djavax.net.ssl.keyStorePassword=sahipassword
-        	-Djavax.net.debug=all">
+        <java classname="com.sahi.Proxy" fork="true" dir="bin">
             <classpath path="classes"/>
         </java>
     </target>
 	
-	<taskdef name="sahi" classname="com.sahi.ant.RunSahiTask" classpath="lib/ant-sahi.jar"/>
-
-	<target name="sahireport" description="show report">	
-		<exec command="C:\\Program Files\\Internet Explorer\\iexplore.exe http://localhost:9999/_s_/spr/logs/"/>
-    </target>
+    <target name="stopsahi" description="stop sahi server">
+		<sahi stop="true" sahihost="localhost" sahiport="9999"/>
+	</target>	
 
     <target name="all">
     	<antcall target="clean"/>
@@ -92,9 +84,12 @@
         <copy todir="temp/sahi/docs" >
             <fileset dir="docs" excludes="CVS/**/*.*"/>
         </copy>
+        <copy todir="temp/sahi/certs" >
+            <fileset dir="certs" excludes="CVS/**/*.*"/>
+        </copy>
         <copy todir="temp/sahi/config" >
             <fileset dir="config" excludes="CVS/**/*.*"/>
-        </copy>
+        </copy>    	
         <zip file="deploy/sahi-src_${DSTAMP}.zip" basedir="temp" >
         </zip>
         <antcall target="clean-temp"/>
@@ -119,11 +114,14 @@
             <fileset dir="extlib" excludes="*.jar"/>
         </copy>        	
         <copy todir="temp/sahi/htdocs" >
-            <fileset dir="htdocs"/>
+            <fileset dir="htdocs" excludes="CVS/**/*.*"/>
         </copy>
         <copy todir="temp/sahi/docs" >
-            <fileset dir="docs"/>
+            <fileset dir="docs" excludes="CVS/**/*.*"/>
         </copy>
+        <copy todir="temp/sahi/certs" >
+            <fileset dir="certs" excludes="CVS/**/*.*"/>
+        </copy>    	
         <copy todir="temp/sahi/config" >
             <fileset dir="config"/>
         </copy>
@@ -162,49 +160,6 @@
             <fileset dir="deploy" includes="**/*.*"/>
         </delete>    	
     </target>
-
-    <target name="stopsahi" description="stop sahi server">
-		<sahi stop="true" sahihost="localhost" sahiport="9999"/>
-	</target>	
-
-	<target name="sahitests" depends="compile" description="start the server and run sahi tests">
-		<parallel>
-			<sequential>
-				<waitfor maxwait="3" maxwaitunit="minute" checkevery="100">
-					<http url="http://localhost:10000/demo/index.htm"/>
-				</waitfor>
-				<sahi suite="../scripts/demo.suite"
-					browser="C:\\Program Files\\Internet Explorer\\iexplore.exe"
-					baseurl="http://localhost:10000/demo/"
-					sahihost="localhost"
-					sahiport="9999"
-					failureproperty="sahi.failed"
-					haltonfailure="false"
-					threads="2"
-					/>
-				<antcall target="stop-web"/>
-				<antcall target="failsahi"/>
-			</sequential>
-			<antcall target="start-web"/>
-		</parallel>
-	</target>	
-
-	<target name="failsahi" if="sahi.failed">
-		<fail message="Sahi tests failed!"/>
-	</target>
-
-	<target name="start-web" description="starts web">
-        <java classname="com.sahi.WebServer" fork="true" dir="bin"
-            jvmargs="-Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5006" >
-            <classpath path="classes"/>
-        </java>
-    </target>
-
-	<target name="stop-web" description="stop web server">
-		<get dest="stopserver.htm" src="http://localhost:10000/dyn/stopserver" ignoreerrors="true" />
-		<delete file="stopserver.htm"/>
-	</target>	
-	
 	
 	<target name="test" depends="compile, compile-test">
 		<junit dir="bin" printsummary="false" fork="true" 
