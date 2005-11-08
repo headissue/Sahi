@@ -11,10 +11,16 @@ h4{
 
 <body>
 
-<a href="http://sourceforge.net">
-<img src="http://sourceforge.net/sflogo.php?group_id=151639&amp;type=3" width="125" height="37" border="0" alt="SourceForge.net Logo" align="right"/>
-</a>
-<h2>Sahi - Web Automation Tool </h2>
+<table width="100%" border="0"><tr><td>
+<h2>Sahi - Web Automation Tool</h2>
+</td>
+<td align="right">
+<a href="http://sourceforge.net"><img src="http://sourceforge.net/sflogo.php?group_id=151639&amp;type=3" width="125" height="37" border="0" alt="SourceForge.net Logo" /></a>
+<br/>
+<a href="index.html">Sahi</a>&nbsp;&nbsp;
+</td>
+</tr></table>
+
 <a href="#intro">Introduction</a></br>
 
 <a href="#features">Features</a></br>
@@ -26,8 +32,9 @@ h4{
 <a href="#scripting">Scripting</a></br>
 <a href="#includes">Including files</a></br>
 <a href="#suites">Suites</a></br>
-
+<a href="ant.html">Ant Support<a/><br/>
 <a href="#logging">Logging</a></br>
+<a href="advanced.html">Multi domains and Multi threaded playback</a></br>
 <a href="#notyet">Not yet supported, but coming in</a></br>
 <a href="apis.html">APIs</a>
 </br></br>
@@ -151,15 +158,15 @@ Configuring the browser:<br/>
 
 </ul>
 
-
-
-<br/><br/>The script being generated can be viewed by opening the sah file in the scripts directory.<br/>
+The script being generated can be viewed by opening the sah file in the scripts directory.<br/>
 (Open it in textpad. Intellij automatically starts saving and it messes the file);<br/>
 
 <ul type="square">
 	<li>Once done, click stop.</li>
 </ul>
-
+Note that you can test your custom code, by entering your code in the debug textarea and clicking in "Test". <br/>
+The command will be executed and the result will be displayed in the textbox near the "Test" button.<br/>
+Once confirmed that the desired result has been achieved, that code snippet can be added to the recording by clicking "Append to Recording"<br/>
 
 (<a href="#top">Top</a>)
 
@@ -169,8 +176,8 @@ Configuring the browser:<br/>
 <ul type="square">
 	<li>Close and reopen (alt-dblclick) the popup window.</li>
 	<li>Select script file just created from the dropdown, and click 'Set'</li>
-	<li>On the browser, navigate to the page where you started recording. Click 'Play'</li>
-
+	<li>Or enter the full url of the script file in the "Set script from url:" textbox, and click 'Set'</li>
+	<li>On the browser, navigate to the page where the recording had started. Click 'Play'</li>
 </ul>
 
 
@@ -235,7 +242,8 @@ test3.sah	abc/startPageForTest3.htm
 
 </b>
 </pre>
-<b>For more details, please look at demo.xml in sahi root folder</b>
+<a href="ant.html">Sahi Ant Target Description<a/><br/>
+<b>For details on running this target, please look at demo.xml in sahi root folder</b>
 <br/>To run demo.xml, type "ant -f demo.xml"
 <br/>
 
@@ -251,8 +259,8 @@ Log results can be accessed through the browser through http://mydomain/_s_/logs
 <br/><h4><a name="limitations">Limitations</a></h4>
 
 <ul type="square">
-	<li>Multidomains can be used in single user mode only. All actions are treated as if in one global session.</li>
-	<li>Multi threaded playback does not work with multidomains.</li>
+	<li><a href="advanced.html#multidomains">Multidomains</a> can be used in single user mode only. All actions are treated as if in one global session.</li>
+	<li><a href="advanced.html#multithreaded">Multi threaded</a> playback does not work with <a href="advanced.html#multidomains">multidomains</a>.</li>
 </ul>
 
 (<a href="#top">Top</a>)
@@ -260,7 +268,7 @@ Log results can be accessed through the browser through http://mydomain/_s_/logs
 <h4><a name="notyet">Not yet supported, but coming in</a></h4>
 
 <ul type="square">
-	<li>Javascript alerts, confirms and prompts not yet supported</li>
+	<li>Javascript alerts, confirms and prompts</li>
 </ul>
 (<a href="#top">Top</a>)
 <br/><br/>
