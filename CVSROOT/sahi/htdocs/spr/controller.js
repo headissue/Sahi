@@ -240,6 +240,7 @@ function evaluateExpr(){
 		else {
 			document.currentForm.result.value = "[Exception] "+e;
 		}
+		throw e;
 	}
 	sahiSetServerVar("sahiEvaluateExpr", "false");
 }

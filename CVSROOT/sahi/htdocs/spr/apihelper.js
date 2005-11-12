@@ -57,8 +57,9 @@ function sahiFindImageHelper(id, win, res, param, isImg){
     var imgs = isImg ? win.document.images : win.document.links;
 	
 	if ((typeof id) == "number"){
-		res = sahiFindResByIndexInList(id, imgs, res);
-		if (res.found) return res;
+		res.cnt = 0;
+		res = sahiFindImageByIx(id, top, res, isImg);
+		return res;
 	}else{
 		var o = getArrayNameAndIndex(id);
 	    var imgIx = o.index;
@@ -84,6 +85,25 @@ function sahiFindImageHelper(id, win, res, param, isImg){
     }
     return res;
 }
+
+function sahiFindImageByIx(ix, win, res, isImg){
+    var imgs = isImg ? win.document.images : win.document.links;
+    if (imgs[ix - res.cnt]) {
+    	res.element = imgs[ix - res.cnt];
+    	res.found = true;
+    	return res;
+    }
+	res.cnt += imgs.length;
+    var frs = win.frames;
+    if (frs){
+        for (var j=0; j<frs.length; j++){
+            res = sahiFindImageByIx(ix, frs[j], res, isImg);
+            if (res && res.found) return res;
+        }
+    }  
+    return res;  
+}
+
 function sahiFindLinkIx(id, toMatch){
 	var res = getBlankResult();
 	if (id == null || id == ""){
@@ -169,6 +189,13 @@ function sahiFindFormElementByIndex(ix, win, type, res){
 		    }
 	    }
     }
+    var frs = win.frames;
+    if (frs){
+        for (var j=0; j<frs.length; j++){
+            res = sahiFindFormElementByIndex(ix, frs[j], type, res);
+            if (res && res.found) return res;
+        }
+    }    
     return res;
 }
 
