@@ -52,7 +52,7 @@ function doAssert(e){
     try{
         if (!top._lastAccessedInfo) top._lastAccessedInfo = sahiGetAccessorInfo(e);
         sahiSendToServer('/_s_/dyn/record?'+getSahiPopUpQS()+sahiGetAccessorInfoQS(top._lastAccessedInfo, true));
-    }catch(ex){alert(ex)}
+    }catch(ex){sahiHandleException(ex);}
 }
 
 function getTarget(e){
@@ -145,7 +145,7 @@ function getShortHand(el, accessor){
     		shortHand += ", "+sahiGetRow(el).rowIndex;
     		shortHand += ", "+el.cellIndex;
         }
-    }catch(ex){alert(ex)}
+    }catch(ex){sahiHandleException(ex);}
     return shortHand;
 }
 function getTableShortHand(el){
@@ -216,31 +216,51 @@ function sahiAddHandlers(win){
         var f = fs[i];
         var els = f.elements;
         for (var j=0; j<els.length; j++){
-            var type = els[j].type;
-            if (type == "text" || type == "textarea" || type == "password"){
-                els[j].prevOnBlur = els[j].onblur;
-                els[j].prevOnChange = els[j].onchange;
-                els[j].onchange = sahiOnEv;
-            }else if (type == "select-one" || type == "select-multiple"){
-                els[j].prevOnBlur = els[j].onblur;
-                els[j].prevOnChange = els[j].onchange;
-                els[j].onchange = sahiOnEv;
-            }else if (type == "button" || type == "submit" || type == "checkbox" || type == "radio"){
-                els[j].prevOnClick = els[j].onclick;
-                els[j].onclick = sahiOnEv;
-            }
+	        sahiAttachFormElementEvents(els[j]);
         }
     }
     var ls = win.document.links;
     for (var i=0; i<ls.length; i++){
         var l = ls[i];
-        l.onclick = sahiOnEv;
+        sahiAttachLinkEvents(l)
     }
     var imgs = win.document.images;
     for (var i=0; i<imgs.length; i++){
-        if (imgs[i].onclick){
-            imgs[i].prevOnClick = imgs[i].onclick;
-            imgs[i].onclick = sahiOnEv;
-        }
+    	sahiAttachImageEvents(imgs[i]);
+    }
+}
+
+function sahiAttachEvents(el){
+	var tagName = el.tagName.toLowerCase();
+	if (tagName == "a"){
+		sahiAttachLinkEvents(el)
+	}else if (el.form && el.type){
+		sahiAttachFormElementEvents(el);
+	}else if (tagName == "img"){
+		sahiAttachImageEvents(el);
+	}
+}
+function sahiAttachFormElementEvents(el){
+    var type = el.type;
+    if (type == "text" || type == "textarea" || type == "password"){
+        el.prevOnBlur = el.onblur;
+        el.prevOnChange = el.onchange;
+        el.onchange = sahiOnEv;
+    }else if (type == "select-one" || type == "select-multiple"){
+        el.prevOnBlur = el.onblur;
+        el.prevOnChange = el.onchange;
+        el.onchange = sahiOnEv;
+    }else if (type == "button" || type == "submit" || type == "checkbox" || type == "radio"){
+        el.prevOnClick = el.onclick;
+        el.onclick = sahiOnEv;
+    }
+}
+function sahiAttachLinkEvents(el){
+    el.onclick = sahiOnEv;
+}
+function sahiAttachImageEvents(el){
+    if (el.onclick){
+        el.prevOnClick = el.onclick;
+        el.onclick = sahiOnEv;
     }
 }

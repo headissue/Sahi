@@ -3,11 +3,12 @@ function play(){
     window.opener.sahiStartPlaying();
     window.opener.sahiSetCurrentIndex(parseInt(document.playform.step.value));
     if (parseInt(document.playform.step.value) == 0){
-    	window.opener.top.location.reload(true);
+//    	window.opener.top.location.reload(true);
 	}
 	else{
-		window.opener.top.sahiEx();
+//		window.opener.top.sahiEx();
 	}
+		window.opener.top.sahiEx();
 }
 function stepWisePlay(){
     window.opener.sahiStartPlaying();
@@ -41,7 +42,7 @@ function doOnUnLoad(s){
     sahiSendToServer('/_s_/dyn/winclosed');
     try{
         window.opener.top._isSahiWinOpen = false;
-    }catch(ex){}
+    }catch(ex){sahiHandleException(ex);}
 }
 
 function doOnLoad(){
@@ -64,20 +65,23 @@ function doOnLoad(){
         	showPlayback();
         }
     }catch(ex){
-        alert(ex);
-        throw ex;
+		sahiHandleException(ex);
     }
 }
 function displayStepNum(){
 	try{
 	    document.playform.step.value = ""+sahiGetCurrentIndex();
-    }catch(e){}
+    }catch(e){
+    	sahiHandleException(e);
+    }
 }
 function sahiGetCurrentIndex(){
 	try{
     	var i = parseInt(sahiGetServerVar("sahiIx"));
    		return (""+i != "NaN") ? i : 0;
-    }catch(e){}
+    }catch(e){
+    	sahiHandleException(e);
+    }
 }
 function displayQuery(s){
 //    document.currentForm.query.value = forceWrap(s);
@@ -156,14 +160,16 @@ function sahiKeyDown(e){
 	    if (!e) e = window.event;
 	    if (e.keyCode == KEY_CONTROL) opener.top._isControlKeyPressed = true;
 	    else if (e.keyCode == KEY_ALT) opener.top._isAltKeyPressed = true;
-    }catch(e){}
+    }catch(e){
+    	sahiHandleException(e);
+    }
 }
 try{
     document.onkeydown=sahiKeyDown;
     document.onkeypress=sahiKeyUp;
     document.onkeyup=sahiKeyUp;
 }catch(ex){
-    //alert(ex);
+	sahiHandleException(ex);
 }
 
 
@@ -240,7 +246,7 @@ function evaluateExpr(){
 		else {
 			document.currentForm.result.value = "[Exception] "+e;
 		}
-		throw e;
+		sahiHandleException(e);
 	}
 	sahiSetServerVar("sahiEvaluateExpr", "false");
 }

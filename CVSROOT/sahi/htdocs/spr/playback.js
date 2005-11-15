@@ -19,7 +19,7 @@ function sahiInit(){
 	    document.onkeyup=sahiKeyUp;
 	    document.onmousemove=sahiMouseOver;
 	}catch(ex){
-	    //alert(ex);
+	    sahiHandleException(ex);
 	}
 
 	try{
@@ -44,7 +44,7 @@ function sahiInit(){
 	    if (_isSahiWinOpen) sahiOpenWin();
 	    if (sahiIsRecording()) sahiAddHandlers();
 	}catch(ex){
-	    throw ex;
+	    sahiHandleException(ex);
 	}
 }
 function sahiIsFirstExecutableFrame(){

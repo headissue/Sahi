@@ -63,13 +63,13 @@ function sahiSetServerVar(name, value){
 }
 function sahiSendToServer(url){
 	try{
-	    var rand = (new Date()) + Math.floor(Math.random()*(10000));
+	    var rand = (new Date()).getTime() + Math.floor(Math.random()*(10000));
 	    var http = sahiCreateRequestObject();
 	    var url = url + (url.indexOf("?")==-1 ? "?" : "&") + "t=" + rand;
 		http.open("GET", url, false);
 	    http.send(null);
 	    return http.responseText;
-    }catch(ex){}
+    }catch(ex){sahiHandleException(ex);}
 }
 function sahiLogErr(msg){
     return;
@@ -95,4 +95,8 @@ function s_v(v){
 }
 function quoted(s){
 	return '"' + s.replace(/"/g, '\\"') + '"';
+}
+function sahiHandleException(e){
+//	alert(e);
+//	throw e;
 }
