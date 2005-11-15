@@ -14,7 +14,7 @@ function sahiGetKnownTags(src){
         if (!el.tagName || el.tagName.toLowerCase() == "html" || el.tagName.toLowerCase() == "body") return null;
         var tag = el.tagName.toLowerCase();
         if (tag == "a" || tag == "select" || tag == "img" || tag == "form"
-            || tag == "input" || tag == "textarea" || tag == "textarea" || tag == "td" || tag == "table" || ((tag == "div" || tag == "span") && src.id && src.id !="")) return el;
+            || tag == "input" || tag == "textarea" || tag == "textarea" || tag == "td" || tag == "table" || ((tag == "div" || tag == "span") && (src.id && src.id !=""))) return el;
         el = el.parentNode;
     }
 }
