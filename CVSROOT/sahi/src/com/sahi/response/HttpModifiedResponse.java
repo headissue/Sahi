@@ -90,7 +90,10 @@ public class HttpModifiedResponse extends HttpResponse {
 		if (data().length < length)
 			length = data().length;
 		String s = new String(data(), 0, length).toLowerCase();
-		return s.indexOf("<html") != -1 || s.indexOf("<script") != -1
+		return s.indexOf("<html") != -1 
+				|| s.indexOf("<body") != -1
+				|| s.indexOf("<table") != -1
+				|| s.indexOf("<script") != -1
 				|| s.indexOf("<form") != -1;
 	}
 }
