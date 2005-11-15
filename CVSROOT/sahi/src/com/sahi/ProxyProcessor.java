@@ -369,6 +369,8 @@ public class ProxyProcessor implements Runnable {
 	private HttpResponse getResponseFromHost(InputStream inputStreamFromHost,
 			OutputStream outputStreamToHost, HttpRequest request)
 			throws IOException {
+		logger.finest(request.uri());
+		logger.finest(new String(request.rawHeaders()));
 		outputStreamToHost.write(request.rawHeaders());
 		if (request.isPost())
 			outputStreamToHost.write(request.data());
