@@ -157,7 +157,7 @@ function getTableShortHand(el){
         } 
         return "_table(" + quoted(shortHand) +")";           
     }
-	return "_accessor(" + quoted(sahiGetAccessor(el)) + ")";
+    return "_table(" + sahiFindTableIx(null, el) + ")";
 }
 
 function AccessorInfo(accessor, shortHand, type, event, value){
@@ -231,6 +231,7 @@ function sahiAddHandlers(win){
 }
 
 function sahiAttachEvents(el){
+	if (el.onclick == sahiOnEv || el.onchange == sahiOnEv) return;
 	var tagName = el.tagName.toLowerCase();
 	if (tagName == "a"){
 		sahiAttachLinkEvents(el)

@@ -339,7 +339,7 @@ function findInForm(name, fm, type){
 
 function sahiFindTableIx(id, toMatch){
 	var res = getBlankResult();
-	var retVal = sahiFindTagIxHelper(id, toMatch, top, "table", res, "id").cnt;
+	var retVal = sahiFindTagIxHelper(id, toMatch, top, "table", res, (id?"id":null)).cnt;
 	if (retVal != -1) return retVal;
 }
 
@@ -395,7 +395,7 @@ function sahiFindTagIxHelper(id, toMatch, win, type, res, param){
     var tags = win.document.getElementsByTagName(type);
     if (tags){
 	    for (var i=0; i<tags.length; i++){
-	        if (sahiAreEqual(tags[i], param, id)){
+	        if (param == null || sahiAreEqual(tags[i], param, id)){
 	        	res.cnt++;
 	        	if (tags[i] == toMatch){
 	        		res.found = true;
@@ -407,7 +407,7 @@ function sahiFindTagIxHelper(id, toMatch, win, type, res, param){
     var frs = win.frames;
     if (frs){
         for (var j=0; j<frs.length; j++){
-            res = sahiFindTagIxHelper(id, toMatch, frs[j], res, param);
+            res = sahiFindTagIxHelper(id, toMatch, frs[j], type, res, param);
 			if (res && res.found) return res;
         }
     }

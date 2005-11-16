@@ -43,12 +43,13 @@ function sahiOpenWin1(e){
 }
 var _lastAccessedInfo;
 function sahiMouseOver(e){
+	if (getTarget(e) == null) return;
     sahiAttachEvents(getTarget(e));
     if (!top._isControlKeyPressed) return;
     try{
       var controlWin = getSahiWinHandle();
       if (controlWin){
-//        controlWin.displayStepNum();
+        controlWin.displayStepNum();
         var acc = sahiGetAccessorInfo(sahiGetKnownTags(getTarget(e)));
         controlWin.displayInfo(acc);
         top._lastAccessedInfo = acc ? acc : top._lastAccessedInfo;
