@@ -133,7 +133,6 @@ function sahiGetArrayElement(s, src){
     var tag = src.tagName.toLowerCase();
     if (tag=="input" || tag=="textarea" || tag=="select"){
         var el2 = eval(s);
-        //alert(s+" "+el2+" "+(el2 == src));
         if (el2 == src) return s;
         var ix = -1;
         if (el2 && el2.length){

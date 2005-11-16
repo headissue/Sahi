@@ -237,7 +237,7 @@ function sahiAttachEvents(el){
 		sahiAttachLinkEvents(el)
 	}else if (el.form && el.type){
 		sahiAttachFormElementEvents(el);
-	}else if (tagName == "img"){
+	}else if (tagName == "img" || tagName == "div" || tagName == "span" || tagName == "td" || tagName == "table"){
 		sahiAttachImageEvents(el);
 	}
 }
