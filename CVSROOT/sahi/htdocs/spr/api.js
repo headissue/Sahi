@@ -103,7 +103,7 @@ function sahi_radio(n){
 function sahi_image(n){
     return sahiFindImage(n, top, "img");
 }
-function sahi_imageSubmit(n){
+function sahi_imageSubmitButton(n){
     return sahiFindElement(n, "image");
 }
 function sahi_link(n){
@@ -188,7 +188,7 @@ function sahi_prompt(n){
 	return prompt(n);
 }
 function sahi_cell(id, row, col){
-	if (!row && !col){
+	if (row==null && col==null){
 		return sahiFindCell(id);
 	}
 	return id.rows[row].cells[col];

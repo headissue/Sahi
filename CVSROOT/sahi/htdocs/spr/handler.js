@@ -72,7 +72,7 @@ function sahiGetAccessorInfo(el){
     var accessor = sahiGetAccessor(el);
     var shortHand = getShortHand(el, accessor);
     if (el.tagName.toLowerCase() == "img"){
-        return new AccessorInfo(accessor, shortHand, "image", "click");
+        return new AccessorInfo(accessor, shortHand, "img", "click");
     }else if(type == "text" || type == "textarea" || type == "password"){
         return new AccessorInfo(accessor, shortHand, type, "setvalue", el.value);
     }else if(type == "select-one" || type == "select-multiple"){
@@ -220,6 +220,11 @@ function sahiAddHandlers(win){
 	        sahiAttachFormElementEvents(els[j]);
         }
     }
+    var imgBtns = win.document.getElementsByTagName("input");
+    for (var j=0; j<imgBtns.length; j++){
+        sahiAttachFormElementEvents(imgBtns[j]);
+    }
+        
     var ls = win.document.links;
     for (var i=0; i<ls.length; i++){
         var l = ls[i];
@@ -244,6 +249,7 @@ function sahiAttachEvents(el){
 }
 function sahiAttachFormElementEvents(el){
     var type = el.type;
+    if (el.onchange == sahiOnEv || el.onblur == sahiOnEv || el.onclick == sahiOnEv) return;
     if (type == "text" || type == "textarea" || type == "password"){
         el.prevOnBlur = el.onblur;
         el.prevOnChange = el.onchange;
@@ -252,7 +258,7 @@ function sahiAttachFormElementEvents(el){
         el.prevOnBlur = el.onblur;
         el.prevOnChange = el.onchange;
         el.onchange = sahiOnEv;
-    }else if (type == "button" || type == "submit" || type == "checkbox" || type == "radio"){
+    }else if (type == "button" || type == "submit" || type == "checkbox" || type == "radio" || type == "image"){
         el.prevOnClick = el.onclick;
         el.onclick = sahiOnEv;
     }

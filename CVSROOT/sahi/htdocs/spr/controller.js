@@ -3,12 +3,12 @@ function play(){
     window.opener.sahiStartPlaying();
     window.opener.sahiSetCurrentIndex(parseInt(document.playform.step.value));
     if (parseInt(document.playform.step.value) == 0){
-//    	window.opener.top.location.reload(true);
+    	window.opener.top.location.reload(true);
 	}
 	else{
-//		window.opener.top.sahiEx();
-	}
 		window.opener.top.sahiEx();
+	}
+//		window.opener.top.sahiEx();
 }
 function stepWisePlay(){
     window.opener.sahiStartPlaying();
@@ -198,7 +198,9 @@ function getAccessor1(info){
         return "_accessor(\"" + info.accessor + "\")";
     } else {
         if ("image" == info.type) {
-            return "_imageSubmit(" + sahiQuoteIfString(info.shortHand) + ")";
+            return "_imageSubmitButton(" + sahiQuoteIfString(info.shortHand) + ")";
+        } else if ("img" == info.type) {
+            return "_image(" + sahiQuoteIfString(info.shortHand) + ")";
         } else if ("link" == info.type) {
             return "_link(" + sahiQuoteIfString(info.shortHand) + ")";
         } else if ("select-one" == info.type || "select-multiple" == info.type) {
