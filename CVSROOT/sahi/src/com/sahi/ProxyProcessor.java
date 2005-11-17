@@ -7,6 +7,7 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.URLDecoder;
+import java.net.UnknownHostException;
 import java.util.Properties;
 import java.util.logging.Logger;
 
@@ -25,6 +26,7 @@ import com.sahi.response.HttpFileResponse;
 import com.sahi.response.HttpModifiedResponse;
 import com.sahi.response.HttpResponse;
 import com.sahi.response.NoCacheHttpResponse;
+import com.sahi.response.SimpleHttpResponse;
 import com.sahi.session.Session;
 import com.sahi.test.SahiTestSuite;
 
@@ -70,8 +72,13 @@ public class ProxyProcessor implements Runnable {
 				if (uri.indexOf("/_s_/") != -1) {
 					processLocally(uri, requestFromBrowser);
 				} else {
-					if (uri.indexOf("favicon.ico") == -1)
+					if (isHostTheProxy(requestFromBrowser.host())
+							&& requestFromBrowser.port() == Configuration.getPort()) {
+						processLocally(uri, requestFromBrowser); 
+					}
+					else if (uri.indexOf("favicon.ico") == -1) {
 						processAsProxy(requestFromBrowser);
+					}
 				}
 			}
 		} catch (Exception e) {
@@ -83,6 +90,11 @@ public class ProxyProcessor implements Runnable {
 				logger.warning(e.getMessage());
 			}
 		}
+	}
+
+	private boolean isHostTheProxy(String host) throws UnknownHostException {
+		return InetAddress.getByName(host).getHostAddress().equals(InetAddress.getLocalHost().getHostAddress())
+		|| InetAddress.getByName(host).getHostAddress().equals("127.0.0.1");
 	}
 
 	private void processAsProxy(HttpRequest requestFromBrowser)
@@ -235,6 +247,8 @@ public class ProxyProcessor implements Runnable {
 		} else if (uri.indexOf("/spr/") != -1) {
 			String fileName = fileNamefromURI(requestFromBrowser.uri());
 			sendResponseToBrowser(new HttpFileResponse(fileName));
+		} else {
+			sendResponseToBrowser(new SimpleHttpResponse("<html><h2>You have reached the Sahi proxy.</h2></html>"));
 		}
 	}
 
