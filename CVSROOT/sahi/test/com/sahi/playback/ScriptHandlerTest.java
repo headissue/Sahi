@@ -30,7 +30,9 @@ public class ScriptHandlerTest extends TestCase {
     }
 
     public void testEscape(){
-        assertEquals("aaa \\\" bbb", Utils.escapeDoubleQuotes("aaa \" bbb"));
+    	assertEquals("\\\\", "\\".replaceAll("\\\\", "\\\\\\\\"));
+        assertEquals("aaa \\\" bbb", Utils.escapeDoubleQuotesAndBackSlashes("aaa \" bbb"));
+        assertEquals("aaa \\\\\\\" bbb", Utils.escapeDoubleQuotesAndBackSlashes("aaa \\\" bbb"));
     }
 
     public void testForUnderstanding(){

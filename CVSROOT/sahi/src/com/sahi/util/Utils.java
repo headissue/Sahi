@@ -14,8 +14,8 @@ import java.util.Date;
  * User: nraman Date: Jun 26, 2005 Time: 4:52:58 PM
  */
 public class Utils {
-	public static String escapeDoubleQuotes(String line) {
-		return line.replaceAll("\"", "\\\\\"");
+	public static String escapeDoubleQuotesAndBackSlashes(String line) {
+		return line.replaceAll("\\\\", "\\\\\\\\").replaceAll("\"", "\\\\\"");
 	}
 
 	public static byte[] getBytes(InputStream in) throws IOException {

@@ -16,27 +16,27 @@ public class SahiScriptFormat implements ScriptFormat {
 			String accessor = getAccessor(jsAccessor, shortHand, type);
 			cmd = "_click(" + accessor + ");";
 		} else if ("clicklink".equals(event)) {
-			cmd = "_click(" + jsAccessor + ",'" + escape(value) + "');";
+			cmd = "_click(" + jsAccessor + "," + quote(value) +  ");";
 		} else if ("setvalue".equals(event)) {
 			String accessor = getAccessor(jsAccessor, shortHand, type);
-			cmd = "_setValue(" + accessor + ", '" + escape(value) + "');";
+			cmd = "_setValue(" + accessor + ", " + quote(value) +  ");";
 		} else if ("setselected".equals(event)) {
 			String accessor = getAccessor(jsAccessor, shortHand, type);
-			cmd = "_setSelected(" + accessor + ", '" + escape(value) + "');";
+			cmd = "_setSelected(" + accessor + ", " + quote(value) +  ");";
 		} else if ("assert".equals(event)) {
 			String accessor = getAccessor(jsAccessor, shortHand, type);
 			cmd = "_assertNotNull(" + accessor + ");\r\n";
 			if ("cell".equals(type)) {
-				cmd += "_assertEqual('" + value + "', _getCellText(" + accessor
+				cmd += "_assertEqual(" + quote(value) +  ", _getCellText(" + accessor
 						+ "));";
 			} else if ("select-one".equals(type)
 					|| "select-multiple".equals(type)) {
-				cmd += "_assertEqual('" + value + "', _getSelectedText("
+				cmd += "_assertEqual(" + quote(value) +  ", _getSelectedText("
 						+ accessor + "));";
 			} else if ("text".equals(type) || "checkbox".equals(type)
 					|| "radio".equals(type) || "textarea".equals(type)
 					|| "password".equals(type)) {
-				cmd += "_assertEqual('" + value + "', " + accessor + ".value);";
+				cmd += "_assertEqual(" + quote(value) +  ", " + accessor + ".value);";
 			}
 		} else if ("wait".equals(event)) {
 			cmd = "_wait(" + value + ");";
@@ -51,12 +51,18 @@ public class SahiScriptFormat implements ScriptFormat {
 		return cmd;
 	}
 
+	private String quote(String value) {
+		return "\"" + escape(value) + "\"";
+	}
+
 	private String getAccessor(String jsAccessor, String shortHand, String type) {
 		if ("".equals(shortHand)) {
 			return "_accessor(\"" + jsAccessor + "\")";
 		} else {
-			if ("image".equals(type)) {
+			if ("img".equals(type)) {
 				return "_image(" + sahiQuoteIfString(shortHand) + ")";
+			} else if ("image".equals(type)) {
+				return "_imageSubmitButton(" + sahiQuoteIfString(shortHand) + ")";
 			} else if ("link".equals(type)) {
 				return "_link(" + sahiQuoteIfString(shortHand) + ")";
 			} else if ("select-one".equals(type)
@@ -77,6 +83,6 @@ public class SahiScriptFormat implements ScriptFormat {
 	}
 
 	String escape(String s) {
-		return s.replaceAll("[$]", "\\\\\\$");
+		return s.replaceAll("[$]", "\\\\\\$").replaceAll("\"", "\\\\\\\"");
 	}
 }

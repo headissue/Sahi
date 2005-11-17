@@ -65,7 +65,7 @@ public abstract class SahiScript {
 				} else {
 					sb.append(PREFIX);
 					sb.append(modifyFunctionNames(separateVariables(Utils
-							.escapeDoubleQuotes(line))));
+							.escapeDoubleQuotesAndBackSlashes(line))));
 					sb.append(CONJUNCTION);
 					sb.append(scriptName);
 					sb.append(" : ");
@@ -154,6 +154,7 @@ public abstract class SahiScript {
 		keywords.add("_getCellText");
 		keywords.add("_getSelectedText");
 		keywords.add("_image");
+		keywords.add("_imageSubmitButton");
 		keywords.add("_link");
 		keywords.add("_password");
 		keywords.add("_radio");
