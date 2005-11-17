@@ -47,7 +47,7 @@ public class WebProcessor implements Runnable {
 			logger.warning(dirEx.getMessage());						
 		} catch (FileNotFoundRuntimeException fnfre) {
 			try {
-				sendResponseToBrowser(new NoCacheHttpResponse(404, "FileNotFound", "<h2>404 File Not Found</h2>"));
+				sendResponseToBrowser(new NoCacheHttpResponse(404, "FileNotFound", "<html><h2>404 File Not Found</h2></html>"));
 			} catch (IOException e) {
 				logger.warning(fnfre.getMessage());			
 			}
