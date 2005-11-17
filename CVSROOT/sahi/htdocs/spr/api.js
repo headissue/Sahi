@@ -103,6 +103,9 @@ function sahi_radio(n){
 function sahi_image(n){
     return sahiFindImage(n, top, "img");
 }
+function sahi_imageSubmit(n){
+    return sahiFindElement(n, "image");
+}
 function sahi_link(n){
     return sahiFindLink(n, top);
 }

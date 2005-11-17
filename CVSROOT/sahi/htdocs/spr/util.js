@@ -98,5 +98,5 @@ function quoted(s){
 }
 function sahiHandleException(e){
 //	alert(e);
-//	throw e;
+	throw e;
 }

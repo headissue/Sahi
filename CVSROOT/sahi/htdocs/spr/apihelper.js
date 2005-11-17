@@ -162,6 +162,10 @@ function sahiFindElement(id, type){
 		retVal = sahiFindElementHelper(id, top, type, res, "value").element;
 		if (retVal != null) return retVal;
 	}
+	else if (type == "image"){
+		retVal = sahiFindElementHelper(id, top, type, res, "alt").element;
+		if (retVal != null) return retVal;
+	}
 	
 	res = getBlankResult();
 	retVal = sahiFindElementHelper(id, top, type, res, "name").element;
@@ -172,20 +176,35 @@ function sahiFindElement(id, type){
 }
 
 function sahiFindFormElementByIndex(ix, win, type, res){
-    var fs = win.document.forms;
-    if (fs){
-	    for (var i=0; i<fs.length; i++){
-	    	var els = fs[i].elements;
-	    	for (var j=0; j<els.length; j++){
-		    	var el = els[j];
-		    	if (el != null && el.type == type){
-		    		res.cnt++;
-		    		if (res.cnt == ix){
-			    		res.element = el;
-			    		res.found = true;
-			    		return res;
-		    		}
-		    	}
+	if (type == "image"){
+		var els = win.document.getElementsByTagName("input");
+    	for (var j=0; j<els.length; j++){
+		   	var el = els[j];
+	    	if (el != null && el.type == type){
+	    		res.cnt++;
+	    		if (res.cnt == ix){
+		    		res.element = el;
+		    		res.found = true;
+		    		return res;
+	    		}
+	    	}
+		}
+	}else{
+	    var fs = win.document.forms;
+	    if (fs){
+		    for (var i=0; i<fs.length; i++){
+		    	var els = fs[i].elements;
+		    	for (var j=0; j<els.length; j++){
+			    	var el = els[j];
+			    	if (el != null && el.type == type){
+			    		res.cnt++;
+			    		if (res.cnt == ix){
+				    		res.element = el;
+				    		res.found = true;
+				    		return res;
+			    		}
+			    	}
+			    }
 		    }
 	    }
     }
@@ -207,20 +226,34 @@ function sahiFindElementHelper(id, win, type, res, param){
 		var o = getArrayNameAndIndex(id);
 	    var ix = o.index;
 	    var fetch = o.name;
-	    var fs = win.document.forms;
-	    if (fs){
-		    for (var i=0; i<fs.length; i++){
-		    	var els = fs[i].elements;
-		    	for (var j=0; j<els.length; j++){
-			        if (els[j].type == type && sahiAreEqual(els[j], param, fetch)){
-			        	res.cnt++;
-			        	if (res.cnt == ix || ix == -1){
-				        	res.element = els[j];
-			        		res.found = true;
-			        		return res;
-			        	}
-			        }
+		if (type == "image"){
+			var els = document.getElementsByTagName("input");
+	    	for (var j=0; j<els.length; j++){
+		        if (els[j].type == type && sahiAreEqual(els[j], param, fetch)){
+		        	res.cnt++;
+		        	if (res.cnt == ix || ix == -1){
+			        	res.element = els[j];
+		        		res.found = true;
+		        		return res;
+		        	}
 		        }
+	        }
+		}else{
+		    var fs = win.document.forms;
+		    if (fs){
+			    for (var i=0; i<fs.length; i++){
+			    	var els = fs[i].elements;
+			    	for (var j=0; j<els.length; j++){
+				        if (els[j].type == type && sahiAreEqual(els[j], param, fetch)){
+				        	res.cnt++;
+				        	if (res.cnt == ix || ix == -1){
+					        	res.element = els[j];
+				        		res.found = true;
+				        		return res;
+				        	}
+				        }
+			        }
+			    }
 		    }
 	    }    
     }
@@ -246,8 +279,11 @@ function sahiFindElementIx(id, toMatch, type){
 	if (type == "button" || type == "submit"){
 		retVal = sahiFindElementIxHelper(id, type, toMatch, top, res, "value").cnt;
 		if (retVal != -1) return retVal;
+	}	
+	else if (type == "image"){
+		retVal = sahiFindElementIxHelper(id, type, toMatch, top, res, "alt").cnt;
+		if (retVal != -1) return retVal;
 	}
-
 	res = getBlankResult();
 	retVal = sahiFindElementIxHelper(id, type, toMatch, top, res, "name").cnt;
 	if (retVal != -1) return retVal;
@@ -259,20 +295,32 @@ function sahiFindElementIx(id, toMatch, type){
 }
 function sahiFindElementIxHelper(id, type, toMatch, win, res, param){
 	if (res && res.found) return res;
-
-    var fs = win.document.forms;
-    if (fs){
-	    for (var i=0; i<fs.length; i++){
-	    	var els = fs[i].elements;
-	    	for (var j=0; j<els.length; j++){
-		        if (els[j].type == type &&  (param == null || sahiAreEqual(els[j], param, id))){
-		        	res.cnt++;
-		        	if (els[j] == toMatch){
-		        		res.found = true;
-		        		return res;
-		        	}
-		        }
+	if (type == "image"){
+		var els = document.getElementsByTagName("input");
+    	for (var j=0; j<els.length; j++){
+	        if (els[j].type == type && sahiAreEqual(els[j], param, id)){
+	        	res.cnt++;
+	        	if (els[j] == toMatch){
+	        		res.found = true;
+	        		return res;
+	        	}
 	        }
+        }
+	}else{
+	    var fs = win.document.forms;
+	    if (fs){
+		    for (var i=0; i<fs.length; i++){
+		    	var els = fs[i].elements;
+		    	for (var j=0; j<els.length; j++){
+			        if (els[j].type == type &&  (param == null || sahiAreEqual(els[j], param, id))){
+			        	res.cnt++;
+			        	if (els[j] == toMatch){
+			        		res.found = true;
+			        		return res;
+			        	}
+			        }
+		        }
+		    }
 	    }
     }
     var frs = win.frames;

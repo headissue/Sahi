@@ -85,12 +85,16 @@ function sahiGetForm(src){
 
 function sahiGetFormElement(src){
     var n = "";
+    if (src.type == "image"){
+    	var els = document.getElementsByTagName('input');
+		return "getElementsByTagName('input')[" + sahiFindInArray(els, src) + "]";
+    }
     if (!isBlankOrNull(src.name)){
         n = 'elements["'+src.name+'"]';
     }else {
-        var f = src.form;
-        for (var j=0; j<f.length; j++){
-            if (f[j] == src){
+        var els = src.form.elements;
+        for (var j=0; j<els.length; j++){
+            if (els[j] == src){
                 n = "elements["+j+"]";
             }
         }

@@ -198,7 +198,7 @@ function getAccessor1(info){
         return "_accessor(\"" + info.accessor + "\")";
     } else {
         if ("image" == info.type) {
-            return "_image(" + sahiQuoteIfString(info.shortHand) + ")";
+            return "_imageSubmit(" + sahiQuoteIfString(info.shortHand) + ")";
         } else if ("link" == info.type) {
             return "_link(" + sahiQuoteIfString(info.shortHand) + ")";
         } else if ("select-one" == info.type || "select-multiple" == info.type) {

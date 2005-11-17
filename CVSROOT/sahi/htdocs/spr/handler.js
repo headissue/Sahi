@@ -79,7 +79,7 @@ function sahiGetAccessorInfo(el){
         return new AccessorInfo(accessor, shortHand, type, "setselected", sahiGetOptionText(el, el.value));
     }else if (el.tagName.toLowerCase() == "a") {
         return new AccessorInfo(accessor, shortHand, "link", "click");
-    }else if (type == "button" || type == "submit"){
+    }else if (type == "button" || type == "submit" || type == "image"){
         return new AccessorInfo(accessor, shortHand, type, "click");
     }else if (type == "checkbox" || type == "radio"){
         return new AccessorInfo(accessor, shortHand, type, "click", el.value);
@@ -119,7 +119,8 @@ function getShortHand(el, accessor){
             return shortHand;
         }else if (el.tagName.toLowerCase() == "input" || el.tagName.toLowerCase() == "textarea" || el.tagName.toLowerCase().indexOf("select") != -1){
         	if (el.type == "button" || el.type == "submit") shortHand = el.value;
-            if (!shortHand || shortHand=="") shortHand = el.name;
+        	if (el.type == "image")	shortHand = el.alt;
+            else if (!shortHand || shortHand=="") shortHand = el.name;
             if (!shortHand || shortHand=="") shortHand = el.id;
             if (shortHand && shortHand!=""){
 	            if (sahiFindElement(shortHand, el.type) != el){
