@@ -1,6 +1,7 @@
 package com.sahi.playback.log;
 
 import java.util.logging.Level;
+import java.util.logging.LogRecord;
 
 /**
  * User: nraman
@@ -12,6 +13,7 @@ public class PlayBackLogLevel extends Level {
 	public static final Level ERROR = new PlayBackLogLevel("ERROR", Level.SEVERE.intValue()+15);    
     public static final Level FAILURE = new PlayBackLogLevel("FAILURE", Level.SEVERE.intValue()+10);
     public static final Level SUCCESS = new PlayBackLogLevel("SUCCESS", Level.SEVERE.intValue()+5);
+	public static final Level INFO2 = new PlayBackLogLevel("INFO", Level.SEVERE.intValue()+5);;
     public PlayBackLogLevel(String name, int value) {
         super(name, value);
     }

@@ -48,7 +48,7 @@ public class PlayBackLogger {
 			} else if ("success".equals(type)) {
 				logger.log(PlayBackLogLevel.SUCCESS, msg);
 			} else {
-				logger.info(msg);
+				logger.log(PlayBackLogLevel.INFO2, msg);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
