@@ -106,7 +106,7 @@ function getShortHand(el, accessor){
             }
             return shortHand;
         }else if (el.tagName.toLowerCase() == "a"){
-            shortHand = (el.innerText) ? el.innerText : el.text;
+            shortHand = sahiGetText(el);//(el.innerText) ? el.innerText : el.text;
             shortHand = sahiTrim(shortHand);
             if (!shortHand || shortHand=="") shortHand = el.id;
             if (shortHand && shortHand!=""){

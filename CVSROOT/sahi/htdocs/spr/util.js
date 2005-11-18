@@ -98,5 +98,13 @@ function quoted(s){
 }
 function sahiHandleException(e){
 //	alert(e);
-	throw e;
+//	throw e;
+}
+function sahiGetText(el){
+	if (el.innerHTML)
+		return sahiGetTextFromHTML(el.innerHTML);
+	return null;
+}
+function sahiGetTextFromHTML(s){
+	return s.replace(/<[^>]*>/g, "");
 }

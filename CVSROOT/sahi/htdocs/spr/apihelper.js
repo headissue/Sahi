@@ -30,7 +30,7 @@ function point(el){
 }
 function sahiAreEqual(el, param, value){
 	if (param == "linkText"){
-        var str = (el.innerText) ? el.innerText : el.text;
+        var str = sahiGetText(el);
         return (sahiTrim(str) == sahiTrim(value));
 	}
 	else{
