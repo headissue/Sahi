@@ -1,0 +1,22 @@
+h4{
+	color:brown;
+	text-decoration:underline;
+}
+pre{
+	background-color:lightgreen;
+	border:20px solid lightgreen;
+}
+p{
+	padding-left: 10px;
+}
+.explain{
+	background-color:lightgray;
+	border:20px solid lightgray;
+}
+.subExplain{
+	background-color:lightgreen;
+	border:20px solid lightgreen;
+}
+b{
+	color:darkblue;
+}

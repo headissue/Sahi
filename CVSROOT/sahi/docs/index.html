@@ -1,14 +1,8 @@
 <html>
 <head>
     <title>Sahi - Web Automation and Test Tool</title>
+	<link rel="stylesheet" type="text/css" href="sahi.css"/>
 </head>
-<style>
-h4{
-	color:brown;
-	text-decoration:underline;
-}
-</style>
-
 <body>
 
 <table width="100%" border="0"><tr><td>
@@ -35,6 +29,7 @@ h4{
 <a href="ant.html">Ant Support<a/><br/>
 <a href="#logging">Logging</a></br>
 <a href="advanced.html">Multi domains and Multi threaded playback</a></br>
+<a href="devnotes.html">Sahi - Technical Aspects</a></br>
 <a href="#notyet">Not yet supported, but coming in</a></br>
 <a href="apis.html">APIs</a>
 </br></br>
@@ -106,18 +101,22 @@ Download the latest Sahi zip file from <a href="http://sourceforge.net/projects/
 <br/><h4><a name="started">Getting started</a></h4>
 
 <b>Starting Sahi:</b><br/>
+<p>
     Windows:<br/>
 
-    - Go to <sahi_root>\bin and run sahi.bat<br/>
+    - Go to &lt;sahi_root&gt;\bin and run sahi.bat<br/>
     Linux<br/>
-    - Go to <sahi_root>/bin and run sahi.sh<br/>
+    - Go to &lt;sahi_root&gt;/bin and run sahi.sh<br/>
 
 
+Note that by default Sahi uses port 9999.
+This can be modified through sahi.properties
+</p>
 <br/>
 
-Configuring the browser:<br/>
+<b>Configuring the browser:</b><br/><br/>
 
-<b>Firefox:</b><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<b>Firefox:</b><br/>
 <ul type="square">
 
 	<li>Go to Tools &gt; Options &gt; General &gt; Connection Settings &gt;</li>
@@ -130,7 +129,7 @@ Configuring the browser:<br/>
 	<li>NOTE: "No Proxy for" should NOT have localhost in it.</li>
 </ul>
 <br/>
-<b>Internet Explorer:</b><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<b>Internet Explorer:</b><br/>
 <ul type="square">
 
 	<li>Go to Tools &gt; Internet Options &gt; Connections &gt; LAN Settings &gt;</li>
@@ -144,7 +143,29 @@ Configuring the browser:<br/>
 
 </ul>
 
+While working with Sahi it may become annoying to have to switch between proxy and no proxy, or to another proxy.<br>
+There are a few plugins/freeware available on the net to ease this.<br>
+My personal favorite while working on Firefox is "Proxy Button". It helps in a single click toggling of proxy.<br>
 
+These tools can considerably enhance the experience of using Sahi.<br>
+
+<br/><br/>
+
+<b><a name="demo">Starting the bundled demo web server if needed, for learning and understanding Sahi APIs:</a></b><br/>
+    Windows:<br/>
+
+    - Go to <sahi_root>\bin and run web.bat<br/>
+    Linux<br/>
+    - Go to <sahi_root>/bin and run web.sh<br/>
+
+<br/>
+Go to url http://localhost:10000/demo/index.htm and play around with the different pages.<br/>
+It gives a fair idea of how elements are accessed through Sahi.<br/><br/>
+
+Note that by default Sahi uses port 9999 and the web server uses port 10000 (sahi's port + 1). <br>
+These can be modified through <a href="props.html">sahi.properties</a>
+
+<br/>
 
 (<a href="#top">Top</a>)
 
@@ -160,16 +181,19 @@ Configuring the browser:<br/>
 
 </ul>
 
-The script being generated can be viewed by opening the sah file in the scripts directory.<br/>
-(Open it in textpad. Intellij automatically starts saving and it messes the file);<br/>
+The script being generated can be viewed by opening the &lt;script_name&gt;.sah file in the scripts directory.<br/>
+The script can be edited even while recording, so that logical segregation into functions etc. can be done as recording happens.<br/>
+
 
 <ul type="square">
 	<li>Once done, click stop.</li>
 </ul>
-Note that you can test your custom code, by entering your code in the debug textarea and clicking in "Test". <br/>
-The command will be executed and the result will be displayed in the textbox near the "Test" button.<br/>
+Note that custom code can be tested, by entering code in the "debug" textarea and clicking on "Test ->". <br/>
+The command will be executed and the result will be displayed in the textbox near the "Test ->" button.<br/>
 Once confirmed that the desired result has been achieved, that code snippet can be added to the recording by clicking "Append to Recording"<br/>
 
+<br/>
+You could use the <a href="#demo">demo application</a> bundled with Sahi to get your feet wet.<br/>
 (<a href="#top">Top</a>)
 
 
@@ -179,7 +203,8 @@ Once confirmed that the desired result has been achieved, that code snippet can 
 	<li>Close and reopen (alt-dblclick) the popup window.</li>
 	<li>Select script file just created from the dropdown, and click 'Set'</li>
 	<li>Or enter the full url of the script file in the "Set script from url:" textbox, and click 'Set'</li>
-	<li>On the browser, navigate to the page where the recording had started. Click 'Play'</li>
+	<li>On the browser, navigate to the page where the recording had started.</li>
+	<li>Click 'Play'</li>
 </ul>
 
 
@@ -263,6 +288,7 @@ Log results can be accessed through the browser through http://mydomain/_s_/logs
 <ul type="square">
 	<li><a href="advanced.html#multidomains">Multidomains</a> can be used in single user mode only. All actions are treated as if in one global session.</li>
 	<li><a href="advanced.html#multithreaded">Multi threaded</a> playback does not work with <a href="advanced.html#multidomains">multidomains</a>.</li>
+	<li>Record or playback of sites which have pages from multiple domains in iframes or frames can cause problems.</li>
 </ul>
 
 (<a href="#top">Top</a>)

@@ -1,14 +1,8 @@
 <html>
 <head>
     <title>Sahi - APIs</title>
+<link rel="stylesheet" type="text/css" href="sahi.css"/>
 </head>
-<style>
-h4{
-	color:brown;
-	text-decoration:underline;
-}
-</style>
-
 <body>
 
 <table width="100%" border="0"><tr><td>
@@ -22,7 +16,7 @@ h4{
 </tr></table>
 
 <br/>
-Even though these APIs are given here, the best way to learn how these work is by recording actions using the Sahi controller and looking at the recorded code.
+The best way to learn how these APIs work is by recording actions using the Sahi controller and looking at the recorded code.
 <br/><br/>
 <a href="#aform">Accessor methods : Form elements</a><br/>
 <a href="#alink">Accessor methods : Link</a><br/>
@@ -116,14 +110,64 @@ _containsHTML(element, htmlToSearch)<br/>
 <br>
 <h4><a name="include"></a>File Inclusion</h4>
 _include(filePath)<br/>
+<br/>
+<div class="explain">
+<b>_include(filePath)</b>
+<br/><br/>
+One sah file may include other sah files, thus allowing logical separation of code.<br/>
+Syntax: _include(file2.sah)
+</div>
 
+<div class="explain">
+Example:<br/>
+<b>File create_customer.sah</b><br/>
+<div class="subExplain">
+include("create_customer_functions.sah");<br/>
+createCustomer("Narayan", 1001, 27);<br/>
+</div>
+<br/>
+<br/>
+<b>File create_customer_functions.sah</b><br/>
+<div class="subExplain">
+function createCustomer($name, $id, $age){<br/>
+	_setValue(_textbox("name"), $name);<br/>
+	_setValue(_textbox("id"), $id);<br/>
+	_setValue(_textbox("age"), $age);<br/>
+}<br/>
+</div>
+</p>
+</div>
 
 
 (<a href="#top">Top</a>)
 <br>
 <h4><a name="utility"></a>Utility Methods</h4>
-_random(maxNo)<br/>
 _savedRandom(id, minNo, maxNo)<br/>
+<br/>
+
+<p class="explain">
+<b>_savedRandom(id, min, max)</b>
+<br/>
+<br/>
+If a script was recorded for say, creating a user, and if the user name is mandated to be unique in the application, <br/>
+we need to add random numbers to the user name so that it remains unique.<br/>
+<br/>
+
+One can obtain a random number by using _savedRandom(id, min, max).<br/>
+During the first call to it, it creates a random number between min and max, associates with the id and returns the number. <br/>
+On subsequent accesses with that id, it returns the same random number which it had created in the first access.<br/>
+<br/>
+
+Example:<br/>
+
+<b>var $x = _savedRandom("login", 100, 200);</b> sets $x to say 145 (a random number between 100, 200). Defaults for min and max, if omitted, are 0 and 10000<br/>
+
+<b>$y = _savedRandom("login", 100, 200);</b> will set $y to 145 again.<br/>
+
+<b>$y = _savedRandom("login");</b> will also set $y to 145.<br/>
+ The min and max are needed only during the first call.<br/>
+</p>
+<br/>
 
 
 <!--Developer: V Narayan Raman-->
