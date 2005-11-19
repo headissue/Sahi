@@ -1,7 +1,14 @@
 //MARK: Link Test Start
 
-_click(_link("Link Test"));
-_assertNotNull(_link("linkByContent"));
+var $linkText = "Link Test";
+_click(_link($linkText));
+
+function clickLinkByContent(){
+	_assertNotNull(_link("linkByContent"));
+}
+clickLinkByContent()
+
+
 _assertNotNull(_link("linkByHtml"));
 _assertNotNull(_link("linkById"))
 _assertEqual(_link("linkById"), _link("linkByContent"))
