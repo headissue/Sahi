@@ -17,21 +17,20 @@
 
 <a href="#intro">Introduction</a></br>
 
-<a href="#features">Features</a></br>
+<a href="#features">Features</a></br></br>
 <a href="#download">Downloading Sahi</a></br>
-<a href="#install">Installing Sahi</a></br>
+<a href="#install">Installing Sahi</a></br></br>
 <a href="#started">Getting started</a></br>
 <a href="#record">Recording through Sahi</a></br>
-<a href="#playback">Playing back</a></br>
-<a href="#scripting">Scripting</a></br>
-<a href="#includes">Including files</a></br>
+<a href="#playback">Playing back</a></br></br>
+<a href="scripting.html">Scripting</a>, <a href="apis.html">APIs</a></br></br>
 <a href="#suites">Suites</a></br>
-<a href="ant.html">Ant Support<a/><br/>
-<a href="#logging">Logging</a></br>
+<a href="ant.html">Ant Support<a/><br/></br>
+<a href="#logging">Logging</a></br></br>
 <a href="advanced.html">Multi domains and Multi threaded playback</a></br>
-<a href="devnotes.html">Sahi - Technical Aspects</a></br>
+<a href="devnotes.html">Sahi - Technical Aspects</a></br></br>
 <a href="#notyet">Not yet supported, but coming in</a></br>
-<a href="apis.html">APIs</a>
+
 </br></br>
 
 (<a href="#top">Top</a>)
@@ -154,9 +153,9 @@ These tools can considerably enhance the experience of using Sahi.<br>
 <b><a name="demo">Starting the bundled demo web server if needed, for learning and understanding Sahi APIs:</a></b><br/>
     Windows:<br/>
 
-    - Go to <sahi_root>\bin and run web.bat<br/>
+    - Go to &lt;sahi_root&gt;\bin and run web.bat<br/>
     Linux<br/>
-    - Go to <sahi_root>/bin and run web.sh<br/>
+    - Go to &lt;sahi_root&gt;/bin and run web.sh<br/>
 
 <br/>
 Go to url http://localhost:10000/demo/index.htm and play around with the different pages.<br/>
@@ -210,16 +209,6 @@ You could use the <a href="#demo">demo application</a> bundled with Sahi to get 
 
 (<a href="#top">Top</a>)
 
-<br/><h4><a name="scripting">Scripting</a></h4>
-
-<ul type="square">
-	<li>Statements can be clubbed into javascript functions.</li>
-	<li>Variables can be declared like in javascript. But they need to prefixed with $</li>
-</ul>
-
-
-(<a href="#top">Top</a>)
-
 <br/><h4>Running test from the console</a></h4>
 
 If you wish to run a script called "MySahiScript.sah" on a page like say, http://<b>www.domain.com</b>/dir/page1.jsp do<br/>
@@ -230,14 +219,6 @@ If you wish to run a script called "MySahiScript.sah" on a page like say, http:/
 
 <br/><br/>Note that the domains in bold should be the same. <br/>
 Yeah, this needs some clean up.<br/>
-
-
-(<a href="#top">Top</a>)
-
-<br/><h4><a name="includes">Including files</a></h4>
-
-One sah file may include other sah files, thus allowing logical separation of code.<br/>
-Syntax: _include(file2.sah)<br/>
 
 
 (<a href="#top">Top</a>)

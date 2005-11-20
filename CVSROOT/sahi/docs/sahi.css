@@ -1,3 +1,7 @@
+body{
+	font-family:arial;
+	font-size:12px;
+}
 h4{
 	color:brown;
 	text-decoration:underline;
@@ -14,9 +18,19 @@ p{
 	border:20px solid lightgray;
 }
 .subExplain{
-	background-color:lightgreen;
-	border:20px solid lightgreen;
+	background-color:lightblue;
+	border:20px solid lightblue;
 }
 b{
+	font-family:arial;
+	font-size:12px;
+	color:black;
+}
+.code{
+	padding-left:10px;
 	color:darkblue;
+}
+td{
+	font-family:arial;
+	font-size:12px;
 }

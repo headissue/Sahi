@@ -1,0 +1,197 @@
+<html>
+
+<head>
+	<title>Sahi - Scripting</title>
+	<link rel="stylesheet" type="text/css" href="sahi.css"/>
+</head>
+
+<body>
+<table width="100%" border="0"><tr><td>
+<h2>Sahi - Scripting</h2>
+</td>
+<td align="right">
+<a href="http://sourceforge.net"><img src="http://sourceforge.net/sflogo.php?group_id=151639&amp;type=3" width="125" height="37" border="0" alt="SourceForge.net Logo" /></a>
+<br/>
+<a href="index.html">Sahi</a>&nbsp;&nbsp;
+</td>
+</tr></table>
+
+<a href="#about">About Sahi script</a><br/>
+<a href="#variables">Variables</a><br/>
+<a href="apis.html">Sahi APIs</a></br>
+
+
+<br/>
+<h4><a name="about">About Sahi script</a></h4>
+<br/>
+
+Sahi script is based on Javascript.
+The constructs of javascript, like functions, variables, loops, conditional statements etc. are all available in Sahi script<br/>
+But the script is parsed and transformed slightly in the Sahi proxy server before it reaches the browser.<br/>
+Details of how Sahi script executes is available <a href="devnotes.html#delayed">here</a>.<br/>
+<br/>
+All lines which start with functions having underscore as their first character,<br/>
+are transformed into strings and added to an array.<br/>
+They are executed sequentially but with a slight delay.<br/>
+Example:<br/>
+<span class="code">_setValue(_textbox("name"), "Kamlesh");</span><br/>
+<br/>
+will be parsed and scheduled for execution later,<br/>
+while<br/>
+<br/>
+<span class="code">var $x = 10;</span><br/>
+<br/>
+will be executed immediately on page load.<br/>
+<br/>
+
+<br/>
+<hr/>
+
+<br/>
+<h4><a name="variables">Rules for variable usage.</a></h4>
+<ul>
+<li><a href="#dollar">Variables which are used as parameters to Sahi APIs should start with a $ (dollar) sign.</a>
+<li><a href="#assign">Returned values of accessor functions, or properties of elements returned by accessors, should not be assigned to variables.</a>
+<li><a href="#string">Variables passed to Sahi APIs can only represent string and numeric values.</a>
+<li><a href="#operation">Operations like $i++ or $i-- should not be performed inside the API call.</a>
+<li><a href="apis.html#global">For storing and retrieving properties of accessors, functions getGlobal() and setGlobal() should be used.</a>
+</ul>
+
+<br/>
+<hr/>
+<br/>
+
+<h4><a name="dollar">Variables which are used as parameters to Sahi APIs should start with a $ (dollar) sign.</a></h4>
+<br/>
+<div class="explain">
+eg.<br/>
+<br/>
+	<div class="code">var $name = "Kamlesh";<br/>
+	_setValue(_textbox("name"), $name);<br/>
+	$name = "Raman";<br/>
+	_setValue(_textbox("name"), $name);<br/>
+	</div>
+<br/>
+is the right way to use variables.<br/>
+<br/>
+	<div class="code">
+	var nameWithoutDollar = "Kamlesh";<br/>
+	_setValue(_textbox("name"), nameWithoutDollar)<br/>
+	nameWithoutDollar = "Raman";<br/>
+	_setValue(_textbox("name"), nameWithoutDollar)<br/>
+	</div>
+<br/>
+is wrong, and will not work correctly. While execution with nameWithoutDollar, both the _setValue calls will set the value to "Raman"!<br/>
+Read <a href="devnotes.html#variable">Why do variables need to be prefixed with a dollar($) sign?</a><br/>
+<br/>
+Variables which are not used as parameters in Sahi APIs need not start with a dollar.<br/>
+
+</div>
+<br/>
+<hr/>
+<br/>
+
+
+<h4><a name="assign">Returned values of accessor functions, or properties of elements returned by accessors, should not be assigned to variables.</a></h4>
+<br/>
+<div class="explain">
+Example:<br/>
+<br/>
+	<div class="code">
+	var $nameField = _textbox("name");<br/>
+	_setValue($nameField, "Kamlesh");<br/>
+	</div>
+<br/>
+can cause problems on pages which do not have a textbox by id "name".<br/>
+<br/>
+It is advisable to use accessor functions in the same call as the action functions.<br/>
+Example<br/>
+<span class="code">_setValue(_textbox("name"), "Kamlesh");</span><br/>
+<br/>
+</div>
+
+<br/>
+<hr/>
+<br/>
+
+
+<h4><a name="string">Variables passed to Sahi APIs can only represent string and numeric values.</a></h4>
+<br/>
+<div class="explain">
+As mentioned earlier, when variables are used, the transformation of script is as follows:<br/>
+<div class="code">
+var $linkText = "Link Test";</b><br/>
+_click(_link($linkText));</b><br/>
+</div>
+
+<br/>
+becomes<br/>
+<div class="code">
+var $linkText = "Link Test";<br/>
+sahiAdd("sahi_click(sahi_link("+s_v($linkText)+"));", "sahi_demo.sah : 4")<br/>
+</div>
+<br/>
+Since the statement is transformed into a string, only variables which are strings or numbers are possible.<br/>
+<br/>
+</div>
+
+<br/>
+<hr/>
+<br/>
+
+
+<h4><a name="operation">Operations like $i++ or $i-- should be not be performed inside the API call.</a></h4>
+<br/>
+<div class="explain">
+Example<br/>
+<br/>
+<span class="code">_setValue(_textbox("name"), "Kamlesh"+(++$i));</span> is not valid;<br/>
+<br/>
+It should be broken into 2 steps, as follows<br/>
+<br/>
+$i++;<br/>
+<span class="code">_setValue(_textbox("name"), "Kamlesh"+$i);</span><br/>
+<br/>
+will work correctly<br/>
+<br/>
+</div>
+
+<br/>
+<hr/>
+<br/>
+
+
+
+
+
+
+
+Language constructs:
+
+Sahi supports:
+
+for loops
+while loops
+if else conditions
+variables
+
+
+Variables:
+
+Variables in Sahi are handled a little differently.
+
+The rules for variables are:
+
+1)
+
+
+
+
+
+</pre>
+
+
+
+</body>
+
+</html>

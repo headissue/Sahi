@@ -1,7 +1,7 @@
 <html>
 <head>
     <title>Sahi - APIs</title>
-<link rel="stylesheet" type="text/css" href="sahi.css"/>
+	<link rel="stylesheet" type="text/css" href="sahi.css"/>
 </head>
 <body>
 
@@ -142,11 +142,13 @@ function createCustomer($name, $id, $age){<br/>
 (<a href="#top">Top</a>)
 <br>
 <h4><a name="utility"></a>Utility Methods</h4>
-_savedRandom(id, minNo, maxNo)<br/>
+<a href="#random">_savedRandom(id, minNo, maxNo)<br/>
+<a href="#global">_setGlobal(name, value)</a><br/>
+<a href="#global">_getGlobal(name)</a><br/>
 <br/>
 
 <p class="explain">
-<b>_savedRandom(id, min, max)</b>
+<b><a name="random">_savedRandom(id, min, max)</a></b>
 <br/>
 <br/>
 If a script was recorded for say, creating a user, and if the user name is mandated to be unique in the application, <br/>
@@ -160,14 +162,34 @@ On subsequent accesses with that id, it returns the same random number which it 
 
 Example:<br/>
 
-<b>var $x = _savedRandom("login", 100, 200);</b> sets $x to say 145 (a random number between 100, 200). Defaults for min and max, if omitted, are 0 and 10000<br/>
+<span class="code">var $x = _savedRandom("login", 100, 200);</span> sets $x to say 145 (a random number between 100, 200). Defaults for min and max, if omitted, are 0 and 10000<br/>
 
-<b>$y = _savedRandom("login", 100, 200);</b> will set $y to 145 again.<br/>
+<span class="code">$y = _savedRandom("login", 100, 200);</span> will set $y to 145 again.<br/>
 
-<b>$y = _savedRandom("login");</b> will also set $y to 145.<br/>
+<span class="code">$y = _savedRandom("login");</span> will also set $y to 145.<br/>
  The min and max are needed only during the first call.<br/>
 </p>
 <br/>
+
+<p class="explain">
+<b><a name="global">_setGlobal(name, value) and _getGloblal(name)</a></b>
+<br/>
+<br/>
+Since a script may span across multiple web pages, variables from one page may need to be stored for later use.<br/>
+For example, an id which is generated on customer creation may need to stored for later look up of the customer, on a different page.<br/>
+This can be accomplished by _setGlobal(name, value) and _getGloblal(name).<br/>
+<br/>
+Example:<br/>
+<span class="code">_setGlobal("customerId", _getCellText(_cell("custId")));</span> // sets the text in table cell with id "custId" into a global variable keyed by "customerId"<br/>
+Then on a later page, one can retrieve the customerId through<br/>
+&nbsp;<span class="code">_setValue(_textbox("lookup"), _getGlobal("customerId"));</span> // the second parameter retrieves the text stored.<br/>
+These variables are stored on the server in a hashmap associated with the session.<br/>
+<br/>
+Note that all values will be stored as strings only.
+<br/>
+</p>
+<br/>
+
 
 
 <!--Developer: V Narayan Raman-->
