@@ -1,8 +1,6 @@
 package com.sahi.playback;
 
 import java.util.ArrayList;
-import java.util.regex.Pattern;
-
 import junit.framework.TestCase;
 
 public class SahiScriptTest extends TestCase {
@@ -58,6 +56,11 @@ public class SahiScriptTest extends TestCase {
 				"sahi_textbox(\"username\").value=\"kk\";\r\n", 
 				new TestScript()
 						.modify("__textbox(\"username\").value=\"kk\";"));
+		assertEquals(
+				"sahiAdd(\"sahi_call(fn1())\", \"null : 1\")\r\n", 
+				new TestScript()
+						.modify("_call(fn1())"));
+
 	}
 
 	public void testModifyFunctionNames() {
@@ -76,7 +79,7 @@ public class SahiScriptTest extends TestCase {
 				"_clickLinkByAccessor|_getCellText|_getSelectedText|" +
 				"_image|_imageSubmitButton|_link|_password|_radio|" +
 				"_select|_setSelected|_setValue|_simulateEvent|_submit|" +
-				"_textarea|_textbox|_event|_eval|_setGlobal|_getGlobal|" +
+				"_textarea|_textbox|_event|_call|_eval|_setGlobal|_getGlobal|" +
 				"_wait|_random|_savedRandom|_cell|_table|_containsText|" +
 				"_containsHTML|_popup)", TestScript.getRegExp(true));
 		
@@ -86,7 +89,7 @@ public class SahiScriptTest extends TestCase {
 				"_clickLinkByAccessor|_getCellText|_getSelectedText|" +
 				"_image|_imageSubmitButton|_link|_password|_radio|" +
 				"_select|_setSelected|_setValue|_simulateEvent|_submit|" +
-				"_textarea|_textbox|_event|_eval|_setGlobal|_getGlobal|" +
+				"_textarea|_textbox|_event|_call|_eval|_setGlobal|_getGlobal|" +
 				"_wait|_random|_savedRandom|_cell|_table|_containsText|" +
 				"_containsHTML|_popup)", TestScript.getRegExp(false));
 	}
@@ -96,7 +99,7 @@ public class SahiScriptTest extends TestCase {
 				"_assertNotNull|_assertNull|_assertTrue|" +
 				"_assertNotTrue|_click|_clickLinkByAccessor|" +
 				"_getCellText|_getSelectedText|_setSelected|" +
-				"_setValue|_simulateEvent|_submit|_eval|_setGlobal|" +
+				"_setValue|_simulateEvent|_submit|_call|_eval|_setGlobal|" +
 				"_getGlobal|_wait|_savedRandom|_popup).*",
 				TestScript.getActionRegExp());
 	}

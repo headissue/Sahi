@@ -176,6 +176,7 @@ public abstract class SahiScript {
 		keywords.add("_setValue");
 		keywords.add("_simulateEvent");
 		keywords.add("_submit");
+		keywords.add("_call");
 		keywords.add("_eval");
 		keywords.add("_setGlobal");
 		keywords.add("_getGlobal");
@@ -215,6 +216,7 @@ public abstract class SahiScript {
 		keywords.add("_textarea");
 		keywords.add("_textbox");
 		keywords.add("_event");
+		keywords.add("_call");
 		keywords.add("_eval");
 		keywords.add("_setGlobal");
 		keywords.add("_getGlobal");

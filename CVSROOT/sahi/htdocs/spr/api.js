@@ -167,6 +167,9 @@ function sahi_alert(s){
 function sahi_eval(s){
     return eval(s);
 }
+function sahi_call(s){
+    return s;
+}
 function sahi_random(n){
 	return Math.floor(Math.random()*(n+1));
 }
