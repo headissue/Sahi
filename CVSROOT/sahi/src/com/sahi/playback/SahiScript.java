@@ -28,10 +28,13 @@ public abstract class SahiScript {
 	protected String fqn;
 	protected String base = "";
 	protected ArrayList parents;
+	private static final String REG_EXP_FOR_ADDING = getRegExp(false);
+	private static final String REG_EXP_FOR_STRIPPING = getRegExp(true);
+	private static final String REG_EXP_FOR_ACTIONS = getActionRegExp();
 
 	public SahiScript() {
 	}
-	
+
 	public SahiScript(String fileName) {
 		parents = new ArrayList();
 		init(fileName);
@@ -59,7 +62,7 @@ public abstract class SahiScript {
 			String line = tokenizer.nextToken().trim();
 			if ("".equals(line))
 				continue;
-			if (line.startsWith("_")) {
+			if (line.startsWith("_") && lineStartsWithActionKeyword(line)) {
 				if (line.startsWith("_include")) {
 					sb.append(processInclude(line));
 				} else {
@@ -81,6 +84,10 @@ public abstract class SahiScript {
 		String toString = sb.toString();
 		logger.fine(toString);
 		return toString;
+	}
+
+	static boolean lineStartsWithActionKeyword(String line) {
+		return line.matches(REG_EXP_FOR_ACTIONS);
 	}
 
 	private String processInclude(String line) {
@@ -108,24 +115,40 @@ public abstract class SahiScript {
 		return null;
 	}
 
+	
+	static String getActionRegExp() {
+		ArrayList keywords = getActionKeyWords();
+		StringBuffer sb = new StringBuffer();
+		int size = keywords.size();
+		sb.append("^(");
+		for (int i = 0; i < size; i++) {
+			String keyword = (String) keywords.get(i);
+			sb.append(keyword);
+			if (i != size - 1)
+				sb.append("|");
+		}
+		sb.append(").*");
+		return sb.toString();	
+	}
+	
 	public static String modifyFunctionNames(String unmodified) {
 		unmodified = stripSahiFromFunctionNames(unmodified);
-		String modified = unmodified.replaceAll(getRegExp(false), "sahi$0");
+		String modified = unmodified.replaceAll(REG_EXP_FOR_ADDING, "sahi$1");
 		return modified;
 	}
 
 	public static String stripSahiFromFunctionNames(String unmodified) {
-		String modified = unmodified.replaceAll(getRegExp(true), "$1");
+		String modified = unmodified.replaceAll(REG_EXP_FOR_STRIPPING, "$1");
 		return modified;
 	}
 
-	private static String getRegExp(boolean isForStripping) {
+	static String getRegExp(boolean isForStripping) {
 		ArrayList keywords = getKeyWords();
 		StringBuffer sb = new StringBuffer();
 		int size = keywords.size();
 		if (isForStripping)
 			sb.append("sahi");
-		sb.append("(");
+		sb.append("_?(");
 		for (int i = 0; i < size; i++) {
 			String keyword = (String) keywords.get(i);
 			sb.append(keyword);
@@ -134,6 +157,32 @@ public abstract class SahiScript {
 		}
 		sb.append(")");
 		return sb.toString();
+	}
+	
+	private static ArrayList getActionKeyWords() {
+		ArrayList keywords = new ArrayList();
+		keywords.add("_alert");
+		keywords.add("_assertEqual");
+		keywords.add("_assertNotEqual");
+		keywords.add("_assertNotNull");
+		keywords.add("_assertNull");
+		keywords.add("_assertTrue");
+		keywords.add("_assertNotTrue");
+		keywords.add("_click");
+		keywords.add("_clickLinkByAccessor");
+		keywords.add("_getCellText");
+		keywords.add("_getSelectedText");
+		keywords.add("_setSelected");
+		keywords.add("_setValue");
+		keywords.add("_simulateEvent");
+		keywords.add("_submit");
+		keywords.add("_eval");
+		keywords.add("_setGlobal");
+		keywords.add("_getGlobal");
+		keywords.add("_wait");
+		keywords.add("_savedRandom");
+		keywords.add("_popup");
+		return keywords;
 	}
 
 	private static ArrayList getKeyWords() {
