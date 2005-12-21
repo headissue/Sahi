@@ -9,19 +9,9 @@ import java.io.InputStream;
  */
 public class HttpModifiedResponse extends HttpResponse {
 	private static final String INJECT_TOP = ""  
-//		+ "<script src='/_s_/spr/util.js'></script>\n"
-//		+ "<script src='/_s_/spr/exception.js'></script>\n"
-//		+ "<script src='/_s_/spr/cookie.js'></script>\n"
-//		+ "<script src='/_s_/dyn/state.js'></script>\n"
-//		+ "<script src='/_s_/spr/accessor.js'></script>\n"
-//		+ "<script src='/_s_/spr/handler.js'></script>\n"
-//		+ "<script src='/_s_/spr/event.js'></script>\n"
-//		+ "<script src='/_s_/spr/api.js'></script>\n"
-//		+ "<script src='/_s_/spr/apihelper.js'></script>\n"
-//		+ "<script src='/_s_/spr/common.js'></script>\n"
-//		+ "<script src='/_s_/spr/include.js'></script>\n"
 		+ "<script src='/_s_/spr/concat.js'></script>\n"
 		+ "<script src='/_s_/dyn/state.js'></script>\n"
+		+ "<div id='sahi_div'></div>\n"
 		+ "";
 
 	private static final String INJECT_BOTTOM = "" 
@@ -32,25 +22,32 @@ public class HttpModifiedResponse extends HttpResponse {
 	public HttpModifiedResponse(InputStream in) throws IOException {
 		super(in);
 		if (firstLine().indexOf("30") == -1) { // Response code other than redirects
-			headers().remove("Transfer-Encoding");
-			headers().put("Cache-Control","no-cache");
-			headers().put("Pragma","no-cache");
-			headers().put("Expires", "0");
-//			headers().remove("ETag");
-//			headers().remove("Last-Modified");
+			removeHeader("Transfer-Encoding");
+			setHeader("Cache-Control","no-cache");
+			setHeader("Pragma","no-cache");
+			setHeader("Expires", "0");
+			removeHeader("ETag");
+			removeHeader("Last-Modified");
 			if (isHTML())
 				data(getModifiedData());
 			else if (isJs()) {
 				data(substituteModals(data()));
 			}
-			headers().put("Content-Length", "" + data().length);
+			setHeader("Content-Length", "" + data().length);
+//			System.out.println("$$$$$$$$$$$$$$");
+//			System.out.println(new String(rawHeaders()));
+//			System.out.println("$$$$$$$$$$$$$$");
+//			System.out.println("--------------");			
+//			System.out.println(new String(getRebuiltHeaderBytes()));
 			setRawHeaders(getRebuiltHeaderBytes());
+//			System.out.println("--------------");			
 		}
 	}
 
 	private boolean isJs() {
-		if (contentType() == null
-				|| contentType().toLowerCase().indexOf("application/x-javascript") != -1) {
+		String contentType = contentType();
+		if (contentType == null
+				|| contentType.toLowerCase().indexOf("application/x-javascript") != -1) {
 			return hasJsContent();
 		}
 		return false;
@@ -72,8 +69,9 @@ public class HttpModifiedResponse extends HttpResponse {
 	}
 
 	private boolean isHTML() {
-		if (contentType() == null
-				|| contentType().toLowerCase().indexOf("text/html") != -1) {
+		String contentType = contentType();
+		if (contentType == null
+				|| contentType.toLowerCase().indexOf("text/html") != -1) {
 			return hasHtmlContent();
 		}
 		return false;

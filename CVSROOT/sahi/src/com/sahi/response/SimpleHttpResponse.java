@@ -10,15 +10,25 @@ public class SimpleHttpResponse extends HttpResponse {
         this(dataStr.getBytes());
     }
 
+    public SimpleHttpResponse(String dataStr, boolean closeConnection) {
+        this(dataStr.getBytes(), closeConnection);
+    }
+
     public SimpleHttpResponse(byte[] data) {
+    	this(data, true);
+    }
+    
+    public SimpleHttpResponse(byte[] data, boolean closeConnection) {
         data(data);
         setFirstLine("HTTP/1.1 200 OK");
-        headers().put("Content-Type", "text/html");
-		headers().put("Cache-Control","no-cache");
-		headers().put("Pragma","no-cache");
-		headers().put("Expires", "0");        
-        headers().put("Connection", "close");
-        headers().put("Content-Length", "" + data().length);
+        setHeader("Content-Type", "text/html");
+		setHeader("Cache-Control","no-cache");
+		setHeader("Pragma","no-cache");
+		setHeader("Expires", "0");        
+        if (closeConnection) {
+        	setHeader("Connection", "close");
+        }
+        setHeader("Content-Length", "" + data().length);
         setRawHeaders(getRebuiltHeaderBytes());
     }
 }

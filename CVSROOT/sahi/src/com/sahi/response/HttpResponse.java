@@ -23,6 +23,6 @@ public class HttpResponse extends StreamHandler {
     }
 
     public String contentType() {
-        return (String) headers().get("Content-Type");
+        return getLastSetValueOfHeader("Content-Type");
     }
 }

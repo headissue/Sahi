@@ -26,13 +26,13 @@ public class NoCacheHttpResponse extends HttpResponse {
     protected void setNoCacheHeaders(byte[] data) {
         data(data);
 		setFirstLine("HTTP/1.1 " + status + " " + statusMessage);
-        headers().put("Content-Type", "text/html");
-        headers().put("Cache-control", "no-cache");
-        headers().put("Cache-control", "no-store");
-        headers().put("Pragma", "no-cache");
-        headers().put("Expires", "0");
-        headers().put("Connection", "close");
-        headers().put("Content-Length", "" + data().length);
+        setHeader("Content-Type", "text/html");
+        setHeader("Cache-control", "no-cache");
+        setHeader("Cache-control", "no-store");
+        setHeader("Pragma", "no-cache");
+        setHeader("Expires", "0");
+        setHeader("Connection", "close");
+        setHeader("Content-Length", "" + data().length);
         setRawHeaders(getRebuiltHeaderBytes());
         logger.fine(new String(rawHeaders()));
     }

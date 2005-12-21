@@ -20,7 +20,6 @@ import com.sahi.playback.ScriptUtil;
 import com.sahi.playback.URLScript;
 import com.sahi.playback.log.LogFileConsolidator;
 import com.sahi.processor.SuiteProcessor;
-import com.sahi.request.HttpModifiedRequest;
 import com.sahi.request.HttpRequest;
 import com.sahi.response.HttpFileResponse;
 import com.sahi.response.HttpModifiedResponse;
@@ -30,7 +29,6 @@ import com.sahi.response.SimpleHttpResponse;
 import com.sahi.session.Session;
 import com.sahi.test.SahiTestSuite;
 
-
 /**
  * User: nraman Date: May 13, 2005 Time: 7:06:11 PM To
  */
@@ -38,6 +36,8 @@ public class ProxyProcessor implements Runnable {
 	private Socket client;
 
 	private SuiteProcessor suiteProcessor = new SuiteProcessor();
+
+	private boolean isSSLSocket = false;
 
 	private static Logger logger = Configuration
 			.getLogger("com.sahi.ProxyProcessor");
@@ -62,6 +62,7 @@ public class ProxyProcessor implements Runnable {
 
 	public ProxyProcessor(Socket client) {
 		this.client = client;
+		isSSLSocket = (client instanceof SSLSocket);
 	}
 
 	public void run() {
@@ -73,15 +74,16 @@ public class ProxyProcessor implements Runnable {
 					processLocally(uri, requestFromBrowser);
 				} else {
 					if (isHostTheProxy(requestFromBrowser.host())
-							&& requestFromBrowser.port() == Configuration.getPort()) {
-						processLocally(uri, requestFromBrowser); 
-					}
-					else if (uri.indexOf("favicon.ico") == -1) {
+							&& requestFromBrowser.port() == Configuration
+									.getPort()) {
+						processLocally(uri, requestFromBrowser);
+					} else if (uri.indexOf("favicon.ico") == -1) {
 						processAsProxy(requestFromBrowser);
 					}
 				}
 			}
 		} catch (Exception e) {
+			e.printStackTrace();
 			logger.warning(e.getMessage());
 		} finally {
 			try {
@@ -93,16 +95,17 @@ public class ProxyProcessor implements Runnable {
 	}
 
 	private boolean isHostTheProxy(String host) throws UnknownHostException {
-		return InetAddress.getByName(host).getHostAddress().equals(InetAddress.getLocalHost().getHostAddress())
-		|| InetAddress.getByName(host).getHostAddress().equals("127.0.0.1");
+		return InetAddress.getByName(host).getHostAddress().equals(
+				InetAddress.getLocalHost().getHostAddress())
+				|| InetAddress.getByName(host).getHostAddress().equals(
+						"127.0.0.1");
 	}
 
 	private void processAsProxy(HttpRequest requestFromBrowser)
 			throws IOException {
 		if (requestFromBrowser.isConnect()) {
 			processConnect(requestFromBrowser);
-		}
-		else if (requestFromBrowser.isSSL()) {
+		} else if (requestFromBrowser.isSSL()) {
 			processHttp(requestFromBrowser);
 		} else {
 			processHttp(requestFromBrowser);
@@ -111,24 +114,25 @@ public class ProxyProcessor implements Runnable {
 
 	private void processConnect(HttpRequest requestFromBrowser) {
 		try {
-			sendResponseToBrowser(new NoCacheHttpResponse(""));
-			SSLSocket sslSocket = new SSLHelper().convertToSecureServerSocket(client);
-			ProxyProcessor delegatedProcessor = new ProxyProcessor(sslSocket);	
+			client.getOutputStream().write(("HTTP/1.0 200 Ok\r\n\r\n").getBytes());
+			SSLSocket sslSocket = new SSLHelper()
+					.convertToSecureServerSocket(client);
+			ProxyProcessor delegatedProcessor = new ProxyProcessor(sslSocket);
 			delegatedProcessor.run();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 
-
 	private void processHttp(HttpRequest requestFromBrowser)
 			throws IOException, SocketException {
+		logger.finest("### Type of socket is " + client.getClass().getName());
 		Socket socketToHost = getSocketToHost(requestFromBrowser);
 		socketToHost.setSoTimeout(120000);
 		OutputStream outputStreamToHost = socketToHost.getOutputStream();
 		InputStream inputStreamFromHost = socketToHost.getInputStream();
 		HttpResponse responseFromHost = getResponseFromHost(
-				inputStreamFromHost, outputStreamToHost, requestFromBrowser);
+				inputStreamFromHost, outputStreamToHost, requestFromBrowser.modifyForFetch());
 		sendResponseToBrowser(responseFromHost);
 		socketToHost.close();
 	}
@@ -234,6 +238,18 @@ public class ProxyProcessor implements Runnable {
 			} else if (uri.indexOf("/confirm.htm") != -1) {
 				String msg = requestFromBrowser.getParameter("msg");
 				sendResponseToBrowser(proxyConfirmResponse(msg));
+			} else if (uri.indexOf("/sleep") != -1) {
+				long millis = 1000;
+				try {
+					millis = Long.parseLong(requestFromBrowser
+							.getParameter("ms"));
+				} catch (Exception e) {
+				}
+				try {
+					Thread.sleep(millis);
+				} catch (Exception e) {
+				}
+				sendResponseToBrowser(new SimpleHttpResponse(""));
 			}
 		} else if (uri.indexOf("/scripts/") != -1) {
 			String fileName = scriptFileNamefromURI(requestFromBrowser.uri());
@@ -248,7 +264,8 @@ public class ProxyProcessor implements Runnable {
 			String fileName = fileNamefromURI(requestFromBrowser.uri());
 			sendResponseToBrowser(new HttpFileResponse(fileName));
 		} else {
-			sendResponseToBrowser(new SimpleHttpResponse("<html><h2>You have reached the Sahi proxy.</h2></html>"));
+			sendResponseToBrowser(new SimpleHttpResponse(
+					"<html><h2>You have reached the Sahi proxy.</h2></html>"));
 		}
 	}
 
@@ -395,8 +412,6 @@ public class ProxyProcessor implements Runnable {
 		return modifiedResponse;
 	}
 
-
-
 	private Socket getSocketToHost(HttpRequest request) throws IOException {
 		InetAddress addr = InetAddress.getByName(request.host());
 		if (request.isSSL()) {
@@ -411,7 +426,7 @@ public class ProxyProcessor implements Runnable {
 
 	private HttpRequest getRequestFromBrowser() throws IOException {
 		InputStream in = client.getInputStream();
-		return new HttpModifiedRequest(in);
+		return new HttpRequest(in, isSSLSocket);
 	}
 
 	protected void sendResponseToBrowser(HttpResponse responseFromHost)

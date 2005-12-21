@@ -38,9 +38,9 @@ public class HttpFileResponse extends HttpResponse {
 
     private void setHeaders() {
         setFirstLine("HTTP/1.1 200 OK");
-        headers().put("Content-Type", getContentType(fileName));
-        headers().put("Connection", "close");
-        headers().put("Content-Length", "" + data().length);
+        setHeader("Content-Type", getContentType(fileName));
+        setHeader("Connection", "close");
+        setHeader("Content-Length", "" + data().length);
         setRawHeaders(getRebuiltHeaderBytes());
     }
 

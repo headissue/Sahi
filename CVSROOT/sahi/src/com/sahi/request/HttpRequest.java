@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.logging.Logger;
@@ -21,8 +22,13 @@ public class HttpRequest extends StreamHandler {
 	private Map params = new HashMap();
 	private Map cookies = null;
 	private static final Logger logger = Logger.getLogger("com.sahi.request.HttpRequest");
+	private final boolean isSSLSocket;
 
 	public HttpRequest(InputStream in) throws IOException {
+		this(in, false);
+	}
+	public HttpRequest(InputStream in, boolean isSSLSocket) throws IOException {
+		this.isSSLSocket = isSSLSocket;
 		populateHeaders(in, true);
 		if (isPost())
 			populateData(in);
@@ -62,8 +68,7 @@ public class HttpRequest extends StreamHandler {
 	}	
 
 	public boolean isSSL() {
-		boolean isSSL = firstLine().indexOf("HTTPS") != -1;
-		return isSSL || isConnect();
+		return isSSLSocket || (firstLine().indexOf("HTTPS") != -1) || isConnect();
 	}
 
 	public String method() {
@@ -92,7 +97,7 @@ public class HttpRequest extends StreamHandler {
 	}
 
 	private void setHostAndPort() {
-		String hostWithPort = (String) headers().get("Host");
+		String hostWithPort = (String) getLastSetValueOfHeader("Host");
 		host = hostWithPort;
 		port = 80;
 		if (isSSL()) port = 443;
@@ -155,7 +160,7 @@ public class HttpRequest extends StreamHandler {
 
 	private void setCookies() {
 		cookies = new HashMap();
-		String cookieString = (String) headers().get("Cookie");
+		String cookieString = (String) getLastSetValueOfHeader("Cookie");
 		if (cookieString == null)
 			return;
 		StringTokenizer tokenizer = new StringTokenizer(cookieString, ";");
@@ -177,5 +182,40 @@ public class HttpRequest extends StreamHandler {
 			setCookies();
 		}
 		return (String) cookies.get(key);
+	}
+	
+	String rebuildCookies() {
+        StringBuffer sb = new StringBuffer();
+        if (cookies.size() == 0) return "";
+        Iterator keys = cookies.keySet().iterator();
+        while (keys.hasNext()) {
+            String key = (String) keys.next();
+            String value = (String) cookies.get(key);
+            sb.append(" ").append(key).append("=").append(value).append(";");
+        }
+        return sb.toString();
+	}
+
+	public Map cookies() {
+		if (cookies == null) {
+			setCookies();
+		}		
+		return cookies;
+	}
+	
+	public HttpRequest modifyForFetch() {
+        setFirstLine(method() + " " + uri() + " " + "HTTP/1.0");
+        removeHeader("Proxy-Connection");
+        removeHeader("Accept-Encoding");
+        removeHeader("Keep-Alive");
+        removeHeader("ETag");
+        removeHeader("If-Modified-Since");
+        removeHeader("If-None-Match");
+        setHeader("Connection", "close");
+		cookies().remove("sahisid");
+		setHeader("Cookie", rebuildCookies());
+        setRawHeaders(getRebuiltHeaderBytes());
+		logger.fine("\n------------\n\nRequest Headers:\n"+headers());      
+		return this;
 	}
 }

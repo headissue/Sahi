@@ -7,13 +7,13 @@ import java.net.Socket;
 import java.util.logging.Logger;
 
 import com.sahi.config.Configuration;
-import com.sahi.request.HttpModifiedRequest;
 import com.sahi.request.HttpRequest;
 import com.sahi.response.HttpFileResponse;
 import com.sahi.response.HttpResponse;
 import com.sahi.response.NoCacheHttpResponse;
+import com.sahi.util.FileIsDirectoryException;
 import com.sahi.util.FileNotFoundRuntimeException;
-import com.sahi.util.FileIsDirectoryException;;
+;
 
 /**
  * User: nraman Date: May 13, 2005 Time: 7:06:11 PM To
@@ -75,7 +75,7 @@ public class WebProcessor implements Runnable {
 
 	private HttpRequest getRequestFromBrowser() throws IOException {
 		InputStream in = client.getInputStream();
-		return new HttpModifiedRequest(in);
+		return new HttpRequest(in);
 	}
 
 	protected void sendResponseToBrowser(HttpResponse responseFromHost)
