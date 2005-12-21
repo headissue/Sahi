@@ -1,7 +1,7 @@
 function sahi_click(el){
     if (el && el.href && el.tagName=="A") sahi_clickLinkByAccessor (el);
     else if (el && el.tagName=="IMG") sahi_clickImage(el);
-    else if (el.prevOnClick) el.prevOnClick();
+    else if (el.sahiPrevOnClick) el.sahiPrevOnClick();
     else if (el.click){
 		if (el.type == "submit"){
 						
@@ -29,7 +29,7 @@ function appendSahiSid(url){
 }
 
 function sahi_clickImage(el){
-    if (el.prevOnClick) el.prevOnClick();
+    if (el.sahiPrevOnClick) el.sahiPrevOnClick();
 	if (el.click) el.click();
     else {
 	    if (el.onclick) el.onclick();
@@ -161,8 +161,11 @@ function sahi_getCellText(el){
     return sahiTrim(sahiIsIE() ? el.innerText : el.textContent);
 }
 function sahi_alert(s){
-	return alert(s);
-//	window.open("/_s_/dyn/alert.htm?msg="+s, "", "height=60px,width=460px,resizable=yes,toolbars=no,statusbar=no");
+	if (isSahiPlaying()){
+		
+	}else{
+		return alert(s);
+	}
 }
 function sahi_eval(s){
     return eval(s);

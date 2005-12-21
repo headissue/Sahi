@@ -1,18 +1,18 @@
 function sahiOnBeforeUnLoad(){
-	if (prevOnBeforeUnLoad) {
-		prevOnBeforeUnLoad();
+	if (sahiPrevOnBeforeUnLoad) {
+		sahiPrevOnBeforeUnLoad();
 	}
 	window.sahiLoaded=false;
 }
 function sahiInit(){
-	if (prevOnLoad) {
-		prevOnLoad();
+	if (sahiPrevOnLoad) {
+		sahiPrevOnLoad();
 	}
 	try{
 		window.sahiLoaded = true;	
-		prevOndblclick = document.ondblclick;
-		prevOnkeydown = document.onkeydown;
-		prevOnkeyup = document.onkeyup;
+		sahiPrevOndblclick = document.ondblclick;
+		sahiPrevOnkeydown = document.onkeydown;
+		sahiPrevOnkeyup = document.onkeyup;
 		
 	    document.ondblclick=sahiOpenWin1;
 	    document.onkeydown=sahiKeyDown;
@@ -57,10 +57,10 @@ function sahiIsFirstExecutableFrame(){
 	}
 	return false;
 }
-var prevOnLoad = window.onload;
+var sahiPrevOnLoad = window.onload;
 window.onload = sahiInit;
 
 
-var prevOnBeforeUnLoad = window.onbeforeunload;
+var sahiPrevOnBeforeUnLoad = window.onbeforeunload;
 window.onbeforeunload = sahiOnBeforeUnLoad;
 //sahiInit();

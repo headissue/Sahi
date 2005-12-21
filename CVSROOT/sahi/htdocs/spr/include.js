@@ -70,16 +70,16 @@ top._isQKeyPressed = false;
 top._isAltKeyPressed = false;
 function sahiKeyUp(e){
     if (!e) e = window.event;
-    if (prevOnkeyup){
-//    	prevOnkeyup(e);
+    if (sahiPrevOnkeyup){
+//    	sahiPrevOnkeyup(e);
     }
     if (e.keyCode == KEY_CONTROL) top._isControlKeyPressed = false;
     if (e.keyCode == KEY_ALT) top._isAltKeyPressed = false;
 }
 function sahiKeyDown(e){
     if (!e) e = window.event;
-    if (prevOnkeydown){
-//    	prevOnkeydown(e);
+    if (sahiPrevOnkeydown){
+//    	sahiPrevOnkeydown(e);
     }
     if (e.keyCode == KEY_CONTROL) top._isControlKeyPressed = true;
     else if (e.keyCode == KEY_ALT) top._isAltKeyPressed = true;

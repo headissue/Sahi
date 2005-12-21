@@ -2,14 +2,14 @@ function sahiOnEv(e){
 	if (sahiGetServerVar("sahiEvaluateExpr") == "true") return;
 	var targ = getTarget(e);
     if (document.all){
-        if (targ.prevOnChange) targ.prevOnChange();
-        if (targ.prevOnBlur) targ.prevOnBlur();
+        if (targ.sahiPrevOnChange) targ.sahiPrevOnChange();
+        if (targ.sahiPrevOnBlur) targ.sahiPrevOnBlur();
     }else{
-        if (targ.prevOnBlur) targ.prevOnBlur();
-        if (targ.prevOnChange) targ.prevOnChange();
+        if (targ.sahiPrevOnBlur) targ.sahiPrevOnBlur();
+        if (targ.sahiPrevOnChange) targ.sahiPrevOnChange();
     }
     sahiSendToServer('/_s_/dyn/record?'+getSahiPopUpQS()+sahiGetAccessorInfoQS(sahiGetAccessorInfo(targ)));
-    if (targ.prevOnClick) targ.prevOnClick();
+    if (targ.sahiPrevOnClick) targ.sahiPrevOnClick();
 }
 function getSahiPopUpQS(){
 	if (window.top.opener != null && window.top.opener != window.top) {
@@ -251,15 +251,15 @@ function sahiAttachFormElementEvents(el){
     var type = el.type;
     if (el.onchange == sahiOnEv || el.onblur == sahiOnEv || el.onclick == sahiOnEv) return;
     if (type == "text" || type == "textarea" || type == "password"){
-        el.prevOnBlur = el.onblur;
-        el.prevOnChange = el.onchange;
+        el.sahiPrevOnBlur = el.onblur;
+        el.sahiPrevOnChange = el.onchange;
         el.onchange = sahiOnEv;
     }else if (type == "select-one" || type == "select-multiple"){
-        el.prevOnBlur = el.onblur;
-        el.prevOnChange = el.onchange;
+        el.sahiPrevOnBlur = el.onblur;
+        el.sahiPrevOnChange = el.onchange;
         el.onchange = sahiOnEv;
     }else if (type == "button" || type == "submit" || type == "checkbox" || type == "radio" || type == "image"){
-        el.prevOnClick = el.onclick;
+        el.sahiPrevOnClick = el.onclick;
         el.onclick = sahiOnEv;
     }
 }
@@ -268,7 +268,7 @@ function sahiAttachLinkEvents(el){
 }
 function sahiAttachImageEvents(el){
     if (el.onclick){
-        el.prevOnClick = el.onclick;
+        el.sahiPrevOnClick = el.onclick;
         el.onclick = sahiOnEv;
     }
 }

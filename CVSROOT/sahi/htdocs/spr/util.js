@@ -45,13 +45,13 @@ function sahiIsIE(){
 	return browser == "Microsoft Internet Explorer";
 }
 function sahiCreateRequestObject(){
-	var request_o;
+	var obj;
 	if(sahiIsIE()){
-		request_o = new ActiveXObject("Microsoft.XMLHTTP");
+		obj = new ActiveXObject("Microsoft.XMLHTTP");
 	}else{
-		request_o = new XMLHttpRequest();
+		obj = new XMLHttpRequest();
 	}
-	return request_o;
+	return obj;
 }
 function sahiGetServerVar(name){
 	var v = sahiSendToServer("/_s_/dyn/getvar?name="+escape(name));
