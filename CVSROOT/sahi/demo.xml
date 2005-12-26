@@ -19,10 +19,9 @@
 					/>
 				<antcall target="stop-web"/>
 				<antcall target="failsahi"/>
-				<antcall target="stopsahi"/>
+				<!--antcall target="stopsahi"/-->
 			</sequential>
 			<antcall target="start-web"/>
-			<antcall target="start"/>
 		</parallel>
 	</target>	
 
