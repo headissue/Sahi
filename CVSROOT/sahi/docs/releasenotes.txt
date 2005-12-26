@@ -9,11 +9,7 @@ Requirements
 Changes
 --------------------
 
-* Fixed bug in handling cookies.
-* Fixed bug in handling HTTPS POST requests.
-* Added _call(fnCall()) method for delayed function calling.
-
-
+See changelog.txt
 
 
 Installation guide
