@@ -100,7 +100,7 @@ public class SahiScriptTest extends TestCase {
 				"_assertNotTrue|_click|_clickLinkByAccessor|" +
 				"_getCellText|_getSelectedText|_setSelected|" +
 				"_setValue|_simulateEvent|_submit|_call|_eval|_setGlobal|" +
-				"_getGlobal|_wait|_savedRandom|_popup).*",
+				"_wait|_popup).*",
 				TestScript.getActionRegExp());
 	}
 	
