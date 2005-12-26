@@ -14,12 +14,12 @@ p{
 	padding-left: 10px;
 }
 .explain{
-	background-color:lightgray;
-	border:20px solid lightgray;
+	background-color:lightgreen;
+	border:20px solid lightgreen;
 }
 .subExplain{
-	background-color:lightblue;
-	border:20px solid lightblue;
+	background-color:lightgreen;
+	border:20px solid lightgreen;
 }
 b{
 	font-family:arial;

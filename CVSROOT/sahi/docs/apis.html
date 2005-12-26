@@ -18,21 +18,21 @@
 <br/>
 The best way to learn how these APIs work is by recording actions using the Sahi controller and looking at the recorded code.
 <br/><br/>
-<a href="#aform">Accessor methods : Form elements</a><br/>
-<a href="#alink">Accessor methods : Link</a><br/>
-<a href="#atable">Accessor methods : Tables</a><br/>
-<a href="#ageneric">Accessor methods : Generic</a><br/>
-<a href="#action">Action methods</a><br/>
-<a href="#assertion">Assertion methods</a><br/>
-<a href="#textaccess">Text Access methods</a><br/>
-<a href="#textverify">Text Verification boolean methods</a><br/>
+<a href="#aform">Accessor Functions : Form elements</a><br/>
+<a href="#alink">Accessor Functions : Link</a><br/>
+<a href="#atable">Accessor Functions : Tables</a><br/>
+<a href="#ageneric">Accessor Functions : Generic</a><br/>
+<a href="#action">Action Scheduler Functions</a><br/>
+<a href="#assertion">Assertion Scheduler Functions</a><br/>
+<a href="#textaccess">Text Access Functions</a><br/>
+<a href="#textverify">Text Verification boolean Functions</a><br/>
 <a href="#include">File Inclusion</a><br/>
-<a href="#utility">Utility Methods</a><br/>
+<a href="#utility">Utility Functions</a><br/>
 
 
 (<a href="#top">Top</a>)
 <br>
-<h4><a name="aform"></a>Accessor methods : Form elements</h4>
+<h4><a name="aform"></a>Accessor Functions : Form elements</h4>
 _textbox(idStr)<br/>
 _password(idStr)<br/>
 _checkbox(idStr)<br/>
@@ -45,26 +45,43 @@ _submit(idStr)<br/>
 
 (<a href="#top">Top</a>)
 <br>
-<h4><a name="alink"></a>Accessor methods : Link</h4>
+<h4><a name="alink"></a>Accessor Functions : Link</h4>
 _link(idStr)<br/>
 
 (<a href="#top">Top</a>)
 <br>
-<h4><a name="atable"></a>Accessor methods : Tables</h4>
+<h4><a name="atable"></a>Accessor Functions : Tables</h4>
 _table(idStr)<br/>
 _cell(tableEl, rowNo, colNo)<br/>
 _cell(cellIdStr)<br/>
 
 (<a href="#top">Top</a>)
 <br>
-<h4><a name="ageneric"></a>Accessor methods : Generic</h4>
+<h4><a name="ageneric"></a>Accessor Functions : Generic</h4>
 _accessor(idStr)<br/>
-
-
 
 (<a href="#top">Top</a>)
 <br>
-<h4><a name="action"></a>Action methods</h4>
+<h4><a name="scheduler"></a>Scheduler Functions</h4>
+
+<div class="explain">
+Scheduler Functions behave differently from normal functions.<br/>
+They schedule the execution of the action for later execution in a different thread.
+They essentailly have the effect of converting the whole statement into a string
+and adding it to a global array. <br/>
+Each statement from the array is then executed one at a time, with a delay, when its turn comes.
+<br/>
+<br/>
+Note: All these functions can also be made to execute instantly (and not delayed) by using __ (double underscores) instead of _ (single underscore)
+<br/>
+</div>
+
+(<a href="#top">Top</a>)
+<br>
+<h4><a name="action"></a>Action Scheduler Functions</h4>
+
+These are <a href="#scheduler">Scheduler Functions</a><br/><br/>
+
 _click(jsElement)<br/>
 _clickImage(jsElement)<br/>
 
@@ -75,12 +92,14 @@ _check(jsElement, val)<br/>
 _simulateEvent(jsElement, ev)<br/>
 _wait(millis)<br/>
 _alert(str)<br/>
-
-
+_setGlobal(name, value)<br/>
+<br/>
 
 (<a href="#top">Top</a>)
 <br>
-<h4><a name="assertion"></a>Assertion methods</h4>
+<h4><a name="assertion"></a>Assertion Scheduler Functions</h4>
+
+These are <a href="#scheduler">Scheduler Functions</a><br/><br/>
 _assertNotNull(jsElement, msg)<br/>
 _assertNull(jsElement, msg)<br/>
 _assertEqual(expected, actual, msg)<br/>
@@ -89,10 +108,9 @@ _assertTrue(condition, msg)<br/>
 _assertNotTrue(condition, msg)<br/>
 
 
-
 (<a href="#top">Top</a>)
 <br>
-<h4><a name="textaccess"></a>Text Access methods</h4>
+<h4><a name="textaccess"></a>Text Access Functions</h4>
 _getSelectedText(selectElement) <br/>
 _getCellText(tableCellElement)<br/>
 
@@ -100,54 +118,53 @@ _getCellText(tableCellElement)<br/>
 
 (<a href="#top">Top</a>)
 <br>
-<h4><a name="textverify"></a>Text Verification boolean methods</h4>
+<h4><a name="textverify"></a>Text Verification boolean Functions</h4>
 _containsText(element, textToSearch)<br/>
 _containsHTML(element, htmlToSearch)<br/>
 
 
 
 (<a href="#top">Top</a>)
-<br>
+<br/><br/>
+<hr/>
+<br/>
 <h4><a name="include"></a>File Inclusion</h4>
 _include(filePath)<br/>
 <br/>
-<div class="explain">
 <b>_include(filePath)</b>
 <br/><br/>
 One sah file may include other sah files, thus allowing logical separation of code.<br/>
 Syntax: _include(file2.sah)
-</div>
+<br/><br/>
 
-<div class="explain">
-Example:<br/>
-<b>File create_customer.sah</b><br/>
-<div class="subExplain">
-include("create_customer_functions.sah");<br/>
-createCustomer("Narayan", 1001, 27);<br/>
-</div>
+Example:<br/><br/>
+<b style="background-color:lightgreen;padding:10px">File create_customer.sah</b><br/>
+<pre class="code">
+include("create_customer_Functions.sah");
+createCustomer("Narayan", 1001, 27);
+</pre>
 <br/>
 <br/>
-<b>File create_customer_functions.sah</b><br/>
-<div class="subExplain">
-function createCustomer($name, $id, $age){<br/>
-	_setValue(_textbox("name"), $name);<br/>
-	_setValue(_textbox("id"), $id);<br/>
-	_setValue(_textbox("age"), $age);<br/>
+<b style="background-color:lightgreen;padding:10px">File create_customer_Functions.sah</b><br/>
+<pre class="code">
+function createCustomer($name, $id, $age){
+   _setValue(_textbox("name"), $name);
+   _setValue(_textbox("id"), $id);
+   _setValue(_textbox("age"), $age);
 }<br/>
-</div>
-</p>
-</div>
+</pre>
 
 
 (<a href="#top">Top</a>)
-<br>
-<h4><a name="utility"></a>Utility Methods</h4>
+<br/>
+<hr/>
+<br/>
+<h4><a name="utility"></a>Utility Functions</h4>
 <a href="#random">_savedRandom(id, minNo, maxNo)<br/>
 <a href="#global">_setGlobal(name, value)</a><br/>
 <a href="#global">_getGlobal(name)</a><br/>
 <br/>
 
-<p class="explain">
 <b><a name="random">_savedRandom(id, min, max)</a></b>
 <br/>
 <br/>
@@ -162,16 +179,17 @@ On subsequent accesses with that id, it returns the same random number which it 
 
 Example:<br/>
 
-<span class="code">var $x = _savedRandom("login", 100, 200);</span> sets $x to say 145 (a random number between 100, 200). Defaults for min and max, if omitted, are 0 and 10000<br/>
-
-<span class="code">$y = _savedRandom("login", 100, 200);</span> will set $y to 145 again.<br/>
-
-<span class="code">$y = _savedRandom("login");</span> will also set $y to 145.<br/>
- The min and max are needed only during the first call.<br/>
-</p>
+<pre class="code">
+var $x = _savedRandom("login", 100, 200); //sets $x to say 145 (a random number between 100, 200).
+                                          //Defaults for min and max, if omitted, are 0 and 10000
+$y = _savedRandom("login", 100, 200);     //will set $y to 145 again.
+$y = _savedRandom("login");               //will also set $y to 145.
+</pre>
 <br/>
-
-<p class="explain">
+The min and max are needed only during the first call.<br/>
+<br/><br/>
+<hr/>
+<br/>
 <b><a name="global">_setGlobal(name, value) and _getGloblal(name)</a></b>
 <br/>
 <br/>
@@ -180,14 +198,19 @@ For example, an id which is generated on customer creation may need to stored fo
 This can be accomplished by _setGlobal(name, value) and _getGloblal(name).<br/>
 <br/>
 Example:<br/>
-<span class="code">_setGlobal("customerId", _getCellText(_cell("custId")));</span> // sets the text in table cell with id "custId" into a global variable keyed by "customerId"<br/>
+<pre class="code">
+_setGlobal("customerId", _getCellText(_cell("custId"))); // sets the text in table cell with id "custId" into a global variable keyed by "customerId"
+</pre>
 Then on a later page, one can retrieve the customerId through<br/>
-&nbsp;<span class="code">_setValue(_textbox("lookup"), _getGlobal("customerId"));</span> // the second parameter retrieves the text stored.<br/>
+<pre class="code">
+_setValue(_textbox("lookup"), _getGlobal("customerId")); // the second parameter retrieves the text stored.
+</pre>
 These variables are stored on the server in a hashmap associated with the session.<br/>
 <br/>
-Note that all values will be stored as strings only.
+Note: that all values will be stored as strings only. <br/>
+Note: _setGlobal is a <a href="#scheduler">Scheduler Function</a>.
 <br/>
-</p>
+
 <br/>
 
 

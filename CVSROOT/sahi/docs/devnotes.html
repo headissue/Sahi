@@ -50,10 +50,10 @@ This cannot be accomplished directly since javascript has no way of pausing exec
 
 Sahi handles this by parsing and modifying the script in the proxy.<br/><br/>
 Thus, a line which looked like this:<br/>
-<span class="code">_click(_link("Link Test"));</span><br/>
+<pre class="code">_click(_link("Link Test"));</pre>
 <br/>
 gets translated to:<br/>
-<span class="code">sahiAdd("sahi_click(sahi_link(\"Link Test\"));", "sahi_demo.sah : 3")</span><br/>
+<pre class="code">sahiAdd("sahi_click(sahi_link(\"Link Test\"));", "sahi_demo.sah : 3")</pre><br/>
 <br/>
 
 The method sahiAdd(cmd, debugInfo) takes two parameters.<br/>
@@ -67,7 +67,7 @@ function sahiAdd(cmd, debugInfo){
 }
 </pre>
 
-During page load, all the lines in the script are thus added to an array.<br/>
+During page load, <a href="apis.html#scheduler">Scheduler Functions</a> add steps in the script to an array.<br/>
 A counter is maintained on the server which marks the index in the array of the step that is to be run next.<br/>
 This counter is updated with each successful execution of a step.<br/>
 <br/>
@@ -79,12 +79,15 @@ This counter is updated with each successful execution of a step.<br/>
 <h4><a name="variable">Why do variables need to be prefixed with a dollar($) sign?</a></h4>
 
 When variables are used, the transformation of script is as follows:<br/>
-<span class="code">var $linkText = "Link Test";</span><br/>
-<span class="code">_click(_link($linkText));</span><br/>
-<br/>
+<pre class="code">
+var $linkText = "Link Test";
+_click(_link($linkText));
+</pre><br/>
 becomes<br/>
-<span class="code">var $linkText = "Link Test";</span><br/>
-<span class="code">sahiAdd("sahi_click(sahi_link("+s_v($linkText)+"));", "sahi_demo.sah : 4")</span><br/>
+<pre class="code">
+var $linkText = "Link Test";
+sahiAdd("sahi_click(sahi_link("+s_v($linkText)+"));", "sahi_demo.sah : 4");
+</pre><br/>
 
 <pre>
 function s_v(v){
@@ -96,7 +99,7 @@ function s_v(v){
 </pre>
 
 Thus, what will eventually execute, will be:<br/>
-<span class="code">sahi_click(sahi_link("Link Test"));</span><br/>
+<pre class="code">sahi_click(sahi_link("Link Test"));</pre>
 
 <br/>
 For easy identifcation of variables while parsing, it is needed that there is some way of tagging variables. <br/>
@@ -113,14 +116,15 @@ Sahi scripts are loaded with each page that appears on the browser.<br/>
 Since it is all javascript, the API function names need to be unique.<br/>
 If the application under test has a function with the same name, it can cause problems.
 <br/>
-For this, all API functions start with "sahi_".<br/> When Sahi's proxy serves the script to the browser, it parses and does a lot of modifications to the script.<br/> One of these is to correctly replace the API methods starting with "_" with "sahi_".
+For this, all API functions start with "sahi_".<br/> When Sahi's proxy serves the script to the browser,
+it parses and does a lot of modifications to the script.<br/>
+One of these is to correctly replace the API methods starting with "_" with "sahi_".
 <br/><br/>
-Thus, <br/>
-<span class="code">_click(_link("Create Login"));</span><br/>
+Thus,
+<pre class="code">_click(_link("Create Login"));</pre><br/>
 actually becomes <br/>
 
-<span class="code">sahi_click(sahi_link("Create Login"));</span><br/>
-<br/>
+<pre class="code">sahi_click(sahi_link("Create Login"));</pre><br/>
 Starting the APIs with "_" helps in easy substitution with "sahi_" with less scope for ambiguity.<br/>
 <br/>
 <br/>

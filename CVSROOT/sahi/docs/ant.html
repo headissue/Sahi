@@ -55,8 +55,8 @@ The demo could be run by running "ant -f demo.xml sahitests" from the sahi base 
 			&lt;sequential&gt;
 				&lt;waitfor maxwait="3" maxwaitunit="minute" checkevery="100"&gt;
 					&lt;http url="http://localhost:10000/demo/index.htm"/&gt;
-				&lt;/waitfor&gt;
-				<b>&lt;sahi suite="../scripts/demo.suite"
+				&lt;/waitfor&gt;<pre style="font-weight:bold;border:0px solid lightgreen;">
+				&lt;sahi suite="../scripts/demo.suite"
 					browser="C:\\Program Files\\Internet Explorer\\iexplore.exe"
 					baseurl="http://localhost:10000/demo/"
 					sahihost="localhost"
@@ -64,13 +64,11 @@ The demo could be run by running "ant -f demo.xml sahitests" from the sahi base 
 					failureproperty="sahi.failed"
 					haltonfailure="false"
 					threads="2"
-					/&gt;</b>
+					/&gt;</pre>
 				&lt;antcall target="stop-web"/&gt;
 				&lt;antcall target="failsahi"/&gt;
-				&lt;antcall target="stopsahi"/&gt;
 			&lt;/sequential&gt;
 			&lt;antcall target="start-web"/&gt;
-			&lt;antcall target="start"/&gt;
 		&lt;/parallel&gt;
 	&lt;/target&gt;
 
