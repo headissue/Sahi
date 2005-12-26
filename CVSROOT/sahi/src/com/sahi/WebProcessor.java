@@ -40,6 +40,7 @@ public class WebProcessor implements Runnable {
 			sendResponseToBrowser(new HttpFileResponse(fileName));
 		} catch (FileIsDirectoryException dirEx) {
 			try {
+				if ("/".equals(uri)) uri = "/demo";
 				sendResponseToBrowser(new NoCacheHttpResponse(200, "OK", "<script>location.href='"+uri+"/index.htm'</script>"));
 			} catch (IOException e) {
 				logger.warning(dirEx.getMessage());			
