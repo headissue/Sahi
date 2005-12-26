@@ -179,9 +179,9 @@ public abstract class SahiScript {
 		keywords.add("_call");
 		keywords.add("_eval");
 		keywords.add("_setGlobal");
-		keywords.add("_getGlobal");
+//		keywords.add("_getGlobal");
 		keywords.add("_wait");
-		keywords.add("_savedRandom");
+//		keywords.add("_savedRandom");
 		keywords.add("_popup");
 		return keywords;
 	}
