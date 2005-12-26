@@ -1,6 +1,8 @@
 package com.sahi.request;
 
 import com.sahi.StreamHandler;
+import com.sahi.test.SahiTestSuite;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -111,6 +113,7 @@ public class HttpRequest extends StreamHandler {
 				e.printStackTrace();
 			}
 		}
+		host = SahiTestSuite.stripSah(host);
 	}
 
 	private void setQueryString() {
