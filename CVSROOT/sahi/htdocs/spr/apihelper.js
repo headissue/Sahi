@@ -461,3 +461,19 @@ function sahiFindTagIxHelper(id, toMatch, win, type, res, param){
     }
     return res;
 }
+function sahiCanSimulateClick(el){
+	return (el.click || el.dispatchEvent);
+}
+function sahiSimulateClick(el){
+	if (el.click) el.click(); //IE has a click
+	else if (el.dispatchEvent) // For FF
+    {    
+		var evt = el.ownerDocument.createEvent('MouseEvents');
+		evt.initMouseEvent('click', true, true, 
+			el.ownerDocument.defaultView, 1, 
+			0, 0, 0, 0, 
+			false, false, false, false, 
+			0, null);
+		el.dispatchEvent(evt);		
+    }
+}

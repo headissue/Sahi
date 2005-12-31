@@ -13,11 +13,12 @@ function sahiInit(){
 		sahiPrevOndblclick = document.ondblclick;
 		sahiPrevOnkeydown = document.onkeydown;
 		sahiPrevOnkeyup = document.onkeyup;
+//		sahiPrevOnMouseMove = document.onmousemove;
 		
 	    document.ondblclick=sahiOpenWin1;
 	    document.onkeydown=sahiKeyDown;
 	    document.onkeyup=sahiKeyUp;
-	    document.onmousemove=sahiMouseOver;
+//	    document.onmousemove=sahiMouseOver;
 	}catch(ex){
 	    sahiHandleException(ex);
 	}

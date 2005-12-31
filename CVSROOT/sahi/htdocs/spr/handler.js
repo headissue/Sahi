@@ -1,15 +1,20 @@
+var lastQs = "";
+var lastTime = 0;
 function sahiOnEv(e){
+	if (e.handled == true) return; //FF
 	if (sahiGetServerVar("sahiEvaluateExpr") == "true") return;
 	var targ = getTarget(e);
-    if (document.all){
-        if (targ.sahiPrevOnChange) targ.sahiPrevOnChange();
-        if (targ.sahiPrevOnBlur) targ.sahiPrevOnBlur();
-    }else{
-        if (targ.sahiPrevOnBlur) targ.sahiPrevOnBlur();
-        if (targ.sahiPrevOnChange) targ.sahiPrevOnChange();
-    }
-    sahiSendToServer('/_s_/dyn/record?'+getSahiPopUpQS()+sahiGetAccessorInfoQS(sahiGetAccessorInfo(targ)));
-    if (targ.sahiPrevOnClick) targ.sahiPrevOnClick();
+	var qs = getSahiPopUpQS()+sahiGetAccessorInfoQS(sahiGetAccessorInfo(targ));
+	if (sahiHasEventBeenRecorded(qs)) return; //IE
+    sahiSendToServer('/_s_/dyn/record?'+qs);
+    e.handled = true; //FF
+}
+function sahiHasEventBeenRecorded(qs){
+	var now = (new Date()).getTime();
+	if (qs == lastQs && (now - lastTime)<500 ) return true;
+	lastQs = qs;
+	lastTime = now;
+	return false;
 }
 function getSahiPopUpQS(){
 	if (window.top.opener != null && window.top.opener != window.top) {
@@ -209,31 +214,29 @@ function sahiAddHandlersToAllFrames(win){
 		}
 	}	
 }
+function sahiDocEventHandler(e){
+	if (!e) e = window.event;
+	var t = getTarget(e);
+	if (t && !t.hasAttached && t.tagName){
+		var tag = t.tagName.toLowerCase();
+		if (tag == "a" || t.form || tag == "img" || tag == "div" || tag == "span" || tag == "td" || tag == "table"){
+			sahiAttachEvents(t);
+		}
+		/*
+		if (t.onmouseover){
+			// addEventListenersForCapturing
+			debug("onmouseover"+tag);
+		}
+		*/
+		t.hasAttached = true;
+	}
 
+}
 function sahiAddHandlers(win){
 	if (!win) win = self;
-    var fs = win.document.forms;
-    for (var i=0; i<fs.length; i++){
-        var f = fs[i];
-        var els = f.elements;
-        for (var j=0; j<els.length; j++){
-	        sahiAttachFormElementEvents(els[j]);
-        }
-    }
-    var imgBtns = win.document.getElementsByTagName("input");
-    for (var j=0; j<imgBtns.length; j++){
-        sahiAttachFormElementEvents(imgBtns[j]);
-    }
-        
-    var ls = win.document.links;
-    for (var i=0; i<ls.length; i++){
-        var l = ls[i];
-        sahiAttachLinkEvents(l)
-    }
-    var imgs = win.document.images;
-    for (var i=0; i<imgs.length; i++){
-    	sahiAttachImageEvents(imgs[i]);
-    }
+	var doc = win.document;
+	addEvent(doc, "keyup", sahiDocEventHandler);
+	addEvent(doc, "mousemove", sahiDocEventHandler);
 }
 
 function sahiAttachEvents(el){
@@ -251,24 +254,24 @@ function sahiAttachFormElementEvents(el){
     var type = el.type;
     if (el.onchange == sahiOnEv || el.onblur == sahiOnEv || el.onclick == sahiOnEv) return;
     if (type == "text" || type == "textarea" || type == "password"){
-        el.sahiPrevOnBlur = el.onblur;
-        el.sahiPrevOnChange = el.onchange;
-        el.onchange = sahiOnEv;
+    	addEvent(el, "change", sahiOnEv);
     }else if (type == "select-one" || type == "select-multiple"){
-        el.sahiPrevOnBlur = el.onblur;
-        el.sahiPrevOnChange = el.onchange;
-        el.onchange = sahiOnEv;
+    	addEvent(el, "change", sahiOnEv);
     }else if (type == "button" || type == "submit" || type == "checkbox" || type == "radio" || type == "image"){
-        el.sahiPrevOnClick = el.onclick;
-        el.onclick = sahiOnEv;
+    	addEvent(el, "click", sahiOnEv);
     }
 }
 function sahiAttachLinkEvents(el){
-    el.onclick = sahiOnEv;
+    addEvent(el, "click", sahiOnEv);
 }
 function sahiAttachImageEvents(el){
-    if (el.onclick){
-        el.sahiPrevOnClick = el.onclick;
-        el.onclick = sahiOnEv;
-    }
+ 	addEvent(el, "click", sahiOnEv);
+}
+function addEvent(el, ev, fn){
+	if (!el) return;
+	if (el.attachEvent){
+		el.attachEvent("on"+ev, fn);
+	}else if (el.addEventListener){
+		el.addEventListener(ev, fn, false);
+	}	
 }

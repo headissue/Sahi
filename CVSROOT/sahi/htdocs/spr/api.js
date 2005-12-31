@@ -1,46 +1,58 @@
 function sahi_click(el){
     if (el && el.href && el.tagName=="A") sahi_clickLinkByAccessor (el);
+	else if (sahiCanSimulateClick(el)){
+		sahiSimulateClick(el);
+	}
     else if (el && el.tagName=="IMG") sahi_clickImage(el);
-    else if (el.sahiPrevOnClick) el.sahiPrevOnClick();
-    else if (el.click){
-		if (el.type == "submit"){
-						
-		}
-    	el.click();
-    }
     else if (el.onclick) el.onclick();
 }
 
 function sahi_clickLinkByAccessor(ln){
+	if (sahiIsIE()){
+		ln.click();
+		return;
+	}
+	if (sahiCanSimulateClick(ln)){
+		sahiSimulateClick(ln);
+	}
+	else{
+	    //point(ln);
+	 	if (ln.onclick) ln.onclick(sahiGetClickEv(ln));
+	}
 	var win = sahiGetWin(ln);
-    //point(ln);
-    if (ln.target==null || ln.target=="") ln.target = "_self";
-	if (ln.onclick) ln.onclick();
     if (ln.href.indexOf("javascript:")==0){
         var s = ln.href.substring(11);
         eval(s);
     }else{
-        win.open(ln.href, ln.target);
-    }
+    	var target = ln.target;
+ 		if (ln.target==null || ln.target=="") target = "_self";
+        win.open(ln.href, target);
+    }   
 }
 
 function appendSahiSid(url){
    	return url + (url.indexOf("?")==-1 ? "?" : "&") + "sahisid="+sahiReadCookie("sahisid");
 }
-
 function sahi_clickImage(el){
-    if (el.sahiPrevOnClick) el.sahiPrevOnClick();
-	if (el.click) el.click();
+    if (el.onclick) el.onclick(sahiGetClickEv(el));
     else {
-	    if (el.onclick) el.onclick();
-	    else {
-			var ln = sahiGetEncapsulatingLink(el);
-			if (ln != null && ln != el){
-				sahi_clickLinkByAccessor(ln);
-			}
+		var ln = sahiGetEncapsulatingLink(el);
+		if (ln != null && ln != el){
+			sahi_clickLinkByAccessor(ln);
 		}
-	}	
+	}
 }
+
+function sahiGetClickEv(el){
+	var e = new Object();
+	if (sahiIsIE()) el.srcElement = e;
+	else e.target = el;
+	e.stopPropagation = noop;
+	return e;
+}
+
+function noop(){}
+
 // api for link click end
 
 // api for set value start
