@@ -10,15 +10,10 @@ function sahiInit(){
 	}
 	try{
 		window.sahiLoaded = true;	
-		sahiPrevOndblclick = document.ondblclick;
-		sahiPrevOnkeydown = document.onkeydown;
-		sahiPrevOnkeyup = document.onkeyup;
-//		sahiPrevOnMouseMove = document.onmousemove;
-		
-	    document.ondblclick=sahiOpenWin1;
-	    document.onkeydown=sahiKeyDown;
-	    document.onkeyup=sahiKeyUp;
-//	    document.onmousemove=sahiMouseOver;
+		addEvent(document, "keydown", sahiKeyDown);
+		addEvent(document, "keyup", sahiKeyUp);
+		addEvent(document, "dblclick", sahiOpenWin1);
+		addEvent(document, "mousemove", sahiMouseOver);
 	}catch(ex){
 	    sahiHandleException(ex);
 	}
