@@ -40,7 +40,6 @@
     	<antcall target="test"/>
     	<antcall target="clean"/>
     	<antcall target="compile"/>
-    	<antcall target="concat-js"/>    	
     	<antcall target="jar"/>
     	<antcall target="jar-ant"/>
     	<antcall target="clean-deploy"/>
@@ -164,23 +163,6 @@
             <fileset dir="deploy" includes="**/*.*"/>
         </delete>    	
     </target>
-	
-	<target name="concat-js">		
-		<concat append="false" destfile="htdocs/spr/concat.js">
-			<fileset dir="htdocs/spr" id="jsconcat">
-				<include name="util.js"/>
-				<include name="exception.js"/>
-				<include name="cookie.js"/>
-				<include name="accessor.js"/>
-				<include name="handler.js"/>
-				<include name="event.js"/>
-				<include name="api.js"/>
-				<include name="apihelper.js"/>
-				<include name="common.js"/>
-				<include name="include.js"/>
-			</fileset>
-		</concat>
-	</target>
 	
 	<target name="test" depends="compile, compile-test">
 		<junit dir="bin" printsummary="false" fork="true" 
