@@ -1331,9 +1331,10 @@ var _sahiCmdDebugInfo = new Array();
 var _sahi_wait = -1;
 
 function sahiAdd(cmd, debugInfo){
+	if (!_sahiCmds) return;
     var i = _sahiCmds.length;
-  _sahiCmds[i] = cmd;
-  _sahiCmdDebugInfo[i] = debugInfo;
+	_sahiCmds[i] = cmd;
+	_sahiCmdDebugInfo[i] = debugInfo;
 }
 
 function sahiPlay(){
@@ -1341,25 +1342,32 @@ function sahiPlay(){
 }
 function areWindowsLoaded(win){
 	try{
+		if (win.location.href == "about:blank") return true;
+	}catch(e){
+	}
+	try{
 		var fs = win.frames;
-		try{
-			if (fs.location.href == "about:blank") return true;
-		}catch(e){}
 		if (!fs || fs.length == 0){
-			return win.sahiLoaded;
+			try{
+				return win.sahiLoaded;
+			}catch(e){
+				return false; //diff domain
+			}
 		}else{
 			for (var i=0; i<fs.length; i++){
 				if (!areWindowsLoaded(fs[i])) return false;
 			}
+			if (win.document && win.document.getElementsByTagName("frameset").length == 0) return win.sahiLoaded;
+			else return true;
 		}	
-		return true;
 	}
 	catch(ex){
-		throw ex;
-		return true;//for diff domains.
+		sahiLogErr("2 to "+typeof ex);
+		sahiLogErr("3 pr "+ex.prototype);	
+		return false;//for diff domains.
 	}
 }
-var SAHI_MAX_WAIT_FOR_LOAD = 100;
+var SAHI_MAX_WAIT_FOR_LOAD = 60;
 var sahiWaitForLoad = SAHI_MAX_WAIT_FOR_LOAD;
 var interval = INTERVAL;
 function sahiEx(){
@@ -1569,7 +1577,7 @@ function sahiSendToServer(url){
     }catch(ex){sahiHandleException(ex);}
 }
 function sahiLogErr(msg){
-    return;
+//    return;
 	sahiSendToServer("/_s_/dyn/log?msg=" + escape(msg) + "&type=err" );
 }
 
