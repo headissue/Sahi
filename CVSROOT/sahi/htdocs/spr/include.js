@@ -44,7 +44,6 @@ function sahiOpenWin1(e){
 var _lastAccessedInfo;
 function sahiMouseOver(e){
 	if (getTarget(e) == null) return;
-    sahiAttachEvents(getTarget(e));
     if (!top._isControlKeyPressed) return;
     try{
       var controlWin = getSahiWinHandle();
@@ -99,17 +98,35 @@ function sahiPlay(){
    window.setTimeout("try{sahiEx();}catch(ex){}", INTERVAL);
 }
 function areWindowsLoaded(win){
-	var fs = win.frames;
-	if (!fs || fs.length == 0){
-		return win.sahiLoaded;
-	}else{
-		for (var i=0; i<fs.length; i++){
-			if (!areWindowsLoaded(fs[i])) return false;
-		}
-	}	
-	return true;
+	try{
+		if (win.location.href == "about:blank") return true;
+	}catch(e){
+	}
+	try{
+		var fs = win.frames;
+		if (!fs || fs.length == 0){
+			try{
+				return win.sahiLoaded;
+			}catch(e){
+				return false; //diff domain
+			}
+		}else{
+			for (var i=0; i<fs.length; i++){
+				if (!areWindowsLoaded(fs[i])) return false;
+			}
+			if (win.document && win.document.getElementsByTagName("frameset").length == 0) return win.sahiLoaded;
+			else return true;
+		}	
+	}
+	catch(ex){
+		sahiLogErr("2 to "+typeof ex);
+		sahiLogErr("3 pr "+ex.prototype);	
+		return false;//for diff domains.
+	}
 }
 
+var SAHI_MAX_WAIT_FOR_LOAD = 60;
+var sahiWaitForLoad = SAHI_MAX_WAIT_FOR_LOAD;
 var interval = INTERVAL;
 function sahiEx(){
     try{
@@ -120,11 +137,14 @@ function sahiEx(){
                 return;
             }
             if (isSahiPlaying() && _sahiCmds[i]!=null){
-				if (!areWindowsLoaded(top)){
+//            	alert(areWindowsLoaded(top));
+				if (!areWindowsLoaded(top) && sahiWaitForLoad>0){
+					sahiWaitForLoad-- ;
 					window.setTimeout("try{sahiEx();}catch(ex){}", interval);
 					return;
 				}
                 try{
+	                sahiWaitForLoad = SAHI_MAX_WAIT_FOR_LOAD;
 	                if (canEvalInBase(_sahiCmds[i])) {
 		                //set before so that this step is not lost when a page unloads due to eval
 	                	sahiSetCurrentIndex(i+1); 
