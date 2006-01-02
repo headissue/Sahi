@@ -3,6 +3,7 @@ package com.sahi.response;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.logging.Logger;
 
 /**
  * User: nraman Date: May 14, 2005 Time: 1:43:05 AM 
@@ -22,12 +23,12 @@ public class HttpModifiedResponse extends HttpResponse {
 	public HttpModifiedResponse(InputStream in) throws IOException {
 		super(in);
 		if (firstLine().indexOf("30") == -1) { // Response code other than redirects
-			removeHeader("Transfer-Encoding");
-			setHeader("Cache-Control","no-cache");
-			setHeader("Pragma","no-cache");
-			setHeader("Expires", "0");
-			removeHeader("ETag");
-			removeHeader("Last-Modified");
+//			removeHeader("Transfer-Encoding");
+//			setHeader("Cache-Control","no-cache");
+//			setHeader("Pragma","no-cache");
+//			setHeader("Expires", "0");
+//			removeHeader("ETag");
+//			removeHeader("Last-Modified");
 			if (isHTML())
 				data(getModifiedData());
 			else if (isJs()) {
@@ -63,8 +64,10 @@ public class HttpModifiedResponse extends HttpResponse {
 	}
 
 	byte[] substituteModals(byte[] content) {
+//		long start = System.currentTimeMillis();
 		String s = new String(content);
 		s = s.replaceAll("(\\W+)((alert)|(confirm)|(prompt))\\s*\\(", "$1sahi_$2(");
+//		System.out.println("substituteModals took ms "+(System.currentTimeMillis() - start));
 		return s.getBytes();
 	}
 
