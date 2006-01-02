@@ -14,7 +14,9 @@ function sahiGetKnownTags(src){
         if (!el.tagName || el.tagName.toLowerCase() == "html" || el.tagName.toLowerCase() == "body") return null;
         var tag = el.tagName.toLowerCase();
         if (tag == "a" || tag == "select" || tag == "img" || tag == "form"
-            || tag == "input" || tag == "textarea" || tag == "textarea" || tag == "td" || tag == "table" || ((tag == "div" || tag == "span") && (src.id && src.id !=""))) return el;
+            || tag == "input" || tag == "button" || tag == "textarea" 
+            || tag == "textarea" || tag == "td" || tag == "table" 
+            || ((tag == "div" || tag == "span") && (src.id && src.id !=""))) return el;
         el = el.parentNode;
     }
 }
@@ -22,7 +24,7 @@ function sahiGetKnownTags(src){
 function sahiById(src){
     var s = src.id;
     if (isBlankOrNull(s)) return "";
-    return 'getElementById("'+s+'")';
+    return "getElementById('"+s+"')";
 }
 function sahiGetPartialAccessor(src){
     if (src == null || src.tagName==null) return null;
@@ -41,7 +43,7 @@ function sahiGetPartialAccessor(src){
     else if (tag=="form"){
         return sahiGetForm(src);
     }
-    else if (tag=="input" || tag=="textarea" || tag=="select"){
+    else if (tag=="button" || tag=="input" || tag=="textarea" || tag=="select"){
         return sahiGetFormElement(src);
     }
     else if (tag == "td"){
@@ -178,6 +180,35 @@ function isBlankOrNull(s){
 	}
     else if (el && el.tagName=="IMG") sahi_clickImage(el);
     else if (el.onclick) el.onclick();
+}
+function sahiSimulateClick1(el){
+	if(document.createEvent){
+		var evt = document.createEvent("MouseEvents");
+		evt.initMouseEvent("click",
+		false, //can bubble
+		true,
+		document.defaultView,
+		1,
+		findPosX(el), //screen x
+		findPosY(el), //screen y
+		findPosX(el), //client x
+		findPosY(el), //client y
+		false,
+		false,
+		false,
+		false,
+		1,
+		el);
+		el.dispatchEvent(evt);
+	}else{
+		var evt = document.createEventObject();
+		// Set an expando property on the event object. This will be used by the
+		// event handler to determine what element was clicked on.
+		evt.clientX = findPosX(el);
+		evt.clientY = findPosY(el);
+		el.fireEvent("onclick",evt);
+		evt.cancelBubble = true;
+	}
 }
 
 function sahi_clickLinkByAccessor(ln){
@@ -880,7 +911,10 @@ function sahiCanSimulateClick(el){
 	return (el.click || el.dispatchEvent);
 }
 function sahiSimulateClick(el){
-	if (el.click) el.click(); //IE has a click
+	if (el.click){
+		if (el.focus) el.focus();
+		el.click(); //IE has a click
+	}
 	else if (el.dispatchEvent) // For FF
     {    
 		var evt = el.ownerDocument.createEvent('MouseEvents');
@@ -1054,7 +1088,7 @@ function getShortHand(el, accessor){
 	            }            
             }
             return shortHand;
-        }else if (el.tagName.toLowerCase() == "input" || el.tagName.toLowerCase() == "textarea" || el.tagName.toLowerCase().indexOf("select") != -1){
+        }else if (el.tagName.toLowerCase() == "button" || el.tagName.toLowerCase() == "input" || el.tagName.toLowerCase() == "textarea" || el.tagName.toLowerCase().indexOf("select") != -1){
         	if (el.type == "button" || el.type == "submit") shortHand = el.value;
         	if (el.type == "image")	shortHand = el.alt;
             else if (!shortHand || shortHand=="") shortHand = el.name;
@@ -1252,7 +1286,6 @@ function sahiOpenWin1(e){
 var _lastAccessedInfo;
 function sahiMouseOver(e){
 	if (getTarget(e) == null) return;
-    sahiAttachEvents(getTarget(e));
     if (!top._isControlKeyPressed) return;
     try{
       var controlWin = getSahiWinHandle();
@@ -1307,17 +1340,27 @@ function sahiPlay(){
    window.setTimeout("try{sahiEx();}catch(ex){}", INTERVAL);
 }
 function areWindowsLoaded(win){
-	var fs = win.frames;
-	if (!fs || fs.length == 0){
-		return win.sahiLoaded;
-	}else{
-		for (var i=0; i<fs.length; i++){
-			if (!areWindowsLoaded(fs[i])) return false;
-		}
-	}	
-	return true;
+	try{
+		var fs = win.frames;
+		try{
+			if (fs.location.href == "about:blank") return true;
+		}catch(e){}
+		if (!fs || fs.length == 0){
+			return win.sahiLoaded;
+		}else{
+			for (var i=0; i<fs.length; i++){
+				if (!areWindowsLoaded(fs[i])) return false;
+			}
+		}	
+		return true;
+	}
+	catch(ex){
+		throw ex;
+		return true;//for diff domains.
+	}
 }
-
+var SAHI_MAX_WAIT_FOR_LOAD = 100;
+var sahiWaitForLoad = SAHI_MAX_WAIT_FOR_LOAD;
 var interval = INTERVAL;
 function sahiEx(){
     try{
@@ -1328,11 +1371,14 @@ function sahiEx(){
                 return;
             }
             if (isSahiPlaying() && _sahiCmds[i]!=null){
-				if (!areWindowsLoaded(top)){
+//            	alert(areWindowsLoaded(top));
+				if (!areWindowsLoaded(top) && sahiWaitForLoad>0){
+					sahiWaitForLoad-- ;
 					window.setTimeout("try{sahiEx();}catch(ex){}", interval);
 					return;
 				}
                 try{
+	                sahiWaitForLoad = SAHI_MAX_WAIT_FOR_LOAD;
 	                if (canEvalInBase(_sahiCmds[i])) {
 		                //set before so that this step is not lost when a page unloads due to eval
 	                	sahiSetCurrentIndex(i+1); 
