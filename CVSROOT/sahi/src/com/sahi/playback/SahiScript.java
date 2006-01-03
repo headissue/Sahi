@@ -228,6 +228,7 @@ public abstract class SahiScript {
 		keywords.add("_containsText");
 		keywords.add("_containsHTML");
 		keywords.add("_popup");
+		keywords.add("_byId");
 		return keywords;
 	}
 
