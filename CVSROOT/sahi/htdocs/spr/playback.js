@@ -4,15 +4,25 @@ function sahiOnBeforeUnLoad(){
 	}
 	window.sahiLoaded=false;
 }
+/*
+function trap1(e){
+	if (!e) e = window.event;
+	if (top._sahiControl) debug(sahiList(e));
+	if (prevDown) prevDown(e);
+}
+var prevDown = null;
+*/
 function sahiInit(){
 	if (sahiPrevOnLoad) {
 		sahiPrevOnLoad();
 	}
 	try{
 		window.sahiLoaded = true;	
+//		prevDown = document.onmousedown;
+//		document.onmousedown = trap1;
 		addEvent(document, "keydown", sahiKeyDown);
 		addEvent(document, "keyup", sahiKeyUp);
-		addEvent(document, "dblclick", sahiOpenWin1);
+		addEvent(document, "dblclick", sahiOpenControllerWindow);
 		addEvent(document, "mousemove", sahiMouseOver);
 	}catch(ex){
 	    sahiHandleException(ex);

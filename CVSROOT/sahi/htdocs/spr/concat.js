@@ -16,7 +16,7 @@ function sahiGetKnownTags(src){
         if (tag == "a" || tag == "select" || tag == "img" || tag == "form"
             || tag == "input" || tag == "button" || tag == "textarea" 
             || tag == "textarea" || tag == "td" || tag == "table" 
-            || ((tag == "div" || tag == "span") && (src.id && src.id !=""))) return el;
+            || ((tag == "div" || tag == "span") && (el.id && el.id !=""))) return el;
         el = el.parentNode;
     }
 }
@@ -173,21 +173,47 @@ function sahiGetFrame(win, s){
 
 function isBlankOrNull(s){
     return (s=="" || s==null);
-}function sahi_click(el){
-    if (el && el.href && el.tagName=="A") sahi_clickLinkByAccessor (el);
-	else if (sahiCanSimulateClick(el)){
-		sahiSimulateClick(el);
-	}
-    else if (el && el.tagName=="IMG") sahi_clickImage(el);
-    else if (el.onclick) el.onclick();
 }
-function sahiSimulateClick1(el){
+function linkClick(){
+	var performDefault = true;
+	if (this.prevClick){
+		performDefault = this.prevClick();
+	}
+	if (performDefault != false){
+		sahiNavigateLink(this);
+	}
+}
+function sahi_click(el){
+	var n = el;
+	while (n != null){
+		if (n.tagName && n.tagName == "A"){
+			n.prevClick = n.onclick;
+			n.onclick = linkClick;
+		}
+		n = n.parentNode;
+	}
+	sahiSimulateMouseEvent(el, "mousemove");
+	sahiSimulateMouseEvent(el, "focus");
+	sahiSimulateMouseEvent(el, "mouseover");
+	sahiSimulateMouseEvent(el, "mousedown");
+	sahiSimulateMouseEvent(el, "mouseup");
+	sahiSimulateMouseEvent(el, "click");
+	sahiSimulateMouseEvent(el, "blur");
+	var n = el;
+	while (n != null){
+		if (n.tagName && n.tagName == "A"){
+			n.onclick = n.prevClick;
+		}
+		n = n.parentNode;
+	}  
+}
+function sahiSimulateMouseEvent(el, type){
 	if(document.createEvent){
-		var evt = document.createEvent("MouseEvents");
-		evt.initMouseEvent("click",
-		false, //can bubble
+		var evt = el.ownerDocument.createEvent("MouseEvents");
+		evt.initMouseEvent(type,
+		true, //can bubble
 		true,
-		document.defaultView,
+		el.ownerDocument.defaultView,
 		1,
 		findPosX(el), //screen x
 		findPosY(el), //screen y
@@ -197,20 +223,53 @@ function sahiSimulateClick1(el){
 		false,
 		false,
 		false,
-		1,
-		el);
+		0,
+		null);
 		el.dispatchEvent(evt);
 	}else{
-		var evt = document.createEventObject();
+		var evt = el.ownerDocument.createEventObject();
 		// Set an expando property on the event object. This will be used by the
 		// event handler to determine what element was clicked on.
 		evt.clientX = findPosX(el);
 		evt.clientY = findPosY(el);
-		el.fireEvent("onclick",evt);
+		evt.button = 1;
+		el.fireEvent("on"+type,evt);
 		evt.cancelBubble = true;
 	}
 }
+function findPosX(obj)
+{
+	return 215;
+	var curleft = 0;
+	if (obj.offsetParent)
+	{
+		while (obj.offsetParent)
+		{
+			curleft += obj.offsetLeft
+			obj = obj.offsetParent;
+		}
+	}
+	else if (obj.x)
+		curleft += obj.x;
+	return curleft + 2;
+}
 
+function findPosY(obj)
+{
+	return 214;
+	var curtop = 0;
+	if (obj.offsetParent)
+	{
+		while (obj.offsetParent)
+		{
+			curtop += obj.offsetTop
+			obj = obj.offsetParent;
+		}
+	}
+	else if (obj.y)
+		curtop += obj.y;
+	return curtop + 2;
+}
 function sahi_clickLinkByAccessor(ln){
 	if (sahiIsIE()){
 		ln.click();
@@ -223,17 +282,21 @@ function sahi_clickLinkByAccessor(ln){
 	    //point(ln);
 	 	if (ln.onclick) ln.onclick(sahiGetClickEv(ln));
 	}
-	var win = sahiGetWin(ln);
+	sahiNavigateLink(ln);
+  
+}
+function sahiNavigateLink(ln){
+	if (!ln) return;
+	var win = ln.ownerDocument.defaultView;
     if (ln.href.indexOf("javascript:")==0){
         var s = ln.href.substring(11);
-        eval(s);
+        win.eval(s);
     }else{
     	var target = ln.target;
  		if (ln.target==null || ln.target=="") target = "_self";
         win.open(ln.href, target);
-    }   
+    } 
 }
-
 function appendSahiSid(url){
    	return url + (url.indexOf("?")==-1 ? "?" : "&") + "sahisid="+sahiReadCookie("sahisid");
 }
@@ -1042,6 +1105,7 @@ function sahiGetAccessorInfo(el){
 
     var accessor = sahiGetAccessor(el);
     var shortHand = getShortHand(el, accessor);
+//    alert(accessor);
     if (el.tagName.toLowerCase() == "img"){
         return new AccessorInfo(accessor, shortHand, "img", "click");
     }else if(type == "text" || type == "textarea" || type == "password"){
@@ -1277,7 +1341,7 @@ function getWinParams(e){
 function getSahiWinHandle(){
     if (top._sahiControl && !top._sahiControl.isClosed) return top._sahiControl;
 }
-function sahiOpenWin1(e){
+function sahiOpenControllerWindow(e){
     if (!top._isAltKeyPressed) return;
     top.sahiOpenWin = sahiOpenWin;
     top.sahiOpenWin(e);
@@ -1518,12 +1582,16 @@ function sahiList(el, p){
     var j=0;
     for (var i in el){
         if (!p || (""+i).indexOf(p)!=-1){
-            s+=i+",";
+            s+=i+"="+el[i]+";<br>";
             j++;
-            if (j%4==0) s+="\n";
+//            if (j%4==0) s+="\n";
         }
     }
-    alert(s);
+    return s;
+}
+function debug(s){
+	var win = window.open("", "_blank");
+	win.document.write(s);
 }
 function arrayCopy(ar1, ar2){
     var ar = new Array();
