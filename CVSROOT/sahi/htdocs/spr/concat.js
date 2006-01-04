@@ -285,7 +285,8 @@ function sahi_clickLinkByAccessor(ln){
 }
 function sahiNavigateLink(ln){
 	if (!ln) return;
-	var win = ln.ownerDocument.defaultView;
+	var win = ln.ownerDocument.defaultView; //FF
+	if (!win) win = ln.ownerDocument.parentWindow; //IE
     if (ln.href.indexOf("javascript:")==0){
         var s = ln.href.substring(11);
         win.eval(s);
