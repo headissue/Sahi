@@ -12,9 +12,9 @@ function trap1(e){
 }
 var prevDown = null;
 */
-function sahiInit(){
+function sahiInit(e){
 	if (sahiPrevOnLoad) {
-		sahiPrevOnLoad();
+		sahiPrevOnLoad(e);
 	}
 	try{
 		window.sahiLoaded = true;	
@@ -50,6 +50,7 @@ function sahiInit(){
 	    if (_isSahiWinOpen) sahiOpenWin();
 	    if (sahiIsRecording()) sahiAddHandlers();
 	}catch(ex){
+//		throw ex;
 	    sahiHandleException(ex);
 	}
 }

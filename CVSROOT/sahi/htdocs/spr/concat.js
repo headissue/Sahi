@@ -174,10 +174,10 @@ function sahiGetFrame(win, s){
 function isBlankOrNull(s){
     return (s=="" || s==null);
 }
-function linkClick(){
+function linkClick(e){
 	var performDefault = true;
 	if (this.prevClick){
-		performDefault = this.prevClick();
+		performDefault = this.prevClick(e);
 	}
 	if (performDefault != false){
 		sahiNavigateLink(this);
@@ -239,7 +239,6 @@ function sahiSimulateMouseEvent(el, type){
 }
 function findPosX(obj)
 {
-	return 215;
 	var curleft = 0;
 	if (obj.offsetParent)
 	{
@@ -251,12 +250,11 @@ function findPosX(obj)
 	}
 	else if (obj.x)
 		curleft += obj.x;
-	return curleft + 2;
+	return curleft;
 }
 
 function findPosY(obj)
 {
-	return 214;
 	var curtop = 0;
 	if (obj.offsetParent)
 	{
@@ -268,7 +266,7 @@ function findPosY(obj)
 	}
 	else if (obj.y)
 		curtop += obj.y;
-	return curtop + 2;
+	return curtop;
 }
 function sahi_clickLinkByAccessor(ln){
 	if (sahiIsIE()){
