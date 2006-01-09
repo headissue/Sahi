@@ -1,0 +1,20 @@
+<html>
+<head>
+<title>
+</title>
+</head>
+<script>
+function ol(){
+	alert("Frameset loaded"+ ". I am "+ (top==self?"":"not ") + "top.");
+}
+function topFn(){
+	alert("topFn");
+}
+window.onload=ol;
+</script>
+<frameset rows="*,*,*">
+<frame src="http://www.dom1.com:10000/demo/interact.htm">
+<frame src="http://www.dom2.com:10000/demo/iframeLoadTest.htm">
+<frame src="">
+</frameset>
+</html>
