@@ -3,7 +3,6 @@ package com.sahi.response;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.logging.Logger;
 
 /**
  * User: nraman Date: May 14, 2005 Time: 1:43:05 AM 
@@ -11,12 +10,13 @@ import java.util.logging.Logger;
 public class HttpModifiedResponse extends HttpResponse {
 	private static final String INJECT_TOP = ""  
 		+ "<script src='/_s_/spr/concat.js'></script>\n"
-		+ "<script src='/_s_/dyn/state.js'></script>\n"
+		+ "<script src='http://www.sahidomain.com/_s_/dyn/state.js'></script>\n"
+		+ "<script src='http://www.sahidomain.com/_s_/dyn/script.js'></script>\n"
+		+ "<script src='/_s_/spr/playback.js'></script>\n" 
 		+ "<div id='sahi_div'></div>\n"
 		+ "";
 
 	private static final String INJECT_BOTTOM = "" 
-		+ "<script src='/_s_/dyn/script.js'></script>\n"
 		+ "<script src='/_s_/spr/playback.js'></script>\n" 
 		+ "";
 

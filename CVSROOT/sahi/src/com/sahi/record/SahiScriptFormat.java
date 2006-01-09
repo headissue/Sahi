@@ -72,6 +72,8 @@ public class SahiScriptFormat implements ScriptFormat {
 				return "_textbox(" + sahiQuoteIfString(shortHand) + ")";
 			} else if ("cell".equals(type)) {
 				return "_cell(" + shortHand + ")";
+			}else if ("byId".equals(type)) {
+				return "_byId(" + shortHand + ")";
 			}
 			return "_" + type + "(" + sahiQuoteIfString(shortHand) + ")";
 		}

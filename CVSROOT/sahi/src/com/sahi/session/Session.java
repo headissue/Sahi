@@ -32,7 +32,6 @@ public class Session {
 
 	public Session(String sessionId) {
 		this.sessionId = sessionId;
-		this.recorder = new Recorder(Configuration.getScriptFormat());
 		this.variables = new HashMap();
 	}
 
@@ -49,6 +48,7 @@ public class Session {
 	}
 
 	public Recorder getRecorder() {
+		if (this.recorder == null) this.recorder = new Recorder(Configuration.getScriptFormat());
 		return recorder;
 	}
 

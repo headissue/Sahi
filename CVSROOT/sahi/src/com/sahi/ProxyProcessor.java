@@ -142,6 +142,7 @@ public class ProxyProcessor implements Runnable {
 		if (uri.indexOf("/dyn/") != -1) {
 			// System.out.println(uri);
 			Session session = getSession(requestFromBrowser);
+//			System.out.println("----------- "+session.id());
 			if (uri.indexOf("/log") != -1) {
 				if (session.getScript() != null) {
 					session.logPlayBack(requestFromBrowser.getParameter("msg"),
@@ -154,18 +155,19 @@ public class ProxyProcessor implements Runnable {
 						.getParameter("file"), "UTF8");
 				session.setScript(new FileScript(
 						getScriptFileWithPath(fileName)));
-				sendResponseToBrowser(new NoCacheHttpResponse(""));
+				sendWindowCloseResponse(session);
 			} else if (uri.indexOf("/setscripturl") != -1) {
 				String url = URLDecoder.decode(requestFromBrowser
 						.getParameter("url"), "UTF8");
 				session.setScript(new URLScript(url));
-				sendResponseToBrowser(new NoCacheHttpResponse(""));
+				sendWindowCloseResponse(session);
 			} else if (uri.indexOf("/recordstart") != -1) {
-				startRecorder(requestFromBrowser);
-				sendResponseToBrowser(new NoCacheHttpResponse(""));
+//				System.out.println("########### "+session.id());
+				startRecorder(requestFromBrowser, session);
+				sendWindowCloseResponse(session);
 			} else if (uri.indexOf("/recordstop") != -1) {
 				session.getRecorder().stop();
-				sendResponseToBrowser(new NoCacheHttpResponse(""));
+				sendWindowCloseResponse(session);
 			} else if (uri.indexOf("/record") != -1) {
 				session.getRecorder().record(
 						requestFromBrowser.getParameter("event"),
@@ -213,6 +215,9 @@ public class ProxyProcessor implements Runnable {
 			} else if (uri.indexOf("/startplay") != -1) {
 				if (session.getScript() != null)
 					session.startPlayBack();
+				session.setVariable("sahi_play", "1");
+				session.setVariable("sahiIx", requestFromBrowser.getParameter("step"));
+				sendWindowCloseResponse(session);
 			} else if (uri.indexOf("/stopplay") != -1) {
 				sendResponseToBrowser(new NoCacheHttpResponse(""));
 				stopPlay(session);
@@ -267,6 +272,18 @@ public class ProxyProcessor implements Runnable {
 			sendResponseToBrowser(new SimpleHttpResponse(
 					"<html><h2>You have reached the Sahi proxy.</h2></html>"));
 		}
+	}
+
+	private void sendWindowCloseResponse(Session session) throws IOException {
+		HttpResponse httpResponse = new HttpFileResponse(Configuration.getHtdocsRoot()
+				+ "spr/close.htm");
+		sendResponseToBrowser(addSahisidCookie(httpResponse, session));
+	}
+
+	private HttpResponse addSahisidCookie(HttpResponse httpResponse, Session session) {
+		httpResponse.addHeader("Set-Cookie", "sahisid="+session.id()+"; path=/; ");
+		httpResponse.setRawHeaders(httpResponse.getRebuiltHeaderBytes());
+		return httpResponse;
 	}
 
 	private void stopPlay(Session session) {
@@ -348,12 +365,12 @@ public class ProxyProcessor implements Runnable {
 		} else {
 			sessionId = requestFromBrowser.getParameter("sahisid");
 		}
-		// System.out.println("1:"+sessionId);
+//		System.out.println("1:"+sessionId);
 		if (isBlankOrNull(sessionId))
 			sessionId = requestFromBrowser.getCookie(new String("sahisid"));
 		if (isBlankOrNull(sessionId))
 			sessionId = "sahi_" + System.currentTimeMillis();
-		// System.out.println("2:"+sessionId);
+//		System.out.println("2:"+sessionId);
 		return Session.getInstance(sessionId);
 	}
 
@@ -391,10 +408,12 @@ public class ProxyProcessor implements Runnable {
 		return Configuration.getScriptRoot() + fileName;
 	}
 
-	private void startRecorder(HttpRequest request) {
+	private void startRecorder(HttpRequest request, Session session) {
 		String fileName = request.getParameter("file");
-		getSession(request).getRecorder()
+		session.getRecorder()
 				.start(getScriptFileWithPath(fileName));
+		session.setVariable("sahi_record", "1");
+//		System.out.println("$$$$$$$$$$$ "+session.id());
 	}
 
 	private HttpResponse getResponseFromHost(InputStream inputStreamFromHost,

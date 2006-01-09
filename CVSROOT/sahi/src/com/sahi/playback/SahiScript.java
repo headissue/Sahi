@@ -62,20 +62,18 @@ public abstract class SahiScript {
 			String line = tokenizer.nextToken().trim();
 			if ("".equals(line))
 				continue;
-			if (line.startsWith("_") && lineStartsWithActionKeyword(line)) {
-				if (line.startsWith("_include")) {
-					sb.append(processInclude(line));
-				} else {
-					sb.append(PREFIX);
-					sb.append(modifyFunctionNames(separateVariables(Utils
-							.escapeDoubleQuotesAndBackSlashes(line))));
-					sb.append(CONJUNCTION);
-					sb.append(scriptName);
-					sb.append(" : ");
-					sb.append(lineNumber);
-					sb.append(SUFFIX);
-					sb.append("\r\n");
-				}
+			if (line.startsWith("_include")) {
+				sb.append(processInclude(line));
+			} else if (line.startsWith("_") && lineStartsWithActionKeyword(line)) {
+				sb.append(PREFIX);
+				sb.append(modifyFunctionNames(separateVariables(Utils
+						.escapeDoubleQuotesAndBackSlashes(line))));
+				sb.append(CONJUNCTION);
+				sb.append(scriptName);
+				sb.append(" : ");
+				sb.append(lineNumber);
+				sb.append(SUFFIX);
+				sb.append("\r\n");
 			} else {
 				sb.append(modifyFunctionNames(line));
 				sb.append("\r\n");

@@ -38,8 +38,10 @@ class SahiTest {
 	String getURL() {
 		String cmd = null;
 		try {
-			cmd = addPrefixForSimultaneousSessions(base, randomInt) + "/_s_/dyn/auto?file=" + URLEncoder.encode(scriptName, "UTF8") + "&startUrl="
-					+ URLEncoder.encode(addPrefixForSimultaneousSessions(startURL, randomInt), "UTF8");
+//			cmd = addPrefixForSimultaneousSessions(base, randomInt) + "/_s_/dyn/auto?file=" + URLEncoder.encode(scriptName, "UTF8") + "&startUrl="
+//			+ URLEncoder.encode(addPrefixForSimultaneousSessions(startURL, randomInt), "UTF8");
+			cmd = "http://www.sahidomain.com/_s_/dyn/auto?file=" + URLEncoder.encode(scriptName, "UTF8") + "&startUrl="
+			+ URLEncoder.encode(startURL, "UTF8");
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
