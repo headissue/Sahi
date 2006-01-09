@@ -207,7 +207,7 @@ function sahi_click(el){
 		n = n.parentNode;
 	}  
 	if (sahiIsIE() && el && el.type && el.type=="submit"){
-		el.form.onsubmit();
+		if (el.form.onsubmit && !el.form.onsubmit()) return;
 		el.form.submit();
 	}
 }
@@ -500,18 +500,6 @@ function sahi_popup(n){
 	}
 	return SahiNotMyWindowException();
 }
-
-top.sahi_clickLinkByAccessor = sahi_clickLinkByAccessor;
-top.sahi_setValue = sahi_setValue;
-top.sahi_wait = sahi_wait;
-top.sahi_textbox = sahi_textbox;
-top.sahi_password = sahi_password;
-top.sahi_checkbox = sahi_checkbox;
-top.sahi_textarea = sahi_textarea;
-top.sahi_select = sahi_select;
-top.sahi_radio = sahi_radio;
-top.sahi_image = sahi_image;
-top.sahi_link = sahi_link;
 
 // finds document of any element
 function sahiGetWin(el){
