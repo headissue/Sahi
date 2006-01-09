@@ -1,29 +1,41 @@
-
+function o(f){
+	window.open("", "channel", "height=100px,width=100px");
+	f.sahisid.value = sahiReadCookie("sahisid");
+}
 function play(){
-    window.opener.sahiStartPlaying();
-    window.opener.sahiSetCurrentIndex(parseInt(document.playform.step.value));
+	
+//    top.opener.sahiStartPlaying();
+//    top.opener.sahiSetCurrentIndex(parseInt(document.playform.step.value));
+//
+//    if (parseInt(document.playform.step.value) == 0){
+//    	top.opener.top.location.reload(true);
+//	}
+//	else{
+//		top.opener.top.sahiEx();
+//	}
+
     if (parseInt(document.playform.step.value) == 0){
-    	window.opener.top.location.reload(true);
+    	top.opener.top.location.reload(true);
 	}
 	else{
-		window.opener.top.sahiEx();
+		top.opener.top.sahiEx();
 	}
-//		window.opener.top.sahiEx();
+	return true;
 }
 function stepWisePlay(){
-    window.opener.sahiStartPlaying();
+    top.opener.sahiStartPlaying();
     if (parseInt(document.playform.step.value) == 0){
-	    window.opener.sahiSetCurrentIndex(parseInt(document.playform.step.value));
-    	window.opener.location.top.reload(true);
-    	window.opener.top.sahiEx();
+	    top.opener.sahiSetCurrentIndex(parseInt(document.playform.step.value));
+    	top.opener.location.top.reload(true);
+    	top.opener.top.sahiEx();
 	}
 	else{
-		window.opener.top.sahiEx();
+		top.opener.top.sahiEx();
 	}
 	stopPlay();
 }
 function stopPlay(){
-    window.opener.sahiStopPlaying();
+    top.opener.sahiStopPlaying();
 }
 function resetStep(){
     document.playform.step.value = 0;
@@ -33,7 +45,6 @@ function clearLogs(){
 }
 function stopRec(){
     try{
-        frames["channel"].location.href="/_s_/dyn/recordstop";
 		top.opener.sahiStopRecording();
     }catch(ex){alert(ex);}
 }
@@ -41,13 +52,13 @@ function stopRec(){
 function doOnUnLoad(s){
     sahiSendToServer('/_s_/dyn/winclosed');
     try{
-        window.opener.top._isSahiWinOpen = false;
+        top.opener.top._isSahiWinOpen = false;
     }catch(ex){sahiHandleException(ex);}
 }
 
 function doOnLoad(){
     try{
-        window.opener.top._isSahiWinOpen = true;
+        top.opener.top._isSahiWinOpen = true;
         document.scriptfileform.file.options.length = 0;
         document.scriptfileform.file.options[0] = new Option("-- Choose Script --", "");
         for (var i=1; i<=_scriptList.length; i++){
@@ -126,14 +137,16 @@ function recordAll(){
     isRecordAll = !isRecordAll;
 }
 
-function checkFile(){
-    if (document.recordform.file.value==""){
+function onRecordStartFormSubmit(f){
+    if (document.recordstartform.file.value==""){
         alert("Please enter a name for the script");
-        document.recordform.file.focus();
+        document.recordstartform.file.focus();
         return false;
     }
-    if (window.opener) {
-    	window.opener.sahiStartRecording(recordAll);
+    if (top.opener) {
+    	o(f);
+   		document.recordstartform.sahisid.value = sahiReadCookie("sahisid");
+    	top.opener.sahiStartRecording(recordAll);
     }
     return true;
 }
@@ -146,20 +159,19 @@ var KEY_ALT = 18;
 var KEY_Q = 81;
 var KEY_K = 75;
 
-//document.domain = "yahoo.com";
-opener.top._isControlKeyPressed = false;
-opener.top._isQKeyPressed = false;
-opener.top._isAltKeyPressed = false;
+top.opener.top._isControlKeyPressed = false;
+top.opener.top._isQKeyPressed = false;
+top.opener.top._isAltKeyPressed = false;
 function sahiKeyUp(e){
     if (!e) e = window.event;
-    if (e.keyCode == KEY_CONTROL) opener.top._isControlKeyPressed = false;
-    if (e.keyCode == KEY_ALT) opener.top._isAltKeyPressed = false;
+    if (e.keyCode == KEY_CONTROL) top.opener.top._isControlKeyPressed = false;
+    if (e.keyCode == KEY_ALT) top.opener.top._isAltKeyPressed = false;
 }
 function sahiKeyDown(e){
 	try{
 	    if (!e) e = window.event;
-	    if (e.keyCode == KEY_CONTROL) opener.top._isControlKeyPressed = true;
-	    else if (e.keyCode == KEY_ALT) opener.top._isAltKeyPressed = true;
+	    if (e.keyCode == KEY_CONTROL) top.opener.top._isControlKeyPressed = true;
+	    else if (e.keyCode == KEY_ALT) top.opener.top._isAltKeyPressed = true;
     }catch(e){
     	sahiHandleException(e);
     }
@@ -178,7 +190,7 @@ function showRec(){
 	document.getElementById("playback").style.display="none";
 	document.getElementById("playbackTab").className="dimTab";
 	document.getElementById("recTab").className="hiTab";
-	document.recordform.file.focus();
+	document.recordstartform.file.focus();
 }
 function showPlayback(){
 	document.getElementById("rec").style.display="none";

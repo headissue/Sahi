@@ -206,6 +206,10 @@ function sahi_click(el){
 		}
 		n = n.parentNode;
 	}  
+	if (sahiIsIE() && el && el.type && el.type=="submit"){
+		el.form.onsubmit();
+		el.form.submit();
+	}
 }
 function sahiSimulateMouseEvent(el, type){
 	if(document.createEvent){
@@ -989,8 +993,10 @@ function sahiCanSimulateClick(el){
 	return (el.click || el.dispatchEvent);
 }
 function sahiIsRecording(){
+//	alert(sahiGetServerVar("sahi_record"));
 	return sahiGetServerVar("sahi_record") == "1";
-}function sahiCreateCookie(name,value,days)
+}
+function sahiCreateCookie(name,value,days)
 {
 	if (days) {
 		var date = new Date();
@@ -1030,13 +1036,14 @@ function SahiNotMyWindowException(){
 }var lastQs = "";
 var lastTime = 0;
 function sahiOnEv(e){
-	if (e.handled == true) return; //FF
-	if (sahiGetServerVar("sahiEvaluateExpr") == "true") return;
+	if (e.handled == true) return true; //FF
+	if (sahiGetServerVar("sahiEvaluateExpr") == "true") return true;
 	var targ = getTarget(e);
 	var qs = getSahiPopUpQS()+sahiGetAccessorInfoQS(sahiGetAccessorInfo(targ));
-	if (sahiHasEventBeenRecorded(qs)) return; //IE
+	if (sahiHasEventBeenRecorded(qs)) return true; //IE
     sahiSendToServer('/_s_/dyn/record?'+qs);
     e.handled = true; //FF
+    return true;
 }
 function sahiHasEventBeenRecorded(qs){
 	var now = (new Date()).getTime();
@@ -1105,7 +1112,7 @@ function sahiGetAccessorInfo(el){
 
     var accessor = sahiGetAccessor(el);
     var shortHand = getShortHand(el, accessor);
-    //alert(accessor+" --- "+shortHand);
+//    alert(type+" -- "+accessor+" --- "+shortHand);
     if (el.tagName.toLowerCase() == "img"){
         return new AccessorInfo(accessor, shortHand, "img", "click");
     }else if(type == "text" || type == "textarea" || type == "password"){
@@ -1119,9 +1126,9 @@ function sahiGetAccessorInfo(el){
     }else if (type == "checkbox" || type == "radio"){
         return new AccessorInfo(accessor, shortHand, type, "click", el.value);
     }else if (el.tagName.toLowerCase() == "td"){
-        return new AccessorInfo(accessor, shortHand, "cell", "", sahiIsIE()? el.innerText : el.textContent);
+        return new AccessorInfo(accessor, shortHand, "cell", "click", sahiIsIE()? el.innerText : el.textContent);
     }else if (el.tagName.toLowerCase() == "div" || el.tagName.toLowerCase() == "span"){
-    	return new AccessorInfo(accessor, shortHand, "byId", "click");
+    	return new AccessorInfo(accessor, shortHand, "byId", "click", sahiIsIE()? el.innerText : el.textContent);
     }
 }
 
@@ -1209,6 +1216,7 @@ function AccessorInfo(accessor, shortHand, type, event, value){
 }
 
 function sahiGetAccessorInfoQS(ai, isAssert){
+	if (ai == null || ai.event==null) return;
     var s = "event="+ (isAssert? "assert" : ai.event);
     s += "&accessor="+escape(ai.accessor);
     s += "&shorthand="+escape(ai.shortHand);
@@ -1274,7 +1282,7 @@ function sahiAddHandlers(win){
 }
 
 function sahiAttachEvents(el){
-	if (el.onclick == sahiOnEv || el.onchange == sahiOnEv) return;
+//	if (el.onclick == sahiOnEv || el.onchange == sahiOnEv) return;
 	var tagName = el.tagName.toLowerCase();
 	if (tagName == "a"){
 		sahiAttachLinkEvents(el)
@@ -1308,7 +1316,16 @@ function addEvent(el, ev, fn){
 	}else if (el.addEventListener){
 		el.addEventListener(ev, fn, false);
 	}	
-}function sahiSetRetries(i){
+}
+function removeEvent(el, ev, fn){
+	if (!el) return;
+	if (el.attachEvent){
+		el.detachEvent("on"+ev, fn);
+	}else if (el.removeEventListener){
+		el.removeEventListener(ev, fn, false);
+	}	
+}
+function sahiSetRetries(i){
     sahiSetServerVar("sahiRetries", i);
 }
 function sahiGetRetries(){
@@ -1347,7 +1364,7 @@ function getSahiWinHandle(){
 }
 function sahiOpenControllerWindow(e){
     if (!top._isAltKeyPressed) return;
-    top.sahiOpenWin = sahiOpenWin;
+//    top.sahiOpenWin = sahiOpenWin;
     top.sahiOpenWin(e);
     top._isAltKeyPressed = false;
 }
@@ -1412,6 +1429,7 @@ function areWindowsLoaded(win){
 	try{
 		if (win.location.href == "about:blank") return true;
 	}catch(e){
+		return true; // diff domain
 	}
 	try{
 		var fs = win.frames;
@@ -1419,20 +1437,21 @@ function areWindowsLoaded(win){
 			try{
 				return win.sahiLoaded;
 			}catch(e){
-				return false; //diff domain
+				return true; //diff domain; don't bother
 			}
 		}else{
 			for (var i=0; i<fs.length; i++){
 				if (!areWindowsLoaded(fs[i])) return false;
 			}
-			if (win.document && win.document.getElementsByTagName("frameset").length == 0) return win.sahiLoaded;
+			if (win.document && win.document.getElementsByTagName("frameset").length == 0) 
+				return win.sahiLoaded;
 			else return true;
 		}	
 	}
 	catch(ex){
 		sahiLogErr("2 to "+typeof ex);
 		sahiLogErr("3 pr "+ex.prototype);	
-		return false;//for diff domains.
+		return true;//for diff domains.
 	}
 }
 var SAHI_MAX_WAIT_FOR_LOAD = 60;
@@ -1558,16 +1577,11 @@ function sahiStopPlaying(){
 }
 function sahiStartRecording(){
    	sahiAddHandlersToAllFrames(top);
-	sahiSetServerVar("sahi_record", 1);
 }
 function sahiStopRecording(){
 	sahiSendToServer("/_s_/dyn/recordstop");
 	sahiSetServerVar("sahi_record", 0);
 }
-function sahiContinuePlay(){
-    sahiPlay();
-}
-
 function sahiLogPlayBack(msg, type, debugInfo){
 	sahiSendToServer("/_s_/dyn/log?msg=" + escape(msg) + "&type=" + type + "&debugInfo=" + escape(debugInfo));
 }
@@ -1642,7 +1656,7 @@ function sahiSendToServer(url){
 	try{
 	    var rand = (new Date()).getTime() + Math.floor(Math.random()*(10000));
 	    var http = sahiCreateRequestObject();
-	    var url = url + (url.indexOf("?")==-1 ? "?" : "&") + "t=" + rand;
+	    url = url + (url.indexOf("?")==-1 ? "?" : "&") + "t=" + rand;
 		http.open("GET", url, false);
 	    http.send(null);
 	    return http.responseText;
@@ -1653,9 +1667,6 @@ function sahiLogErr(msg){
 	sahiSendToServer("/_s_/dyn/log?msg=" + escape(msg) + "&type=err" );
 }
 
-function sahiLogPlayBack(msg, st, debugInfo){
-	sahiSendToServer("/_s_/dyn/log?msg=" + escape(msg) + "&type=" + st + "&debugInfo=" + escape(debugInfo));
-}
 function sahiGetParentNode(el, tagName){
     var parent = el.parentNode;
     while (parent &&  parent.tagName.toLowerCase() != "body" && parent.tagName.toLowerCase() != "html"){
@@ -1684,4 +1695,47 @@ function sahiGetText(el){
 }
 function sahiGetTextFromHTML(s){
 	return s.replace(/<[^>]*>/g, "");
+}
+function sahiOnBeforeUnLoad(){
+	window.sahiLoaded=false;
+}
+/*
+function trap1(e){
+	if (!e) e = window.event;
+	if (top._sahiControl) debug(sahiList(e));
+	if (prevDown) prevDown(e);
+}
+var prevDown = null;
+*/
+function sahiInit(e){
+	try{
+		window.sahiLoaded = true;	
+		addEvent(document, "keydown", sahiKeyDown);
+		addEvent(document, "keyup", sahiKeyUp);
+		addEvent(document, "dblclick", sahiOpenControllerWindow);
+		addEvent(document, "mousemove", sahiMouseOver);
+	}catch(ex){
+	    sahiHandleException(ex);
+	}
+
+	try{
+	    if (self == top){ 
+	        sahiPlay();
+	    }
+	    if (top._isSahiWinOpen) top.sahiOpenWin();
+	    if (sahiIsRecording()) sahiAddHandlers();
+	}catch(ex){
+//		throw ex;
+	    sahiHandleException(ex);
+	}
+}
+function sahiIsFirstExecutableFrame(){
+	var fs = top.frames;
+	for (var i=0; i<fs.length; i++){
+		if (self == top.frames[i]) return true;
+		if (""+(typeof top.frames[i].location) != "undefined"){ // = undefined when previous frames are not accessible due to some reason (may be from diff domain)
+			return false;
+		}
+	}
+	return false;
 }

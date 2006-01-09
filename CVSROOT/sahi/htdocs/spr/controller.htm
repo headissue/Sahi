@@ -56,12 +56,21 @@
 	Record Script:
 	</td></tr>
 	<tr><td bgcolor="">
-	<form name="recordform" action="/_s_/dyn/recordstart" target="channel" onsubmit="return checkFile()">
+	<table><tr><td>
+	<form name="recordstartform" action="http://www.sahidomain.com/_s_/dyn/recordstart" target="channel" onsubmit="return onRecordStartFormSubmit(this)">
 	Name: <input type="text" name="file" value="">
 	<input type="submit" value="Record">
-	<input type="button" value="Stop" onclick="return stopRec()">
+	<input type="hidden" name="sahisid">
+	</form>
+	</td><td>
+	<form name="recordstopform" action="http://www.sahidomain.com/_s_/dyn/recordstop" target="channel" onsubmit="o(this);stopRec()">
+	<input type="submit" value="Stop">
+	<input type="hidden" name="sahisid">
 	<input type="checkbox" checked onclick="recordAll()">Record All
 	</form>
+	</td>
+	</tr>
+	</table>
 	</td>
 	</table>
 
@@ -108,9 +117,10 @@ Accessor: </td><td><input name="accessor" value="" size="50"><br>
 	Set script:
 	</td></tr>
 	<tr><td bgcolor="">
-	<form name="scriptfileform" action="/_s_/dyn/setscriptfile" method="get" target="channel" onsubmit="resetStep();clearLogs()">
+	<form name="scriptfileform" action="http://www.sahidomain.com/_s_/dyn/setscriptfile" method="get" target="channel" onsubmit="o(this);resetStep();clearLogs()">
 	<select name="file">
 	</select>
+	<input type="hidden" name="sahisid">
 	<input type="submit" value="Set">
 	</form>
 	</td></tr>
@@ -123,8 +133,9 @@ Accessor: </td><td><input name="accessor" value="" size="50"><br>
 	Set script from url:
 	</td></tr>
 	<tr><td bgcolor="">
-	<form name="scripturlform" action="/_s_/dyn/setscripturl" method="get" target="channel" onsubmit="resetStep()">
+	<form name="scripturlform" action="http://www.sahidomain.com/_s_/dyn/setscripturl" method="get" target="channel" onsubmit="o(this);resetStep()">
 	<input type="text" name="url">
+	<input type="hidden" name="sahisid">
 	<input type="submit" value="Set">
 	</form>
 	</td></tr>
@@ -140,9 +151,10 @@ Accessor: </td><td><input name="accessor" value="" size="50"><br>
 	Start replay:
 	</td></tr>
 	<tr><td bgcolor="">
-	<form name="playform">
+	<form name="playform" action="http://www.sahidomain.com/_s_/dyn/startplay"  onsubmit="o(this);play()" target="channel">
 	<!--input type="text" name="starturl" value=""-->
-	<input type="button" value="Play" onclick="play()">
+	<input type="submit" value="Play">
+	<input type="hidden" name="sahisid">
 	 from step: <input type="text" size="2" name="step" value="0"><input type="button" value="Stop" onclick="stopPlay()">
 	[<a href="#" onclick="resetStep()">Reset</a>]<!--input type="button" value="Step" onclick="stepWisePlay()"-->
 	<!--
@@ -169,7 +181,7 @@ Accessor: </td><td><input name="accessor" value="" size="50"><br>
 	</form>
 </div>
 <div style="display:none">
-<iframe height=0 width=0 name="channel"></iframe>
+<iframe height=0 width=0 name="channel2"></iframe>
 </div>
 </body>
 </html>
