@@ -244,7 +244,7 @@ function sahiSimulateMouseEvent(el, type){
 	}
 }
 var sahiPointTimer;
-function sahiPoint(el){
+function sahi_point(el){
 	var d =	document.getElementById("sahi_div");
 	d.innerHTML = "<span style='color:red;font-family:verdana;font-size:20px;'>&gt;</span>";
 	d.style.position = "absolute";
