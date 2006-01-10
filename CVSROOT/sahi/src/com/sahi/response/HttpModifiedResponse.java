@@ -13,7 +13,7 @@ public class HttpModifiedResponse extends HttpResponse {
 		+ "<script src='http://www.sahidomain.com/_s_/dyn/state.js'></script>\n"
 		+ "<script src='http://www.sahidomain.com/_s_/dyn/script.js'></script>\n"
 		+ "<script src='/_s_/spr/playback.js'></script>\n" 
-		+ "<div id='sahi_div'></div>\n"
+		+ "<div id='sahi_div' style='display:none'></div>\n"
 		+ "";
 
 	private static final String INJECT_BOTTOM = "" 

@@ -177,7 +177,7 @@ function isBlankOrNull(s){
 function linkClick(e){
 	var performDefault = true;
 	if (this.prevClick){
-		performDefault = this.prevClick(e);
+		performDefault = this.prevClick(arguments);
 	}
 	if (performDefault != false){
 		sahiNavigateLink(this);
@@ -212,6 +212,8 @@ function sahi_click(el){
 	}
 }
 function sahiSimulateMouseEvent(el, type){
+	var x = findPosX(el);
+	var y = findPosY(el);
 	if(document.createEvent){
 		var evt = el.ownerDocument.createEvent("MouseEvents");
 		evt.initMouseEvent(type,
@@ -219,10 +221,10 @@ function sahiSimulateMouseEvent(el, type){
 		true,
 		el.ownerDocument.defaultView,
 		1,
-		findPosX(el), //screen x
-		findPosY(el), //screen y
-		findPosX(el), //client x
-		findPosY(el), //client y
+		x, //screen x
+		y, //screen y
+		x, //client x
+		y, //client y
 		false,
 		false,
 		false,
@@ -234,12 +236,32 @@ function sahiSimulateMouseEvent(el, type){
 		var evt = el.ownerDocument.createEventObject();
 		// Set an expando property on the event object. This will be used by the
 		// event handler to determine what element was clicked on.
-		evt.clientX = findPosX(el);
-		evt.clientY = findPosY(el);
+		evt.clientX = x;
+		evt.clientY = y;
 		evt.button = 1;
 		el.fireEvent("on"+type,evt);
 		evt.cancelBubble = true;
 	}
+}
+var sahiPointTimer;
+function sahiPoint(el){
+	var d =	document.getElementById("sahi_div");
+	d.innerHTML = "<span style='color:red;font-family:verdana;font-size:20px;'>&gt;</span>";
+	d.style.position = "absolute";
+	d.style.left = (findPosX(el)-16)+"px";
+	d.style.top = findPosY(el)-8+"px";
+	d.style.zIndex = 10;
+	d.style.display = "block";	
+	sahiPointTimer = window.setTimeout("sahiFade()", 2000);
+}
+function sahiFade(){
+	window.clearTimeout(sahiPointTimer);
+	var d =	document.getElementById("sahi_div");
+	d.style.position = "absolute";
+	d.style.left = "0px";
+	d.style.top = "0px";
+	d.style.zIndex = 0;
+	d.style.display = "none";	
 }
 function findPosX(obj)
 {
@@ -272,21 +294,7 @@ function findPosY(obj)
 		curtop += obj.y;
 	return curtop;
 }
-function sahi_clickLinkByAccessor(ln){
-	if (sahiIsIE()){
-		ln.click();
-		return;
-	}
-	if (sahiCanSimulateClick(ln)){
-		sahiSimulateMouseEvent(ln, "click");
-	}
-	else{
-	    //point(ln);
-	 	if (ln.onclick) ln.onclick(sahiGetClickEv(ln));
-	}
-	sahiNavigateLink(ln);
-  
-}
+
 function sahiNavigateLink(ln){
 	if (!ln) return;
 	var win = ln.ownerDocument.defaultView; //FF
@@ -302,15 +310,6 @@ function sahiNavigateLink(ln){
 }
 function appendSahiSid(url){
    	return url + (url.indexOf("?")==-1 ? "?" : "&") + "sahisid="+sahiReadCookie("sahisid");
-}
-function sahi_clickImage(el){
-    if (el.onclick) el.onclick(sahiGetClickEv(el));
-    else {
-		var ln = sahiGetEncapsulatingLink(el);
-		if (ln != null && ln != el){
-			sahi_clickLinkByAccessor(ln);
-		}
-	}
 }
 
 function sahiGetClickEv(el){
@@ -1276,7 +1275,8 @@ function sahiAttachEvents(el){
 		sahiAttachLinkEvents(el)
 	}else if (el.form && el.type){
 		sahiAttachFormElementEvents(el);
-	}else if (tagName == "img" || tagName == "div" || tagName == "span" || tagName == "td" || tagName == "table"){
+	}else if (tagName == "img" || tagName == "div" || tagName == "span" 
+				|| tagName == "td" || tagName == "table"){
 		sahiAttachImageEvents(el);
 	}
 }
@@ -1386,11 +1386,13 @@ function sahiKeyUp(e){
     if (!e) e = window.event;
     if (e.keyCode == KEY_CONTROL) top._isControlKeyPressed = false;
     if (e.keyCode == KEY_ALT) top._isAltKeyPressed = false;
+    return true;
 }
 function sahiKeyDown(e){
     if (!e) e = window.event;
     if (e.keyCode == KEY_CONTROL) top._isControlKeyPressed = true;
     else if (e.keyCode == KEY_ALT) top._isAltKeyPressed = true;
+    return true;
 }
 
 
