@@ -499,7 +499,9 @@ function sahi_popup(n){
 	}
 	return SahiNotMyWindowException();
 }
-
+function sahi_log(s, type){
+	sahiLogPlayBack(s, type);
+}
 // finds document of any element
 function sahiGetWin(el){
 	if (el == null) return self;

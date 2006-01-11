@@ -1,7 +1,6 @@
 _sahisid = '$sessionId';
 top._sahisid = '$sessionId';
-//_isSahiWinOpen = $isWindowOpen;
+_isSahiWinOpen = $isWindowOpen;
 top._isSahiWinOpen = $isWindowOpen;
 top.sahiCreateCookie('sahisid', '$sessionId');
-
-
+//alert('$sessionId');
