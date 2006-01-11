@@ -105,8 +105,6 @@ public class ProxyProcessor implements Runnable {
 			throws IOException {
 		if (requestFromBrowser.isConnect()) {
 			processConnect(requestFromBrowser);
-		} else if (requestFromBrowser.isSSL()) {
-			processHttp(requestFromBrowser);
 		} else {
 			processHttp(requestFromBrowser);
 		}
@@ -114,7 +112,8 @@ public class ProxyProcessor implements Runnable {
 
 	private void processConnect(HttpRequest requestFromBrowser) {
 		try {
-			client.getOutputStream().write(("HTTP/1.0 200 Ok\r\n\r\n").getBytes());
+			client.getOutputStream().write(
+					("HTTP/1.0 200 Ok\r\n\r\n").getBytes());
 			SSLSocket sslSocket = new SSLHelper()
 					.convertToSecureServerSocket(client);
 			ProxyProcessor delegatedProcessor = new ProxyProcessor(sslSocket);
@@ -132,7 +131,8 @@ public class ProxyProcessor implements Runnable {
 		OutputStream outputStreamToHost = socketToHost.getOutputStream();
 		InputStream inputStreamFromHost = socketToHost.getInputStream();
 		HttpResponse responseFromHost = getResponseFromHost(
-				inputStreamFromHost, outputStreamToHost, requestFromBrowser.modifyForFetch());
+				inputStreamFromHost, outputStreamToHost, requestFromBrowser
+						.modifyForFetch());
 		sendResponseToBrowser(responseFromHost);
 		socketToHost.close();
 	}
@@ -142,7 +142,7 @@ public class ProxyProcessor implements Runnable {
 		if (uri.indexOf("/dyn/") != -1) {
 			// System.out.println(uri);
 			Session session = getSession(requestFromBrowser);
-//			System.out.println("----------- "+session.id());
+			// System.out.println("----------- "+session.id());
 			if (uri.indexOf("/log") != -1) {
 				if (session.getScript() != null) {
 					session.logPlayBack(requestFromBrowser.getParameter("msg"),
@@ -162,7 +162,7 @@ public class ProxyProcessor implements Runnable {
 				session.setScript(new URLScript(url));
 				sendWindowCloseResponse(session);
 			} else if (uri.indexOf("/recordstart") != -1) {
-//				System.out.println("########### "+session.id());
+				// System.out.println("########### "+session.id());
 				startRecorder(requestFromBrowser, session);
 				sendWindowCloseResponse(session);
 			} else if (uri.indexOf("/recordstop") != -1) {
@@ -216,7 +216,8 @@ public class ProxyProcessor implements Runnable {
 				if (session.getScript() != null)
 					session.startPlayBack();
 				session.setVariable("sahi_play", "1");
-				session.setVariable("sahiIx", requestFromBrowser.getParameter("step"));
+				session.setVariable("sahiIx", requestFromBrowser
+						.getParameter("step"));
 				sendWindowCloseResponse(session);
 			} else if (uri.indexOf("/stopplay") != -1) {
 				sendResponseToBrowser(new NoCacheHttpResponse(""));
@@ -275,13 +276,16 @@ public class ProxyProcessor implements Runnable {
 	}
 
 	private void sendWindowCloseResponse(Session session) throws IOException {
-		HttpResponse httpResponse = new HttpFileResponse(Configuration.getHtdocsRoot()
+		HttpResponse httpResponse = new HttpFileResponse(Configuration
+				.getHtdocsRoot()
 				+ "spr/close.htm");
 		sendResponseToBrowser(addSahisidCookie(httpResponse, session));
 	}
 
-	private HttpResponse addSahisidCookie(HttpResponse httpResponse, Session session) {
-		httpResponse.addHeader("Set-Cookie", "sahisid="+session.id()+"; path=/; ");
+	private HttpResponse addSahisidCookie(HttpResponse httpResponse,
+			Session session) {
+		httpResponse.addHeader("Set-Cookie", "sahisid=" + session.id()
+				+ "; path=/; ");
 		httpResponse.setRawHeaders(httpResponse.getRebuiltHeaderBytes());
 		return httpResponse;
 	}
@@ -349,13 +353,14 @@ public class ProxyProcessor implements Runnable {
 				+ "spr/confirm.htm", props);
 	}
 
-	private HttpFileResponse proxyStateResponse(Session session) {
+	private HttpResponse proxyStateResponse(Session session) {
 		Properties props = new Properties();
 		props.setProperty("sessionId", session.id());
 		props.setProperty("isRecording", "" + session.isRecording());
 		props.setProperty("isWindowOpen", "" + session.isWindowOpen());
-		return new HttpFileResponse(Configuration.getHtdocsRoot()
-				+ "spr/state.js", props);
+		return new NoCacheHttpResponse(
+				new HttpFileResponse(Configuration.getHtdocsRoot()
+				+ "spr/state.js", props));
 	}
 
 	private Session getSession(HttpRequest requestFromBrowser) {
@@ -365,12 +370,12 @@ public class ProxyProcessor implements Runnable {
 		} else {
 			sessionId = requestFromBrowser.getParameter("sahisid");
 		}
-//		System.out.println("1:"+sessionId);
+		// System.out.println("1:"+sessionId);
 		if (isBlankOrNull(sessionId))
 			sessionId = requestFromBrowser.getCookie(new String("sahisid"));
 		if (isBlankOrNull(sessionId))
 			sessionId = "sahi_" + System.currentTimeMillis();
-//		System.out.println("2:"+sessionId);
+		// System.out.println("2:"+sessionId);
 		return Session.getInstance(sessionId);
 	}
 
@@ -410,10 +415,9 @@ public class ProxyProcessor implements Runnable {
 
 	private void startRecorder(HttpRequest request, Session session) {
 		String fileName = request.getParameter("file");
-		session.getRecorder()
-				.start(getScriptFileWithPath(fileName));
+		session.getRecorder().start(getScriptFileWithPath(fileName));
 		session.setVariable("sahi_record", "1");
-//		System.out.println("$$$$$$$$$$$ "+session.id());
+		// System.out.println("$$$$$$$$$$$ "+session.id());
 	}
 
 	private HttpResponse getResponseFromHost(InputStream inputStreamFromHost,

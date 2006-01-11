@@ -27,7 +27,6 @@ public class NoCacheHttpResponse extends HttpResponse {
         data(data);
 		setFirstLine("HTTP/1.1 " + status + " " + statusMessage);
         setHeader("Content-Type", "text/html");
-        setHeader("Cache-control", "no-cache");
         setHeader("Cache-control", "no-store");
         setHeader("Pragma", "no-cache");
         setHeader("Expires", "0");
@@ -36,4 +35,8 @@ public class NoCacheHttpResponse extends HttpResponse {
         setRawHeaders(getRebuiltHeaderBytes());
         logger.fine(new String(rawHeaders()));
     }
+    
+	public NoCacheHttpResponse(HttpResponse httpResponse) {
+		setNoCacheHeaders(httpResponse.data());
+    }   
 }

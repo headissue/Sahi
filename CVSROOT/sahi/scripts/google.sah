@@ -1,0 +1,7 @@
+_setValue(_textbox("q"), "narayan raman");
+_click(_submit("Google Search"));
+_click(_link("Sahi - Web Automation and Test Tool"));
+_assertNotNull(_link("Ant Support"));
+
+_assertNotNull(_cell(_table(0), 0, 0));
+_assertEqual("Sahi - Web Automation and Test Tool ", _getCellText(_cell(_table(0), 0, 0)));

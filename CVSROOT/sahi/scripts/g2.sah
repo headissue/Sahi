@@ -1,0 +1,4 @@
+_setValue(_textbox("q"), "hello");
+_click(_submit("Google Search"));
+_click(_link("Hello : Welcome"));
+_click(_image(5));
