@@ -181,6 +181,7 @@ public abstract class SahiScript {
 		keywords.add("_wait");
 //		keywords.add("_savedRandom");
 		keywords.add("_popup");
+		keywords.add("_highlight");		
 		return keywords;
 	}
 
@@ -227,6 +228,7 @@ public abstract class SahiScript {
 		keywords.add("_containsHTML");
 		keywords.add("_popup");
 		keywords.add("_byId");
+		keywords.add("_highlight");
 		return keywords;
 	}
 
