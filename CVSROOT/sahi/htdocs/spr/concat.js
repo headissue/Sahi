@@ -245,7 +245,7 @@ function sahiSimulateMouseEvent(el, type){
 }
 var sahiPointTimer;
 function sahiPoint(el){
-	var d =	document.getElementById("sahi_div");
+	var d =	sahiFindElementById(top, "sahi_div");
 	d.innerHTML = "<span style='color:red;font-family:verdana;font-size:20px;'>&gt;</span>";
 	d.style.position = "absolute";
 	d.style.left = (findPosX(el)-16)+"px";
@@ -256,7 +256,7 @@ function sahiPoint(el){
 }
 function sahiFade(){
 	window.clearTimeout(sahiPointTimer);
-	var d =	document.getElementById("sahi_div");
+	var d =	sahiFindElementById(top, "sahi_div");
 	d.style.position = "absolute";
 	d.style.left = "0px";
 	d.style.top = "0px";
