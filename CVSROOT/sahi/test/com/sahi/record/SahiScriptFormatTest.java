@@ -10,6 +10,7 @@ import junit.framework.TestCase;
 public class SahiScriptFormatTest extends TestCase {
     public void testEscape() {
         assertEquals("aa\\$bb", new SahiScriptFormat().escape("aa$bb"));
+        assertEquals("aa\\r\\nbb", new SahiScriptFormat().escape("aa\r\nbb"));
     }
 	public void testSahiQuoteIfString() {
 		assertEquals("123", new SahiScriptFormat().sahiQuoteIfString("123"));

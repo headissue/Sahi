@@ -85,6 +85,9 @@ public class SahiScriptFormat implements ScriptFormat {
 	}
 
 	String escape(String s) {
-		return s.replaceAll("[$]", "\\\\\\$").replaceAll("\"", "\\\\\\\"");
+		return s.replaceAll("[$]", "\\\\\\$")
+			.replaceAll("\"", "\\\\\\\"")
+			.replaceAll("\r", "\\\\r")
+			.replaceAll("\n", "\\\\n");
 	}
 }
