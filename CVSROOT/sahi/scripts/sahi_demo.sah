@@ -1,79 +1,80 @@
-//MARK: Link Test Start
-
 var $linkText = "Link Test";
 _click(_link($linkText));
 
-function clickLinkByContent(){
-	_assertNotNull(_link("linkByContent"));
-}
-clickLinkByContent()
-
-
 _include("sahi_demo_include.sah");
-
-//MARK: Link Test End
-
-
-//MARK: Form Test Start
-
-
-//MARK: Form Test End
 _click(_link("Form Test"));
 
-function doAsserts(){
-__assertNotNull(_textbox("t1"));
-__assertEqual('', _textbox("t1").value);
-__assertNotNull(_textbox(1));
-__assertEqual('', _textbox(1).value);
-__assertNotNull(_textarea("ta1"));
-__assertEqual('', _textarea("ta1").value);
-__assertNotNull(_textarea(1));
-__assertEqual('', _textarea(1).value);
-__assertNotNull(_checkbox("c1"));
-__assertEqual('', _checkbox("c1").value);
-__assertNotNull(_checkbox(1));
-__assertEqual('', _checkbox(1).value);
-__assertNotNull(_checkbox("c1[1]"));
-__assertEqual('', _checkbox("c1[1]").value);
-__assertNotNull(_checkbox(3));
-__assertEqual('', _checkbox(3).value);
-__assertNotNull(_radio("r1"));
-__assertEqual('', _radio("r1").value);
-__assertNotNull(_password("p1"));
-__assertEqual('', _password("p1").value);
-__assertNotNull(_password(1));
-__assertEqual('', _password(1).value);
-__assertNotNull(_select("s1"));
-__assertEqual('o1', _getSelectedText(_select("s1")));
-__assertNotNull(_select("s1Id[1]"));
-__assertEqual('o1', _getSelectedText(_select("s1Id[1]")));
-__assertNotNull(_select(2));
-__assertEqual('o1', _getSelectedText(_select(2)));
-__assertNotNull(_button("button value"));
-
-__assertNotNull(_button("btnName[1]"));
-
-__assertNotNull(_button("btnId[2]"));
-
-__assertNotNull(_button(3));
-
-__assertNotNull(_submit("Add"));
-
-__assertNotNull(_submit("submitBtnName[1]"));
-
-__assertNotNull(_submit("submitBtnId[2]"));
-
-__assertNotNull(_submit(3));
-
-__assertNotNull(_image("imageAlt1"));
-
-__assertNotNull(_image("imageId1[1]"));
-
-__assertNotNull(_image(2));
-
-__assertNotNull(_link("Back"));
-
+function testAccessors(){
+	// These execute without any delay between asserts. 
+	// Note that all steps start with __ (double underscores)
+	// Refer http://sahi.sourceforge.net/apis.html#scheduler for more information
+	__assertNotNull(_textbox("t1"));
+	__assertEqual('', _textbox("t1").value);
+	__assertNotNull(_textbox(1));
+	__assertEqual('', _textbox(1).value);
+	__assertNotNull(_textarea("ta1"));
+	__assertEqual('', _textarea("ta1").value);
+	__assertNotNull(_textarea(1));
+	__assertEqual('', _textarea(1).value);
+	__assertNotNull(_checkbox("c1"));
+	__assertEqual('', _checkbox("c1").value);
+	__assertNotNull(_checkbox(1));
+	__assertEqual('', _checkbox(1).value);
+	__assertNotNull(_checkbox("c1[1]"));
+	__assertEqual('', _checkbox("c1[1]").value);
+	__assertNotNull(_checkbox(3));
+	__assertEqual('', _checkbox(3).value);
+	__assertNotNull(_radio("r1"));
+	__assertEqual('', _radio("r1").value);
+	__assertNotNull(_password("p1"));
+	__assertEqual('', _password("p1").value);
+	__assertNotNull(_password(1));
+	__assertEqual('', _password(1).value);
+	__assertNotNull(_select("s1"));
+	__assertEqual('o1', _getSelectedText(_select("s1")));
+	__assertNotNull(_select("s1Id[1]"));
+	__assertEqual('o1', _getSelectedText(_select("s1Id[1]")));
+	__assertNotNull(_select(2));
+	__assertEqual('o1', _getSelectedText(_select(2)));
+	__assertNotNull(_button("button value"));
+	__assertNotNull(_button("btnName[1]"));
+	__assertNotNull(_button("btnId[2]"));
+	__assertNotNull(_button(3));
+	__assertNotNull(_submit("Add"));
+	__assertNotNull(_submit("submitBtnName[1]"));
+	__assertNotNull(_submit("submitBtnId[2]"));
+	__assertNotNull(_submit(3));
+	__assertNotNull(_image("imageAlt1"));
+	__assertNotNull(_image("imageId1[1]"));
+	__assertNotNull(_image(2));
+	__assertNotNull(_link("Back"));
 }
 
-_call(doAsserts());
+function testClicks(){
+	// These execute with a delay between statements. 
+	// Note that all steps start with _ (single underscore)
+	// Refer http://sahi.sourceforge.net/apis.html#scheduler for more information
+	_click(_checkbox("c1"));
+	_assertNotNull(_checkbox("c1"));
+	_assertTrue(_checkbox("c1").checked);
+	_click(_checkbox("c1"));
+	_assertNotNull(_checkbox("c1"));
+	_assertNotTrue(_checkbox("c1").checked);
+	_click(_radio("r1"));
+	_assertNotNull(_radio("r1"));
+	_assertTrue(_radio("r1").checked);
+	_click(_radio("r1[1]"));
+	_assertNotNull(_radio("r1"));
+	_assertNotTrue(_radio("r1").checked);	
+}
+
+// Note that testAccessors() cannot have any calls to other Scheduler Action Functions
+// when invoked using _call
+// Refer http://sahi.sourceforge.net/scripting.html#functions for more information
+_call(testAccessors());
+
+// Note that testClicks() can have calls to other Scheduler Action Functions
+// as it is not invoked using _call
+// Refer http://sahi.sourceforge.net/scripting.html#functions for more information
+testClicks();
 _click(_link("Back"));
