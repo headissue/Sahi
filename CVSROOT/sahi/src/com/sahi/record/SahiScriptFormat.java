@@ -33,10 +33,11 @@ public class SahiScriptFormat implements ScriptFormat {
 					|| "select-multiple".equals(type)) {
 				cmd += "_assertEqual(" + quote(value) +  ", _getSelectedText("
 						+ accessor + "));";
-			} else if ("text".equals(type) || "checkbox".equals(type)
-					|| "radio".equals(type) || "textarea".equals(type)
+			} else if ("text".equals(type) || "textarea".equals(type)
 					|| "password".equals(type)) {
 				cmd += "_assertEqual(" + quote(value) +  ", " + accessor + ".value);";
+			} else if ("checkbox".equals(type) || "radio".equals(type)) {
+				cmd += "_assert" + ("true".equals(value) ? "":"Not" ) +"True("+accessor + ".checked);";
 			}
 		} else if ("wait".equals(event)) {
 			cmd = "_wait(" + value + ");";
@@ -48,14 +49,19 @@ public class SahiScriptFormat implements ScriptFormat {
 		if (cmd != null && popup != null) {
 			cmd = "_popup(\"" + popup + "\")." + cmd;
 		}
+//		System.out.println("assertEquals("+a(cmd)+", sahiScriptFormat.getScript("+a(event)+", "+a(jsAccessor)+", "+a(value)+", "+a(type)+", "+a(shortHand)+", "+a(popup)+"));");
 		return cmd;
 	}
+	
+//	private String a(String s) {
+//		return s == null ? null : "\"" + s.replaceAll("\"", "\\\\\"") + "\"";
+//	}
 
 	private String quote(String value) {
 		return "\"" + escape(value) + "\"";
 	}
 
-	private String getAccessor(String jsAccessor, String shortHand, String type) {
+	protected String getAccessor(String jsAccessor, String shortHand, String type) {
 		if ("".equals(shortHand)) {
 			return "_accessor(\"" + jsAccessor + "\")";
 		} else {
