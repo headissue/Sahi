@@ -28,7 +28,6 @@
 <a href="#suites">Suites</a></br>
 <a href="ant.html">Ant Support<a/><br/></br>
 <a href="#logging">Logging</a></br></br>
-<a href="advanced.html">Multi domains and Multi threaded playback</a></br>
 <a href="devnotes.html">Sahi - Technical Aspects</a></br></br>
 <a href="#notyet">Not yet supported, but coming in</a></br>
 
@@ -114,7 +113,7 @@ if the module is to be rebuilt from source, JDK 1.4 or above, <a href="http://an
 
 
 Note that by default Sahi uses port 9999.
-This can be modified through sahi.properties
+This can be modified through <a href="props.html">sahi.properties</a>
 </p>
 <br/>
 
@@ -127,7 +126,7 @@ This can be modified through sahi.properties
 	<li>Set to "Manual Proxy Configuration"</li>
 	<li>Set "HTTP Proxy" to "localhost"</li>
 
-	<li>Set "Port" to "9999". (This setting can be modified through &lt;sahi_root&gt;/config/sahi.properties)</li>
+	<li>Set "Port" to "9999". (This setting can be modified through &lt;sahi_root&gt;/config/<a href="props.html">sahi.properties</a>)</li>
 
 	<li>Keep "Use the same proxy for all protocol" unchecked as Sahi does not understand protocols other than HTTP</li>
 	<li>NOTE: "No Proxy for" should NOT have localhost in it.</li>
@@ -217,15 +216,12 @@ You could use the <a href="#demo">demo application</a> bundled with Sahi to get 
 <br/><h4>Running test from the console</a></h4>
 
 If you wish to run a script called "MySahiScript.sah" on a page like say, http://<b>www.domain.com</b>/dir/page1.jsp do<br/>
-
-<br/><br/>"C:\Program Files\Mozilla Firefox\firefox.exe"<br/>
-"http://<b>www.domain.com</b>/<em>s</em>/dyn/auto?file=MySahiScript.sah&amp;startUrl=http://<b>www.domain.com</b>/dir/page1.jsp" <br/>
-
-
-<br/><br/>Note that the domains in bold should be the same. <br/>
-Yeah, this needs some clean up.<br/>
-
-
+<br/>
+<pre>
+"C:\Program Files\Mozilla Firefox\firefox.exe" "http://www.sahidomain.com/_s_/dyn/auto?file=<b>MySahiScript.sah</b>&amp;startUrl=<b>http://www.domain.com/dir/page1.jsp</b>" <br/>
+Note that www.sahidomain.com at the start of the URL is hardcoded, and should be used as is. Only the values in bold need to be changed.
+</pre>
+<br/>
 (<a href="#top">Top</a>)
 
 <br/><h4><a name="suites">Suites</a></h4>
@@ -272,9 +268,8 @@ Log results can be accessed through the browser through http://mydomain/_s_/logs
 <br/><h4><a name="limitations">Limitations</a></h4>
 
 <ul type="square">
-	<li><a href="advanced.html#multidomains">Multidomains</a> can be used in single user mode only. All actions are treated as if in one global session.</li>
-	<li><a href="advanced.html#multithreaded">Multi threaded</a> playback does not work with <a href="advanced.html#multidomains">multidomains</a>.</li>
-	<li>Record or playback of sites which have pages from multiple domains in iframes or frames can cause problems.</li>
+	<li>FileUpload using &lt;input type="file"&gt; is not supported.</li>
+	<li>Frames having pages from different domains in the same frameset does not work properly.</li>
 </ul>
 
 (<a href="#top">Top</a>)
@@ -283,6 +278,9 @@ Log results can be accessed through the browser through http://mydomain/_s_/logs
 
 <ul type="square">
 	<li>Javascript alerts, confirms and prompts</li>
+	<li>SSL certificate creation utility</li>
+	<li>Better Sahi Controller UI which works across multidomain pages</li>
+	<li>Support for non-english languages</li>
 </ul>
 (<a href="#top">Top</a>)
 <br/><br/>
