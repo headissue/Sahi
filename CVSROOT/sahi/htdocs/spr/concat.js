@@ -1375,9 +1375,9 @@ function sahiOpenControllerWindow(e){
     return true;
 }
 function sahiIsHotKeyPressed(){
-	return ((sahiHotKey == "SHIFT" && _isShiftKeyPressed)
-		||(sahiHotKey == "CTRL" && _isControlKeyPressed)
-		||(sahiHotKey == "ALT" && _isAltKeyPressed));
+	return ((sahiHotKey == "SHIFT" && top._isShiftKeyPressed)
+		||(sahiHotKey == "CTRL" && top._isControlKeyPressed)
+		||(sahiHotKey == "ALT" && top._isAltKeyPressed));
 }
 var _lastAccessedInfo;
 function sahiMouseOver(e){
@@ -1403,8 +1403,8 @@ var KEY_Q = 81;
 var KEY_K = 75;
 
 top._isControlKeyPressed = false;
-top._isQKeyPressed = false;
 top._isAltKeyPressed = false;
+top._isShiftKeyPressed = false;
 function sahiKeyUp(e){
     if (!e) e = window.event;
     if (e.keyCode == KEY_CONTROL) top._isControlKeyPressed = false;
