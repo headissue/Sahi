@@ -22,7 +22,7 @@ public class Configuration {
 		try {
 			properties.load(new FileInputStream("../config/sahi.properties"));
 			System.setProperty("java.util.logging.config.file",
-				"../config/log.properties");
+					"../config/log.properties");
 			createLogFolders(getPlayBackLogsRoot());
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -77,15 +77,17 @@ public class Configuration {
 		try {
 			int limit = 1000000; // 1 Mb
 			int numLogFiles = 3;
-			handler = new FileHandler(getLogsRoot()+LOG_PATTERN, limit, numLogFiles);
+			handler = new FileHandler(getLogsRoot() + LOG_PATTERN, limit,
+					numLogFiles);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		Logger logger = Logger.getLogger(name);
-		if (handler!=null) logger.addHandler(handler);
+		if (handler != null)
+			logger.addHandler(handler);
 		return logger;
 	}
-	
+
 	public static String getLogsRoot() {
 		return addEndSlash(properties.getProperty("logs.dir"));
 	}
@@ -95,7 +97,7 @@ public class Configuration {
 	}
 
 	public static String getPlayBackLogsRoot() {
-		return getLogsRoot()+PLAYBACK_LOG_ROOT;
+		return getLogsRoot() + PLAYBACK_LOG_ROOT;
 	}
 
 	private static String addEndSlash(String dir) {
@@ -108,14 +110,11 @@ public class Configuration {
 		return HTDOCS_ROOT;
 	}
 
-	public static boolean isMultiDomainEnabled() {
-		return "true".equals(properties.getProperty("multidomains"));
+	public static boolean isExternalProxyEnabled() {
+		return "true".equalsIgnoreCase(properties
+				.getProperty("ext.proxy.enable"));
 	}
 
-	public static boolean isExternalProxyEnabled() {
-		return "true".equalsIgnoreCase(properties.getProperty("ext.proxy.enable"));
-	}
-	
 	public static String getExternalProxyHost() {
 		return properties.getProperty("ext.proxy.host");
 	}
@@ -127,9 +126,17 @@ public class Configuration {
 			return 80;
 		}
 	}
-	
+
 	public static void createScriptsDirIfNeeded() {
 		File file = new File(Configuration.getScriptRoot());
 		file.mkdirs();
-	}	
+	}
+
+	public static String getHotKey() {
+		String hotkey = properties.getProperty("controller.hotkey");
+		if ("SHIFT".equals(hotkey) || "ALT".equals(hotkey)
+				|| "CTRL".equals(hotkey))
+			return hotkey;
+		return "ALT";
+	}
 }

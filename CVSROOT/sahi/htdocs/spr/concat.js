@@ -1122,7 +1122,7 @@ function sahiGetAccessorInfo(el){
     }else if (type == "button" || type == "submit" || type == "image"){
         return new AccessorInfo(accessor, shortHand, type, "click");
     }else if (type == "checkbox" || type == "radio"){
-        return new AccessorInfo(accessor, shortHand, type, "click", el.value);
+        return new AccessorInfo(accessor, shortHand, type, "click", el.checked);
     }else if (el.tagName.toLowerCase() == "td"){
         return new AccessorInfo(accessor, shortHand, "cell", "click", sahiIsIE()? el.innerText : el.textContent);
     }else if (el.tagName.toLowerCase() == "div" || el.tagName.toLowerCase() == "span"){
@@ -1341,12 +1341,18 @@ function sahiOpenWin(e){
 try{
     if (!e) e = window.event;
     top._sahiControl = window.open("", "_sahiControl", getWinParams(e));
-    if (!top._sahiControl.play){
-        top._sahiControl = window.open("/_s_/spr/controller.htm", "_sahiControl", getWinParams(e));
+    var diffDom = false;
+    try{
+    	var checkDiffDomain = top._sahiControl.document.domain;
+    }catch(domainInaccessible){
+	    diffDom = true;
     }
+    if (diffDom || !top._sahiControl.play){
+	    top._sahiControl = window.open("/_s_/spr/controller.htm", "_sahiControl", getWinParams(e));
+	}
     if (top._sahiControl) top._sahiControl.opener = this;
     if (e) top._sahiControl.focus();
-}catch(e){sahiHandleException(e);}
+}catch(ex){sahiHandleException(ex);}
 }
 function getWinParams(e){
     var x = e ? e.screenX-40 : 500;
@@ -1362,10 +1368,16 @@ function getSahiWinHandle(){
     if (top._sahiControl && !top._sahiControl.isClosed) return top._sahiControl;
 }
 function sahiOpenControllerWindow(e){
-    if (!top._isAltKeyPressed) return;
-//    top.sahiOpenWin = sahiOpenWin;
+	if (!e) e = window.event;
+    if (!top.sahiIsHotKeyPressed()) return true;
     top.sahiOpenWin(e);
     top._isAltKeyPressed = false;
+    return true;
+}
+function sahiIsHotKeyPressed(){
+	return ((sahiHotKey == "SHIFT" && _isShiftKeyPressed)
+		||(sahiHotKey == "CTRL" && _isControlKeyPressed)
+		||(sahiHotKey == "ALT" && _isAltKeyPressed));
 }
 var _lastAccessedInfo;
 function sahiMouseOver(e){
@@ -1397,12 +1409,14 @@ function sahiKeyUp(e){
     if (!e) e = window.event;
     if (e.keyCode == KEY_CONTROL) top._isControlKeyPressed = false;
     if (e.keyCode == KEY_ALT) top._isAltKeyPressed = false;
+    if (e.keyCode == KEY_SHIFT) top._isShiftKeyPressed = false;
     return true;
 }
 function sahiKeyDown(e){
     if (!e) e = window.event;
     if (e.keyCode == KEY_CONTROL) top._isControlKeyPressed = true;
-    else if (e.keyCode == KEY_ALT) top._isAltKeyPressed = true;
+    if (e.keyCode == KEY_ALT) top._isAltKeyPressed = true;
+    if (e.keyCode == KEY_SHIFT) top._isShiftKeyPressed = true;
     return true;
 }
 
@@ -1723,7 +1737,9 @@ function sahiInit(e){
 	    if (self == top){ 
 	        sahiPlay();
 	    }
-	    if (top._isSahiWinOpen) top.sahiOpenWin();
+	    if (top._isSahiWinOpen){
+	    	top.sahiOpenWin();
+	    }
 	    if (sahiIsRecording()) sahiAddHandlers();
 	}catch(ex){
 //		throw ex;

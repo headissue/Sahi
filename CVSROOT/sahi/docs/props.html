@@ -36,6 +36,10 @@ ext.proxy.enable=false
 ext.proxy.host=66.250.69.1
 ext.proxy.port=8080
 
+# Sets the hotkey which when pressed and doubleclicked, 
+# will open the Sahi controller window.
+# Can specify ALT, SHIFT or CTRL
+<a href="#hotkey">controller.hotkey = ALT</a>
 
 </pre>
 <br/>
@@ -50,6 +54,12 @@ While recording, one can specify the format that the recorded script should be i
 Eg. One may want to record scripts for use with selenium.<br/><br/>
 Look at com.sahi.record.ScriptFormat.java and com.sahi.record.SahiScriptFormat.java <br/>
 TODO: Add documentation to these classes.
+
+<h4><a name="#hotkey">Hot Key</a></h4>
+When the Hot Key is pressed and the page is doubleclicked, the Sahi Controller window is displayed.<br/>
+By default, the Hot Key is set to ALT.<br/>
+If ALT does not work on your platform, you could configure the hotkey in this file. <br/>
+The hot key could be any one of ALT, SHIFT or CTRL keys.
 
 
 </body>

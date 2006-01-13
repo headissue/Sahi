@@ -358,6 +358,7 @@ public class ProxyProcessor implements Runnable {
 		props.setProperty("sessionId", session.id());
 		props.setProperty("isRecording", "" + session.isRecording());
 		props.setProperty("isWindowOpen", "" + session.isWindowOpen());
+		props.setProperty("hotkey", "" + Configuration.getHotKey());
 		return new NoCacheHttpResponse(
 				new HttpFileResponse(Configuration.getHtdocsRoot()
 				+ "spr/state.js", props));
@@ -365,11 +366,7 @@ public class ProxyProcessor implements Runnable {
 
 	private Session getSession(HttpRequest requestFromBrowser) {
 		String sessionId = null;
-		if (Configuration.isMultiDomainEnabled()) {
-			sessionId = "sahi_abc";
-		} else {
-			sessionId = requestFromBrowser.getParameter("sahisid");
-		}
+		sessionId = requestFromBrowser.getParameter("sahisid");
 		// System.out.println("1:"+sessionId);
 		if (isBlankOrNull(sessionId))
 			sessionId = requestFromBrowser.getCookie(new String("sahisid"));
