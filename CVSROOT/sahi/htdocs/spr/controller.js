@@ -51,9 +51,25 @@ function stopRec(){
 
 function doOnUnLoad(s){
     sahiSendToServer('/_s_/dyn/winclosed');
+	sendRecorderSnapshot();
+	sendPlaybackSnapshot();
     try{
         top.opener.top._isSahiWinOpen = false;
     }catch(ex){sahiHandleException(ex);}
+}
+function sendPlaybackSnapshot(){
+	sahiSetServerVar("controller_url", document.scripturlform.url.value);
+	sahiSetServerVar("controller_logs", document.logForm.logs.value);
+	sahiSetServerVar("controller_step", document.playform.step.value)
+}
+function sendRecorderSnapshot(){
+	sahiSetServerVar("controller_recorder_file", document.recordstartform.file.value);
+	sahiSetServerVar("controller_el_value", document.currentForm.elValue.value);
+	sahiSetServerVar("controller_comment", document.currentForm.comment.value);
+	sahiSetServerVar("controller_accessor", document.currentForm.accessor.value);	
+	sahiSetServerVar("controller_debug", document.currentForm.debug.value);
+	sahiSetServerVar("controller_waitTime", document.currentForm.waitTime.value);
+	sahiSetServerVar("controller_result", document.currentForm.result.value);
 }
 
 function doOnLoad(){
@@ -66,11 +82,13 @@ function doOnLoad(){
             if (_scriptList[i-1] == _selectedScript)
                 document.scriptfileform.file.options[i].selected = true;
         }
-        window.focus();
+//        window.focus();
         if (sahiGetCurrentIndex() != null){
             displayStepNum();
         }
-        if (sahiIsRecording()){
+        initPlaybackTab();
+        initRecorderTab();
+        if ("record" == sahiGetServerVar("controller_tab")){
         	showRec();
         }else{
         	showPlayback();
@@ -191,6 +209,16 @@ function showRec(){
 	document.getElementById("playbackTab").className="dimTab";
 	document.getElementById("recTab").className="hiTab";
 	document.recordstartform.file.focus();
+	sahiSetServerVar("controller_tab", "record");
+}
+function initRecorderTab(){
+	document.recordstartform.file.value = sahiGetServerVar("controller_recorder_file");
+	document.currentForm.elValue.value = sahiGetServerVar("controller_el_value");
+	document.currentForm.accessor.value = sahiGetServerVar("controller_accessor");	
+	document.currentForm.comment.value = sahiGetServerVar("controller_comment");	
+	document.currentForm.debug.value = sahiGetServerVar("controller_debug");
+	document.currentForm.waitTime.value = sahiGetServerVar("controller_waitTime");
+	document.currentForm.result.value = sahiGetServerVar("controller_result");
 }
 function showPlayback(){
 	document.getElementById("rec").style.display="none";
@@ -198,8 +226,14 @@ function showPlayback(){
 	document.getElementById("playbackTab").className="hiTab";
 	document.getElementById("recTab").className="dimTab";
 	document.scriptfileform.file.focus();
+	sahiSetServerVar("controller_tab", "playback");
 }
 
+function initPlaybackTab(){
+	document.scripturlform.url.value = sahiGetServerVar("controller_url");
+	document.logForm.logs.value = sahiGetServerVar("controller_logs");	
+	document.playform.step.value = sahiGetServerVar("controller_step");
+}
 function displayInfo(info){
 	var f = document.currentForm;
 	f.elValue.value = info.value ? info.value : "";
