@@ -212,13 +212,13 @@ function showRec(){
 	sahiSetServerVar("controller_tab", "record");
 }
 function initRecorderTab(){
-	document.recordstartform.file.value = sahiGetServerVar("controller_recorder_file");
-	document.currentForm.elValue.value = sahiGetServerVar("controller_el_value");
-	document.currentForm.accessor.value = sahiGetServerVar("controller_accessor");	
-	document.currentForm.comment.value = sahiGetServerVar("controller_comment");	
-	document.currentForm.debug.value = sahiGetServerVar("controller_debug");
-	document.currentForm.waitTime.value = sahiGetServerVar("controller_waitTime");
-	document.currentForm.result.value = sahiGetServerVar("controller_result");
+	document.recordstartform.file.value = blankIfNull(sahiGetServerVar("controller_recorder_file"));
+	document.currentForm.elValue.value = blankIfNull(sahiGetServerVar("controller_el_value"));
+	document.currentForm.accessor.value = blankIfNull(sahiGetServerVar("controller_accessor"));	
+	document.currentForm.comment.value = blankIfNull(sahiGetServerVar("controller_comment"));	
+	document.currentForm.debug.value = blankIfNull(sahiGetServerVar("controller_debug"));
+	document.currentForm.waitTime.value = blankIfNull(sahiGetServerVar("controller_waitTime"));
+	document.currentForm.result.value = blankIfNull(sahiGetServerVar("controller_result"));
 }
 function showPlayback(){
 	document.getElementById("rec").style.display="none";
@@ -230,9 +230,9 @@ function showPlayback(){
 }
 
 function initPlaybackTab(){
-	document.scripturlform.url.value = sahiGetServerVar("controller_url");
-	document.logForm.logs.value = sahiGetServerVar("controller_logs");	
-	document.playform.step.value = sahiGetServerVar("controller_step");
+	document.scripturlform.url.value = blankIfNull(sahiGetServerVar("controller_url"));
+	document.logForm.logs.value = blankIfNull(sahiGetServerVar("controller_logs"));	
+	document.playform.step.value = blankIfNull(sahiGetServerVar("controller_step"));
 }
 function displayInfo(info){
 	var f = document.currentForm;
@@ -307,5 +307,8 @@ function addSahi(s){
 	return sahiSendToServer("/_s_/dyn/getSahiScript?code="+escape(s));
 }
 
+function blankIfNull(s){
+	return (s==null || s=="null") ? "" : s;
+}
 
 
