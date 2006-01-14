@@ -1,4 +1,4 @@
-Sahi Nightly Release 2005-12-26
+Sahi Nightly Release 2006-01-14
 
 Requirements
 ------------
@@ -15,3 +15,9 @@ See changelog.txt
 Installation guide
 ------------------
 Please refer to docs directory in release.
+
+Known Issues
+------------
+* Non ASCII characters not recorded correctly.
+* Firefox has problems with multithreaded playback due to windows not closing properly.
+* Multi-select form element does not record correctly
