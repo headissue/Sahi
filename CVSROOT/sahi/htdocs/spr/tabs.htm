@@ -1,0 +1,53 @@
+<html>
+<head>
+<title>Sahi Controller</title>
+<script src="/_s_/spr/controller2.js"></script>
+<script src="/_s_/spr/util.js"></script>
+<style>
+.hiTab{
+	border-left: solid white 2px;
+	border-right: solid gray 2px;
+	border-top: solid white 2px;
+	font-color: black;
+	cursor:pointer;
+}
+.dimTab{
+	border-left: solid white 1px;
+	border-right: solid gray 1px;
+	border-top: solid white 1px;
+	border-bottom: solid white 1px;
+	font-color: white;
+	font-size: 11pt;
+	cursor:pointer;
+}
+.recPane{
+	display:block;
+	background-color:white;
+	border-left: solid white 2px;
+	border-right: solid gray 2px;
+	border-top: solid white 2px;
+	border-bottom: solid gray 2px;
+	margin:2px solid gray;
+}
+.playbackPane{
+	display:none;
+	background-color:white;
+	border-left: solid white 2px;
+	border-right: solid gray 2px;
+	border-top: solid white 2px;
+	border-bottom: solid gray 2px;
+	margin:2px solid gray;
+}
+
+</style>
+</head>
+<body bgcolor="lightgrey" onload="doOnTabsLoad()" onbeforeunload="doOnTabsUnLoad()">
+<span onclick="showrecord()" id="recordTab" class="dimTab">
+&nbsp;Record&nbsp;
+</span><span onclick="showplayback()" id="playbackTab" class="hiTab">
+&nbsp;Playback&nbsp;
+</span><span onclick="showlogs()" id="logsTab" class="dimTab">
+&nbsp;Logs&nbsp;
+</span>
+</body>
+</html>

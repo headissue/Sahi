@@ -1,0 +1,113 @@
+<html>
+<head>
+<title>Sahi Controller</title>
+<script src="/_s_/spr/exception.js"></script>
+<script src="/_s_/spr/controller2.js"></script>
+<script src="/_s_/dyn/scriptslist.js"></script>
+<script src="/_s_/spr/util.js"></script>
+<script src="/_s_/spr/common.js"></script>
+<script src="/_s_/spr/cookie.js"></script>
+<script src="util.js"></script>
+<style>
+.hiTab{
+	border-left: solid white 2px;
+	border-right: solid gray 2px;
+	border-top: solid white 2px;
+	font-color: black;
+	cursor:pointer;
+}
+.dimTab{
+	border-left: solid white 1px;
+	border-right: solid gray 1px;
+	border-top: solid white 1px;
+	border-bottom: solid white 1px;
+	font-color: white;
+	font-size: 11pt;
+	cursor:pointer;
+}
+.recPane{
+	display:block;
+	background-color:white;
+	border-left: solid white 2px;
+	border-right: solid gray 2px;
+	border-top: solid white 2px;
+	border-bottom: solid gray 2px;
+	margin:2px solid gray;
+}
+.playbackPane{
+	display:none;
+	background-color:white;
+	border-left: solid white 2px;
+	border-right: solid gray 2px;
+	border-top: solid white 2px;
+	border-bottom: solid gray 2px;
+	margin:2px solid gray;
+}
+
+</style>
+</head>
+<body bgcolor="lightgrey" onload="doOnRecLoad()" onbeforeunload="doOnRecUnLoad()">
+<div id="rec" class="recPane" >
+
+	<table>
+	<tr><td>
+	Record Script:
+	</td></tr>
+	<tr><td bgcolor="">
+	<table><tr><td>
+	<form name="recordstartform" action="http://www.sahidomain.com/_s_/dyn/recordstart" target="channel" onsubmit="return onRecordStartFormSubmit(this)">
+	Name: <input type="text" name="file" value="">
+	<input type="submit" value="Record">
+	<input type="hidden" name="sahisid">
+	</form>
+	</td><td>
+	<form name="recordstopform" action="http://www.sahidomain.com/_s_/dyn/recordstop" target="channel" onsubmit="o(this);stopRec()">
+	<input type="submit" value="Stop">
+	<input type="hidden" name="sahisid">
+	<input type="checkbox" checked onclick="recordAll()">Record All
+	</form>
+	</td>
+	</tr>
+	</table>
+	</td>
+	</table>
+
+
+
+<table>
+<tr><td>
+<hr>
+Accessor:
+</td></tr>
+<tr><td bgcolor="">
+<form name="currentForm">
+<table>
+<tr><td>
+Value: </td><td><input name="elValue" value="" size="50"><br>
+</td></tr>
+<tr><td>
+Accessor: </td><td><input name="accessor" value="" size="50"><br>
+</td></tr>
+</table>
+<br>
+<input type="button" value="Add Assertions" onclick="top.opener.doAssert()"> 
+<input type="button" value="Add Wait" onclick="addWait()">
+<input type="input" name="waitTime" value="3000" size="6"> ms 
+<input type="checkbox" name="preview"> Preview
+<br>
+<input type="button" value="Mark" onclick="mark()"> with comment : 
+<input type="input" name="comment" value="" size="20">
+<br><hr>Debug
+<textarea name="debug" rows="4" cols="50" style="white-space:normal"></textarea>
+<input type="button" onclick="evaluateExpr()" value="Test --> "><input type="text" name="result" value="">
+&nbsp;&nbsp;<input type="button" onclick="append()" value="Append to Recording">
+</form>
+</td></tr>
+
+</table>
+</div>
+<div style="display:none">
+<iframe height=0 width=0 name="channel2"></iframe>
+</div>
+</body>
+</html>

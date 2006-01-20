@@ -1348,7 +1348,7 @@ try{
 	    diffDom = true;
     }
     if (diffDom || !top._sahiControl.play){
-	    top._sahiControl = window.open("/_s_/spr/controller.htm", "_sahiControl", getWinParams(e));
+	    top._sahiControl = window.open("/_s_/spr/controller2.htm", "_sahiControl", getWinParams(e));
 	}
     if (top._sahiControl) top._sahiControl.opener = this;
     if (e) top._sahiControl.focus();
@@ -1386,9 +1386,9 @@ function sahiMouseOver(e){
     try{
       var controlWin = getSahiWinHandle();
       if (controlWin){
-        controlWin.displayStepNum();
+        controlWin.main.displayStepNum();
         var acc = sahiGetAccessorInfo(sahiGetKnownTags(getTarget(e)));
-        controlWin.displayInfo(acc);
+        controlWin.main.displayInfo(acc);
         top._lastAccessedInfo = acc ? acc : top._lastAccessedInfo;
       }
     }catch(ex){}
@@ -1565,8 +1565,8 @@ function updateControlWinDisplay(s){
     try{
       var controlWin = getSahiWinHandle();
       if (controlWin && !controlWin.closed){
-        controlWin.displayStepNum();
-        controlWin.displayLogs(s);
+        controlWin.main.displayStepNum();
+        controlWin.main.displayLogs(s);
       }
     }catch(ex){}
 }
