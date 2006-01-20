@@ -58,18 +58,53 @@ function doOnUnLoad(s){
     }catch(ex){sahiHandleException(ex);}
 }
 function sendPlaybackSnapshot(){
-	sahiSetServerVar("controller_url", document.scripturlform.url.value);
-	sahiSetServerVar("controller_logs", document.logForm.logs.value);
-	sahiSetServerVar("controller_step", document.playform.step.value)
+	var s="";
+	s+=addVar("controller_url", document.scripturlform.url.value);
+	s+=addVar("controller_logs", document.logForm.logs.value);
+	s+=addVar("controller_step", document.playform.step.value);
+	sahiSetServerVar("playback_state", s);
 }
 function sendRecorderSnapshot(){
-	sahiSetServerVar("controller_recorder_file", document.recordstartform.file.value);
-	sahiSetServerVar("controller_el_value", document.currentForm.elValue.value);
-	sahiSetServerVar("controller_comment", document.currentForm.comment.value);
-	sahiSetServerVar("controller_accessor", document.currentForm.accessor.value);	
-	sahiSetServerVar("controller_debug", document.currentForm.debug.value);
-	sahiSetServerVar("controller_waitTime", document.currentForm.waitTime.value);
-	sahiSetServerVar("controller_result", document.currentForm.result.value);
+	var s="";
+	s+=addVar("controller_recorder_file", document.recordstartform.file.value);
+	s+=addVar("controller_el_value", document.currentForm.elValue.value);
+	s+=addVar("controller_comment", document.currentForm.comment.value);
+	s+=addVar("controller_accessor", document.currentForm.accessor.value);	
+	s+=addVar("controller_debug", document.currentForm.debug.value);
+	s+=addVar("controller_waitTime", document.currentForm.waitTime.value);
+	s+=addVar("controller_result", document.currentForm.result.value);
+	sahiSetServerVar("recorder_state", s);
+}
+
+function addVar(n, v){
+	return n+"="+v+"_$sahi$_";
+}
+_recVars = null;
+function getRecVar(name){
+	if (_recVars == null){
+		_recVars = loadVars("recorder_state");
+	}
+	return blankIfNull(_recVars[name]);
+}
+
+function loadVars(serverVarName){
+	var s = sahiGetServerVar(serverVarName);
+	var a = new Array();
+	var nv = s.split("_$sahi$_");
+	for (var i=0; i<nv.length; i++){
+		var ix = nv[i].indexOf("=");
+		var n = nv[i].substring(0, ix);
+		var v = nv[i].substring(ix+1);
+		a[n]=blankIfNull(v);
+	}	
+	return a;
+}
+_pbVars = null;
+function getPbVar(name){
+	if (_pbVars == null){
+		_pbVars = loadVars("playback_state");
+	}
+	return _pbVars[name];
 }
 
 function doOnLoad(){
@@ -94,6 +129,7 @@ function doOnLoad(){
         	showPlayback();
         }
     }catch(ex){
+    	throw ex;
 		sahiHandleException(ex);
     }
 }
@@ -212,13 +248,13 @@ function showRec(){
 	sahiSetServerVar("controller_tab", "record");
 }
 function initRecorderTab(){
-	document.recordstartform.file.value = blankIfNull(sahiGetServerVar("controller_recorder_file"));
-	document.currentForm.elValue.value = blankIfNull(sahiGetServerVar("controller_el_value"));
-	document.currentForm.accessor.value = blankIfNull(sahiGetServerVar("controller_accessor"));	
-	document.currentForm.comment.value = blankIfNull(sahiGetServerVar("controller_comment"));	
-	document.currentForm.debug.value = blankIfNull(sahiGetServerVar("controller_debug"));
-	document.currentForm.waitTime.value = blankIfNull(sahiGetServerVar("controller_waitTime"));
-	document.currentForm.result.value = blankIfNull(sahiGetServerVar("controller_result"));
+	document.recordstartform.file.value = getRecVar("controller_recorder_file");
+	document.currentForm.elValue.value = getRecVar("controller_el_value");
+	document.currentForm.accessor.value = getRecVar("controller_accessor");	
+	document.currentForm.comment.value = getRecVar("controller_comment");	
+	document.currentForm.debug.value = getRecVar("controller_debug");
+	document.currentForm.waitTime.value = getRecVar("controller_waitTime");
+	document.currentForm.result.value = getRecVar("controller_result");
 }
 function showPlayback(){
 	document.getElementById("rec").style.display="none";
@@ -230,9 +266,9 @@ function showPlayback(){
 }
 
 function initPlaybackTab(){
-	document.scripturlform.url.value = blankIfNull(sahiGetServerVar("controller_url"));
-	document.logForm.logs.value = blankIfNull(sahiGetServerVar("controller_logs"));	
-	document.playform.step.value = blankIfNull(sahiGetServerVar("controller_step"));
+	document.scripturlform.url.value = getPbVar("controller_url");
+	document.logForm.logs.value = getPbVar("controller_logs");	
+	document.playform.step.value = getPbVar("controller_step");
 }
 function displayInfo(info){
 	var f = document.currentForm;
