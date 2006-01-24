@@ -14,10 +14,10 @@ public class PlayBackLogFormatter extends Formatter {
 			sb.append("<div style='background-color:red;color:white'>");
 		}
 		sb.append("\r\n");
-		sb.append(record.getLevel().getLocalizedName());
-		sb.append("\t\t: ");
 		String message = formatMessage(record);
 		sb.append(message);
+//		sb.append("\t\t: ");
+//		sb.append(record.getLevel().getLocalizedName());
 		sb.append("</div>\r\n");
 		return sb.toString();
 	}

@@ -1,5 +1,6 @@
 package com.sahi.response;
 
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.Properties;
 
@@ -39,6 +40,7 @@ public class HttpFileResponse extends HttpResponse {
     private void setHeaders() {
         setFirstLine("HTTP/1.1 200 OK");
         setHeader("Content-Type", getContentType(fileName));
+        setHeader("Expires", new Date(System.currentTimeMillis()+3*60*1000).toString());        
         setHeader("Connection", "close");
         setHeader("Content-Length", "" + data().length);
         setRawHeaders(getRebuiltHeaderBytes());
@@ -51,6 +53,8 @@ public class HttpFileResponse extends HttpResponse {
         } else if (fileName.endsWith("class")) {
             return "text/plain";
 //            return "application-x/octetst";
+        }else if (fileName.endsWith("ico")) {
+        	return "image/bmp";
         }
         return "text/plain";
     }

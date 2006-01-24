@@ -28,6 +28,7 @@ public abstract class SahiScript {
 	protected String fqn;
 	protected String base = "";
 	protected ArrayList parents;
+	private String original = "";
 	private static final String REG_EXP_FOR_ADDING = getRegExp(false);
 	private static final String REG_EXP_FOR_STRIPPING = getRegExp(true);
 	private static final String REG_EXP_FOR_ACTIONS = getActionRegExp();
@@ -46,6 +47,7 @@ public abstract class SahiScript {
 	}
 
 	protected void setScript(String s) {
+		original  = s;
 		script = modify(s);
 	}
 
@@ -70,7 +72,7 @@ public abstract class SahiScript {
 						.escapeDoubleQuotesAndBackSlashes(line))));
 				sb.append(CONJUNCTION);
 				sb.append(scriptName);
-				sb.append(" : ");
+				sb.append("#");
 				sb.append(lineNumber);
 				sb.append(SUFFIX);
 				sb.append("\r\n");
@@ -289,4 +291,12 @@ public abstract class SahiScript {
 	}
 
 	protected abstract void loadScript(String url);
+
+	public String getOriginal() {
+		return original;
+	}
+	
+	public String getOriginalInHTML() {
+		return SahiScriptHTMLAdapter.createHTML(original);
+	}
 }

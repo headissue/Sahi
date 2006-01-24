@@ -17,7 +17,7 @@ public class SahiScriptTest extends TestCase {
 
 	public void testModify() {
 		assertEquals(
-				"sahiAdd(\"sahi_assertEquals(sahi_table(\\\"aa\\\"))\", \"null : 1\")\r\n",
+				"sahiAdd(\"sahi_assertEquals(sahi_table(\\\"aa\\\"))\", \"null#1\")\r\n",
 				new TestScript().modify("_assertEquals(_table(\"aa\"))"));
 			
 		assertEquals(
@@ -28,7 +28,7 @@ public class SahiScriptTest extends TestCase {
 				.modify("if(_table(\"aa\"))"));
 		
 		assertEquals(
-			"sahiAdd(\"sahi_setGlobal(\\\"newFinanceTypeName\\\", \'sahiTestFT\'+sahi_random(10000))\", \"null : 1\")\r\n", 
+			"sahiAdd(\"sahi_setGlobal(\\\"newFinanceTypeName\\\", \'sahiTestFT\'+sahi_random(10000))\", \"null#1\")\r\n", 
 			new TestScript()
 			.modify("_setGlobal(\"newFinanceTypeName\", \'sahiTestFT\'+_random(10000))"));
 		
@@ -57,7 +57,7 @@ public class SahiScriptTest extends TestCase {
 				new TestScript()
 						.modify("__textbox(\"username\").value=\"kk\";"));
 		assertEquals(
-				"sahiAdd(\"sahi_call(fn1())\", \"null : 1\")\r\n", 
+				"sahiAdd(\"sahi_call(fn1())\", \"null#1\")\r\n", 
 				new TestScript()
 						.modify("_call(fn1())"));
 

@@ -16,6 +16,7 @@ import javax.net.ssl.SSLSocket;
 import com.sahi.config.Configuration;
 import com.sahi.playback.FileScript;
 import com.sahi.playback.SahiScript;
+import com.sahi.playback.SahiScriptHTMLAdapter;
 import com.sahi.playback.ScriptUtil;
 import com.sahi.playback.URLScript;
 import com.sahi.playback.log.LogFileConsolidator;
@@ -77,9 +78,11 @@ public class ProxyProcessor implements Runnable {
 							&& requestFromBrowser.port() == Configuration
 									.getPort()) {
 						processLocally(uri, requestFromBrowser);
-					} else if (uri.indexOf("favicon.ico") == -1) {
+					} else if (uri.indexOf("favicon.ico") != -1) {
+						sendResponseToBrowser(new HttpFileResponse(Configuration.getHtdocsRoot()+"spr/favicon.ico"));
+					}else {
 						processAsProxy(requestFromBrowser);
-					}
+					} 
 				}
 			}
 		} catch (Exception e) {
@@ -95,10 +98,14 @@ public class ProxyProcessor implements Runnable {
 	}
 
 	private boolean isHostTheProxy(String host) throws UnknownHostException {
-		return InetAddress.getByName(host).getHostAddress().equals(
-				InetAddress.getLocalHost().getHostAddress())
-				|| InetAddress.getByName(host).getHostAddress().equals(
-						"127.0.0.1");
+		try {
+			return InetAddress.getByName(host).getHostAddress().equals(
+					InetAddress.getLocalHost().getHostAddress())
+					|| InetAddress.getByName(host).getHostAddress().equals(
+							"127.0.0.1");
+		} catch (Exception e) {
+			return false;
+		}
 	}
 
 	private void processAsProxy(HttpRequest requestFromBrowser)
@@ -126,7 +133,13 @@ public class ProxyProcessor implements Runnable {
 	private void processHttp(HttpRequest requestFromBrowser)
 			throws IOException, SocketException {
 		logger.finest("### Type of socket is " + client.getClass().getName());
-		Socket socketToHost = getSocketToHost(requestFromBrowser);
+		Socket socketToHost = null;
+		try {
+			socketToHost = getSocketToHost(requestFromBrowser);
+		}catch (UnknownHostException e) {
+			sendResponseToBrowser(new NoCacheHttpResponse(404, "UnknownHost", "<html><h2>Host "+e.getMessage()+" Not Found</h2></html>"));
+			return;
+		}
 		socketToHost.setSoTimeout(120000);
 		OutputStream outputStreamToHost = socketToHost.getOutputStream();
 		InputStream inputStreamFromHost = socketToHost.getInputStream();
@@ -256,7 +269,26 @@ public class ProxyProcessor implements Runnable {
 				} catch (Exception e) {
 				}
 				sendResponseToBrowser(new SimpleHttpResponse(""));
+			} else if (uri.indexOf("currentscript") != -1) {
+				if (session.getScript() != null) {
+					sendResponseToBrowser(new SimpleHttpResponse("<pre>"
+							+ SahiScriptHTMLAdapter.createHTML(session
+									.getScript().getOriginal()) + "</pre>"));
+				} else {
+					sendResponseToBrowser(new SimpleHttpResponse(
+							"No Script has been set for playback."));
+				}
+			} else if (uri.indexOf("currentparsedscript") != -1) {
+				if (session.getScript() != null) {
+					sendResponseToBrowser(new SimpleHttpResponse("<pre>"
+							+ SahiScriptHTMLAdapter.createHTML(session
+									.getScript().modifiedScript()) + "</pre>"));
+				} else {
+					sendResponseToBrowser(new SimpleHttpResponse(
+							"No Script has been set for playback."));
+				}
 			}
+
 		} else if (uri.indexOf("/scripts/") != -1) {
 			String fileName = scriptFileNamefromURI(requestFromBrowser.uri());
 			sendResponseToBrowser(new HttpFileResponse(fileName));
@@ -276,9 +308,9 @@ public class ProxyProcessor implements Runnable {
 	}
 
 	private void sendWindowCloseResponse(Session session) throws IOException {
-//		HttpResponse httpResponse = new HttpFileResponse(Configuration
-//				.getHtdocsRoot()
-//				+ "spr/close.htm");
+		// HttpResponse httpResponse = new HttpFileResponse(Configuration
+		// .getHtdocsRoot()
+		// + "spr/close.htm");
 		HttpResponse httpResponse = new NoCacheHttpResponse("");
 		sendResponseToBrowser(addSahisidCookie(httpResponse, session));
 	}
@@ -360,8 +392,8 @@ public class ProxyProcessor implements Runnable {
 		props.setProperty("isRecording", "" + session.isRecording());
 		props.setProperty("isWindowOpen", "" + session.isWindowOpen());
 		props.setProperty("hotkey", "" + Configuration.getHotKey());
-		return new NoCacheHttpResponse(
-				new HttpFileResponse(Configuration.getHtdocsRoot()
+		return new NoCacheHttpResponse(new HttpFileResponse(Configuration
+				.getHtdocsRoot()
 				+ "spr/state.js", props));
 	}
 

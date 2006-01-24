@@ -39,7 +39,7 @@ public class PlayBackLogger {
 	public void log(String msg, String type, String debugInfo) {
 		try {
 			if (debugInfo != null) {
-				msg = "(" + debugInfo + ")\t\t" + msg;
+				msg = msg + "\t\t[" + debugInfo + "]";
 			}
 			if ("error".equals(type)) {
 				logger.log(PlayBackLogLevel.ERROR, msg);

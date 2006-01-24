@@ -4,6 +4,7 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import com.sahi.playback.FileScriptTest;
+import com.sahi.playback.SahiScriptHTMLAdapterTest;
 import com.sahi.playback.SahiScriptTest;
 import com.sahi.playback.ScriptHandlerTest;
 import com.sahi.playback.URLScriptTest;
@@ -24,6 +25,7 @@ public class AllTests extends TestSuite {
         suite.addTestSuite(URLScriptTest.class);
         suite.addTestSuite(SahiScriptFormatTest.class);
         suite.addTestSuite(HttpFileResponseTest.class);
+        suite.addTestSuite(SahiScriptHTMLAdapterTest.class);
         suite.addTestSuite(UtilsTest.class);
 		return suite;
 	}
