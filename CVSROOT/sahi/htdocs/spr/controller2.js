@@ -248,19 +248,27 @@ try{
 
 function showrecord(){
 	if (top.main.location.href.indexOf('recorder.htm')!=-1) return;
-	sahiSetServerVar("controller_tab", "record");
 	hilightTab("record")
 	top.main.location.href='recorder.htm'
 }
 function showlogs(){
 	hilightTab("logs");
-	sahiSetServerVar("controller_tab", "logs");
-	top.main.location.href='/_s_/spr/logs/'
+	top.main.location.href='/_s_/spr/logs/';
+}
+function showscript(){
+	hilightTab("script");
+	top.main.location.href='/_s_/dyn/currentscript/';
+}
+function showparsed(){
+	hilightTab("parsed");
+	top.main.location.href='/_s_/dyn/currentparsedscript/'
 }
 function hilightTab(n){
 	document.getElementById("logsTab").className="dimTab";
 	document.getElementById("playbackTab").className="dimTab";
 	document.getElementById("recordTab").className="dimTab";	
+	document.getElementById("scriptTab").className="dimTab";	
+	document.getElementById("parsedTab").className="dimTab";	
 	document.getElementById(n+"Tab").className="hiTab";
 	sahiSetServerVar("controller_tab", n);
 }

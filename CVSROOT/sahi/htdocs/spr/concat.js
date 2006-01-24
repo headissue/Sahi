@@ -1496,7 +1496,7 @@ function sahiEx(){
                     if (canEval(_sahiCmds[i])){
 		                updateControlWinDisplay(_sahiCmds[i]);
                     	eval(_sahiCmds[i]);
-		                var debugInfo = ""+_sahiCmdDebugInfo[i]+" step ["+i+"]";
+		                var debugInfo = ""+_sahiCmdDebugInfo[i];
 		                sahiLogPlayBack(_sahiCmds[i], "success", debugInfo);
 		                sahiSetRetries(0); // _sahi_attempts = 0;
                     }
@@ -1510,7 +1510,7 @@ function sahiEx(){
 							window.setTimeout("try{sahiEx();}catch(ex){}", interval);
 							return;			                
 			            }else{
-	                        debugInfo = ""+_sahiCmdDebugInfo[i]+" step ["+i+"]";
+	                        debugInfo = ""+_sahiCmdDebugInfo[i];
 	                        sahiLogPlayBack(_sahiCmds[i] + ex1.messageText, "failure", debugInfo);
 	                        sahiSetRetries(0);
 	                    }
@@ -1534,7 +1534,7 @@ function sahiEx(){
                 interval = IDLE_INTERVAL;
             }
             else {
-                var debugInfo = ""+_sahiCmdDebugInfo[i]+" step ["+i+"]";
+                var debugInfo = ""+_sahiCmdDebugInfo[i];
                 sahiLogPlayBack(_sahiCmds[i], "error", debugInfo);
                 sahiStopPlaying();
             }
