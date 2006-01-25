@@ -168,19 +168,19 @@ public class ProxyProcessor implements Runnable {
 						.getParameter("file"), "UTF8");
 				session.setScript(new FileScript(
 						getScriptFileWithPath(fileName)));
-				sendWindowCloseResponse(session);
+				sendSidCookieResponse(session);
 			} else if (uri.indexOf("/setscripturl") != -1) {
 				String url = URLDecoder.decode(requestFromBrowser
 						.getParameter("url"), "UTF8");
 				session.setScript(new URLScript(url));
-				sendWindowCloseResponse(session);
+				sendSidCookieResponse(session);
 			} else if (uri.indexOf("/recordstart") != -1) {
 				// System.out.println("########### "+session.id());
 				startRecorder(requestFromBrowser, session);
-				sendWindowCloseResponse(session);
+				sendSidCookieResponse(session);
 			} else if (uri.indexOf("/recordstop") != -1) {
 				session.getRecorder().stop();
-				sendWindowCloseResponse(session);
+				sendSidCookieResponse(session);
 			} else if (uri.indexOf("/record") != -1) {
 				session.getRecorder().record(
 						requestFromBrowser.getParameter("event"),
@@ -202,7 +202,7 @@ public class ProxyProcessor implements Runnable {
 				sendResponseToBrowser(new NoCacheHttpResponse(""));
 			} else if (uri.indexOf("/winopen") != -1) {
 				session.setIsWindowOpen(true);
-				sendResponseToBrowser(new NoCacheHttpResponse(""));
+				sendSidCookieResponse(session);
 			} else if (uri.indexOf("/state") != -1) {
 				sendResponseToBrowser(proxyStateResponse(session));
 			} else if (uri.indexOf("/auto") != -1) {
@@ -231,7 +231,7 @@ public class ProxyProcessor implements Runnable {
 				session.setVariable("sahi_play", "1");
 				session.setVariable("sahiIx", requestFromBrowser
 						.getParameter("step"));
-				sendWindowCloseResponse(session);
+				sendSidCookieResponse(session);
 			} else if (uri.indexOf("/stopplay") != -1) {
 				sendResponseToBrowser(new NoCacheHttpResponse(""));
 				stopPlay(session);
@@ -307,7 +307,7 @@ public class ProxyProcessor implements Runnable {
 		}
 	}
 
-	private void sendWindowCloseResponse(Session session) throws IOException {
+	private void sendSidCookieResponse(Session session) throws IOException {
 		// HttpResponse httpResponse = new HttpFileResponse(Configuration
 		// .getHtdocsRoot()
 		// + "spr/close.htm");

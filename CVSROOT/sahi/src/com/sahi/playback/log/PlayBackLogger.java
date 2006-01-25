@@ -47,6 +47,10 @@ public class PlayBackLogger {
 				logger.log(PlayBackLogLevel.FAILURE, msg);
 			} else if ("success".equals(type)) {
 				logger.log(PlayBackLogLevel.SUCCESS, msg);
+			} else if ("start".equals(type)) {
+				logger.log(PlayBackLogLevel.START, msg);
+			} else if ("stop".equals(type)) {
+				logger.log(PlayBackLogLevel.STOP, msg);
 			} else {
 				logger.log(PlayBackLogLevel.INFO2, msg);
 			}

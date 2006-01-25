@@ -63,7 +63,7 @@ public class SahiScriptFormat implements ScriptFormat {
 
 	protected String getAccessor(String jsAccessor, String shortHand, String type) {
 		if ("".equals(shortHand)) {
-			return "_accessor(\"" + jsAccessor + "\")";
+			return jsAccessor;
 		} else {
 			if ("img".equals(type)) {
 				return "_image(" + sahiQuoteIfString(shortHand) + ")";

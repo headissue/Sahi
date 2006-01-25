@@ -1497,7 +1497,8 @@ function sahiEx(){
 		                updateControlWinDisplay(_sahiCmds[i]);
                     	eval(_sahiCmds[i]);
 		                var debugInfo = ""+_sahiCmdDebugInfo[i];
-		                sahiLogPlayBack(_sahiCmds[i], "success", debugInfo);
+		                var level = (_sahiCmds[i].indexOf("sahi_assert") == 0)?"success":"info";
+		                sahiLogPlayBack(_sahiCmds[i], level, debugInfo);
 		                sahiSetRetries(0); // _sahi_attempts = 0;
                     }
                 }catch (ex1){
@@ -1598,7 +1599,7 @@ function sahiStopRecording(){
 	sahiSetServerVar("sahi_record", 0);
 }
 function sahiLogPlayBack(msg, type, debugInfo){
-	sahiSendToServer("/_s_/dyn/log?msg=" + escape(msg) + "&type=" + type + "&debugInfo=" + escape(debugInfo));
+	sahiSendToServer("/_s_/dyn/log?msg=" + escape(msg) + "&type=" + type + "&debugInfo=" + (debugInfo?escape(debugInfo):""));
 }
 function sahiTrim(s){
     if (s==null) return s;

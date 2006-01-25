@@ -75,6 +75,7 @@ function sendRecorderSnapshot(){
 	s+=addVar("controller_el_value", document.currentForm.elValue.value);
 	s+=addVar("controller_comment", document.currentForm.comment.value);
 	s+=addVar("controller_accessor", document.currentForm.accessor.value);	
+	s+=addVar("controller_alternative", document.currentForm.alternative.value);	
 	s+=addVar("controller_debug", document.currentForm.debug.value);
 	s+=addVar("controller_waitTime", document.currentForm.waitTime.value);
 	s+=addVar("controller_result", document.currentForm.result.value);
@@ -276,6 +277,7 @@ function initRecorderTab(){
 	document.recordstartform.file.value = getRecVar("controller_recorder_file");
 	document.currentForm.elValue.value = getRecVar("controller_el_value");
 	document.currentForm.accessor.value = getRecVar("controller_accessor");	
+	document.currentForm.alternative.value = getRecVar("controller_alternative");		
 	document.currentForm.comment.value = getRecVar("controller_comment");	
 	document.currentForm.debug.value = getRecVar("controller_debug");
 	document.currentForm.waitTime.value = getRecVar("controller_waitTime");
@@ -297,11 +299,12 @@ function displayInfo(info){
 	if (f){	
 		f.elValue.value = info.value ? info.value : "";
 		f.accessor.value = getAccessor1(info);
+		f.alternative.value = info.accessor;
 	}
 }
 function getAccessor1(info){
     if ("" == info.shortHand) {
-        return "_accessor(\"" + info.accessor + "\")";
+        return info.accessor;
     } else {
         if ("image" == info.type) {
             return "_imageSubmitButton(" + sahiQuoteIfString(info.shortHand) + ")";

@@ -2,6 +2,8 @@ package com.sahi.config;
 
 import com.sahi.record.ScriptFormat;
 import com.sahi.record.SahiScriptFormat;
+import com.sahi.util.Utils;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.File;
@@ -109,7 +111,18 @@ public class Configuration {
 	public static String getHtdocsRoot() {
 		return HTDOCS_ROOT;
 	}
+	
+	public static String getPlaybackLogCSSFileName(boolean addHtdocsRoot) {
+		final String path = "/spr/css/playback_log_format.css";
+		return addHtdocsRoot ? Utils.concatPaths(getHtdocsRoot(), path) : path;
+	}
 
+
+	public static String getConsolidatedLogCSSFileName(boolean addHtdocsRoot) {
+		final String path = "/spr/css/consolidated_log_format.css";
+		return addHtdocsRoot ? Utils.concatPaths(getHtdocsRoot(), path) : path;
+	}
+	
 	public static boolean isExternalProxyEnabled() {
 		return "true".equalsIgnoreCase(properties
 				.getProperty("ext.proxy.enable"));
@@ -139,4 +152,5 @@ public class Configuration {
 			return hotkey;
 		return "ALT";
 	}
+
 }

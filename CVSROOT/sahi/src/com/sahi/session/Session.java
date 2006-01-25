@@ -84,14 +84,14 @@ public class Session {
 	}
 
 	public void stopPlayBack() {
-		playBackLogger.log("Stopping script", "info", script.getScriptName());
+		playBackLogger.log("Stopping script", "stop", script.getScriptName());
 		playBackLogger.stop();
 		playBackLogger = null;
 	}
 
 	public void startPlayBack() {
 		createPlayBackLogger();
-		playBackLogger.log("Starting script", "info", script.getScriptName());
+		playBackLogger.log("Starting script", "start", script.getScriptName());
 	}
 
 	private void createPlayBackLogger() {

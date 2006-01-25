@@ -61,15 +61,19 @@ public class LogFileConsolidator {
 
 	public String getHTML() {
 		StringBuffer sb = new StringBuffer();
-		sb.append("<table width='40%'>");
-		sb.append("<tr><td>Test</td><td>Total Steps</td><td>Failures</td>" + "<td>Errors</td><td>Success Rate</td></tr>");
+		sb.append("<style>\r\n")
+		.append(new String(Utils.readFile(Configuration.getConsolidatedLogCSSFileName(true))))
+		.append("</style>\r\n")
+		.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"/_s_"+Configuration.getConsolidatedLogCSSFileName(false)+"\">\r\n");
+		sb.append("<table>");
+		sb.append("<tr><td>Test</td><td>Total Steps</td><td>Failures</td>" + "<td>Errors</td><td>Success Rate</td></tr>\r\n");
 		Iterator iterator = testResults.iterator();
 		while (iterator.hasNext()) {
 			TestResult testResult = (TestResult) iterator.next();
 			int failureCount = testResult.failures.size();
 			int errorCount = testResult.errors.size();
 			boolean isFailed = (failureCount != 0 || errorCount != 0);
-			sb.append("<tr " + (isFailed?"style='background-color:red;color:white'":"") + " ><td>");
+			sb.append("<tr class=\"" + (isFailed?"FAILURE":"SUCCESS") + "\" ><td>");
 			sb.append(getTestLink(testResult, isFailed));
 			sb.append("</td><td>");
 			sb.append(testResult.total);
@@ -83,7 +87,7 @@ public class LogFileConsolidator {
 				success = ((100 - (testResult.errors.size() + testResult.failures.size()) * 100 / testResult.total));
 			}
 			sb.append(success);
-			sb.append(" % </td></tr>");
+			sb.append(" % </td></tr>\r\n");
 		}
 		sb.append("</table>");
 		return sb.toString();
@@ -162,6 +166,7 @@ public class LogFileConsolidator {
 		private int total = 0;
 		private ArrayList errors = new ArrayList();
 		private ArrayList failures = new ArrayList();
+		final PlayBackLogFormatter playBackLogFormatter = new PlayBackLogFormatter();
 
 		TestResult(String logFileFullPath) {
 			this.logFileFullPath = logFileFullPath;
@@ -174,13 +179,13 @@ public class LogFileConsolidator {
 			StringTokenizer tokenizer = new StringTokenizer(contents, "\n");
 			while (tokenizer.hasMoreTokens()) {
 				String line = tokenizer.nextToken().trim();
-				if (line.startsWith(PlayBackLogLevel.ERROR.getName())) {
+				if (line.startsWith(playBackLogFormatter.getErrorIndicator())) {
 					errors.add(line);
 					total++;
-				} else if (line.startsWith(PlayBackLogLevel.FAILURE.getName())) {
+				} else if (line.startsWith(playBackLogFormatter.getFailureIndicator())) {
 					failures.add(line);
 					total++;
-				} else if (line.startsWith(PlayBackLogLevel.SUCCESS.getName())) {
+				} else if (line.startsWith(playBackLogFormatter.getSuccessIndicator())) {
 					total++;
 				}
 			}

@@ -1,0 +1,7 @@
+div{border:1px solid white;border-bottom:1px broken grey;padding:1px}
+a{text-decoration:none;color:white;}
+a.INFO{color:black}
+a.START,a.STOP{color:black;font-weight:bold;}
+div.INFO{background-color:white}
+div.SUCCESS{background-color:green;color:white}
+div.FAILURE,div.ERROR{background-color:red;color:white}

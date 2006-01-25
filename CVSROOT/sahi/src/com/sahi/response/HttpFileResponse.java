@@ -40,7 +40,7 @@ public class HttpFileResponse extends HttpResponse {
     private void setHeaders() {
         setFirstLine("HTTP/1.1 200 OK");
         setHeader("Content-Type", getContentType(fileName));
-        setHeader("Expires", new Date(System.currentTimeMillis()+3*60*1000).toString());        
+//        setHeader("Expires", new Date(System.currentTimeMillis()+3*60*1000).toString());        
         setHeader("Connection", "close");
         setHeader("Content-Length", "" + data().length);
         setRawHeaders(getRebuiltHeaderBytes());
