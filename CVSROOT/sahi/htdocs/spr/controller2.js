@@ -252,24 +252,24 @@ function showrecord(){
 	hilightTab("record")
 	top.main.location.href='recorder.htm'
 }
-function showlogs(){
-	hilightTab("logs");
-	top.main.location.href='/_s_/spr/logs/';
-}
-function showscript(){
-	hilightTab("script");
-	top.main.location.href='/_s_/dyn/currentscript/';
-}
-function showparsed(){
-	hilightTab("parsed");
-	top.main.location.href='/_s_/dyn/currentparsedscript/'
-}
+//function showlogs(){
+//	hilightTab("logs");
+//	top.main.location.href='/_s_/spr/logs/';
+//}
+//function showscript(){
+//	hilightTab("script");
+//	top.main.location.href='/_s_/dyn/currentscript/';
+//}
+//function showparsed(){
+//	hilightTab("parsed");
+//	top.main.location.href='/_s_/dyn/currentparsedscript/'
+//}
 function hilightTab(n){
-	document.getElementById("logsTab").className="dimTab";
+//	document.getElementById("logsTab").className="dimTab";
 	document.getElementById("playbackTab").className="dimTab";
 	document.getElementById("recordTab").className="dimTab";	
-	document.getElementById("scriptTab").className="dimTab";	
-	document.getElementById("parsedTab").className="dimTab";	
+//	document.getElementById("scriptTab").className="dimTab";	
+//	document.getElementById("parsedTab").className="dimTab";	
 	document.getElementById(n+"Tab").className="hiTab";
 	sahiSetServerVar("controller_tab", n);
 }
@@ -373,5 +373,3 @@ function addSahi(s){
 function blankIfNull(s){
 	return (s==null || s=="null") ? "" : s;
 }
-
-

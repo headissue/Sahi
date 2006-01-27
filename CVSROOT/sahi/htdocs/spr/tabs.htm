@@ -20,6 +20,10 @@
 	font-size: 11pt;
 	cursor:pointer;
 }
+.noTab{
+	border-bottom: solid white 1px;
+	font-color: white;
+}
 .recPane{
 	display:block;
 	background-color:white;
@@ -41,17 +45,11 @@
 
 </style>
 </head>
-<body bgcolor="lightgrey" onload="doOnTabsLoad()" onbeforeunload="doOnTabsUnLoad()">
+<body bgcolor="lightgrey" onload="doOnTabsLoad()" onbeforeunload="doOnTabsUnLoad()" style="margin-top:10px">
 <span onclick="showrecord()" id="recordTab" class="dimTab">
 &nbsp;Record&nbsp;
 </span><span onclick="showplayback()" id="playbackTab" class="hiTab">
 &nbsp;Playback&nbsp;
-</span><span onclick="showscript()" id="scriptTab" class="dimTab">
-&nbsp;Script&nbsp;
-</span><span onclick="showparsed()" id="parsedTab" class="dimTab">
-&nbsp;Parsed Script&nbsp;
-</span><span onclick="showlogs()" id="logsTab" class="dimTab">
-&nbsp;Logs&nbsp;
 </span>
 </body>
 </html>
