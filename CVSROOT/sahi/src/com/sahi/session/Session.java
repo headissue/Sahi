@@ -114,4 +114,8 @@ public class Session {
 	public String getScriptLogFile() {
 		return scriptLogFile;
 	}
+
+	public boolean isPlayingBack() {
+		return playBackLogger != null;
+	}
 }

@@ -29,6 +29,7 @@ import com.sahi.response.NoCacheHttpResponse;
 import com.sahi.response.SimpleHttpResponse;
 import com.sahi.session.Session;
 import com.sahi.test.SahiTestSuite;
+import com.sahi.util.Utils;
 
 /**
  * User: nraman Date: May 13, 2005 Time: 7:06:11 PM To
@@ -79,10 +80,12 @@ public class ProxyProcessor implements Runnable {
 									.getPort()) {
 						processLocally(uri, requestFromBrowser);
 					} else if (uri.indexOf("favicon.ico") != -1) {
-						sendResponseToBrowser(new HttpFileResponse(Configuration.getHtdocsRoot()+"spr/favicon.ico"));
-					}else {
+						sendResponseToBrowser(new HttpFileResponse(
+								Configuration.getHtdocsRoot()
+										+ "spr/favicon.ico"));
+					} else {
 						processAsProxy(requestFromBrowser);
-					} 
+					}
 				}
 			}
 		} catch (Exception e) {
@@ -136,8 +139,10 @@ public class ProxyProcessor implements Runnable {
 		Socket socketToHost = null;
 		try {
 			socketToHost = getSocketToHost(requestFromBrowser);
-		}catch (UnknownHostException e) {
-			sendResponseToBrowser(new NoCacheHttpResponse(404, "UnknownHost", "<html><h2>Host "+e.getMessage()+" Not Found</h2></html>"));
+		} catch (UnknownHostException e) {
+			sendResponseToBrowser(new NoCacheHttpResponse(404, "UnknownHost",
+					"<html><h2>Host " + e.getMessage()
+							+ " Not Found</h2></html>"));
 			return;
 		}
 		socketToHost.setSoTimeout(120000);
@@ -269,7 +274,7 @@ public class ProxyProcessor implements Runnable {
 				} catch (Exception e) {
 				}
 				sendResponseToBrowser(new SimpleHttpResponse(""));
-			} else if (uri.indexOf("currentscript") != -1) {
+			} else if (uri.indexOf("/currentscript") != -1) {
 				if (session.getScript() != null) {
 					sendResponseToBrowser(new SimpleHttpResponse("<pre>"
 							+ SahiScriptHTMLAdapter.createHTML(session
@@ -278,7 +283,11 @@ public class ProxyProcessor implements Runnable {
 					sendResponseToBrowser(new SimpleHttpResponse(
 							"No Script has been set for playback."));
 				}
-			} else if (uri.indexOf("currentparsedscript") != -1) {
+			} else if (uri.indexOf("/currentlog") != -1) {
+				if (session.getScriptLogFile() != null) {
+					sendLogResponse(appendLogsRoot(session.getScriptLogFile()));
+				}
+			} else if (uri.indexOf("/currentparsedscript") != -1) {
 				if (session.getScript() != null) {
 					sendResponseToBrowser(new SimpleHttpResponse("<pre>"
 							+ SahiScriptHTMLAdapter.createHTML(session
@@ -293,11 +302,7 @@ public class ProxyProcessor implements Runnable {
 			String fileName = scriptFileNamefromURI(requestFromBrowser.uri());
 			sendResponseToBrowser(new HttpFileResponse(fileName));
 		} else if (uri.indexOf("/logs/") != -1 || uri.endsWith("/logs")) {
-			String fileName = logFileNamefromURI(requestFromBrowser.uri());
-			if ("".equals(fileName))
-				sendResponseToBrowser(new NoCacheHttpResponse(getLogsList()));
-			else
-				sendResponseToBrowser(new HttpFileResponse(fileName));
+			sendLogResponse(logFileNamefromURI(requestFromBrowser.uri()));
 		} else if (uri.indexOf("/spr/") != -1) {
 			String fileName = fileNamefromURI(requestFromBrowser.uri());
 			sendResponseToBrowser(new HttpFileResponse(fileName));
@@ -305,6 +310,13 @@ public class ProxyProcessor implements Runnable {
 			sendResponseToBrowser(new SimpleHttpResponse(
 					"<html><h2>You have reached the Sahi proxy.</h2></html>"));
 		}
+	}
+
+	private void sendLogResponse(String fileName) throws IOException {
+		if ("".equals(fileName))
+			sendResponseToBrowser(new NoCacheHttpResponse(getLogsList()));
+		else
+			sendResponseToBrowser(new HttpFileResponse(fileName));
 	}
 
 	private void sendSidCookieResponse(Session session) throws IOException {
@@ -424,17 +436,16 @@ public class ProxyProcessor implements Runnable {
 		String fileName = uri.substring(uri.indexOf("/logs/") + 6);
 		if ("".equals(fileName))
 			return "";
-		StringBuffer sb = new StringBuffer();
-		sb.append(Configuration.getPlayBackLogsRoot());
-		sb.append(fileName);
-		return sb.toString();
+		return appendLogsRoot(fileName);
+	}
+
+	private String appendLogsRoot(String fileName) {
+		return Utils.concatPaths(Configuration.getPlayBackLogsRoot(), fileName);
 	}
 
 	private String fileNamefromURI(String uri) {
-		StringBuffer sb = new StringBuffer();
-		sb.append(Configuration.getHtdocsRoot());
-		sb.append(uri.substring(uri.indexOf("_s_/") + 4));
-		return sb.toString();
+		return Utils.concatPaths(Configuration.getHtdocsRoot(), uri
+				.substring(uri.indexOf("_s_/") + 4));
 	}
 
 	private String getScriptFileWithPath(String fileName) {

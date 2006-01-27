@@ -35,6 +35,10 @@ public class PlayBackLogFormatter extends Formatter {
 	
 	public String getErrorIndicator(){
 		return "<div class=\""+PlayBackLogLevel.ERROR.getName();
+	}	
+	
+	public String getInfoIndicator(){
+		return "<div class=\""+PlayBackLogLevel.INFO.getName();
 	}
 
 	String createLink(String s, String level) {

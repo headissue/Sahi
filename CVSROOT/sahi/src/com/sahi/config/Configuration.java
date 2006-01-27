@@ -99,7 +99,7 @@ public class Configuration {
 	}
 
 	public static String getPlayBackLogsRoot() {
-		return getLogsRoot() + PLAYBACK_LOG_ROOT;
+		return Utils.concatPaths(getLogsRoot(), PLAYBACK_LOG_ROOT);
 	}
 
 	private static String addEndSlash(String dir) {

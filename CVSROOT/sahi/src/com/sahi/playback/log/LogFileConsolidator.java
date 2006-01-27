@@ -61,19 +61,24 @@ public class LogFileConsolidator {
 
 	public String getHTML() {
 		StringBuffer sb = new StringBuffer();
-		sb.append("<style>\r\n")
-		.append(new String(Utils.readFile(Configuration.getConsolidatedLogCSSFileName(true))))
-		.append("</style>\r\n")
-		.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"/_s_"+Configuration.getConsolidatedLogCSSFileName(false)+"\">\r\n");
+		sb.append("<style>\r\n").append(
+				new String(Utils.readFile(Configuration
+						.getConsolidatedLogCSSFileName(true)))).append(
+				"</style>\r\n").append(
+				"<link rel=\"stylesheet\" type=\"text/css\" href=\"/_s_"
+						+ Configuration.getConsolidatedLogCSSFileName(false)
+						+ "\">\r\n");
 		sb.append("<table>");
-		sb.append("<tr><td>Test</td><td>Total Steps</td><td>Failures</td>" + "<td>Errors</td><td>Success Rate</td></tr>\r\n");
+		sb.append("<tr><td>Test</td><td>Total Steps</td><td>Failures</td>"
+				+ "<td>Errors</td><td>Success Rate</td></tr>\r\n");
 		Iterator iterator = testResults.iterator();
 		while (iterator.hasNext()) {
 			TestResult testResult = (TestResult) iterator.next();
 			int failureCount = testResult.failures.size();
 			int errorCount = testResult.errors.size();
 			boolean isFailed = (failureCount != 0 || errorCount != 0);
-			sb.append("<tr class=\"" + (isFailed?"FAILURE":"SUCCESS") + "\" ><td>");
+			sb.append("<tr class=\"" + (isFailed ? "FAILURE" : "SUCCESS")
+					+ "\" ><td>");
 			sb.append(getTestLink(testResult, isFailed));
 			sb.append("</td><td>");
 			sb.append(testResult.total);
@@ -84,7 +89,9 @@ public class LogFileConsolidator {
 			sb.append("</td><td>");
 			int success = 0;
 			if (testResult.total != 0) {
-				success = ((100 - (testResult.errors.size() + testResult.failures.size()) * 100 / testResult.total));
+				success = ((100 - (testResult.errors.size() + testResult.failures
+						.size())
+						* 100 / testResult.total));
 			}
 			sb.append(success);
 			sb.append(" % </td></tr>\r\n");
@@ -94,7 +101,9 @@ public class LogFileConsolidator {
 	}
 
 	private String getTestLink(TestResult testResult, boolean isFailed) {
-		return "<a "+ (isFailed?"style='color:white'":"") +" href='" + testResult.logFile + "'>" + getTestFileName(testResult.logFile) + "</a>";
+		return "<a " + (isFailed ? "style='color:white'" : "") + " href='"
+				+ testResult.logFile + "'>"
+				+ getTestFileName(testResult.logFile) + "</a>";
 	}
 
 	private String getTestFileName(String logFile) {
@@ -107,7 +116,8 @@ public class LogFileConsolidator {
 	}
 
 	public static String getLogsList() {
-		File[] fileList = new File(Configuration.getPlayBackLogsRoot()).listFiles();
+		File[] fileList = new File(Configuration.getPlayBackLogsRoot())
+				.listFiles();
 		Comparator comparator = new LastModifiedComparator();
 		java.util.Arrays.sort(fileList, comparator);
 		StringBuffer sb = new StringBuffer();
@@ -141,7 +151,8 @@ public class LogFileConsolidator {
 			if (logFile.isDirectory()) {
 				summaryFile = new File(logFile, "index.htm");
 			} else {
-				summaryFile = new File(stripExtension(withPath) + "_summary.htm");
+				summaryFile = new File(stripExtension(withPath)
+						+ "_summary.htm");
 			}
 			summaryFile.createNewFile();
 			FileOutputStream out = new FileOutputStream(summaryFile);
@@ -182,10 +193,14 @@ public class LogFileConsolidator {
 				if (line.startsWith(playBackLogFormatter.getErrorIndicator())) {
 					errors.add(line);
 					total++;
-				} else if (line.startsWith(playBackLogFormatter.getFailureIndicator())) {
+				} else if (line.startsWith(playBackLogFormatter
+						.getFailureIndicator())) {
 					failures.add(line);
 					total++;
-				} else if (line.startsWith(playBackLogFormatter.getSuccessIndicator())) {
+				} else if (line.startsWith(playBackLogFormatter
+						.getSuccessIndicator())
+						|| line.startsWith(playBackLogFormatter
+								.getInfoIndicator())) {
 					total++;
 				}
 			}
@@ -195,7 +210,8 @@ public class LogFileConsolidator {
 
 class LastModifiedComparator implements Comparator {
 	public int compare(Object file1, Object file2) {
-		long diff = (((File) file1).lastModified() - ((File) file2).lastModified());
+		long diff = (((File) file1).lastModified() - ((File) file2)
+				.lastModified());
 		return diff == 0 ? 0 : diff < 0 ? 1 : -1;
 	}
 }
