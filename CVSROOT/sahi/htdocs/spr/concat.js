@@ -255,13 +255,16 @@ function sahiSimulateMouseEvent(el, type){
 var sahiPointTimer;
 function sahi_highlight(el){
 	var d =	sahiFindElementById(top, "sahi_div");
-	d.innerHTML = "<span style='color:red;font-family:verdana;font-size:20px;'>&gt;</span>";
+	d.innerHTML = "<span style='color:red;font-family:verdana;font-size:20px;'>&raquo;</span>";
 	d.style.position = "absolute";
-	d.style.left = (findPosX(el)-16)+"px";
-	d.style.top = findPosY(el)-8+"px";
+	var x = findPosX(el)-10;
+	var y = findPosY(el)-8;
+	d.style.left = x+"px";
+	d.style.top = y+"px";
 	d.style.zIndex = 10;
 	d.style.display = "block";	
 	sahiPointTimer = window.setTimeout("sahiFade()", 2000);
+	window.scrollTo(x, y);	
 }
 function sahiFade(){
 	window.clearTimeout(sahiPointTimer);
@@ -1042,11 +1045,26 @@ function sahiOnEv(e){
 		if (type == "text" || type == "textarea" || type == "password" 
 		|| type == "select-one" || type == "select-multiple") return true;
 	}
-	var qs = getSahiPopUpQS()+sahiGetAccessorInfoQS(sahiGetAccessorInfo(targ));
+	var info = sahiGetAccessorInfo(targ);
+	var qs = getSahiPopUpQS()+sahiGetAccessorInfoQS(info);
 	if (sahiHasEventBeenRecorded(qs)) return true; //IE
+	showInController(info);
     sahiSendToServer('/_s_/dyn/record?'+qs);
     e.handled = true; //FF
     return true;
+}
+function showInController(info){
+	try{
+		var c = getSahiWinHandle();
+		if (c) {
+			var d = c.top.main.document.currentForm.debug;
+			d.value=getScript(info);
+//			d.value+="\n"+getScript(info);
+//			d.scrollTop = d.scrollHeight;			
+		}
+	}catch(ex2){
+		throw ex2;
+	}
 }
 function sahiHasEventBeenRecorded(qs){
 	var now = (new Date()).getTime();
@@ -1054,6 +1072,12 @@ function sahiHasEventBeenRecorded(qs){
 	lastQs = qs;
 	lastTime = now;
 	return false;
+}
+function getPopupName(){
+	if (window.top.opener != null && window.top.opener != window.top) {
+		return top.name;
+	}
+	return "";
 }
 function getSahiPopUpQS(){
 	if (window.top.opener != null && window.top.opener != window.top) {
@@ -1091,11 +1115,23 @@ function findAllAccessors(){
 }
 */
 
+function addWait(time){
+    if (!sahiIsRecording()) return;
+    var val = parseInt(time);
+    if ((""+val) == "NaN" || val < 200) throw new Error();
+    showInController(new AccessorInfo("", "", "", "wait", time));
+//    sahiSendToServer('/_s_/dyn/record?event=wait&value='+val);
+}
+function mark(s){
+    showInController(new AccessorInfo("", "", "", "mark", s));
+}
 function doAssert(e){
     if (!sahiIsRecording()) return;
     try{
-        if (!top._lastAccessedInfo) top._lastAccessedInfo = sahiGetAccessorInfo(e);
-        sahiSendToServer('/_s_/dyn/record?'+getSahiPopUpQS()+sahiGetAccessorInfoQS(top._lastAccessedInfo, true));
+        if (!top._lastAccessedInfo) return;
+        top._lastAccessedInfo.event = "assert";
+        showInController(top._lastAccessedInfo);
+//      sahiSendToServer('/_s_/dyn/record?'+getSahiPopUpQS()+sahiGetAccessorInfoQS(top._lastAccessedInfo, true));
     }catch(ex){sahiHandleException(ex);}
 }
 
@@ -1391,12 +1427,34 @@ function sahiMouseOver(e){
       if (controlWin){
         controlWin.main.displayStepNum();
         var acc = sahiGetAccessorInfo(sahiGetKnownTags(getTarget(e)));
-        controlWin.main.displayInfo(acc);
+        try{
+        	controlWin.main.displayInfo(acc);
+        }catch(ex2){}
         top._lastAccessedInfo = acc ? acc : top._lastAccessedInfo;
       }
     }catch(ex){}
 }
 
+function getAccessor1(info){
+    if ("" == info.shortHand) {
+        return info.accessor;
+    } else {
+        if ("image" == info.type) {
+            return "_imageSubmitButton(" + sahiQuoteIfString(info.shortHand) + ")";
+        } else if ("img" == info.type) {
+            return "_image(" + sahiQuoteIfString(info.shortHand) + ")";
+        } else if ("link" == info.type) {
+            return "_link(" + sahiQuoteIfString(info.shortHand) + ")";
+        } else if ("select-one" == info.type || "select-multiple" == info.type) {
+            return "_select(" + sahiQuoteIfString(info.shortHand) + ")";
+        } else if ("text" == info.type) {
+            return "_textbox(" + sahiQuoteIfString(info.shortHand) + ")";
+        } else if ("cell" == info.type) {
+            return "_cell(" + info.shortHand + ")";
+        }
+        return "_" + info.type + "(" + sahiQuoteIfString(info.shortHand) + ")";
+    }
+}
 
 var _key;
 var KEY_SHIFT = 16;
@@ -1759,4 +1817,51 @@ function sahiIsFirstExecutableFrame(){
 		}
 	}
 	return false;
+}
+function getScript(info) {
+	var accessor = getAccessor1(info);
+	var ev = info.event;
+	var value = info.value;
+	var type = info.type
+	var popup = getPopupName();
+
+	cmd = null;
+	if (value == null)
+		value = "";
+	if (ev == "load") {
+		cmd = "_wait(2000);";
+	} else if (ev == "click") {
+		cmd = "_click(" + accessor + ");";
+	} else if (ev == "clicklink") {
+		cmd = "_click(" + accessor + "," + quoted(value) +  ");";
+	} else if (ev == "setvalue") {
+		cmd = "_setValue(" + accessor + ", " + quoted(value) +  ");";
+	} else if (ev == "setselected") {
+		cmd = "_setSelected(" + accessor + ", " + quoted(value) +  ");";
+	} else if (ev == "assert") {
+		cmd = "_assertNotNull(" + accessor + ");\r\n";
+		if (type == "cell") {
+			cmd += "_assertEqual(" + quoted(value) +  ", _getCellText(" + accessor + "));";
+		} else if (type == "select-one" || type == "select-multiple") {
+			cmd += "_assertEqual(" + quoted(value) +  ", _getSelectedText(" + accessor + "));";
+		} else if (type == "text" || type == "textarea" || type == "password") {
+			cmd += "_assertEqual(" + quoted(value) +  ", " + accessor + ".value);";
+		} else if (type == "checkbox" || type == "radio") {
+			cmd += "_assert" + ("true".equals(value) ? "":"Not" ) +"True("+accessor + ".checked);";
+		}
+	} else if (ev == "wait") {
+		cmd = "_wait(" + value + ");";
+	} else if (ev == "mark") {
+		cmd = "//MARK: " + value;
+	} else if (ev == "append") {
+		cmd = value;
+	}
+	if (cmd != null && popup != null && popup != "") {
+		cmd = "_popup(\"" + popup + "\")." + cmd;
+	}
+	return cmd;
+}
+function sahiQuoteIfString(shortHand) {
+	if ((""+shortHand).match(/^[0-9]+$/)) return shortHand;
+	return quoted(shortHand);
 }

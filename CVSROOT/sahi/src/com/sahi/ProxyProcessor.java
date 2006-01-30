@@ -320,11 +320,12 @@ public class ProxyProcessor implements Runnable {
 	}
 
 	private void sendSidCookieResponse(Session session) throws IOException {
-		// HttpResponse httpResponse = new HttpFileResponse(Configuration
-		// .getHtdocsRoot()
-		// + "spr/close.htm");
-		HttpResponse httpResponse = new NoCacheHttpResponse("");
-		sendResponseToBrowser(addSahisidCookie(httpResponse, session));
+		HttpResponse httpResponse = new HttpFileResponse(Configuration
+				.getHtdocsRoot()
+				+ "spr/close.htm");
+		// HttpResponse httpResponse = new NoCacheHttpResponse("");
+		sendResponseToBrowser(new NoCacheHttpResponse(addSahisidCookie(
+				httpResponse, session)));
 	}
 
 	private HttpResponse addSahisidCookie(HttpResponse httpResponse,

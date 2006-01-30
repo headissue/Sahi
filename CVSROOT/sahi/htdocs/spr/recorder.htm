@@ -43,76 +43,78 @@
 	border-bottom: solid gray 2px;
 	margin:2px solid gray;
 }
-
+a,body,input,td{
+	font-size:12;
+	font-family:verdana;
+}
+.button{
+	width:50px;
+}
+form{
+	margin-bottom:0;
+}
+body{
+	margin:8px;
+	background-color:lightgrey; 
+}
 </style>
 </head>
-<body bgcolor="lightgrey" onload="doOnRecLoad()" onbeforeunload="doOnRecUnLoad()">
-<div id="rec" class="recPane" >
-
-	<table>
-	<tr><td>
-	Record Script:
-	</td></tr>
-	<tr><td bgcolor="">
-	<table><tr><td>
+<body onload="doOnRecLoad()" onbeforeunload="doOnRecUnLoad()">
+<div id="rec" class="recPane" ><br>
+	<table bgcolor=""><tr><td>
 	<form name="recordstartform" action="http://www.sahidomain.com/_s_/dyn/recordstart" target="channel" onsubmit="return onRecordStartFormSubmit(this)">
-	Name: <input type="text" name="file" value="">
+	Script Name: <input type="text" name="file" value="">
 	<input type="submit" value="Record">
-	<input type="hidden" name="sahisid">
-	</form>
+	<input type="hidden" name="rand">
+	<input type="hidden" name="sahisid"></form>
 	</td><td>
 	<form name="recordstopform" action="http://www.sahidomain.com/_s_/dyn/recordstop" target="channel" onsubmit="o(this);stopRec()">
 	<input type="submit" value="Stop">
+	<input type="hidden" name="rand">
 	<input type="hidden" name="sahisid">
-	<!--
-	<input type="checkbox" checked onclick="recordAll()">Record All
-	-->
 	</form>
 	</td>
 	</tr>
 	</table>
-	</td>
-	</table>
-
-
-
+<hr>
 <table>
 <tr><td>
-<hr>
-Accessor:
+
 </td></tr>
 <tr><td bgcolor="">
 <form name="currentForm">
 <table>
 <tr><td>
-Accessor: </td><td><input name="accessor" value="" size="41">&nbsp;<input type="button" value=" Click " onclick="demoClick()"><br>
+Accessor: </td><td><input name="accessor" value="" size="45">
+</td><td>
+<input type="button" class="button" value=" Click " onclick="demoClick()">
 </td></tr>
 <tr><td>
-Alternative: </td><td><input name="alternative" value="" size="50"><br>
+Alternative: </td><td><input name="alternative" value="" size="45">
+</td><td>
+<input type="button" class="button" value=" Hilight " onclick="demoHighlight()">
 </td></tr>
 <tr><td>
-Value: </td><td><input name="elValue" value="" size="43">&nbsp;<input type="button" value=" Set " onclick="demoSetValue()"><br>
+Value: </td><td><input name="elValue" value="" size="45">
+</td><td>
+<input type="button" class="button" value=" Set " onclick="demoSetValue()">
 </td></tr>
 </table>
 <br>
-<input type="button" value="Add Assertions" onclick="top.opener.doAssert()"> 
-<input type="button" value="Add Wait" onclick="addWait()">
+<input type="button" class="button" value="Assert" onclick="top.opener.doAssert()"> 
+<input type="button" class="button" value="Wait" onclick="addWait()">
 <input type="input" name="waitTime" value="3000" size="6"> ms 
-<input type="checkbox" name="preview"> Preview
-<br>
-<input type="button" value="Mark" onclick="mark()"> with comment : 
+
+<input type="button" value="Comment" onclick="mark()"> 
 <input type="input" name="comment" value="" size="20">
 <br><hr>Evaluate expression:
-<textarea name="debug" rows="4" cols="50" style="white-space:normal"></textarea>
-<input type="button" onclick="evaluateExpr()" value="Test --> "><input type="text" name="result" value="">
-&nbsp;&nbsp;<input type="button" onclick="append()" value="Append to Recording">
+<textarea name="debug" rows="10" cols="50" style="white-space:normal"></textarea>
+<input type="button" onclick="evaluateExpr()" value="Test --> "><input type="text" size="24" name="result" value="">
+&nbsp;&nbsp;&nbsp;&nbsp;<input type="button" onclick="append()" value="Append to Script">
 </form>
 </td></tr>
 
 </table>
-</div>
-<div style="display:none">
-<iframe height=0 width=0 name="channel2"></iframe>
 </div>
 </body>
 </html>

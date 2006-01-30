@@ -1,5 +1,6 @@
 function o(f){
 	window.open("", "channel", "height=100px,width=100px");
+	f.rand.value=new Date();
 	f.sahisid.value = sahiReadCookie("sahisid");
 }
 function play(){
@@ -333,9 +334,7 @@ function sahiQuoteIfString(s){
 function addWait(){
     if (!sahiIsRecording()) return;
     try{
-        var val = parseInt(document.currentForm.waitTime.value);
-        if ((""+val) == "NaN" || val < 200) throw new Error();
-        sahiSendToServer('/_s_/dyn/record?event=wait&value='+val);
+    	top.opener.addWait(document.currentForm.waitTime.value);
     }catch(ex){
     	alert("Please enter the number of milliseconds to wait (should be >= 200)");
     	document.currentForm.waitTime.value = 3000;
@@ -343,7 +342,8 @@ function addWait(){
 }
 
 function mark(){
-   sahiSendToServer('/_s_/dyn/record?event=mark&value='+escape(document.currentForm.comment.value));
+	top.opener.mark(document.currentForm.comment.value);
+//   sahiSendToServer('/_s_/dyn/record?event=mark&value='+escape(document.currentForm.comment.value));
 }
 
 function evaluateExpr(){
@@ -365,6 +365,11 @@ function demoClick(){
 	document.currentForm.debug.value = "_click("+document.currentForm.accessor.value+");";
 	evaluateExpr();
 }
+function demoHighlight(){
+	document.currentForm.debug.value = "_highlight("+document.currentForm.accessor.value+");";
+	evaluateExpr();
+}
+
 function demoSetValue(){
 	document.currentForm.debug.value = "_setValue("+document.currentForm.accessor.value+", \""+document.currentForm.elValue.value+"\");";
 	evaluateExpr();

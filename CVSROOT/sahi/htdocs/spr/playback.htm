@@ -43,10 +43,23 @@
 	border-bottom: solid gray 2px;
 	margin:2px solid gray;
 }
-
+a,body,input,td{
+	font-size:12;
+	font-family:verdana;
+}
+.button{
+	width:50px;
+}
+form{
+	margin-bottom:0;
+}
+body{
+	margin:8px;
+	background-color:lightgrey; 
+}
 </style>
 </head>
-<body bgcolor="lightgrey" onload="doOnPlaybackLoad()" onbeforeunload="doOnPlaybackUnLoad()">
+<body onload="doOnPlaybackLoad()" onbeforeunload="doOnPlaybackUnLoad()">
 <div id="playback" class="playbackPane">
 <table>
 <tr><td>
@@ -60,6 +73,7 @@
 	<select name="file">
 	</select>
 	<input type="hidden" name="sahisid">
+	<input type="hidden" name="rand">
 	<input type="submit" value="Set">
 	</form>
 	</td></tr>
@@ -75,13 +89,13 @@
 	<form name="scripturlform" action="http://www.sahidomain.com/_s_/dyn/setscripturl" method="get" target="channel" onsubmit="o(this);resetStep()">
 	<input type="text" name="url">
 	<input type="hidden" name="sahisid">
+	<input type="hidden" name="rand">
 	<input type="submit" value="Set">
 	</form>
 	</td></tr>
 	</table>
 	
 </td></tr>
-<!--tr><td colspan="2"><a href="file:///C|/my/sahi/scripts/sahi_demo.sah" target="_blank">View script</a></td></tr-->
 </table>
 	<hr>
 
@@ -93,6 +107,7 @@
 	<form name="playform" action="http://www.sahidomain.com/_s_/dyn/startplay"  onsubmit="o(this);play()" target="channel">
 	<!--input type="text" name="starturl" value=""-->
 	<input type="submit" value="Play">
+	<input type="hidden" name="rand">
 	<input type="hidden" name="sahisid">
 	 from step: <input type="text" size="2" name="step" value="0"><input type="button" value="Stop" onclick="stopPlay()">
 	[<a href="#" onclick="resetStep()">Reset</a>]<!--input type="button" value="Step" onclick="stepWisePlay()"-->
@@ -104,21 +119,20 @@
 	</td></tr>
 	</table>
 <hr>
-	<form name="logForm">
 	<table>
 	<tr><td bgcolor="">
+	<form name="logForm">
 	Statements:
 	<br>
-	<textarea name="logs" cols="50" rows="9"></textarea>
+	<textarea name="logs" cols="50" rows="14"></textarea>
+	</form>
 	</td></tr>
 	</table>
-	</form>
 	<a href="/_s_/dyn/currentscript/" target="_blank">View Script</a>
 	<a href="/_s_/dyn/currentparsedscript/" target="_blank">View Script</a>
 	<a href="/_s_/spr/logs/" target="_blank">View Logs</a>
-</div>
-<div style="display:none">
-<iframe height=0 width=0 name="channel2"></iframe>
+	<br/>
+	<br/>
 </div>
 </body>
 </html>
