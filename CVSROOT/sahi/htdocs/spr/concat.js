@@ -1063,7 +1063,7 @@ function showInController(info){
 //			d.scrollTop = d.scrollHeight;			
 		}
 	}catch(ex2){
-		throw ex2;
+//		throw ex2;
 	}
 }
 function sahiHasEventBeenRecorded(qs){
@@ -1533,19 +1533,20 @@ function areWindowsLoaded(win){
 var SAHI_MAX_WAIT_FOR_LOAD = 60;
 var sahiWaitForLoad = SAHI_MAX_WAIT_FOR_LOAD;
 var interval = INTERVAL;
-function sahiEx(){
+function sahiEx(isStep){
     try{
         try{
+        	if (isPaused()) return;
             var i=sahiGetCurrentIndex();
             if (isSahiPlaying() && _sahiCmds.length == i){
                 sahiStopPlaying();
                 return;
             }
-            if (isSahiPlaying() && _sahiCmds[i]!=null){
+            if ((isStep || isSahiPlaying()) && _sahiCmds[i]!=null){
 //            	alert(areWindowsLoaded(top));
 				if (!areWindowsLoaded(top) && sahiWaitForLoad>0){
 					sahiWaitForLoad-- ;
-					window.setTimeout("try{sahiEx();}catch(ex){}", interval);
+					if (!isStep) window.setTimeout("try{sahiEx();}catch(ex){}", interval);
 					return;
 				}
                 try{
@@ -1569,7 +1570,7 @@ function sahiEx(){
 			                sahiSetRetries(retries+1);
 			                interval = IDLE_INTERVAL;
 	                    	sahiSetCurrentIndex(sahiGetCurrentIndex()-1);
-							window.setTimeout("try{sahiEx();}catch(ex){}", interval);
+							if (!isStep) window.setTimeout("try{sahiEx();}catch(ex){}", interval);
 							return;			                
 			            }else{
 	                        debugInfo = ""+_sahiCmdDebugInfo[i];
@@ -1601,10 +1602,10 @@ function sahiEx(){
                 sahiStopPlaying();
             }
         }
-        window.setTimeout("try{sahiEx();}catch(ex){}", interval);
+        if (!isStep) window.setTimeout("try{sahiEx();}catch(ex){}", interval);
     }catch(ex2){
         if (isSahiPlaying()){
-            window.setTimeout("try{sahiEx();}catch(ex){alert(ex)}", 1000);
+            if (!isStep) window.setTimeout("try{sahiEx();}catch(ex){alert(ex)}", 1000);
         }
     }
 }
@@ -1618,6 +1619,15 @@ function canEval(cmd){
 	return (top.opener == null && !isForPopup(cmd)) // for base window
             || (top.opener && top.opener.top == top) // for links in firefox
             || (top.opener != null && isForPopup(cmd)); // for popups
+}
+function pause(){
+	sahiSetServerVar("sahiPaused", 1);
+}
+function unpause(){
+	sahiSetServerVar("sahiPaused", 0);
+}
+function isPaused(){
+	return sahiGetServerVar("sahiPaused") == "1";
 }
 function updateControlWinDisplay(s){
 	try{

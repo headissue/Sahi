@@ -101,21 +101,34 @@ body{
 
 	<table width="100%">
 	<tr><td>
-	Start replay:
+	Replay:
 	</td></tr>
 	<tr><td bgcolor="">
-	<form name="playform" action="http://www.sahidomain.com/_s_/dyn/startplay"  onsubmit="o(this);play()" target="channel">
-	<!--input type="text" name="starturl" value=""-->
-	<input type="submit" value="Play">
-	<input type="hidden" name="rand">
-	<input type="hidden" name="sahisid">
-	 from step: <input type="text" size="2" name="step" value="0"><input type="button" value="Stop" onclick="stopPlay()">
-	[<a href="#" onclick="resetStep()">Reset</a>]<!--input type="button" value="Step" onclick="stepWisePlay()"-->
-	<!--
-	<br>
-	Speed: <input type="text" size="2" name="step" value="0">ms &nbsp;&nbsp;<input type="button" value="Set" onclick="stopPlay()">
-	-->
-	</form>
+		<form name="playform" action="http://www.sahidomain.com/_s_/dyn/startplay"  onsubmit="o(this);play()" target="channel">
+		<table width="100%" border="0">
+		<tr><td width="70%">
+			<input type="hidden" name="rand">
+			<input type="hidden" name="sahisid">
+				<table border=0><tr><td>
+				From step: <input type="text" size="2" name="step" value="0"> [<a href="#" onclick="resetStep()">Reset</a>]
+				<!--
+				To: <input type="text" size="2" name="stepend" value="0">
+				-->
+				</td></tr>
+				<tr>
+				<td>
+				<input class="button" type="submit" value="Play"> 
+				<input class="button" type="button" value="Pause" onclick="pause()">
+				<input class="button" type="button" value="Step" onclick="stepWisePlay()">	
+				<input class="button" type="button" value="Stop" onclick="stopPlay()">
+				</td>
+				</tr>
+				</table>
+		</td>
+		<td valign="top">
+		</td></tr>
+		</table>
+		</form>
 	</td></tr>
 	</table>
 <hr>
@@ -124,7 +137,7 @@ body{
 	<form name="logForm">
 	Statements:
 	<br>
-	<textarea name="logs" cols="50" rows="14"></textarea>
+	<textarea name="logs" cols="50" rows="10"></textarea>
 	</form>
 	</td></tr>
 	</table>

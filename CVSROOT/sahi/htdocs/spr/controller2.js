@@ -14,7 +14,7 @@ function play(){
 //	else{
 //		top.opener.top.sahiEx();
 //	}
-
+	top.opener.top.unpause();
     if (parseInt(document.playform.step.value) == 0){
     	top.opener.top.location.reload(true);
 	}
@@ -24,16 +24,19 @@ function play(){
 	return true;
 }
 function stepWisePlay(){
-    top.opener.sahiStartPlaying();
+	top.opener.top.unpause();
+//    top.opener.sahiStartPlaying();
     if (parseInt(document.playform.step.value) == 0){
 	    top.opener.sahiSetCurrentIndex(parseInt(document.playform.step.value));
-    	top.opener.location.top.reload(true);
-    	top.opener.top.sahiEx();
+    	top.opener.top.location.reload(true);
+//    	top.opener.top.sahiEx(isStep);
 	}
 	else{
-		top.opener.top.sahiEx();
+		top.opener.top.sahiEx(true);
 	}
-	stopPlay();
+}
+function pause(){
+	top.opener.top.pause();
 }
 function stopPlay(){
     top.opener.sahiStopPlaying();
