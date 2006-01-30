@@ -177,7 +177,7 @@ function isBlankOrNull(s){
 function linkClick(e){
 	var performDefault = true;
 	if (this.prevClick){
-		performDefault = this.prevClick(arguments);
+		performDefault = this.prevClick.apply(this, arguments);
 	}
 	if (performDefault != false){
 		sahiNavigateLink(this);
@@ -1037,6 +1037,11 @@ function sahiOnEv(e){
 	if (e.handled == true) return true; //FF
 	if (sahiGetServerVar("sahiEvaluateExpr") == "true") return true;
 	var targ = getTarget(e);
+	if (e.type == "click" && targ.form && targ.type){
+		var type = targ.type;
+		if (type == "text" || type == "textarea" || type == "password" 
+		|| type == "select-one" || type == "select-multiple") return true;
+	}
 	var qs = getSahiPopUpQS()+sahiGetAccessorInfoQS(sahiGetAccessorInfo(targ));
 	if (sahiHasEventBeenRecorded(qs)) return true; //IE
     sahiSendToServer('/_s_/dyn/record?'+qs);
@@ -1280,14 +1285,12 @@ function sahiAddHandlers(win){
 }
 
 function sahiAttachEvents(el){
-//	if (el.onclick == sahiOnEv || el.onchange == sahiOnEv) return;
 	var tagName = el.tagName.toLowerCase();
 	if (tagName == "a"){
 		sahiAttachLinkEvents(el)
 	}else if (el.form && el.type){
 		sahiAttachFormElementEvents(el);
-	}else if (tagName == "img" || tagName == "div" || tagName == "span" 
-				|| tagName == "td" || tagName == "table"){
+	}else if (tagName == "img" || tagName == "div" || tagName == "span" || tagName == "td" || tagName == "table"){
 		sahiAttachImageEvents(el);
 	}
 }
