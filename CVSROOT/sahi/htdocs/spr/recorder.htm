@@ -85,13 +85,13 @@ Accessor:
 <form name="currentForm">
 <table>
 <tr><td>
-Value: </td><td><input name="elValue" value="" size="50"><br>
-</td></tr>
-<tr><td>
-Accessor: </td><td><input name="accessor" value="" size="50"><br>
+Accessor: </td><td><input name="accessor" value="" size="41">&nbsp;<input type="button" value=" Click " onclick="demoClick()"><br>
 </td></tr>
 <tr><td>
 Alternative: </td><td><input name="alternative" value="" size="50"><br>
+</td></tr>
+<tr><td>
+Value: </td><td><input name="elValue" value="" size="43">&nbsp;<input type="button" value=" Set " onclick="demoSetValue()"><br>
 </td></tr>
 </table>
 <br>
@@ -102,7 +102,7 @@ Alternative: </td><td><input name="alternative" value="" size="50"><br>
 <br>
 <input type="button" value="Mark" onclick="mark()"> with comment : 
 <input type="input" name="comment" value="" size="20">
-<br><hr>Debug
+<br><hr>Evaluate expression:
 <textarea name="debug" rows="4" cols="50" style="white-space:normal"></textarea>
 <input type="button" onclick="evaluateExpr()" value="Test --> "><input type="text" name="result" value="">
 &nbsp;&nbsp;<input type="button" onclick="append()" value="Append to Recording">

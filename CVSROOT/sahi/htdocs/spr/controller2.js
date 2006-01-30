@@ -361,7 +361,14 @@ function evaluateExpr(){
 	}
 	sahiSetServerVar("sahiEvaluateExpr", "false");
 }
-
+function demoClick(){
+	document.currentForm.debug.value = "_click("+document.currentForm.accessor.value+");";
+	evaluateExpr();
+}
+function demoSetValue(){
+	document.currentForm.debug.value = "_setValue("+document.currentForm.accessor.value+", \""+document.currentForm.elValue.value+"\");";
+	evaluateExpr();
+}
 function append(){
    sahiSendToServer('/_s_/dyn/record?event=append&value='+escape(document.currentForm.debug.value));
 }
