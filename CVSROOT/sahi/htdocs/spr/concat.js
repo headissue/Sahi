@@ -1034,7 +1034,8 @@ function sahi_event(type, keyCode){
 	this.exceptionType = "SahiAssertionException";
 }
 function SahiNotMyWindowException(){
-}var lastQs = "";
+}
+var lastQs = "";
 var lastTime = 0;
 function sahiOnEv(e){
 	if (e.handled == true) return true; //FF
@@ -1048,9 +1049,9 @@ function sahiOnEv(e){
 	var info = sahiGetAccessorInfo(targ);
 	var qs = getSahiPopUpQS()+sahiGetAccessorInfoQS(info);
 	if (sahiHasEventBeenRecorded(qs)) return true; //IE
-	showInController(info);
     sahiSendToServer('/_s_/dyn/record?'+qs);
     e.handled = true; //FF
+	showInController(info);
     return true;
 }
 function showInController(info){

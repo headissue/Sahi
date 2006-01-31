@@ -144,7 +144,7 @@ public class ProxyProcessor implements Runnable {
 					"<html><h2>Host " + e.getMessage()
 							+ " Not Found</h2></html>"));
 			return;
-		}
+		} 
 		socketToHost.setSoTimeout(120000);
 		OutputStream outputStreamToHost = socketToHost.getOutputStream();
 		InputStream inputStreamFromHost = socketToHost.getInputStream();
@@ -158,9 +158,9 @@ public class ProxyProcessor implements Runnable {
 	private void processLocally(String uri, HttpRequest requestFromBrowser)
 			throws IOException {
 		if (uri.indexOf("/dyn/") != -1) {
-			// System.out.println(uri);
+//			System.out.println(uri);
 			Session session = getSession(requestFromBrowser);
-			// System.out.println("----------- "+session.id());
+//			System.out.println("----------- "+session.id());
 			if (uri.indexOf("/log") != -1) {
 				if (session.getScript() != null) {
 					session.logPlayBack(requestFromBrowser.getParameter("msg"),
@@ -210,7 +210,10 @@ public class ProxyProcessor implements Runnable {
 				sendSidCookieResponse(session);
 			} else if (uri.indexOf("/state") != -1) {
 				sendResponseToBrowser(proxyStateResponse(session));
-			} else if (uri.indexOf("/auto") != -1) {
+			}else if(uri.indexOf("/setCommonCookie")!=-1) {
+				sendSidCookieResponse(session);				
+			}
+			else if (uri.indexOf("/auto") != -1) {
 				String fileName = URLDecoder.decode(requestFromBrowser
 						.getParameter("file"), "UTF8");
 				session.setScript(new FileScript(
@@ -324,8 +327,8 @@ public class ProxyProcessor implements Runnable {
 				.getHtdocsRoot()
 				+ "spr/close.htm");
 		// HttpResponse httpResponse = new NoCacheHttpResponse("");
-		sendResponseToBrowser(new NoCacheHttpResponse(addSahisidCookie(
-				httpResponse, session)));
+		sendResponseToBrowser(addSahisidCookie(
+				httpResponse, session));
 	}
 
 	private HttpResponse addSahisidCookie(HttpResponse httpResponse,
