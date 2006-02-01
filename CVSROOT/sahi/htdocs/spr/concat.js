@@ -1803,10 +1803,7 @@ var prevDown = null;
 function sahiInit(e){
 	try{
 		window.sahiLoaded = true;	
-		addEvent(document, "keydown", sahiKeyDown);
-		addEvent(document, "keyup", sahiKeyUp);
-		addEvent(document, "dblclick", sahiOpenControllerWindow);
-		addEvent(document, "mousemove", sahiMouseOver);
+		sahiActivateHotKey();
 	}catch(ex){
 	    sahiHandleException(ex);
 	}
@@ -1820,6 +1817,16 @@ function sahiInit(e){
 //		throw ex;
 	    sahiHandleException(ex);
 	}
+}
+function sahiActivateHotKey(){
+	try{
+		addEvent(document, "keydown", sahiKeyDown);
+		addEvent(document, "keyup", sahiKeyUp);
+		addEvent(document, "dblclick", sahiOpenControllerWindow);
+		addEvent(document, "mousemove", sahiMouseOver);
+	}catch(ex){
+	    sahiHandleException(ex);
+	}	
 }
 function sahiIsFirstExecutableFrame(){
 	var fs = top.frames;
@@ -1878,3 +1885,4 @@ function sahiQuoteIfString(shortHand) {
 	if ((""+shortHand).match(/^[0-9]+$/)) return shortHand;
 	return quoted(shortHand);
 }
+sahiActivateHotKey();
