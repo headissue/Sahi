@@ -1121,7 +1121,6 @@ function findAllAccessors(){
 */
 
 function addWait(time){
-    if (!sahiIsRecording()) return;
     var val = parseInt(time);
     if ((""+val) == "NaN" || val < 200) throw new Error();
     showInController(new AccessorInfo("", "", "", "wait", time));
@@ -1131,7 +1130,6 @@ function mark(s){
     showInController(new AccessorInfo("", "", "", "mark", s));
 }
 function doAssert(e){
-    if (!sahiIsRecording()) return;
     try{
         if (!top._lastAccessedInfo) return;
         top._lastAccessedInfo.event = "assert";

@@ -339,7 +339,6 @@ function sahiQuoteIfString(s){
 }
 
 function addWait(){
-    if (!sahiIsRecording()) return;
     try{
     	top.opener.addWait(document.currentForm.waitTime.value);
     }catch(ex){
