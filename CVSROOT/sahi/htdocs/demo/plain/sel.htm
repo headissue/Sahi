@@ -1,0 +1,46 @@
+<html>
+
+<head>
+<title>
+
+</title>
+</head>
+
+<body>
+<form name="f1">
+
+aaaa
+caaaaa
+<br><br><br>
+
+<textarea name="t1"></textarea><br>
+<input type="button" value="click me" onclick="getSel()">
+</form>
+<script>
+function getSel(){
+	var txt = '';
+	var foundIn = '';
+	if (window.getSelection)
+	{
+		txt = window.getSelection();
+		foundIn = 'window.getSelection()';
+	}
+	else if (document.getSelection)
+	{
+		txt = document.getSelection();
+		foundIn = 'document.getSelection()';
+	}
+	else if (document.selection)
+	{
+		txt = document.selection.createRange().text;
+		foundIn = 'document.selection.createRange()';
+	}
+	else return;
+	alert('Found in: ' + foundIn + '\n' + txt);
+}
+</script>
+
+</body>
+
+</html>
+
