@@ -63,39 +63,59 @@ body{
 <div id="playback" class="playbackPane">
 <table>
 <tr><td>
-
+<div id="setfile">
 	<table>
-	<tr><td>
-	Set script:
+	<form name="scriptfileform" action="http://www.sahidomain.com/_s_/dyn/setscriptfile" method="get" target="channel" onsubmit="onScriptFormSubmit(this)">
+	<tr><td colspan="2">
+	Set script from file: <a href="javascript:byFile(false)">[from url]</a>
 	</td></tr>
 	<tr><td bgcolor="">
-	<form name="scriptfileform" action="http://www.sahidomain.com/_s_/dyn/setscriptfile" method="get" target="channel" onsubmit="o(this);resetStep();clearLogs()">
+	File:
+	</td><td>
 	<select name="file">
 	</select>
 	<input type="hidden" name="sahisid">
 	<input type="hidden" name="rand">
-	<input type="submit" value="Set">
-	</form>
 	</td></tr>
-	</table>
-
-</td><td>
-
-	<table>
 	<tr><td>
-	Set script from url:
+	Start URL: 
+	</td><td>	
+	<input type="text" name="starturl" value="" size="50">
+	</td></tr>	
+	<tr><td>	
+	<input type="submit" value="Set">
+	</td></tr>
+	</form>
+	</table>
+</div>
+</td><td>
+<div id="seturl" style="display:none">
+	<table>
+	<form name="scripturlform" action="http://www.sahidomain.com/_s_/dyn/setscripturl" method="get" target="channel" onsubmit="onScriptFormSubmit(this)">
+	<tr><td colspan="2">
+	Set script from url: <a href="javascript:byFile(true)">[from file]</a>
 	</td></tr>
 	<tr><td bgcolor="">
-	<form name="scripturlform" action="http://www.sahidomain.com/_s_/dyn/setscripturl" method="get" target="channel" onsubmit="o(this);resetStep()">
+	Script:
+	</td><td>
 	<input type="text" name="url">
 	<input type="hidden" name="sahisid">
 	<input type="hidden" name="rand">
-	<input type="submit" value="Set">
-	</form>
 	</td></tr>
+	<tr><td>
+	Start URL: 
+	</td><td>	
+	<input type="text" name="starturl" value="" size="50">
+	</td></tr>	
+	<tr><td>	
+	<input type="submit" value="Set">
+	</td></tr>
+	</form>
 	</table>
-	
+</div>	
 </td></tr>
+
+
 </table>
 	<hr>
 
@@ -117,7 +137,7 @@ body{
 				</td></tr>
 				<tr>
 				<td>
-				<input class="button" type="submit" value="Play"> 
+				<input class="button" type="button" value="Play" onclick="play()"> 
 				<input class="button" type="button" value="Pause" onclick="pause()">
 				<input class="button" type="button" value="Step" onclick="stepWisePlay()">	
 				<input class="button" type="button" value="Stop" onclick="stopPlay()">

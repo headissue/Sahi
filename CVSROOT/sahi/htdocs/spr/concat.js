@@ -1,3 +1,4 @@
+var tried = false;
 function sahiGetAccessor(src){
     var fr = sahiGetFrame(top, "top");
     var a = sahiGetPartialAccessor(src);
@@ -513,6 +514,9 @@ function sahi_popup(n){
 }
 function sahi_log(s, type){
 	sahiLogPlayBack(s, type);
+}
+function sahi_navigateTo(url){
+	top.location.href = url;
 }
 // finds document of any element
 function sahiGetWin(el){
@@ -1537,6 +1541,7 @@ var interval = INTERVAL;
 function sahiEx(isStep){
     try{
         try{
+//        	alert("isPaused()="+isPaused()+" isSahiPlaying()="+isSahiPlaying()+" sahiGetCurrentIndex()"+sahiGetCurrentIndex());
         	if (isPaused()) return;
             var i=sahiGetCurrentIndex();
             if (isSahiPlaying() && _sahiCmds.length == i){
@@ -1809,9 +1814,6 @@ function sahiInit(e){
 	try{
 	    if (self == top){ 
 	        sahiPlay();
-	    }
-	    if (top._isSahiWinOpen){
-	    	top.sahiOpenWin();
 	    }
 	    if (sahiIsRecording()) sahiAddHandlers();
 	}catch(ex){

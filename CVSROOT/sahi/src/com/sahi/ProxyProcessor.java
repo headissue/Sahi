@@ -173,12 +173,14 @@ public class ProxyProcessor implements Runnable {
 						.getParameter("file"), "UTF8");
 				session.setScript(new FileScript(
 						getScriptFileWithPath(fileName)));
-				sendSidCookieResponse(session);
+				startPlayback(requestFromBrowser, session);
+//				sendSidCookieResponse(session);
 			} else if (uri.indexOf("/setscripturl") != -1) {
 				String url = URLDecoder.decode(requestFromBrowser
 						.getParameter("url"), "UTF8");
 				session.setScript(new URLScript(url));
-				sendSidCookieResponse(session);
+				startPlayback(requestFromBrowser, session);
+//				sendSidCookieResponse(session);
 			} else if (uri.indexOf("/recordstart") != -1) {
 				// System.out.println("########### "+session.id());
 				startRecorder(requestFromBrowser, session);
@@ -234,12 +236,7 @@ public class ProxyProcessor implements Runnable {
 						? value
 						: "null"));
 			} else if (uri.indexOf("/startplay") != -1) {
-				if (session.getScript() != null)
-					session.startPlayBack();
-				session.setVariable("sahi_play", "1");
-				session.setVariable("sahiIx", requestFromBrowser
-						.getParameter("step"));
-				sendSidCookieResponse(session);
+				startPlayback(requestFromBrowser, session);
 			} else if (uri.indexOf("/stopplay") != -1) {
 				sendResponseToBrowser(new NoCacheHttpResponse(""));
 				stopPlay(session);
@@ -313,6 +310,14 @@ public class ProxyProcessor implements Runnable {
 			sendResponseToBrowser(new SimpleHttpResponse(
 					"<html><h2>You have reached the Sahi proxy.</h2></html>"));
 		}
+	}
+
+	private void startPlayback(HttpRequest requestFromBrowser, Session session) throws IOException {
+		if (session.getScript() != null)
+			session.startPlayBack();
+		session.setVariable("sahi_play", "1");
+		session.setVariable("sahiPaused", "1");		
+		sendSidCookieResponse(session);
 	}
 
 	private void sendLogResponse(String fileName) throws IOException {

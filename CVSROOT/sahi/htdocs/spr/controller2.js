@@ -14,13 +14,9 @@ function play(){
 //	else{
 //		top.opener.top.sahiEx();
 //	}
+	top.opener.top.sahiSetCurrentIndex(parseInt(document.playform.step.value));
 	top.opener.top.unpause();
-    if (parseInt(document.playform.step.value) == 0){
-    	top.opener.top.location.reload(true);
-	}
-	else{
-		top.opener.top.sahiEx();
-	}
+	top.opener.top.sahiEx();
 	return true;
 }
 function stepWisePlay(){
@@ -71,6 +67,11 @@ function sendPlaybackSnapshot(){
 	s+=addVar("controller_url", document.scripturlform.url.value);
 	s+=addVar("controller_logs", document.logForm.logs.value);
 	s+=addVar("controller_step", document.playform.step.value);
+	s+=addVar("controller_step", document.playform.step.value);
+	s+=addVar("controller_url_starturl", document.scripturlform.starturl.value);
+	s+=addVar("controller_file_starturl", document.scriptfileform.starturl.value);
+	var showUrl = ""+(document.getElementById("seturl").style.display=="block");
+	s+=addVar("controller_show_url", showUrl);
 	sahiSetServerVar("playback_state", s);
 }
 function sendRecorderSnapshot(){
@@ -296,7 +297,10 @@ function showplayback(){
 function initPlaybackTab(){
 	document.scripturlform.url.value = getPbVar("controller_url");
 	document.logForm.logs.value = getPbVar("controller_logs");	
+	document.scripturlform.starturl.value = getPbVar("controller_url_starturl");	
+	document.scriptfileform.starturl.value = getPbVar("controller_file_starturl");	
 	document.playform.step.value = getPbVar("controller_step");
+	byFile(getPbVar("controller_show_url")!="true");
 }
 function displayInfo(info){
 	var f = document.currentForm;
@@ -387,4 +391,22 @@ function addSahi(s){
 
 function blankIfNull(s){
 	return (s==null || s=="null") ? "" : s;
+}
+function byFile(showFile){
+	document.getElementById("seturl").style.display=showFile?"none":"block";
+	document.getElementById("setfile").style.display=showFile?"block":"none";
+}
+function onScriptFormSubmit(f){
+	o(f);
+	resetStep();
+	clearLogs();
+	window.setTimeout("reloadPage('"+f.starturl.value+"')", 1000);
+}
+function reloadPage(u){
+	if (u == ""){
+    	top.opener.top.location.reload(true);
+	}else{
+		top.opener.top.location.href = u;
+	}	
+	top.location.reload();
 }
