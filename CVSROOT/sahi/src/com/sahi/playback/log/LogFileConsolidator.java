@@ -7,8 +7,8 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.StringTokenizer;
+
 import com.sahi.config.Configuration;
-import com.sahi.playback.log.PlayBackLogLevel;
 import com.sahi.util.Utils;
 
 public class LogFileConsolidator {
@@ -26,7 +26,8 @@ public class LogFileConsolidator {
 			if (logFile.isDirectory()) {
 				File[] files = logFile.listFiles();
 				for (int i = 0; i < files.length; i++) {
-					addTestResult(files[i]);
+					if (!"index.htm".equals(files[i].getName()))
+						addTestResult(files[i]);
 				}
 			} else {
 				addTestResult(logFile);

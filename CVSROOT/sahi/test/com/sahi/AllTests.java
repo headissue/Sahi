@@ -29,6 +29,7 @@ public class AllTests extends TestSuite {
         suite.addTestSuite(SahiScriptHTMLAdapterTest.class);
         suite.addTestSuite(UtilsTest.class);
         suite.addTestSuite(PlayBackLogFormatterTest.class);        
+        suite.addTestSuite(ProxyProcessorHelperTest.class);        
 		return suite;
 	}
 

@@ -287,6 +287,15 @@ public class ProxyProcessor implements Runnable {
 				if (session.getScriptLogFile() != null) {
 					sendLogResponse(appendLogsRoot(session.getScriptLogFile()));
 				}
+			} else if (uri.indexOf("/highlighted") != -1) {
+				int lineNumber = getLineNumber(requestFromBrowser);
+				String fileName = ProxyProcessorHelper.scriptFileNamefromURI(requestFromBrowser.uri(), "/highlighted/");
+				final HttpFileResponse response = new HttpFileResponse(fileName);
+				if (lineNumber != -1) {
+					response.data(ProxyProcessorHelper.highlight(new String(response.data()), lineNumber).getBytes());
+				}
+				System.out.println(new String(response.data()));
+				sendResponseToBrowser(response);
 			} else if (uri.indexOf("/currentparsedscript") != -1) {
 				if (session.getScript() != null) {
 					sendResponseToBrowser(new SimpleHttpResponse("<pre>"
@@ -299,7 +308,7 @@ public class ProxyProcessor implements Runnable {
 			}
 
 		} else if (uri.indexOf("/scripts/") != -1) {
-			String fileName = scriptFileNamefromURI(requestFromBrowser.uri());
+			String fileName = ProxyProcessorHelper.scriptFileNamefromURI(requestFromBrowser.uri(), "/scripts/");
 			sendResponseToBrowser(new HttpFileResponse(fileName));
 		} else if (uri.indexOf("/logs/") != -1 || uri.endsWith("/logs")) {
 			sendLogResponse(logFileNamefromURI(requestFromBrowser.uri()));
@@ -310,6 +319,15 @@ public class ProxyProcessor implements Runnable {
 			sendResponseToBrowser(new SimpleHttpResponse(
 					"<html><h2>You have reached the Sahi proxy.</h2></html>"));
 		}
+	}
+
+	private int getLineNumber(HttpRequest req) {
+		String p = req.getParameter("n");
+		int i = -1;
+		try {
+			i = Integer.parseInt(p);
+		}catch(Exception e) {}		
+		return i;
 	}
 
 	private void startPlayback(HttpRequest requestFromBrowser, Session session) throws IOException {
@@ -432,13 +450,6 @@ public class ProxyProcessor implements Runnable {
 
 	private boolean isBlankOrNull(String s) {
 		return (s == null || "".equals(s));
-	}
-
-	private String scriptFileNamefromURI(String uri) {
-		StringBuffer sb = new StringBuffer();
-		sb.append(Configuration.getScriptRoot());
-		sb.append(uri.substring(uri.lastIndexOf("/scripts/") + 9));
-		return sb.toString();
 	}
 
 	private String logFileNamefromURI(String uri) {
