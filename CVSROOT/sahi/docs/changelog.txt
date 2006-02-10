@@ -1,13 +1,7 @@
-* Made multidomain handling default. No need to specify in property file.
-* Multithreaded playback of multidomain scripts works without tainting the URL.
-* Changed event trapping and handling to better simulate clicks.
-* Sahi Controller stays in synch with the main page even after domain switches.
-* Fixed broken _include directive
-* Made ALT-dblclick configurable through sahi.properties to choose between ALT, SHIFT or CTRL keys.
-* Changed assertion on checkboxes and radio buttons to assert for checked state.
-* Added documentation
-* _highlight and _log added for debugging ease
-* _byId() added for div and span identification.
+* Changed controller GUI for better usability.
+* Changed logs formatting.
+* Some bug fixes.
+* _navigateTo(url) added for navigating to urls.
 
 Known issues
 * Non ASCII characters not recorded correctly.

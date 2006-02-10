@@ -180,8 +180,7 @@ These can be modified through <a href="props.html">sahi.properties</a>
 	<li>On the popup that appears, give a name for the script you wish to generate, and click 'Record'</li>
 	<li>Most actions on the page will now get recorded.</li>
 	<li>Moving the mouse over any html element while pressing Ctrl key will show the javascript accessor info in the popup.</li>
-	<li>Clicking the "Add Assertions" button adds assertions for the element.</li>
-
+	<li>Clicking the "Add Assertions" button generates assertions for the element. These assertions can be added to the script by clicking "Add to Script"</li>
 </ul>
 
 The script being generated can be viewed by opening the &lt;script_name&gt;.sah file in the scripts directory.<br/>
@@ -203,11 +202,12 @@ You could use the <a href="#demo">demo application</a> bundled with Sahi to get 
 <br/><h4><a name="playback">Playing back</a></h4>
 
 <ul type="square">
-	<li>Close and reopen (alt-dblclick) the popup window.</li>
-	<li>Select script file just created from the dropdown, and click 'Set'</li>
-	<li>Or enter the full url of the script file in the "Set script from url:" textbox, and click 'Set'</li>
-	<li>On the browser, navigate to the page where the recording had started.</li>
-	<li>Click 'Play'</li>
+	<li>Open (alt-dblclick) the popup window.</li>
+	<li>Select script file from the dropdown.</li>
+	<li>Or go to the "[from url]" section and specify the full url of the script file. (eg. http://<i>proxyhost:proxyport</i>/_s_/scrcipts/<i>scriptName</i>.sah)</li>
+	<li>Click 'Set'.</li>
+	<li>Wait for the pages to reload.</li>
+	<li>Click 'Play'.</li>
 </ul>
 
 
