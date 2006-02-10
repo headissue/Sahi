@@ -214,6 +214,7 @@ function onRecordStartFormSubmit(f){
     if (top.opener) {
     	o(f);
     	top.opener.sahiStartRecording(recordAll);
+    	window.setTimeout("top.location.reload();", 1000);
     }
     return true;
 }

@@ -1423,9 +1423,9 @@ function sahiIsHotKeyPressed(){
 }
 var _lastAccessedInfo;
 function sahiMouseOver(e){
+    try{
 	if (getTarget(e) == null) return;
     if (!top._isControlKeyPressed) return;
-    try{
       var controlWin = getSahiWinHandle();
       if (controlWin){
         controlWin.main.displayStepNum();
