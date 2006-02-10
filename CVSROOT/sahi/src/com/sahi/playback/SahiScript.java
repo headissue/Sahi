@@ -185,6 +185,7 @@ public abstract class SahiScript {
 		keywords.add("_popup");
 		keywords.add("_highlight");		
 		keywords.add("_log");		
+		keywords.add("_navigateTo");		
 		return keywords;
 	}
 
@@ -233,6 +234,7 @@ public abstract class SahiScript {
 		keywords.add("_byId");
 		keywords.add("_highlight");
 		keywords.add("_log");		
+		keywords.add("_navigateTo");		
 		return keywords;
 	}
 

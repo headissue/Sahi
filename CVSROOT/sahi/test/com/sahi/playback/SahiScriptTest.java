@@ -81,7 +81,7 @@ public class SahiScriptTest extends TestCase {
 				"_select|_setSelected|_setValue|_simulateEvent|_submit|" +
 				"_textarea|_textbox|_event|_call|_eval|_setGlobal|_getGlobal|" +
 				"_wait|_random|_savedRandom|_cell|_table|_containsText|" +
-				"_containsHTML|_popup|_byId|_highlight|_log)", TestScript.getRegExp(true));
+				"_containsHTML|_popup|_byId|_highlight|_log|_navigateTo)", TestScript.getRegExp(true));
 		
 		assertEquals("_?(_accessor|_alert|_assertEqual|" +
 				"_assertNotEqual|_assertNotNull|_assertNull|_assertTrue|" +
@@ -91,7 +91,7 @@ public class SahiScriptTest extends TestCase {
 				"_select|_setSelected|_setValue|_simulateEvent|_submit|" +
 				"_textarea|_textbox|_event|_call|_eval|_setGlobal|_getGlobal|" +
 				"_wait|_random|_savedRandom|_cell|_table|_containsText|" +
-				"_containsHTML|_popup|_byId|_highlight|_log)", TestScript.getRegExp(false));
+				"_containsHTML|_popup|_byId|_highlight|_log|_navigateTo)", TestScript.getRegExp(false));
 	}
 	
 	public void testGetActionRegExp() {
@@ -100,7 +100,7 @@ public class SahiScriptTest extends TestCase {
 				"_assertNotTrue|_click|_clickLinkByAccessor|" +
 				"_getCellText|_getSelectedText|_setSelected|" +
 				"_setValue|_simulateEvent|_submit|_call|_eval|_setGlobal|" +
-				"_wait|_popup|_highlight|_log).*",
+				"_wait|_popup|_highlight|_log|_navigateTo).*",
 				TestScript.getActionRegExp());
 	}
 	
