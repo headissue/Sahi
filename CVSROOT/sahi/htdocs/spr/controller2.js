@@ -241,6 +241,7 @@ function sahiKeyDown(e){
 	    if (e.keyCode == KEY_CONTROL) top.opener.top._isControlKeyPressed = true;
 	    else if (e.keyCode == KEY_ALT) top.opener.top._isAltKeyPressed = true;
     }catch(e){
+    throw e;
     	sahiHandleException(e);
     }
 }
@@ -303,40 +304,13 @@ function initPlaybackTab(){
 	document.playform.step.value = getPbVar("controller_step");
 	byFile(getPbVar("controller_show_url")!="true");
 }
-function displayInfo(info){
+function displayInfo(info, escapedAccessor, escapedValue){
 	var f = document.currentForm;
 	if (f){	
-		f.elValue.value = info.value ? info.value : "";
-		f.accessor.value = getAccessor1(info);
+		f.elValue.value = escapedValue;
+		f.accessor.value = escapedAccessor;
 		f.alternative.value = info.accessor;
 	}
-}
-function getAccessor1(info){
-    if ("" == info.shortHand) {
-        return info.accessor;
-    } else {
-        if ("image" == info.type) {
-            return "_imageSubmitButton(" + sahiQuoteIfString(info.shortHand) + ")";
-        } else if ("img" == info.type) {
-            return "_image(" + sahiQuoteIfString(info.shortHand) + ")";
-        } else if ("link" == info.type) {
-            return "_link(" + sahiQuoteIfString(info.shortHand) + ")";
-        } else if ("select-one" == info.type || "select-multiple" == info.type) {
-            return "_select(" + sahiQuoteIfString(info.shortHand) + ")";
-        } else if ("text" == info.type) {
-            return "_textbox(" + sahiQuoteIfString(info.shortHand) + ")";
-        } else if ("cell" == info.type) {
-            return "_cell(" + info.shortHand + ")";
-        }
-        return "_" + info.type + "(" + sahiQuoteIfString(info.shortHand) + ")";
-    }
-}
-
-function sahiQuoteIfString(s){
-	if (typeof s == "string") {
-		return "\"" + s + "\"";
-	}
-	return s;
 }
 
 function addWait(){

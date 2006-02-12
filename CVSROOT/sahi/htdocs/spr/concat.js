@@ -74,7 +74,7 @@ function sahiGetImg(src){
 }
 
 function sahiGetForm(src){
-    if (!isBlankOrNull(src.name)){
+    if (!isBlankOrNull(src.name) && nameNotAnInputElement(src)){
         return "forms['"+src.name+"']";
     }
     var fs = document.forms;
@@ -85,7 +85,9 @@ function sahiGetForm(src){
     }
     return null;
 }
-
+function nameNotAnInputElement(src){
+	return (typeof src.name != "object");
+}
 function sahiGetFormElement(src){
     var n = "";
     if (src.type == "image"){
@@ -551,6 +553,7 @@ function point(el){
 function sahiAreEqual(el, param, value){
 	if (param == "linkText"){
         var str = sahiGetText(el);
+//        alert(str+ " " +value);
         return (sahiTrim(str) == sahiTrim(value));
 	}
 	else{
@@ -1150,6 +1153,7 @@ function getTarget(e){
 }
 
 function sahiGetAccessorInfo(el){
+	if (el == null) return null;
     var type = el.type;
 
     var accessor = sahiGetAccessor(el);
@@ -1260,11 +1264,11 @@ function AccessorInfo(accessor, shortHand, type, event, value){
 function sahiGetAccessorInfoQS(ai, isAssert){
 	if (ai == null || ai.event==null) return;
     var s = "event="+ (isAssert? "assert" : ai.event);
-    s += "&accessor="+escape(ai.accessor);
-    s += "&shorthand="+escape(ai.shortHand);
+    s += "&accessor="+escape(sahiConvertUnicode(ai.accessor));
+    s += "&shorthand="+escape(sahiConvertUnicode(ai.shortHand));
     s += "&type="+ai.type;
     if (ai.value){
-        s += "&value="+escape(ai.value);
+        s += "&value="+escape(sahiConvertUnicode(ai.value));
     }
     return s;
 }
@@ -1431,34 +1435,36 @@ function sahiMouseOver(e){
         controlWin.main.displayStepNum();
         var acc = sahiGetAccessorInfo(sahiGetKnownTags(getTarget(e)));
         try{
-        	controlWin.main.displayInfo(acc);
+        	if (acc) controlWin.main.displayInfo(acc, getAccessor1(acc), sahiConvertUnicode(acc.value));
         }catch(ex2){}
         top._lastAccessedInfo = acc ? acc : top._lastAccessedInfo;
       }
-    }catch(ex){}
+    }catch(ex){throw ex}
 }
 
 function getAccessor1(info){
-    if ("" == info.shortHand) {
+    if ("" == info.shortHand || info.shortHand == null) {
         return info.accessor;
     } else {
         if ("image" == info.type) {
-            return "_imageSubmitButton(" + sahiQuoteIfString(info.shortHand) + ")";
+            return "_imageSubmitButton(" + escapeForScript(info.shortHand) + ")";
         } else if ("img" == info.type) {
-            return "_image(" + sahiQuoteIfString(info.shortHand) + ")";
+            return "_image(" + escapeForScript(info.shortHand) + ")";
         } else if ("link" == info.type) {
-            return "_link(" + sahiQuoteIfString(info.shortHand) + ")";
+            return "_link(" + escapeForScript(info.shortHand) + ")";
         } else if ("select-one" == info.type || "select-multiple" == info.type) {
-            return "_select(" + sahiQuoteIfString(info.shortHand) + ")";
+            return "_select(" + escapeForScript(info.shortHand) + ")";
         } else if ("text" == info.type) {
-            return "_textbox(" + sahiQuoteIfString(info.shortHand) + ")";
+            return "_textbox(" + escapeForScript(info.shortHand) + ")";
         } else if ("cell" == info.type) {
             return "_cell(" + info.shortHand + ")";
         }
-        return "_" + info.type + "(" + sahiQuoteIfString(info.shortHand) + ")";
+        return "_" + info.type + "(" + escapeForScript(info.shortHand) + ")";
     }
 }
-
+function escapeForScript(s){
+	return sahiQuoteIfString(s);
+}
 var _key;
 var KEY_SHIFT = 16;
 var KEY_CONTROL = 17;
@@ -1785,8 +1791,38 @@ function sahiGetText(el){
 	return null;
 }
 function sahiGetTextFromHTML(s){
-	return s.replace(/<[^>]*>/g, "");
+	s = s.replace(/<[^>]*>/g, "");
+	return s;	
 }
+function sahiConvertUnicode(source){
+	if (source == null) return null;
+	var result = '';
+	for (i=0; i<source.length; i++){
+		if (source.charCodeAt(i) > 127)
+			result += addSlashU(source.charCodeAt(i).toString(16));
+		else result += source[i];
+	}
+	return result;
+}
+function addSlashU(num){
+	var buildU
+	switch(num.length){
+		case 1:
+		buildU="\\u000"+num
+		break
+		case 2:
+		buildU="\\u00"+num
+		break
+		case 3:
+		buildU="\\u0"+num
+		break
+		case 4:
+		buildU="\\u"+num
+		break
+	}
+	return buildU;
+}
+
 function sahiOnBeforeUnLoad(){
 	window.sahiLoaded=false;
 }
@@ -1853,19 +1889,19 @@ function getScript(info) {
 	} else if (ev == "clicklink") {
 		cmd = "_click(" + accessor + "," + quoted(value) +  ");";
 	} else if (ev == "setvalue") {
-		cmd = "_setValue(" + accessor + ", " + quoted(value) +  ");";
+		cmd = "_setValue(" + accessor + ", " + sahiConvertUnicode(quoted(value)) +  ");";
 	} else if (ev == "setselected") {
 		cmd = "_setSelected(" + accessor + ", " + quoted(value) +  ");";
 	} else if (ev == "assert") {
 		cmd = "_assertNotNull(" + accessor + ");\r\n";
 		if (type == "cell") {
-			cmd += "_assertEqual(" + quoted(value) +  ", _getCellText(" + accessor + "));";
+			cmd += "_assertEqual(" + quoted(sahiConvertUnicode(value)) +  ", _getCellText(" + accessor + "));";
 		} else if (type == "select-one" || type == "select-multiple") {
-			cmd += "_assertEqual(" + quoted(value) +  ", _getSelectedText(" + accessor + "));";
+			cmd += "_assertEqual(" + quoted(sahiConvertUnicode(value)) +  ", _getSelectedText(" + accessor + "));";
 		} else if (type == "text" || type == "textarea" || type == "password") {
-			cmd += "_assertEqual(" + quoted(value) +  ", " + accessor + ".value);";
+			cmd += "_assertEqual(" + quoted(sahiConvertUnicode(value)) +  ", " + accessor + ".value);";
 		} else if (type == "checkbox" || type == "radio") {
-			cmd += "_assert" + ("true".equals(value) ? "":"Not" ) +"True("+accessor + ".checked);";
+			cmd += "_assert" + ("true" == ""+value ? "":"Not" ) +"True("+accessor + ".checked);";
 		}
 	} else if (ev == "wait") {
 		cmd = "_wait(" + value + ");";
@@ -1881,6 +1917,6 @@ function getScript(info) {
 }
 function sahiQuoteIfString(shortHand) {
 	if ((""+shortHand).match(/^[0-9]+$/)) return shortHand;
-	return quoted(shortHand);
+	return quoted(sahiConvertUnicode(shortHand));
 }
 sahiActivateHotKey();

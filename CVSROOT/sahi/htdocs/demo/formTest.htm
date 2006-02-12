@@ -11,20 +11,32 @@ function abc(){
 }
 function dummy(){
 }
+function testFormName(){
+	alert(typeof document.f1.name);
+}
 </script>
 
-<body>
+<body onload="testFormName()">
 <h2>Form Test</h2>
 <form name="f1">
-Text: <br/>
+<table>
+<tr><td>
+Text: </td><td></td></tr>
+<tr><td>
 &lt;input type="text" value="" name="t1"&gt;
-<br/>
-<input type="text" value="" name="t1"><br/><br/>
-
+</td><td>
+<input type="text" value="" name="t1"></td></tr>
+<tr><td>
 &lt;input type="text" value="" &gt;
-<br/>
-<input type="text" value="" ><br/><br/>
-
+</td><td>
+<input type="text" value="" >
+</td></tr>
+<tr><td>
+&lt;input type="text" value="" name="name"&gt;
+</td><td>
+<input type="text" value="" name="name">
+</td></tr>
+</table>
 <hr/>
 
 TextArea: <br/>
