@@ -1,4 +1,4 @@
-_setValue(_textbox("q"), "narayan raman");
+_setValue(_textbox("q"), "Sahi sourceforge");
 _click(_submit("Google Search"));
 _click(_link("Sahi - Web Automation and Test Tool"));
 _assertNotNull(_link("Ant Support"));
