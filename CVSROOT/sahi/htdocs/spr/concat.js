@@ -1389,7 +1389,7 @@ try{
     }catch(domainInaccessible){
 	    diffDom = true;
     }
-    if (diffDom || !top._sahiControl.play){
+    if (diffDom || !top._sahiControl.isOpen){
 	    top._sahiControl = window.open("/_s_/spr/controller2.htm", "_sahiControl", getWinParams(e));
 	}
     if (top._sahiControl) top._sahiControl.opener = this;

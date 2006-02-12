@@ -1,7 +1,7 @@
 function o(f){
-	window.open("", "channel", "height=100px,width=100px");
-	f.rand.value=new Date();
-	f.sahisid.value = sahiReadCookie("sahisid");
+//	window.open("", "channel", "height=100px,width=100px");
+//	f.rand.value=new Date();
+//	f.sahisid.value = sahiReadCookie("sahisid");
 }
 function play(){
 	
@@ -214,7 +214,7 @@ function onRecordStartFormSubmit(f){
     if (top.opener) {
     	o(f);
     	top.opener.sahiStartRecording(recordAll);
-    	window.setTimeout("top.location.reload();", 1000);
+//    	window.setTimeout("top.location.reload();", 1000);
     }
     return true;
 }
@@ -408,5 +408,5 @@ function reloadPage(u){
 	}else{
 		top.opener.top.location.href = u;
 	}	
-	top.location.reload();
+//	top.location.reload();
 }

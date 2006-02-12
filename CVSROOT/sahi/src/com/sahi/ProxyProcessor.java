@@ -174,20 +174,18 @@ public class ProxyProcessor implements Runnable {
 				session.setScript(new FileScript(
 						getScriptFileWithPath(fileName)));
 				startPlayback(requestFromBrowser, session);
-//				sendSidCookieResponse(session);
 			} else if (uri.indexOf("/setscripturl") != -1) {
 				String url = URLDecoder.decode(requestFromBrowser
 						.getParameter("url"), "UTF8");
 				session.setScript(new URLScript(url));
 				startPlayback(requestFromBrowser, session);
-//				sendSidCookieResponse(session);
 			} else if (uri.indexOf("/recordstart") != -1) {
-				// System.out.println("########### "+session.id());
+//				 System.out.println("########### "+session.id());
 				startRecorder(requestFromBrowser, session);
-				sendSidCookieResponse(session);
+				sendBlankResponse(session);
 			} else if (uri.indexOf("/recordstop") != -1) {
 				session.getRecorder().stop();
-				sendSidCookieResponse(session);
+				sendBlankResponse(session);
 			} else if (uri.indexOf("/record") != -1) {
 				session.getRecorder().record(
 						requestFromBrowser.getParameter("event"),
@@ -209,11 +207,11 @@ public class ProxyProcessor implements Runnable {
 				sendResponseToBrowser(new NoCacheHttpResponse(""));
 			} else if (uri.indexOf("/winopen") != -1) {
 				session.setIsWindowOpen(true);
-				sendSidCookieResponse(session);
+				sendBlankResponse(session);
 			} else if (uri.indexOf("/state") != -1) {
 				sendResponseToBrowser(proxyStateResponse(session));
 			}else if(uri.indexOf("/setCommonCookie")!=-1) {
-				sendSidCookieResponse(session);				
+				sendBlankResponse(session);				
 			}
 			else if (uri.indexOf("/auto") != -1) {
 				String fileName = URLDecoder.decode(requestFromBrowser
@@ -335,7 +333,7 @@ public class ProxyProcessor implements Runnable {
 			session.startPlayBack();
 		session.setVariable("sahi_play", "1");
 		session.setVariable("sahiPaused", "1");		
-		sendSidCookieResponse(session);
+		sendBlankResponse(session);
 	}
 
 	private void sendLogResponse(String fileName) throws IOException {
@@ -345,13 +343,8 @@ public class ProxyProcessor implements Runnable {
 			sendResponseToBrowser(new HttpFileResponse(fileName));
 	}
 
-	private void sendSidCookieResponse(Session session) throws IOException {
-		HttpResponse httpResponse = new HttpFileResponse(Configuration
-				.getHtdocsRoot()
-				+ "spr/close.htm");
-		// HttpResponse httpResponse = new NoCacheHttpResponse("");
-		sendResponseToBrowser(addSahisidCookie(
-				httpResponse, session));
+	private void sendBlankResponse(Session session) throws IOException {
+		sendResponseToBrowser(new NoCacheHttpResponse(""));
 	}
 
 	private HttpResponse addSahisidCookie(HttpResponse httpResponse,
@@ -431,9 +424,11 @@ public class ProxyProcessor implements Runnable {
 		props.setProperty("isRecording", "" + session.isRecording());
 		props.setProperty("isWindowOpen", "" + session.isWindowOpen());
 		props.setProperty("hotkey", "" + Configuration.getHotKey());
-		return new NoCacheHttpResponse(new HttpFileResponse(Configuration
+		NoCacheHttpResponse httpResponse = new NoCacheHttpResponse(new HttpFileResponse(Configuration
 				.getHtdocsRoot()
 				+ "spr/state.js", props));
+		addSahisidCookie(httpResponse, session);
+		return httpResponse;
 	}
 
 	private Session getSession(HttpRequest requestFromBrowser) {
