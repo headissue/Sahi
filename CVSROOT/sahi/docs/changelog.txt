@@ -1,9 +1,7 @@
-* Changed controller GUI for better usability.
-* Changed logs formatting.
-* Some bug fixes.
-* _navigateTo(url) added for navigating to urls.
+* Non ASCII characters are escaped into unicode sequences for recorded script.
+* Removed multiple pop ups and reloads of Controller GUI during record/playback.
+* Fixed bug for Asserts on checkbox and radio.
 
 Known issues
-* Non ASCII characters not recorded correctly.
 * Firefox has problems with multithreaded playback due to windows not closing properly.
 * Multi-select form element does not record correctly.

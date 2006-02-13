@@ -18,6 +18,5 @@ Please refer to docs directory in release.
 
 Known Issues
 ------------
-* Non ASCII characters not recorded correctly.
 * Firefox has problems with multithreaded playback due to windows not closing properly.
 * Multi-select form element does not record correctly
