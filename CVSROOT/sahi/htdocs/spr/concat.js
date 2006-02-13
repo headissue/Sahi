@@ -1800,7 +1800,7 @@ function sahiConvertUnicode(source){
 	for (i=0; i<source.length; i++){
 		if (source.charCodeAt(i) > 127)
 			result += addSlashU(source.charCodeAt(i).toString(16));
-		else result += source[i];
+		else result += source.charAt(i);
 	}
 	return result;
 }
@@ -1891,7 +1891,7 @@ function getScript(info) {
 	} else if (ev == "setvalue") {
 		cmd = "_setValue(" + accessor + ", " + sahiConvertUnicode(quoted(value)) +  ");";
 	} else if (ev == "setselected") {
-		cmd = "_setSelected(" + accessor + ", " + quoted(value) +  ");";
+		cmd = "_setSelected(" + accessor + ", " + sahiConvertUnicode(quoted(value)) +  ");";
 	} else if (ev == "assert") {
 		cmd = "_assertNotNull(" + accessor + ");\r\n";
 		if (type == "cell") {
