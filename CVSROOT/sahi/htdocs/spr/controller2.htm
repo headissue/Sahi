@@ -4,6 +4,37 @@
 </title>
 <script>
 var isOpen = true;
+var KEY_SHIFT = 16;
+var KEY_CONTROL = 17;
+var KEY_ALT = 18;
+var KEY_Q = 81;
+var KEY_K = 75;
+
+top.opener.top._isControlKeyPressed = false;
+top.opener.top._isQKeyPressed = false;
+top.opener.top._isAltKeyPressed = false;
+function sahiKeyUp(e){
+    if (!e) e = window.event;
+    if (e.keyCode == KEY_CONTROL) top.opener.top._isControlKeyPressed = false;
+    if (e.keyCode == KEY_ALT) top.opener.top._isAltKeyPressed = false;
+}
+function sahiKeyDown(e){
+	try{
+	    if (!e) e = window.event;
+	    if (e.keyCode == KEY_CONTROL) top.opener.top._isControlKeyPressed = true;
+	    else if (e.keyCode == KEY_ALT) top.opener.top._isAltKeyPressed = true;
+    }catch(e){
+    throw e;
+    	sahiHandleException(e);
+    }
+}
+try{
+    document.onkeydown=sahiKeyDown;
+    document.onkeypress=sahiKeyUp;
+    document.onkeyup=sahiKeyUp;
+}catch(ex){
+	sahiHandleException(ex);
+}
 </script>
 <frameset rows="30px,*,0px" border=0px>
 <frame src="tabs.htm" scrolling="no" style="margin:0px">

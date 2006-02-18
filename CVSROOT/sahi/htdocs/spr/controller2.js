@@ -356,7 +356,7 @@ function demoSetValue(){
 	evaluateExpr();
 }
 function append(){
-   sahiSendToServer('/_s_/dyn/record?event=append&value='+escape(document.currentForm.debug.value));
+   sahiSendToServer('/_s_/dyn/record?cmd='+escape(document.currentForm.debug.value));
 }
 
 function addSahi(s){

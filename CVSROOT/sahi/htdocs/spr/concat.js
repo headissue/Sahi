@@ -1048,15 +1048,18 @@ function sahiOnEv(e){
 	if (e.handled == true) return true; //FF
 	if (sahiGetServerVar("sahiEvaluateExpr") == "true") return true;
 	var targ = getTarget(e);
-	if (e.type == "click" && targ.form && targ.type){
-		var type = targ.type;
-		if (type == "text" || type == "textarea" || type == "password" 
-		|| type == "select-one" || type == "select-multiple") return true;
+	if (e.type == "click" ){
+		if (targ.form && targ.type){
+			var type = targ.type;
+			if (type == "text" || type == "textarea" || type == "password" 
+			|| type == "select-one" || type == "select-multiple") return true;
+		}
 	}
 	var info = sahiGetAccessorInfo(targ);
-	var qs = getSahiPopUpQS()+sahiGetAccessorInfoQS(info);
-	if (sahiHasEventBeenRecorded(qs)) return true; //IE
-    sahiSendToServer('/_s_/dyn/record?'+qs);
+	var cmd = getScript(info);
+	if (cmd == null) return true;
+	if (sahiHasEventBeenRecorded(cmd)) return true; //IE
+    sahiSendToServer('/_s_/dyn/record?cmd='+escape(cmd));
     e.handled = true; //FF
 	showInController(info);
     return true;
@@ -1084,12 +1087,6 @@ function sahiHasEventBeenRecorded(qs){
 function getPopupName(){
 	if (window.top.opener != null && window.top.opener != window.top) {
 		return top.name;
-	}
-	return "";
-}
-function getSahiPopUpQS(){
-	if (window.top.opener != null && window.top.opener != window.top) {
-		return "popup="+top.name+"&";
 	}
 	return "";
 }
@@ -1874,6 +1871,7 @@ function sahiIsFirstExecutableFrame(){
 }
 function getScript(info) {
 	var accessor = getAccessor1(info);
+	if (accessor == null) return null;
 	var ev = info.event;
 	var value = info.value;
 	var type = info.type
@@ -1886,8 +1884,6 @@ function getScript(info) {
 		cmd = "_wait(2000);";
 	} else if (ev == "click") {
 		cmd = "_click(" + accessor + ");";
-	} else if (ev == "clicklink") {
-		cmd = "_click(" + accessor + "," + quoted(value) +  ");";
 	} else if (ev == "setvalue") {
 		cmd = "_setValue(" + accessor + ", " + sahiConvertUnicode(quoted(value)) +  ");";
 	} else if (ev == "setselected") {
@@ -1907,9 +1903,7 @@ function getScript(info) {
 		cmd = "_wait(" + value + ");";
 	} else if (ev == "mark") {
 		cmd = "//MARK: " + value;
-	} else if (ev == "append") {
-		cmd = value;
-	}
+	} 
 	if (cmd != null && popup != null && popup != "") {
 		cmd = "_popup(\"" + popup + "\")." + cmd;
 	}
