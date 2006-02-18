@@ -14,33 +14,7 @@ public class Recorder {
 	boolean isStarted = false;
 	private static Logger logger = Configuration
 			.getLogger("com.sahi.record.Recorder");
-	private ScriptFormat scriptFormat;
 	private File file = null;
-
-	public Recorder(ScriptFormat scriptFormat) {
-		this.scriptFormat = scriptFormat;
-	}
-
-	public void record(String event, String accessor, String value,
-			String shortHand, String type, String popup) {
-		String cmd = null;
-		cmd = scriptFormat.getScript(event, accessor, value, shortHand, type, popup);
-		if (!isStarted)
-			return;
-		if (cmd == null)
-			return;
-		if (file == null)
-			return;
-		logger.fine("Record:" + cmd);
-		try {
-			out = new FileOutputStream(file, true);
-			out.write((cmd + "\n").getBytes());
-			out.close();
-			out = null;
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
 
 	public void start(String fileName) {
 		logger.fine("Starting to write  to " + fileName + ".");
@@ -70,5 +44,23 @@ public class Recorder {
 
 	public boolean isRecording() {
 		return isStarted;
+	}
+
+	public void record(String cmd) {
+		if (!isStarted)
+			return;
+		if (cmd == null)
+			return;
+		if (file == null)
+			return;
+		logger.fine("Record:" + cmd);
+		try {
+			out = new FileOutputStream(file, true);
+			out.write((cmd + "\n").getBytes());
+			out.close();
+			out = null;
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 }

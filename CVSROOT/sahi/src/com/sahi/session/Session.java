@@ -3,7 +3,6 @@ package com.sahi.session;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.sahi.config.Configuration;
 import com.sahi.playback.SahiScript;
 import com.sahi.playback.log.LogFileConsolidator;
 import com.sahi.playback.log.PlayBackLogger;
@@ -48,7 +47,7 @@ public class Session {
 	}
 
 	public Recorder getRecorder() {
-		if (this.recorder == null) this.recorder = new Recorder(Configuration.getScriptFormat());
+		if (this.recorder == null) this.recorder = new Recorder();
 		return recorder;
 	}
 

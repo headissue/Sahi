@@ -1,15 +1,13 @@
 package com.sahi.config;
 
-import com.sahi.record.ScriptFormat;
-import com.sahi.record.SahiScriptFormat;
-import com.sahi.util.Utils;
-
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.File;
 import java.util.Properties;
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
+
+import com.sahi.util.Utils;
 
 /**
  * User: nraman Date: Jun 3, 2005 Time: 12:48:07 AM To
@@ -38,10 +36,6 @@ public class Configuration {
 		}
 	}
 
-	public static String getScriptFormatClassName() {
-		return properties.getProperty("scriptformat.classname");
-	}
-
 	public static String getBrowserExecutable() {
 		try {
 			return properties.getProperty("browser");
@@ -56,22 +50,6 @@ public class Configuration {
 		} catch (Exception e) {
 			return 9999;
 		}
-	}
-
-	public static ScriptFormat getScriptFormat() {
-		Class clazz = null;
-		try {
-			clazz = Class.forName(getScriptFormatClassName());
-			return (ScriptFormat) clazz.newInstance();
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		} catch (InstantiationException e) {
-			e.printStackTrace();
-		}
-		System.out.println("Loading default SahiScriptFormat due to errors.");
-		return new SahiScriptFormat();
 	}
 
 	public static Logger getLogger(String name) {

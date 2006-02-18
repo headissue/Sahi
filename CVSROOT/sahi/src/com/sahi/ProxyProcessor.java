@@ -187,13 +187,7 @@ public class ProxyProcessor implements Runnable {
 				session.getRecorder().stop();
 				sendBlankResponse(session);
 			} else if (uri.indexOf("/record") != -1) {
-				session.getRecorder().record(
-						requestFromBrowser.getParameter("event"),
-						requestFromBrowser.getParameter("accessor"),
-						requestFromBrowser.getParameter("value"),
-						requestFromBrowser.getParameter("type"),
-						requestFromBrowser.getParameter("shorthand"),
-						requestFromBrowser.getParameter("popup"));
+				session.getRecorder().record(requestFromBrowser.getParameter("cmd"));
 				sendResponseToBrowser(new NoCacheHttpResponse(""));
 			} else if (uri.indexOf("/scriptslist") != -1) {
 				sendResponseToBrowser(new NoCacheHttpResponse(ScriptUtil
