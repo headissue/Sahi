@@ -17,6 +17,7 @@ import com.sahi.config.Configuration;
 import com.sahi.playback.FileScript;
 import com.sahi.playback.SahiScript;
 import com.sahi.playback.SahiScriptHTMLAdapter;
+import com.sahi.playback.ScriptFactory;
 import com.sahi.playback.ScriptUtil;
 import com.sahi.playback.URLScript;
 import com.sahi.playback.log.LogFileConsolidator;
@@ -171,13 +172,13 @@ public class ProxyProcessor implements Runnable {
 			} else if (uri.indexOf("/setscriptfile") != -1) {
 				String fileName = URLDecoder.decode(requestFromBrowser
 						.getParameter("file"), "UTF8");
-				session.setScript(new FileScript(
+				session.setScript(new ScriptFactory().getScript(
 						getScriptFileWithPath(fileName)));
 				startPlayback(requestFromBrowser, session);
 			} else if (uri.indexOf("/setscripturl") != -1) {
 				String url = URLDecoder.decode(requestFromBrowser
 						.getParameter("url"), "UTF8");
-				session.setScript(new URLScript(url));
+				session.setScript(new ScriptFactory().getScript(url));
 				startPlayback(requestFromBrowser, session);
 			} else if (uri.indexOf("/recordstart") != -1) {
 				// System.out.println("########### "+session.id());

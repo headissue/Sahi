@@ -22,11 +22,4 @@ public class URLScript extends SahiScript {
 		urlScript.parents = parents;
 		return urlScript;
 	}
-
-	String getFQN(String scriptName) {
-		if (scriptName.indexOf("http://") != 0) {
-			scriptName = base + scriptName;
-		}
-		return scriptName;
-	}
 }

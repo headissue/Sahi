@@ -14,6 +14,8 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import sun.security.krb5.internal.n;
+
 import com.sahi.config.Configuration;
 import com.sahi.util.Utils;
 
@@ -37,8 +39,7 @@ public abstract class SahiScript {
 	}
 
 	public SahiScript(String fileName) {
-		parents = new ArrayList();
-		init(fileName);
+		this(fileName, new ArrayList());
 	}
 
 	public SahiScript(String fileName, ArrayList parents) {
@@ -92,18 +93,24 @@ public abstract class SahiScript {
 
 	private String processInclude(String line) {
 		final String include = getInclude(line);
-		if (include != null && !parents.contains(getFQN(include))) {
+		if (include != null && !isRecursed(include)) {
 			ArrayList clone = (ArrayList) parents.clone();
 			clone.add(this.fqn);
-			return getNewInstance(include, clone).modifiedScript();
+			return new ScriptFactory().getScript(getFQN(include), clone).modifiedScript();
 		}
 		return "";
 	}
 
-	abstract String getFQN(String include);
+	private boolean isRecursed(final String include) {
+		return parents.contains(getFQN(include));
+	}
 
-	abstract SahiScript getNewInstance(String scriptName,
-			ArrayList parentScriptName);
+	String getFQN(String scriptName) {
+		if (scriptName.indexOf("http://") != 0 && scriptName.indexOf("https://") != 0) {
+			scriptName = base + scriptName;
+		}
+		return scriptName;
+	}
 
 	static String getInclude(String line) {
 		final String re = ".*_include\\([\"|'](.*)[\"|']\\).*";

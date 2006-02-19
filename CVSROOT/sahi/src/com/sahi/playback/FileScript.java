@@ -21,8 +21,4 @@ public class FileScript extends SahiScript {
 		fileScript.parents = parents;
 		return fileScript;
 	}
-
-	String getFQN(String scriptName) {
-		return base + scriptName;
-	}
 }
