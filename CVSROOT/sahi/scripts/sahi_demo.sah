@@ -1,7 +1,7 @@
 var $linkText = "Link Test";
 _click(_link($linkText));
 
-_include("sahi_demo_include.sah");
+_include("http://localhost:9999/_s_/scripts/sahi_demo_include.sah");
 _click(_link("Form Test"));
 
 function testAccessors(){
