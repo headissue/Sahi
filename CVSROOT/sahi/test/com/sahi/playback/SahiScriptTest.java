@@ -17,12 +17,12 @@ public class SahiScriptTest extends TestCase {
 
 	public void testModify() {
 		assertEquals(
-				"sahiAdd(\"sahi_assertEquals(sahi_table(\\\"aa\\\"))\", \"null#1\")\r\n",
-				new TestScript().modify("_assertEquals(_table(\"aa\"))"));
+				"sahiAdd(\"sahi_assertEqual(sahi_table(\\\"aa\\\"))\", \"null#1\")\r\n",
+				new TestScript().modify("_assertEqual(_table(\"aa\"))"));
 			
 		assertEquals(
-				"sahi_assertEquals(sahi_table(\"aa\"))\r\n",
-				new TestScript().modify("__assertEquals(_table(\"aa\"))"));
+				"sahi_assertEqual(sahi_table(\"aa\"))\r\n",
+				new TestScript().modify("__assertEqual(_table(\"aa\"))"));
 			
 		assertEquals("if(sahi_table(\"aa\"))\r\n", new TestScript()
 				.modify("if(_table(\"aa\"))"));
@@ -62,14 +62,21 @@ public class SahiScriptTest extends TestCase {
 						.modify("_call(fn1())"));
 
 	}
+	
+	public void testKeywordsAsASubstringFails() {
+		assertEquals(
+		"sahiAdd(\"sahi_setValue(sahi_textbox (\\\"form_loginname\\\"), \\\"narayanraman\\\");\", \"null#1\")\r\n", 
+		new TestScript()
+				.modify("_setValue(_textbox (\"form_loginname\"), \"narayanraman\");"));		
+	}
 
 	public void testModifyFunctionNames() {
-		assertEquals("sahi_setGlobal", TestScript
-				.modifyFunctionNames("_setGlobal"));
-		assertEquals("_insert", TestScript
-				.modifyFunctionNames("_insert"));
-		assertEquals("sahi_setValue", TestScript
-				.modifyFunctionNames("__setValue"));
+		assertEquals("sahi_setGlobal(", TestScript
+				.modifyFunctionNames("_setGlobal("));
+		assertEquals("_insert  (", TestScript
+				.modifyFunctionNames("_insert  ("));
+		assertEquals("sahi_setValue (", TestScript
+				.modifyFunctionNames("__setValue ("));
 	}
 	
 	public void testGetRegExp() {
@@ -81,7 +88,7 @@ public class SahiScriptTest extends TestCase {
 				"_select|_setSelected|_setValue|_simulateEvent|_submit|" +
 				"_textarea|_textbox|_event|_call|_eval|_setGlobal|_getGlobal|" +
 				"_wait|_random|_savedRandom|_cell|_table|_containsText|" +
-				"_containsHTML|_popup|_byId|_highlight|_log|_navigateTo)", TestScript.getRegExp(true));
+				"_containsHTML|_popup|_byId|_highlight|_log|_navigateTo)(\\s*\\()", TestScript.getRegExp(true));
 		
 		assertEquals("_?(_accessor|_alert|_assertEqual|" +
 				"_assertNotEqual|_assertNotNull|_assertNull|_assertTrue|" +
@@ -91,16 +98,16 @@ public class SahiScriptTest extends TestCase {
 				"_select|_setSelected|_setValue|_simulateEvent|_submit|" +
 				"_textarea|_textbox|_event|_call|_eval|_setGlobal|_getGlobal|" +
 				"_wait|_random|_savedRandom|_cell|_table|_containsText|" +
-				"_containsHTML|_popup|_byId|_highlight|_log|_navigateTo)", TestScript.getRegExp(false));
+				"_containsHTML|_popup|_byId|_highlight|_log|_navigateTo)(\\s*\\()", TestScript.getRegExp(false));
 	}
 	
 	public void testGetActionRegExp() {
-		assertEquals("^(_alert|_assertEqual|_assertNotEqual|" +
+		assertEquals("^(?:_alert|_assertEqual|_assertNotEqual|" +
 				"_assertNotNull|_assertNull|_assertTrue|" +
 				"_assertNotTrue|_click|_clickLinkByAccessor|" +
 				"_getCellText|_getSelectedText|_setSelected|" +
 				"_setValue|_simulateEvent|_submit|_call|_eval|_setGlobal|" +
-				"_wait|_popup|_highlight|_log|_navigateTo).*",
+				"_wait|_popup|_highlight|_log|_navigateTo)\\s*\\(.*",
 				TestScript.getActionRegExp());
 	}
 	
@@ -142,5 +149,13 @@ public class SahiScriptTest extends TestCase {
 
 		protected void loadScript(String url) {
 		}
+	}
+	
+	public void testBrackets() {
+		assertEquals("axx", "a((".replaceAll("\\(", "x"));
+		assertEquals("sahi_log (form_login", "_log (form_login".replaceAll("_?(_log|_textbox)(\\s*\\()", "sahi$1$2"));
+		assertEquals("sahi_log(form_login", "_log(form_login".replaceAll("_?(_log|_textbox)(\\s*\\()", "sahi$1$2"));
+		assertTrue("_assertEqual(".matches("^(_assertEqual)\\s*\\("));
+		assertTrue("_assertEqual           (".matches("^(_assertEqual)\\s*\\("));
 	}
 }

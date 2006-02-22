@@ -9,7 +9,6 @@ import com.sahi.playback.SahiScriptTest;
 import com.sahi.playback.ScriptHandlerTest;
 import com.sahi.playback.URLScriptTest;
 import com.sahi.playback.log.PlayBackLogFormatterTest;
-import com.sahi.record.SahiScriptFormatTest;
 import com.sahi.response.HttpFileResponseTest;
 import com.sahi.util.UtilsTest;
 
@@ -24,7 +23,6 @@ public class AllTests extends TestSuite {
         suite.addTestSuite(SahiScriptTest.class);
         suite.addTestSuite(ScriptHandlerTest.class);
         suite.addTestSuite(URLScriptTest.class);
-        suite.addTestSuite(SahiScriptFormatTest.class);
         suite.addTestSuite(HttpFileResponseTest.class);
         suite.addTestSuite(SahiScriptHTMLAdapterTest.class);
         suite.addTestSuite(UtilsTest.class);

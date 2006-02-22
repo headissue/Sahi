@@ -14,8 +14,6 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import sun.security.krb5.internal.n;
-
 import com.sahi.config.Configuration;
 import com.sahi.util.Utils;
 
@@ -127,25 +125,25 @@ public abstract class SahiScript {
 		ArrayList keywords = getActionKeyWords();
 		StringBuffer sb = new StringBuffer();
 		int size = keywords.size();
-		sb.append("^(");
+		sb.append("^(?:");
 		for (int i = 0; i < size; i++) {
 			String keyword = (String) keywords.get(i);
-			sb.append(keyword);
+			sb.append(keyword);			
 			if (i != size - 1)
 				sb.append("|");
 		}
-		sb.append(").*");
+		sb.append(")\\s*\\(.*");
 		return sb.toString();	
 	}
 	
 	public static String modifyFunctionNames(String unmodified) {
 		unmodified = stripSahiFromFunctionNames(unmodified);
-		String modified = unmodified.replaceAll(REG_EXP_FOR_ADDING, "sahi$1");
+		String modified = unmodified.replaceAll(REG_EXP_FOR_ADDING, "sahi$1$2");
 		return modified;
 	}
 
 	public static String stripSahiFromFunctionNames(String unmodified) {
-		String modified = unmodified.replaceAll(REG_EXP_FOR_STRIPPING, "$1");
+		String modified = unmodified.replaceAll(REG_EXP_FOR_STRIPPING, "$1$2");
 		return modified;
 	}
 
@@ -162,7 +160,7 @@ public abstract class SahiScript {
 			if (i != size - 1)
 				sb.append("|");
 		}
-		sb.append(")");
+		sb.append(")(\\s*\\()");
 		return sb.toString();
 	}
 	
@@ -186,9 +184,7 @@ public abstract class SahiScript {
 		keywords.add("_call");
 		keywords.add("_eval");
 		keywords.add("_setGlobal");
-//		keywords.add("_getGlobal");
 		keywords.add("_wait");
-//		keywords.add("_savedRandom");
 		keywords.add("_popup");
 		keywords.add("_highlight");		
 		keywords.add("_log");		

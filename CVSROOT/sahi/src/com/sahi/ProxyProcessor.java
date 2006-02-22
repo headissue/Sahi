@@ -19,7 +19,6 @@ import com.sahi.playback.SahiScript;
 import com.sahi.playback.SahiScriptHTMLAdapter;
 import com.sahi.playback.ScriptFactory;
 import com.sahi.playback.ScriptUtil;
-import com.sahi.playback.URLScript;
 import com.sahi.playback.log.LogFileConsolidator;
 import com.sahi.processor.SuiteProcessor;
 import com.sahi.request.HttpRequest;
