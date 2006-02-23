@@ -3,6 +3,31 @@
     <title>Sahi - Web Automation and Test Tool</title>
 	<link rel="stylesheet" type="text/css" href="sahi.css"/>
 </head>
+
+<script>
+function show(id){
+	hide('intro');
+	hide('features');
+	hide('snapshot');
+	hide('download');
+	hide('prereq');
+	hide('install');
+	hide('started');
+	hide('demo');
+	hide('record');
+	hide('playback');
+	hide('suites');
+	hide('logging');
+	hide('notyet');
+	hide('limitations');
+	document.getElementById(id).style.display="block";
+}
+function hide(id){
+	document.getElementById(id).style.display="none";
+}
+
+</script>
+
 <body>
 
 <table width="100%" border="0"><tr><td>
@@ -15,27 +40,34 @@
 </td>
 </tr></table>
 
-<a href="#intro">Introduction</a></br>
+<table width="100%" border="0">
+<tr><td valign="top" width="25%px">
 
-<a href="#features">Features</a></br></br>
-<a href="#download">Downloading Sahi</a></br>
-<a href="#prereq">Prerequisites</a></br>
-<a href="#install">Installing Sahi</a></br></br>
-<a href="#started">Getting started</a></br>
-<a href="#record">Recording through Sahi</a></br>
-<a href="#playback">Playing back</a></br></br>
+<br/>
+<a href="javascript:show('intro')">Introduction</a></br>
+
+<a href="javascript:show('features')">Features</a></br></br>
+<a href="javascript:show('snapshot')">Snapshots</a></br></br>
+<a href="javascript:show('download')">Downloading Sahi</a></br>
+<a href="javascript:show('prereq')">Prerequisites</a></br>
+<a href="javascript:show('install')">Installing Sahi</a></br></br>
+<a href="javascript:show('started')">Getting started</a></br>
+<a href="javascript:show('demo')">Demo server</a></br>
+<a href="javascript:show('record')">Recording through Sahi</a></br>
+<a href="javascript:show('playback')">Playing back</a></br></br>
 <a href="scripting.html">Scripting</a>, <a href="apis.html">APIs</a></br></br>
-<a href="#suites">Suites</a></br>
+<a href="javascript:show('suites')">Suites</a></br>
 <a href="ant.html">Ant Support<a/><br/></br>
-<a href="#logging">Logging</a></br></br>
+<a href="javascript:show('logging')">Logging</a></br></br>
 <a href="devnotes.html">Sahi - Technical Aspects</a></br></br>
-<a href="#notyet">Not yet supported, but coming in</a></br>
+<a href="javascript:show('notyet')">Not yet supported, but coming in</a></br>
+<br/><br/>
+Please send your feedback to<br><a href="http://sourceforge.net/users/narayanraman/">V Narayan Raman</a>.
 
-</br></br>
+</td><td valign="top" align="left">
+<div style="display:block" id="intro">
 
-(<a href="#top">Top</a>)
-
-<br/><h4><a name="intro">Introduction</a></h4>
+<h4><a name="intro">Introduction</a></h4>
 
 Sahi is an automation and testing tool for web applications, with the facility to record and playback scripts.<br/>
 Developed in java and javascript, this tool uses simple javascript to execute events on the browser. <br/>
@@ -48,60 +80,74 @@ Sahi runs as a proxy server and the browser needs to use the sahi server as its 
 Sahi then injects javascript so that it can access elements in the webpage.<br/>
 This makes the tool independant of the website/ web application.<br/>
 
-(<a href="#top">Top</a>)
+</div>
+<div style="display:none" id="features">
 
-<br/><h4><a name="features">Features</a></h4>
+<h4><a name="features">Features</a></h4>
 
 <ul>
-<li> Recording of browser actions.</li>
+<li> <b>Record</b> and <b>playback</b> of browser actions.</li>
 
-<li> Playback of recorded/scripted actions.</li>
-<li> Accessor Viewer for identifying html elements for scripting</li>
-<li> Easily editable scripts (text files)</li>
-<li> Simple APIs</li>
-<li> Integrates with ant builds</li>
+<li> <b>Controller</b> for identifying html elements and script generation</li>
+<li> <b>Text based scripts</b> (easily editable)</li>
+<li> <b>Simple APIs</b></li>
+<li> Integrates with <b>ant builds</b></li>
 <li> Logging/reports</li>
 
 <li> Script is in javascript hence supports concepts and constructs that javascript supports</li>
 <li> Support for global variables stored across pages in a test and across tests in a suite.</li>
 <li> Script refactorable into functions and files.</li>
-<li> Scripts runnable through url.</li>
-Bugs can be recorded by testers and the sahi script can be published on a web server.<br/>
-This url can be included in bug reports.<br/>
-Developers can reproduce the bug by pointing to that url in the bug report.<br/>
+<li> <b>Scripts runnable through url</b>.</li>
+<ul>
+<li>Script can be generated using JSPs or any dynamic web page (helps in data driven tests).</li>
+<li>Bugs can be recorded by testers and the sahi script can be published on a web server.</li>
+<li>This url can be included in bug reports.</li>
+<li>Developers can reproduce the bug by pointing to that url in the bug report.</li>
+</ul>
 
 <li> Scripts automatically available to others through HTTP</li>
 <li> Very lightweight</li>
-<li> Tests do not need the browser window to be in focus.</li>
-<li> Suites can run in multiple threads thus reducing the test execution time.</li>
+<li> Tests <b>do not need the browser window to be in focus</b>.</li>
+<li> Suites can <b>run in multiple threads</b> thus <b>reducing</b> the test execution <b>time</b>.</li>
 <li> Supports external proxy and HTTPS.</li>
 </ul>
 
 
 
-(<a href="#top">Top</a>)
+</div>
+<div style="display:none" id="snapshot">
 
-<br/><h4><a name="download">Downloading Sahi</a></h4>
+<img src="sahi_recording.jpg" width="900px" onclick="window.open('sahi_recording.jpg', '_blank', 'toolbar=no,width=900px')"></img>
+
+</div>
+<div style="display:none" id="download">
+
+<h4><a name="download">Downloading Sahi</a></h4>
 
 Download the latest Sahi zip file from <a href="http://sourceforge.net/projects/sahi/">http://sourceforge.net/projects/sahi/</a><br/>
 
 
 
-(<a href="#top">Top</a>)
+</div>
+<div style="display:none" id="prereq">
 
-<br/><h4><a name="prereq">Prerequisites</a></h4>
+<h4><a name="prereq">Prerequisites</a></h4>
 <a href="http://java.sun.com" target="_blank">JRE 1.4 or above</a> is needed for running Sahi.</br>
 if the module is to be rebuilt from source, JDK 1.4 or above, <a href="http://ant.apache.org/bindownload.cgi" target="_blank">ant</a> 1.6 or above, log4j.jar and junit.jar are also needed.</br>
 
-(<a href="#top">Top</a>)
-<br/><h4><a name="install">Installing Sahi</a></h4>
+
+</div>
+<div style="display:none" id="install">
+
+<h4><a name="install">Installing Sahi</a></h4>
 
 1) Unzip sahi.zip to a desired location<br/>
+This is mostly the machine from which you will be developing scripts.
 
+</div>
+<div style="display:none" id="started">
 
-(<a href="#top">Top</a>)
-
-<br/><h4><a name="started">Getting started</a></h4>
+<h4><a name="started">Getting started</a></h4>
 
 <b>Starting Sahi:</b><br/>
 <p>
@@ -125,10 +171,11 @@ This can be modified through <a href="props.html">sahi.properties</a>
 	<li>Go to Tools &gt; Options &gt; General &gt; Connection Settings &gt;</li>
 	<li>Set to "Manual Proxy Configuration"</li>
 	<li>Set "HTTP Proxy" to "localhost"</li>
+	<li>Set "SSL Proxy" to "localhost"</li>
 
 	<li>Set "Port" to "9999". (This setting can be modified through &lt;sahi_root&gt;/config/<a href="props.html">sahi.properties</a>)</li>
 
-	<li>Keep "Use the same proxy for all protocol" unchecked as Sahi does not understand protocols other than HTTP</li>
+	<li>Keep "Use the same proxy for all protocol" unchecked as Sahi does not understand protocols other than HTTP and SSL</li>
 	<li>NOTE: "No Proxy for" should NOT have localhost in it.</li>
 </ul>
 <br/>
@@ -152,9 +199,11 @@ My personal favorite while working on Firefox is "Proxy Button". It helps in a s
 
 These tools can considerably enhance the experience of using Sahi.<br>
 
-<br/><br/>
+</div>
+<div style="display:none" id="demo">
 
-<b><a name="demo">Starting the bundled demo web server if needed, for learning and understanding Sahi APIs:</a></b><br/>
+<h4>Experimenting with Demo Server</h4>
+<b><a name="demo">Start the bundled demo web server if needed, for learning and understanding Sahi APIs:</a></b><br/>
     Windows:<br/>
 
     - Go to &lt;sahi_root&gt;\bin and run web.bat<br/>
@@ -170,9 +219,10 @@ These can be modified through <a href="props.html">sahi.properties</a>
 
 <br/>
 
-(<a href="#top">Top</a>)
+</div>
+<div style="display:none" id="record">
 
-<br/><h4><a name="record">Recording through Sahi</a></h4>
+<h4><a name="record">Recording through Sahi</a></h4>
 
 
 <ul type="square">
@@ -195,11 +245,14 @@ The command will be executed and the result will be displayed in the textbox nea
 Once confirmed that the desired result has been achieved, that code snippet can be added to the recording by clicking "Append to Recording"<br/>
 
 <br/>
-You could use the <a href="#demo">demo application</a> bundled with Sahi to get your feet wet.<br/>
-(<a href="#top">Top</a>)
+You could use the <a href="javascript:show('demo')">demo application</a> bundled with Sahi to get your feet wet.<br/>
 
 
-<br/><h4><a name="playback">Playing back</a></h4>
+</div>
+<div style="display:none" id="playback">
+
+
+<h4><a name="playback">Playing back</a></h4>
 
 <ul type="square">
 	<li>Open (alt-dblclick) the popup window.</li>
@@ -211,9 +264,7 @@ You could use the <a href="#demo">demo application</a> bundled with Sahi to get 
 </ul>
 
 
-(<a href="#top">Top</a>)
-
-<br/><h4>Running test from the console</a></h4>
+<h4>Running test from the console</a></h4>
 
 If you wish to run a script called "MySahiScript.sah" on a page like say, http://<b>www.domain.com</b>/dir/page1.jsp do<br/>
 <br/>
@@ -222,9 +273,13 @@ If you wish to run a script called "MySahiScript.sah" on a page like say, http:/
 Note that www.sahidomain.com at the start of the URL is hardcoded, and should be used as is. Only the values in bold need to be changed.
 </pre>
 <br/>
-(<a href="#top">Top</a>)
 
-<br/><h4><a name="suites">Suites</a></h4>
+
+</div>
+<div style="display:none" id="suites">
+
+
+<h4><a name="suites">Suites</a></h4>
 
 Multiple tests can be run through ant. For each test in the suite, the ant target opens a browser, runs the test and closes the browser, <br/>
 The ant target specifies a suite file, say SuiteName.suite. <br/><br/>
@@ -256,23 +311,29 @@ test3.sah	abc/startPageForTest3.htm
 <br/>To run demo.xml, type "ant -f demo.xml"
 <br/>
 
-(<a href="#top">Top</a>)
+
+</div>
+<div style="display:none" id="logging">
+
+
 <h4><a name="logging">Logging</a></h4>
 
 Logs are created in "logs/playback/" directory.<br/>
 Log results can be accessed through the browser through http://mydomain/_s_/logs/
 <br/>
 
-(<a href="#top">Top</a>)
+</div>
+<div style="display:none" id="limitations">
 
-<br/><h4><a name="limitations">Limitations</a></h4>
+<h4><a name="limitations">Limitations</a></h4>
 
 <ul type="square">
 	<li>FileUpload using &lt;input type="file"&gt; is not supported.</li>
 	<li>Frames having pages from different domains in the same frameset does not work properly.</li>
 </ul>
 
-(<a href="#top">Top</a>)
+</div>
+<div style="display:none" id="notyet">
 
 <h4><a name="notyet">Not yet supported, but coming in</a></h4>
 
@@ -282,10 +343,7 @@ Log results can be accessed through the browser through http://mydomain/_s_/logs
 	<li>Better Sahi Controller with Debugging support</li>
 	<li>Support for non-english languages</li>
 </ul>
-(<a href="#top">Top</a>)
-<br/><br/>
-Please send your feedback to <a href="http://sourceforge.net/users/narayanraman/">V Narayan Raman</a>.
-<br/><br/>
+</td></tr></table>
 <script src="http://www.treepie.org/counter.js"></script>
 <!--RiteCounter-->
 <script type="text/javascript" src="http://www.ritecounter.com/scripts/counters.php?id=6641"></script>
