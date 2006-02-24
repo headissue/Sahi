@@ -74,16 +74,33 @@ class SahiTest {
 	}
 
 	private String escapeCommandStringForPlatform(String url) {
-		if (System.getProperty("os.name").toLowerCase()
-		    .startsWith("windows"))
+		if (isWindows())
 			return "\"" + browser + "\" \"" + url + "\"";
 		else
 			return browser.replaceAll("[ ]+", "\\ ")
 			    + " " + url.replaceAll("&", "\\&");
 	}
 
+	private boolean isWindows() {
+		return System.getProperty("os.name").toLowerCase()
+		    .startsWith("windows");
+	}
+
 	public void stop() {
 		logger.fine("Killing " + scriptName);		
-		if (process != null) process.destroy();		
+		if (process != null) {
+//			if (isFirefox() && isWindows()) {
+//				try {
+//					Runtime.getRuntime().exec("taskkill /PID "+process.toString());
+//				} catch (IOException e) {
+//					e.printStackTrace();
+//				}
+//			}
+			process.destroy();		
+		}
+	}
+
+	private boolean isFirefox() {
+		return browser.indexOf("firefox")!=-1;
 	}
 }
