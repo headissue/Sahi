@@ -16,7 +16,7 @@ public class HttpModifiedResponse extends HttpResponse {
 			+ "<div id='sahi_div' style='display:none'></div>\n" + "";
 
 	private static final String INJECT_BOTTOM = ""
-			+ "<script src='/_s_/spr/playback.js'></script>\n" + "";
+			+ "<!----><script src='/_s_/spr/playback.js'></script>\n" + "";
 
 	public HttpModifiedResponse(InputStream in) throws IOException {
 		super(in);
