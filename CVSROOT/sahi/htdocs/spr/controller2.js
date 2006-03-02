@@ -1,22 +1,25 @@
+function checkOpener(){
+	try{
+		var x = top.opener.document;
+	}
+	catch (e){
+	}
+}
+window.onerror=checkOpener;
 function o(f){
 //	window.open("", "channel", "height=100px,width=100px");
 //	f.rand.value=new Date();
 //	f.sahisid.value = sahiReadCookie("sahisid");
 }
-function play(){
-	
-//    top.opener.sahiStartPlaying();
-//    top.opener.sahiSetCurrentIndex(parseInt(document.playform.step.value));
-//
-//    if (parseInt(document.playform.step.value) == 0){
-//    	top.opener.top.location.reload(true);
-//	}
-//	else{
-//		top.opener.top.sahiEx();
-//	}
-	top.opener.top.sahiSetCurrentIndex(parseInt(document.playform.step.value));
-	top.opener.top.unpause();
-	top.opener.top.sahiEx();
+function play(){	
+	try{
+		top.opener.top.sahiSetCurrentIndex(parseInt(document.playform.step.value));
+		top.opener.top.unpause();
+		top.opener.top.sahiEx();
+	}catch (e){
+		alert("Please open the Controller again. \n(Press ALT-DblClick on the main window.)");
+		top.close();
+	}
 	return true;
 }
 function stepWisePlay(){
@@ -137,12 +140,11 @@ function doOnPlaybackLoad(){
 }
 function doOnTabsLoad(){
     try{
-        top.opener.top._isSahiWinOpen = true;
 		var hilightedTab = sahiGetServerVar("controller_tab")
 		if (hilightedTab == null || hilightedTab == "") hilightedTab = "playback";
         eval("show"+hilightedTab+"()");
+        top.opener.top._isSahiWinOpen = true;
     }catch(ex){
-    	throw ex;
 		sahiHandleException(ex);
     }
 }
@@ -227,13 +229,18 @@ var KEY_ALT = 18;
 var KEY_Q = 81;
 var KEY_K = 75;
 
-top.opener.top._isControlKeyPressed = false;
-top.opener.top._isQKeyPressed = false;
-top.opener.top._isAltKeyPressed = false;
+try{
+	top.opener.top._isControlKeyPressed = false;
+	top.opener.top._isQKeyPressed = false;
+	top.opener.top._isAltKeyPressed = false;
+}catch(ex){}
 function sahiKeyUp(e){
+	try{
     if (!e) e = window.event;
     if (e.keyCode == KEY_CONTROL) top.opener.top._isControlKeyPressed = false;
     if (e.keyCode == KEY_ALT) top.opener.top._isAltKeyPressed = false;
+    }catch(ex){
+    }
 }
 function sahiKeyDown(e){
 	try{
@@ -241,17 +248,13 @@ function sahiKeyDown(e){
 	    if (e.keyCode == KEY_CONTROL) top.opener.top._isControlKeyPressed = true;
 	    else if (e.keyCode == KEY_ALT) top.opener.top._isAltKeyPressed = true;
     }catch(e){
-    throw e;
-    	sahiHandleException(e);
     }
 }
 try{
     document.onkeydown=sahiKeyDown;
     document.onkeypress=sahiKeyUp;
     document.onkeyup=sahiKeyUp;
-}catch(ex){
-	sahiHandleException(ex);
-}
+}catch(ex){}
 
 
 function showrecord(){

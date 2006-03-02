@@ -459,6 +459,31 @@ function sahi_getSelectedText(el){
 function sahi_getCellText(el){
     return sahiTrim(sahiIsIE() ? el.innerText : el.textContent);
 }
+function sahi_getText(el){
+    return sahiTrim(sahiIsIE() ? el.innerText : el.textContent);
+}
+function sahiGetRowIndexWith(txt, tableEl){
+	for (var i=0; i<tableEl.rows.length; i++){
+		var r = tableEl.rows[i];
+		for (var j=0; j<r.cells.length; j++){
+			if (sahi_getText(r.cells[j]).indexOf(txt) != -1){
+				return i;
+			}
+		}
+	}
+	return -1;
+}
+function sahiGetColIndexWith(txt, tableEl){
+	for (var i=0; i<tableEl.rows.length; i++){
+		var r = tableEl.rows[i];
+		for (var j=0; j<r.cells.length; j++){
+			if (sahi_getText(r.cells[j]).indexOf(txt) != -1){
+				return j;
+			}
+		}
+	}
+	return -1;	
+}
 function sahi_alert(s){
 	if (isSahiPlaying()){
 		
@@ -496,7 +521,17 @@ function sahi_cell(id, row, col){
 	if (row==null && col==null){
 		return sahiFindCell(id);
 	}
-	return id.rows[row].cells[col];
+	var rowIx = row;
+	var colIx = col;
+	if (typeof row == "string"){
+		rowIx = sahiGetRowIndexWith(row, id);
+		if (rowIx == -1) return null;
+	}
+	if (typeof col == "string"){
+		colIx = sahiGetColIndexWith(col, id);
+		if (colIx == -1) return null;
+	}
+	return id.rows[rowIx].cells[colIx];
 }
 function sahi_table(n){
 	return sahiFindTable(n);
@@ -505,7 +540,7 @@ function sahi_containsHTML(el, htm){
 	return el && el.innerHTML && el.innerHTML.indexOf(htm) != -1;
 }
 function sahi_containsText(el, txt){
-	return el && el.innerText && el.innerText.indexOf(txt) != -1;
+	return el && sahiGetText(el).indexOf(txt) != -1;
 }
 function sahi_popup(n){
 	if (top.opener != null && top.name == n){
@@ -1789,6 +1824,10 @@ function sahiGetText(el){
 }
 function sahiGetTextFromHTML(s){
 	s = s.replace(/<[^>]*>/g, "");
+	s = s.replace(/&amp;/g, "&");
+	s = s.replace(/&lt;/g, "<");
+	s = s.replace(/&gt;/g, ">");
+	s = s.replace(/&nbsp;/g, " ");
 	return s;	
 }
 function sahiConvertUnicode(source){

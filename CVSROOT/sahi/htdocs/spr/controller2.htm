@@ -3,6 +3,16 @@
 	Sahi Controller
 </title>
 <script>
+function checkOpener(){
+	try{
+		var x = top.opener.document;
+	}
+	catch (e){
+	}
+}
+window.onerror=checkOpener;
+
+
 var isOpen = true;
 var KEY_SHIFT = 16;
 var KEY_CONTROL = 17;
@@ -10,9 +20,14 @@ var KEY_ALT = 18;
 var KEY_Q = 81;
 var KEY_K = 75;
 
+try{
 top.opener.top._isControlKeyPressed = false;
 top.opener.top._isQKeyPressed = false;
 top.opener.top._isAltKeyPressed = false;
+}
+catch (e){
+}
+
 function sahiKeyUp(e){
     if (!e) e = window.event;
     if (e.keyCode == KEY_CONTROL) top.opener.top._isControlKeyPressed = false;
@@ -24,7 +39,7 @@ function sahiKeyDown(e){
 	    if (e.keyCode == KEY_CONTROL) top.opener.top._isControlKeyPressed = true;
 	    else if (e.keyCode == KEY_ALT) top.opener.top._isAltKeyPressed = true;
     }catch(e){
-    throw e;
+    	//throw e;
     	sahiHandleException(e);
     }
 }
