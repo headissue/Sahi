@@ -45,7 +45,7 @@ public class PlayBackLogFormatter extends Formatter {
 		int ix = s.lastIndexOf("[");
 		String msg = s.substring(0, ix).trim();
 		String href = s.substring(ix+1, s.lastIndexOf("]"));
-		return "<a class=\""+level+"\" href=\"/_s_/scripts/"+href+"\">"+msg+"</a>";
+		return "<a class=\""+level+"\" href=\"/_s_/dyn/highlighted/"+href+"\">"+msg+"</a>";
 
 	}
 	

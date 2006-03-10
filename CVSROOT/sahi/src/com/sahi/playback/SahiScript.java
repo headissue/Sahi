@@ -71,7 +71,7 @@ public abstract class SahiScript {
 						.escapeDoubleQuotesAndBackSlashes(line))));
 				sb.append(CONJUNCTION);
 				sb.append(scriptName);
-				sb.append("#");
+				sb.append("?n=");
 				sb.append(lineNumber);
 				sb.append(SUFFIX);
 				sb.append("\r\n");

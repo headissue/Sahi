@@ -285,11 +285,13 @@ public class ProxyProcessor implements Runnable {
 				final HttpFileResponse response = new HttpFileResponse(fileName);
 				if (lineNumber != -1) {
 					response
-							.data(ProxyProcessorHelper.highlight(
-									new String(response.data()), lineNumber)
+							.data(("<html><body><style>b{color:brown}</style><pre>" + ProxyProcessorHelper.highlight(
+									new String(response.data()), lineNumber) + "</pre></body></html>")
 									.getBytes());
 				}
-				System.out.println(new String(response.data()));
+				response.addHeader("Content-type", "text/html");
+				response.setRawHeaders(response.getRebuiltHeaderBytes());
+//				System.out.println(new String(response.data()));
 				sendResponseToBrowser(response);
 			} else if (uri.indexOf("/currentparsedscript") != -1) {
 				if (session.getScript() != null) {
