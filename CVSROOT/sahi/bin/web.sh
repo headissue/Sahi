@@ -1,3 +1,1 @@
-#!/bin/sh
-
-${JAVA_HOME}/bin/java -cp ${PWD}../lib/sahi.jar com.sahi.WebServer
+${JAVA_HOME}/bin/java -classpath ${PWD}../lib/sahi.jar com.sahi.WebServer
