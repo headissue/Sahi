@@ -141,7 +141,7 @@ function doOnPlaybackLoad(){
 function doOnTabsLoad(){
     try{
 		var hilightedTab = sahiGetServerVar("controller_tab")
-		if (hilightedTab == null || hilightedTab == "") hilightedTab = "playback";
+		if (hilightedTab == null || hilightedTab == "") hilightedTab = "record";
         eval("show"+hilightedTab+"()");
         top.opener.top._isSahiWinOpen = true;
     }catch(ex){
