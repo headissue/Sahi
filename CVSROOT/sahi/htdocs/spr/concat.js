@@ -1445,7 +1445,7 @@ function getWinParams(e){
         if (sahiIsIE()) positionParams = ",screenX="+x+",screenY="+y;
         else positionParams = ",screenX="+x+",screenY="+y;
     }
-    return "height=480px,width=460px,resizable=yes, toolbars=no"+positionParams;
+    return "height=520px,width=460px,resizable=yes, toolbars=no"+positionParams;
 }
 function getSahiWinHandle(){
     if (top._sahiControl && !top._sahiControl.isClosed) return top._sahiControl;
