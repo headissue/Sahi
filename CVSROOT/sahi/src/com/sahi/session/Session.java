@@ -15,7 +15,7 @@ import com.sahi.test.SahiTestSuite;
 public class Session {
 	private static Map sessions = new HashMap();
 	private String sessionId;
-	private boolean isWindowOpen;
+	private boolean isWindowOpen = true;
 	private Recorder recorder;
 	private SahiScript script;
 	private Map variables;

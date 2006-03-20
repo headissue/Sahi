@@ -213,6 +213,7 @@ public class ProxyProcessor implements Runnable {
 						getScriptFileWithPath(fileName)));
 				String startUrl = URLDecoder.decode(requestFromBrowser
 						.getParameter("startUrl"), "UTF8");
+				session.setIsWindowOpen(false);
 				session.startPlayBack();
 				sendResponseToBrowser(proxyAutoResponse(startUrl, session.id()));
 			} else if (uri.indexOf("/setvar") != -1) {
