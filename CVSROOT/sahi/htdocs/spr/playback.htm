@@ -57,6 +57,11 @@ body{
 	margin:8px;
 	background-color:lightgrey; 
 }
+.comment{
+color:darkred;
+font-size:10px;
+font-weight:bolder;
+}
 </style>
 </head>
 <body onload="doOnPlaybackLoad()" onbeforeunload="doOnPlaybackUnLoad()">
@@ -81,7 +86,7 @@ body{
 	<input type="text" name="starturl" value="" size="50">
 	</td></tr>	
 	<tr><td>	
-	<input type="submit" value="Set">
+	<input type="submit" value="Set"></td><td class="comment">Click 'Set', wait till page refreshes, then click 'Play'.
 	</td></tr>
 	</form>
 	</table>
@@ -104,7 +109,7 @@ body{
 	<input type="text" name="starturl" value="" size="50">
 	</td></tr>	
 	<tr><td>	
-	<input type="submit" value="Set">
+	<input type="submit" value="Set"></td><td class="comment">Click 'Set', wait till page refreshes, then click 'Play'.
 	</td></tr>
 	</form>
 	</table>
@@ -117,7 +122,7 @@ body{
 
 	<table width="100%">
 	<tr><td>
-	Replay:
+	Replay:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">Set script above, before clicking on 'Play'.</span>
 	</td></tr>
 	<tr><td bgcolor="">
 		<form name="playform" action="http://www.sahidomain.com/_s_/dyn/startplay"  onsubmit="o(this);play()" target="channel">

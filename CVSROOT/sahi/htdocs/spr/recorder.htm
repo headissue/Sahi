@@ -57,11 +57,19 @@ body{
 	margin:8px;
 	background-color:lightgrey; 
 }
+.comment{
+color:darkred;
+font-size:10px;
+font-weight:bolder;
+}
 </style>
 </head>
 <body onload="doOnRecLoad()" onbeforeunload="doOnRecUnLoad()">
-<div id="rec" class="recPane" ><br>
-	<table bgcolor=""><tr><td>
+<div id="rec" class="recPane" >
+	<table bgcolor=""><tr><td colspan="2" class="comment">
+	Enter a script name and click "Record" to start recording.<br/>
+	Script will be generated in sahi/scripts directory. <br/><br/>
+	</td></tr><tr><td>
 	<form name="recordstartform" action="http://www.sahidomain.com/_s_/dyn/recordstart" target="channel" onsubmit="return onRecordStartFormSubmit(this)">
 	Script Name: <input type="text" name="file" value="">
 	<input type="submit" value="Record">
@@ -81,6 +89,9 @@ body{
 <tr><td bgcolor="">
 <form name="currentForm">
 <table>
+<tr><td colspan="2" class="comment">
+	Press CTRL key and hover mouse over any HTML element. <a class='comment' href='sahi_recorder_help.htm' target='_blank'>More ...</a><br/>
+</td></tr>
 <tr><td>
 Accessor: </td><td><input name="accessor" value="" size="45">
 </td><td>
