@@ -60,8 +60,11 @@ body{
 </style>
 </head>
 <body onload="doOnRecLoad()" onbeforeunload="doOnRecUnLoad()">
-<div id="rec" class="recPane" ><br>
-	<table bgcolor=""><tr><td>
+<div id="rec" class="recPane" >
+	<table bgcolor=""><tr><td colspan="2" style="color:brown;font-size:10px;font-weight:bolder">
+	Enter a script name and click "Record" to start recording.<br/>
+	Script will be generated in sahi/scripts directory. <br/>
+	</td></tr><tr><td>
 	<form name="recordstartform" action="http://www.sahidomain.com/_s_/dyn/recordstart" target="channel" onsubmit="return onRecordStartFormSubmit(this)">
 	Script Name: <input type="text" name="file" value="">
 	<input type="submit" value="Record">
