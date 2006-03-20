@@ -195,6 +195,11 @@ function sahi_click(el){
 		}
 		n = n.parentNode;
 	}
+	
+	if (sahiIsIE() && el && el.type=="submit" && el.name == "submit"){
+		return el.click();
+	}
+	
 	sahiSimulateMouseEvent(el, "mousemove");
 	sahiSimulateMouseEvent(el, "focus");
 	sahiSimulateMouseEvent(el, "mouseover");
