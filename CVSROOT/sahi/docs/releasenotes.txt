@@ -1,4 +1,4 @@
-Sahi Nightly Release 2006-02-02
+Sahi Nightly Release 2006-03-21
 
 Requirements
 ------------
@@ -18,5 +18,5 @@ Please refer to docs directory in release.
 
 Known Issues
 ------------
-* Firefox has problems with multithreaded playback due to windows not closing properly.
-* Multi-select form element does not record correctly
+* Firefox has problems with multithreaded playback due to windows not closing properly. 
+* Multi-select form element does not record correctly.
