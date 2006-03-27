@@ -28,6 +28,7 @@ The best way to learn how these APIs work is by recording actions using the Sahi
 <a href="#textverify">Text Verification boolean Functions</a><br/>
 <a href="#include">File Inclusion</a><br/>
 <a href="#utility">Utility Functions</a><br/>
+<a href="#popup">Handling popup windows</a><br/>
 
 
 (<a href="#top">Top</a>)
@@ -225,6 +226,33 @@ These variables are stored on the server in a hashmap associated with the sessio
 Note: that all values will be stored as strings only. <br/>
 Note: _setGlobal is a <a href="#scheduler">Scheduler Function</a>.
 <br/>
+
+(<a href="#top">Top</a>)
+<br/>
+<hr/>
+<br/>
+<h4><a name="popup"></a>Handling popup windows</h4>
+<a href="#popup1">_popup(windowName)<br/>
+<br/>
+
+<b><a name="popup1">_popup(windowName)</a></b>
+<br/>
+<br/>
+In order to execute sahi commands in a popup window, for example click a link,<br/>
+use
+<pre class="code">
+_popup("popupWinName")._click(_link("Click Me"));</b>
+</pre>
+<br/>
+where popupWinName was defined like this:<br/>
+window.open("http://popup.url", "popupWinName");<br/>
+or<br/>
+&lt;a href="http://popup.url" target="popupWinName"&gt;<br/>
+
+
+Note that there may be problems in recording this.
+<br/>
+
 
 <br/>
 
