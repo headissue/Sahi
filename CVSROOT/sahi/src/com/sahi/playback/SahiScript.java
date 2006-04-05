@@ -175,6 +175,7 @@ public abstract class SahiScript {
 		keywords.add("_assertNotTrue");
 		keywords.add("_click");
 		keywords.add("_clickLinkByAccessor");
+		keywords.add("_dragDrop");
 		keywords.add("_getCellText");
 		keywords.add("_getSelectedText");
 		keywords.add("_setSelected");
@@ -207,6 +208,7 @@ public abstract class SahiScript {
 		keywords.add("_checkbox");
 		keywords.add("_click");
 		keywords.add("_clickLinkByAccessor");
+		keywords.add("_dragDrop");
 		keywords.add("_getCellText");
 		keywords.add("_getSelectedText");
 		keywords.add("_image");

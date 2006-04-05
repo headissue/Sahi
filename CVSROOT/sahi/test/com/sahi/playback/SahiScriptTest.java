@@ -83,7 +83,7 @@ public class SahiScriptTest extends TestCase {
 		assertEquals("sahi_?(_accessor|_alert|_assertEqual|" +
 				"_assertNotEqual|_assertNotNull|_assertNull|_assertTrue|" +
 				"_assertNotTrue|_button|_check|_checkbox|_click|" +
-				"_clickLinkByAccessor|_getCellText|_getSelectedText|" +
+				"_clickLinkByAccessor|_dragDrop|_getCellText|_getSelectedText|" +
 				"_image|_imageSubmitButton|_link|_password|_radio|" +
 				"_select|_setSelected|_setValue|_simulateEvent|_submit|" +
 				"_textarea|_textbox|_event|_call|_eval|_setGlobal|_getGlobal|" +
@@ -93,7 +93,7 @@ public class SahiScriptTest extends TestCase {
 		assertEquals("_?(_accessor|_alert|_assertEqual|" +
 				"_assertNotEqual|_assertNotNull|_assertNull|_assertTrue|" +
 				"_assertNotTrue|_button|_check|_checkbox|_click|" +
-				"_clickLinkByAccessor|_getCellText|_getSelectedText|" +
+				"_clickLinkByAccessor|_dragDrop|_getCellText|_getSelectedText|" +
 				"_image|_imageSubmitButton|_link|_password|_radio|" +
 				"_select|_setSelected|_setValue|_simulateEvent|_submit|" +
 				"_textarea|_textbox|_event|_call|_eval|_setGlobal|_getGlobal|" +
@@ -104,7 +104,7 @@ public class SahiScriptTest extends TestCase {
 	public void testGetActionRegExp() {
 		assertEquals("^(?:_alert|_assertEqual|_assertNotEqual|" +
 				"_assertNotNull|_assertNull|_assertTrue|" +
-				"_assertNotTrue|_click|_clickLinkByAccessor|" +
+				"_assertNotTrue|_click|_clickLinkByAccessor|_dragDrop|" +
 				"_getCellText|_getSelectedText|_setSelected|" +
 				"_setValue|_simulateEvent|_submit|_call|_eval|_setGlobal|" +
 				"_wait|_popup|_highlight|_log|_navigateTo)\\s*\\(.*",
