@@ -83,6 +83,7 @@ public class Session {
 	}
 
 	public void stopPlayBack() {
+		if (playBackLogger == null) return;
 		playBackLogger.log("Stopping script", "stop", script.getScriptName());
 		playBackLogger.stop();
 		playBackLogger = null;
