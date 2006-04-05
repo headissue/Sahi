@@ -9,6 +9,7 @@ public class ScriptUtil {
 		String[] fileList = getFileNames();
 		StringBuffer sb = new StringBuffer();
 		for (int i = 0; i < fileList.length; i++) {
+			if (fileList[i].indexOf(".sah") == -1) continue;
 			sb.append("addToScriptList('");
 			sb.append(fileList[i]);
 			sb.append("');\n");
