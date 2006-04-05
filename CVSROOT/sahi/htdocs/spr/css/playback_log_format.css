@@ -1,4 +1,4 @@
-div{border:1px solid white;border-bottom:1px broken grey;padding:1px}
+div{border:1px solid white;border-bottom:1px solid grey;padding:1px}
 a{text-decoration:none;color:white;}
 a.INFO{color:black}
 a.START,a.STOP{color:black;font-weight:bold;}
