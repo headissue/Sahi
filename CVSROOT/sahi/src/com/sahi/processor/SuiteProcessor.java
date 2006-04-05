@@ -19,7 +19,7 @@ public class SuiteProcessor {
 		}
 		boolean isSessionMultiThreaded = threads > 1;
 		SahiTestSuite suite = new SahiTestSuite(suiteName, base, browser,
-				session.id(), isSessionMultiThreaded);
+				session.id());
 		for (int i = 0; i < threads; i++) {
 			suite.executeNext();
 			try {

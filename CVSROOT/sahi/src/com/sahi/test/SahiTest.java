@@ -13,20 +13,15 @@ class SahiTest {
 	private int randomInt;
 	private final String sessionId;
 	Process process;
-	private final String base;
 	private final String browser;
 	private static Logger logger = Configuration
-	.getLogger("com.sahi.test.SahiTest");
-	private final boolean addPrefixForMultiThreaded;
-	
+	.getLogger("com.sahi.test.SahiTest");	
 
-	SahiTest(String scriptName, String startURL, String base, String browser, String sessionId, boolean addPrefixForMultiThreaded) {
+	SahiTest(String scriptName, String startURL, String browser, String sessionId) {
 		this.scriptName = scriptName;
 		this.startURL = startURL;
-		this.base = base;
 		this.browser = browser;
 		this.sessionId = sessionId;
-		this.addPrefixForMultiThreaded = addPrefixForMultiThreaded;
 	}
 
 	public void execute() {
@@ -45,11 +40,6 @@ class SahiTest {
 		}
 		logger.fine("cmd=" + cmd);
 		return cmd;
-	}
-
-	private String addPrefixForSimultaneousSessions(String base, int randomInt) {
-		if (!addPrefixForMultiThreaded) return base; 
-		return base.replaceFirst("://", "://sahix" + randomInt + "x");
 	}
 
 	private int getRandomInt() {
@@ -100,7 +90,7 @@ class SahiTest {
 		}
 	}
 
-	private boolean isFirefox() {
-		return browser.indexOf("firefox")!=-1;
-	}
+//	private boolean isFirefox() {
+//		return browser.indexOf("firefox")!=-1;
+//	}
 }
