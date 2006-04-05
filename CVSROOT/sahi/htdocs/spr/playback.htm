@@ -70,7 +70,7 @@ font-weight:bolder;
 <tr><td>
 <div id="setfile">
 	<table>
-	<form name="scriptfileform" action="http://www.sahidomain.com/_s_/dyn/setscriptfile" method="get" target="channel" onsubmit="onScriptFormSubmit(this)">
+	<form name="scriptfileform" action="http://www.sahidomain.com/_s_/dyn/setscriptfile" method="get" target="channel" onsubmit="return onScriptFormSubmit(this)">
 	<tr><td colspan="2">
 	Set script from file: <a href="javascript:byFile(false)">[from url]</a>
 	</td></tr>
@@ -94,7 +94,7 @@ font-weight:bolder;
 </td><td>
 <div id="seturl" style="display:none">
 	<table>
-	<form name="scripturlform" action="http://www.sahidomain.com/_s_/dyn/setscripturl" method="get" target="channel" onsubmit="onScriptFormSubmit(this)">
+	<form name="scripturlform" action="http://www.sahidomain.com/_s_/dyn/setscripturl" method="get" target="channel" onsubmit="return onScriptFormSubmit(this)">
 	<tr><td colspan="2">
 	Set script from url: <a href="javascript:byFile(true)">[from file]</a>
 	</td></tr>
@@ -125,7 +125,7 @@ font-weight:bolder;
 	Replay:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">Set script above, before clicking on 'Play'.</span>
 	</td></tr>
 	<tr><td bgcolor="">
-		<form name="playform" action="http://www.sahidomain.com/_s_/dyn/startplay"  onsubmit="o(this);play()" target="channel">
+		<form name="playform" action="http://www.sahidomain.com/_s_/dyn/startplay"  onsubmit="play()" target="channel">
 		<table width="100%" border="0">
 		<tr><td width="70%">
 				<table border=0><tr><td>

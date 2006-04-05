@@ -186,6 +186,21 @@ function linkClick(e){
 		sahiNavigateLink(this);
 	}
 }
+
+function sahi_dragDrop(draggable, droppable){
+	sahiSimulateMouseEvent(draggable, "mousedown");
+	draggable.style.left=findPosX(droppable) - findPosX(draggable) + 2;
+	draggable.style.top=findPosY(droppable) - findPosY(draggable) + 2;
+	draggable.style.zIndex=1;
+	sahiSimulateMouseEvent(droppable, "mousedown");
+	
+	sahiSimulateMouseEvent(draggable, "mousemove");
+	sahiSimulateMouseEvent(droppable, "mousemove");
+	
+	sahiSimulateMouseEvent(draggable, "mouseup");
+	sahiSimulateMouseEvent(droppable, "mouseup");
+}
+
 function sahi_click(el){
 	var n = el;
 	while (n != null){
@@ -490,6 +505,7 @@ function sahiGetColIndexWith(txt, tableEl){
 	return -1;	
 }
 function sahi_alert(s){
+	return alert(s);
 	if (isSahiPlaying()){
 		
 	}else{
@@ -1416,7 +1432,10 @@ function sahiGetRetries(){
 }
 function sahiOnError(msg, url, lno){
     var debugInfo = "Javascript error on page";
-    sahiLogPlayBack("msg: "+msg+"\nurl: "+url+"\nLine no: "+lno, "error", debugInfo);
+    if (msg && msg.indexOf("Access to XPConnect service denied") != -1){ //FF hack    
+    	sahiLogPlayBack("msg: "+msg+"\nurl: "+url+"\nLine no: "+lno, "info", debugInfo);
+    }
+	else sahiLogPlayBack("msg: "+msg+"\nurl: "+url+"\nLine no: "+lno, "error", debugInfo);
 }
 window.onerror=sahiOnError;
 var _sahiControl;
@@ -1529,7 +1548,7 @@ function sahiKeyDown(e){
 
 
 var IDLE_INTERVAL=1000;
-var INTERVAL=300;
+var INTERVAL=100;
 var RETRY_INTERVAL=1000;
 var MAX_RETRIES=10;
 
@@ -1787,16 +1806,6 @@ function sahiGetServerVar(name){
 function sahiSetServerVar(name, value){
 	sahiSendToServer("/_s_/dyn/setvar?name="+escape(name)+"&value="+escape(value));
 }
-function sahiSendToServer(url){
-	try{
-	    var rand = (new Date()).getTime() + Math.floor(Math.random()*(10000));
-	    var http = sahiCreateRequestObject();
-	    url = url + (url.indexOf("?")==-1 ? "?" : "&") + "t=" + rand;
-		http.open("GET", url, false);
-	    http.send(null);
-	    return http.responseText;
-    }catch(ex){sahiHandleException(ex);}
-}
 function sahiLogErr(msg){
 //    return;
 	sahiSendToServer("/_s_/dyn/log?msg=" + escape(msg) + "&type=err" );
@@ -1809,6 +1818,16 @@ function sahiGetParentNode(el, tagName){
         parent = parent.parentNode;
     }
     return null;
+}
+function sahiSendToServer(url){
+	try{
+	    var rand = (new Date()).getTime() + Math.floor(Math.random()*(10000));
+	    var http = sahiCreateRequestObject();
+	    url = url + (url.indexOf("?")==-1 ? "?" : "&") + "t=" + rand;
+		http.open("GET", url, false);
+	    http.send(null);
+	    return http.responseText;
+    }catch(ex){sahiHandleException(ex)}
 }
 function s_v(v){
     var type = typeof v;

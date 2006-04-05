@@ -6,10 +6,14 @@ function checkOpener(){
 	}
 }
 window.onerror=checkOpener;
-function o(f){
-//	window.open("", "channel", "height=100px,width=100px");
-//	f.rand.value=new Date();
-//	f.sahisid.value = sahiReadCookie("sahisid");
+function trim(s){
+	return s.replace(/[ \t]/, "", "g");
+}
+
+function checkURL(url){
+	if (url == null || trim(url) == "") return "";
+	if (url.indexOf("://") == -1) return "http://" + url;
+	return url;
 }
 function play(){	
 	try{
@@ -215,7 +219,6 @@ function onRecordStartFormSubmit(f){
         return false;
     }
     if (top.opener) {
-    	o(f);
     	top.opener.sahiStartRecording(recordAll);
 //    	window.setTimeout("top.location.reload();", 1000);
     }
@@ -311,7 +314,7 @@ function initPlaybackTab(){
 function displayInfo(info, escapedAccessor, escapedValue){
 	var f = document.currentForm;
 	if (f){	
-		f.elValue.value = escapedValue;
+		f.elValue.value = escapedValue ? escapedValue : "";
 		f.accessor.value = escapedAccessor;
 		f.alternative.value = info.accessor;
 	}
@@ -331,19 +334,20 @@ function mark(){
 //   sahiSendToServer('/_s_/dyn/record?event=mark&value='+escape(document.currentForm.comment.value));
 }
 
-function evaluateExpr(){
+function evaluateExpr(showErr){
 	sahiSetServerVar("sahiEvaluateExpr", "true");
 	try{
-		document.currentForm.result.value = top.opener.sahi_eval(addSahi(document.currentForm.debug.value));
+		var res = top.opener.sahi_eval(addSahi(document.currentForm.debug.value));
 	}catch(e){
 		if (e.exceptionType &&  e.exceptionType == "SahiAssertionException"){
-			document.currentForm.result.value = "[Assertion Failed]"+(e.messageText?e.messageText:"");
+			res = "[Assertion Failed]"+(e.messageText?e.messageText:"");
 		}
 		else {
-			document.currentForm.result.value = "[Exception] "+e;
+			res = "[Exception] "+e;
 		}
 		sahiHandleException(e);
 	}
+	if (showErr) document.currentForm.result.value = res;
 	sahiSetServerVar("sahiEvaluateExpr", "false");
 }
 function demoClick(){
@@ -374,11 +378,24 @@ function byFile(showFile){
 	document.getElementById("seturl").style.display=showFile?"none":"block";
 	document.getElementById("setfile").style.display=showFile?"block":"none";
 }
+function checkScript(f){
+	if (f.file && f.file.value == ""){
+		alert("Please choose a script file");
+		return false;
+	}
+	if (f.url && f.url.value == ""){
+		alert("Please specify the url to script file");
+		return false;
+	}
+	return true;
+	
+}
 function onScriptFormSubmit(f){
-	o(f);
+	if (!checkScript(f)) return false;
+	var url = checkURL(f.starturl.value);
 	resetStep();
 	clearLogs();
-	window.setTimeout("reloadPage('"+f.starturl.value+"')", 1000);
+	window.setTimeout("reloadPage('"+url+"')", 100);
 }
 function reloadPage(u){
 	if (u == ""){
