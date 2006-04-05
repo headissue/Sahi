@@ -505,7 +505,6 @@ function sahiGetColIndexWith(txt, tableEl){
 	return -1;	
 }
 function sahi_alert(s){
-	return alert(s);
 	if (isSahiPlaying()){
 		
 	}else{
