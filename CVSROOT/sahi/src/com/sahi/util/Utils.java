@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 /**
@@ -100,5 +101,22 @@ public class Utils {
 		if (s1HasSlash && s2HasSlash)
 			return s1 + s2.substring(1);
 		return s1 + s2;
+	}
+
+	public static ArrayList getTokens(String s) {
+		ArrayList tokens = new ArrayList();
+		int ix1 = 0;
+		int ix2 = -1;
+		int len = s.length();
+		while (ix1 < len && (ix2 = s.indexOf('\n', ix1)) != -1) {
+			String token = s.substring(ix1, ix2+1);
+			tokens.add(token);
+			ix1 = ix2+1;			
+		}
+		if (ix2 == -1) {
+			String token =  s.substring(ix1);
+			tokens.add(token);
+		}
+		return tokens;
 	}
 }
