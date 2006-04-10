@@ -1,17 +1,18 @@
 package com.sahi.request;
 
-import com.sahi.StreamHandler;
-import com.sahi.test.SahiTestSuite;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.logging.Logger;
-import java.net.URLDecoder;
+
+import com.sahi.StreamHandler;
+import com.sahi.test.SahiTestSuite;
 
 /**
  * User: nraman Date: May 13, 2005 Time: 10:01:13 PM
@@ -162,7 +163,7 @@ public class HttpRequest extends StreamHandler {
 	}
 
 	private void setCookies() {
-		cookies = new HashMap();
+		cookies = new LinkedHashMap();
 		String cookieString = (String) getLastSetValueOfHeader("Cookie");
 		if (cookieString == null)
 			return;
@@ -188,15 +189,23 @@ public class HttpRequest extends StreamHandler {
 	}
 	
 	String rebuildCookies() {
+		return rebuildCookies(cookies);
+	}
+	
+	static String rebuildCookies(Map cookies2) {
         StringBuffer sb = new StringBuffer();
-        if (cookies.size() == 0) return "";
-        Iterator keys = cookies.keySet().iterator();
+        if (cookies2.size() == 0) return "";
+        Iterator keys = cookies2.keySet().iterator();
         while (keys.hasNext()) {
             String key = (String) keys.next();
-            String value = (String) cookies.get(key);
+            String value = (String) cookies2.get(key);
             sb.append(" ").append(key).append("=").append(value).append(";");
         }
-        return sb.toString();
+        String cookieStr = sb.toString().trim();
+        if (cookieStr.endsWith(";")) {
+        	cookieStr = cookieStr.substring(0, cookieStr.length()-1);
+        }
+		return cookieStr;
 	}
 
 	public Map cookies() {
