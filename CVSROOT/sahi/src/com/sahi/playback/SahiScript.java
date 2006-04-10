@@ -9,7 +9,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.StringTokenizer;
+import java.util.Iterator;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -53,14 +53,14 @@ public abstract class SahiScript {
 	public String modifiedScript() {
 		return script == null ? "" : script;
 	}
-
+	
 	String modify(String s) {
 		StringBuffer sb = new StringBuffer();
-		StringTokenizer tokenizer = new StringTokenizer(s, "\n");
+		Iterator tokens = Utils.getTokens(s).iterator();
 		int lineNumber = 0;
-		while (tokenizer.hasMoreTokens()) {
+		while (tokens.hasNext()) {
 			lineNumber++;
-			String line = tokenizer.nextToken().trim();
+			String line = ((String)tokens.next()).trim();
 			if ("".equals(line))
 				continue;
 			if (line.startsWith("_include")) {
