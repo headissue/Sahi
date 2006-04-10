@@ -23,6 +23,8 @@ public class ProxyProcessorHelper {
 //	}
 	
 	static String highlight(String s, int lineNumber) {
+		s = s.replaceAll("<", "&lt;");
+		s = s.replaceAll(">", "&gt;");
 		int startIx = 0;
 		int endIx = -1;
 		int len = s.length();
