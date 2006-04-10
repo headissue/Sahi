@@ -1470,21 +1470,21 @@ function getSahiWinHandle(){
 }
 function sahiOpenControllerWindow(e){
 	if (!e) e = window.event;
-    if (!top.sahiIsHotKeyPressed()) return true;
-    top.sahiOpenWin(e);
-    top._isAltKeyPressed = false;
+    if (!sahiIsHotKeyPressed(e)) return true;
+    sahiOpenWin(e);
     return true;
 }
-function sahiIsHotKeyPressed(){
-	return ((sahiHotKey == "SHIFT" && top._isShiftKeyPressed)
-		||(sahiHotKey == "CTRL" && top._isControlKeyPressed)
-		||(sahiHotKey == "ALT" && top._isAltKeyPressed));
+function sahiIsHotKeyPressed(e){
+	return ((sahiHotKey == "SHIFT" && e.shiftKey)
+		||(sahiHotKey == "CTRL" && e.ctrlKey)
+		||(sahiHotKey == "ALT" && e.altKey)
+		||(sahiHotKey == "META" && e.metaKey));
 }
 var _lastAccessedInfo;
 function sahiMouseOver(e){
     try{
 	if (getTarget(e) == null) return;
-    if (!top._isControlKeyPressed) return;
+    if (!e.ctrlKey) return;
       var controlWin = getSahiWinHandle();
       if (controlWin){
         controlWin.main.displayStepNum();
@@ -1526,25 +1526,6 @@ var KEY_CONTROL = 17;
 var KEY_ALT = 18;
 var KEY_Q = 81;
 var KEY_K = 75;
-
-top._isControlKeyPressed = false;
-top._isAltKeyPressed = false;
-top._isShiftKeyPressed = false;
-function sahiKeyUp(e){
-    if (!e) e = window.event;
-    if (e.keyCode == KEY_CONTROL) top._isControlKeyPressed = false;
-    if (e.keyCode == KEY_ALT) top._isAltKeyPressed = false;
-    if (e.keyCode == KEY_SHIFT) top._isShiftKeyPressed = false;
-    return true;
-}
-function sahiKeyDown(e){
-    if (!e) e = window.event;
-    if (e.keyCode == KEY_CONTROL) top._isControlKeyPressed = true;
-    if (e.keyCode == KEY_ALT) top._isAltKeyPressed = true;
-    if (e.keyCode == KEY_SHIFT) top._isShiftKeyPressed = true;
-    return true;
-}
-
 
 var IDLE_INTERVAL=1000;
 var INTERVAL=100;
@@ -1914,8 +1895,6 @@ function sahiInit(e){
 }
 function sahiActivateHotKey(){
 	try{
-		addEvent(document, "keydown", sahiKeyDown);
-		addEvent(document, "keyup", sahiKeyUp);
 		addEvent(document, "dblclick", sahiOpenControllerWindow);
 		addEvent(document, "mousemove", sahiMouseOver);
 	}catch(ex){

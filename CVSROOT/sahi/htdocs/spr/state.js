@@ -4,6 +4,6 @@ try{
 top._sahisid = '$sessionId';
 top._isSahiWinOpen = $isWindowOpen;
 top.sahiCreateCookie('sahisid', '$sessionId');
-top.sahiHotKey = '$hotkey';
+sahiHotKey = '$hotkey';
 }catch(e){}
 //alert('$sessionId');
