@@ -56,7 +56,6 @@ function stopRec(){
     }catch(ex){alert(ex);}
 }
 function doOnTabsUnLoad(s){
-	return true;
     sahiSendToServer('/_s_/dyn/winclosed');
     try{
         top.opener.top._isSahiWinOpen = false;
