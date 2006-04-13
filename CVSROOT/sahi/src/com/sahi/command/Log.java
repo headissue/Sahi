@@ -1,15 +1,15 @@
 package com.sahi.command;
 
-import com.sahi.ProxyProcessorHelper;
 import com.sahi.request.HttpRequest;
 import com.sahi.response.HttpFileResponse;
 import com.sahi.response.HttpResponse;
 import com.sahi.session.Session;
+import com.sahi.util.URLParser;
 
 public class Log {
 	public HttpResponse highlight(HttpRequest requestFromBrowser) {
 		int lineNumber = getLineNumber(requestFromBrowser);
-		String fileName = ProxyProcessorHelper.scriptFileNamefromURI(
+		String fileName = URLParser.scriptFileNamefromURI(
 				requestFromBrowser.uri(), "/Log_highlight/");
 		final HttpFileResponse response = new HttpFileResponse(fileName);
 		if (lineNumber != -1) {

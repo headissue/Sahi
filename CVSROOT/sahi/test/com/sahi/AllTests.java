@@ -11,6 +11,7 @@ import com.sahi.playback.ScriptHandlerTest;
 import com.sahi.playback.URLScriptTest;
 import com.sahi.playback.log.PlayBackLogFormatterTest;
 import com.sahi.response.HttpFileResponseTest;
+import com.sahi.util.URLParserTest;
 import com.sahi.util.UtilsTest;
 
 public class AllTests extends TestSuite {
@@ -28,7 +29,7 @@ public class AllTests extends TestSuite {
         suite.addTestSuite(SahiScriptHTMLAdapterTest.class);
         suite.addTestSuite(UtilsTest.class);
         suite.addTestSuite(PlayBackLogFormatterTest.class);        
-        suite.addTestSuite(ProxyProcessorHelperTest.class);        
+        suite.addTestSuite(URLParserTest.class);        
         suite.addTestSuite(CommandExecuterTest.class);        
         suite.addTestSuite(LocalRequestProcessorTest.class);        
 		return suite;

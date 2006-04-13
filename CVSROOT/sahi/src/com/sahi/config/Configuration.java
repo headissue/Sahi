@@ -137,4 +137,8 @@ public class Configuration {
 		return getScriptRoot() + fileName;
 	}
 
+	public static String appendLogsRoot(String fileName) {
+		return Utils.concatPaths(getPlayBackLogsRoot(), fileName);
+	}
+
 }

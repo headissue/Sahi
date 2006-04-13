@@ -12,7 +12,7 @@ import com.sahi.response.HttpFileResponse;
 import com.sahi.response.HttpResponse;
 import com.sahi.response.NoCacheHttpResponse;
 import com.sahi.response.SimpleHttpResponse;
-import com.sahi.util.Utils;
+import com.sahi.util.URLParser;
 
 public class LocalRequestProcessor {
 	public HttpResponse getLocalResponse(String uri, HttpRequest requestFromBrowser) throws UnsupportedEncodingException, IOException {
@@ -29,20 +29,18 @@ public class LocalRequestProcessor {
 				httpResponse =  proxyConfirmResponse(msg);
 			} else if (uri.indexOf("/stopserver") != -1) {
 				System.exit(1);
-			} else if (uri.indexOf("/setscripturl") != -1) {
-				httpResponse = new CommandExecuter("Player_setScriptUrl", requestFromBrowser).execute();
 			} else if (command != null) {
 				httpResponse = new CommandExecuter(command, requestFromBrowser).execute();				
 			}
 
 		} else if (uri.indexOf("/scripts/") != -1) {
-			String fileName = ProxyProcessorHelper.scriptFileNamefromURI(
+			String fileName = URLParser.scriptFileNamefromURI(
 					requestFromBrowser.uri(), "/scripts/");
 			httpResponse = new HttpFileResponse(fileName);
 		} else if (uri.indexOf("/logs/") != -1 || uri.endsWith("/logs")) {
-			httpResponse = getLogResponse(logFileNamefromURI(requestFromBrowser.uri()));
+			httpResponse = getLogResponse(URLParser.logFileNamefromURI(requestFromBrowser.uri()));
 		} else if (uri.indexOf("/spr/") != -1) {
-			String fileName = fileNamefromURI(requestFromBrowser.uri());
+			String fileName = URLParser.fileNamefromURI(requestFromBrowser.uri());
 			httpResponse = new HttpFileResponse(fileName);
 		} else {
 			httpResponse = new SimpleHttpResponse(
@@ -90,23 +88,6 @@ public class LocalRequestProcessor {
 		props.setProperty("msg", msg);
 		return new HttpFileResponse(Configuration.getHtdocsRoot()
 				+ "spr/confirm.htm", props);
-	}
-
-	private String fileNamefromURI(String uri) {
-		return Utils.concatPaths(Configuration.getHtdocsRoot(), uri
-				.substring(uri.indexOf("_s_/") + 4));
-	}
-
-
-	private String logFileNamefromURI(String uri) {
-		String fileName = uri.substring(uri.indexOf("/logs/") + 6);
-		if ("".equals(fileName))
-			return "";
-		return appendLogsRoot(fileName);
-	}
-
-	private String appendLogsRoot(String fileName) {
-		return Utils.concatPaths(Configuration.getPlayBackLogsRoot(), fileName);
 	}
 
 
