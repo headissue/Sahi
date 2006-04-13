@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <project name="demo" default="sahitests">
-	<taskdef name="sahi" classname="com.sahi.ant.RunSahiTask" classpath="lib/ant-sahi.jar"/>
+	<taskdef name="sahi" classname="net.sf.sahi.ant.RunSahiTask" classpath="lib/ant-sahi.jar"/>
 
 	<target name="sahitests" description="start the server and run sahi tests">
 		<parallel>
@@ -30,7 +30,7 @@
 	</target>
 
 	<target name="start-web" description="starts web">
-		<java classname="com.sahi.WebServer" fork="true" dir="bin"
+		<java classname="net.sf.sahi.WebServer" fork="true" dir="bin"
 			jvmargs="-Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5006" >
 			<classpath location="lib/sahi.jar"/>
 		</java>
@@ -47,7 +47,7 @@
 	</target>
 	
 	<target name="start" description="starts proxy">
-		<java classname="com.sahi.Proxy" fork="true" dir="bin">
+		<java classname="net.sf.sahi.Proxy" fork="true" dir="bin">
 			<classpath location="lib/sahi.jar"/>
 		</java>
 	</target>

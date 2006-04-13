@@ -25,7 +25,7 @@
     </target>
 
     <target name="start" description="starts proxy">
-        <java classname="com.sahi.Proxy" fork="true" dir="bin">
+        <java classname="net.sf.sahi.Proxy" fork="true" dir="bin">
         	<jvmarg line="-Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5099"/>
             <classpath path="classes"/>
         </java>
@@ -136,8 +136,8 @@
     <target name="jar">
         <jar file="lib/sahi.jar">
             <fileset dir="classes">
-	        	<exclude name="com/sahi/ant/**.*"/>
-            	<exclude name="com/sahi/test/TestRunner.*"/>
+	        	<exclude name="net/sf/sahi/ant/**.*"/>
+            	<exclude name="net/sf/sahi/test/TestRunner.*"/>
         	</fileset>
         </jar>
     </target>
@@ -145,8 +145,8 @@
     <target name="jar-ant">
         <jar file="lib/ant-sahi.jar">
             <fileset dir="classes">
-            	<include name="com/sahi/ant/**.*"/>
-            	<include name="com/sahi/test/TestRunner.*"/>
+            	<include name="net/sf/sahi/ant/**.*"/>
+            	<include name="net/sf/sahi/test/TestRunner.*"/>
             </fileset>
         </jar>
     </target>
@@ -176,7 +176,7 @@
 				<pathelement location="extlib/log4j.jar"/>
 			</classpath>
 			<formatter type="brief" usefile="false"/>
-			<test todir="logs/junit" name="com.sahi.AllTests" failureProperty="junit.failed" />
+			<test todir="logs/junit" name="net.sf.sahi.AllTests" failureProperty="junit.failed" />
 		</junit>
 		<delete file="bin/junittestrun.out" failonerror="false"/>
 		<fail message="JUnit tests failed. MAKE SURE THAT junit.jar AND log4j.jar ARE PRESENT IN {sahi}/extlib/ FOLDER" if="junit.failed"/>
