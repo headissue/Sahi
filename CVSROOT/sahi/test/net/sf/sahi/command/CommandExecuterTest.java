@@ -1,15 +1,15 @@
-package com.sahi.command;
+package net.sf.sahi.command;
 
 import junit.framework.TestCase;
 
-import com.sahi.request.HttpRequest;
+import net.sf.sahi.request.HttpRequest;
 
 public class CommandExecuterTest extends TestCase {
 	static boolean called = false;
-	
+
 	public void testMethodCalled() throws Exception {
 		final HttpRequest httpRequest = null;
-		new CommandExecuter("com.sahi.command.TestClass_act", httpRequest).execute();
+		new CommandExecuter("net.sf.sahi.command.TestClass_act", httpRequest).execute();
 		assertTrue(called);
 	}
 
@@ -18,7 +18,7 @@ public class CommandExecuterTest extends TestCase {
 		new CommandExecuter("TestClass_act", httpRequest).execute();
 		assertTrue(called);
 	}
-	
+
 	public void tearDown() {
 		called = false;
 	}

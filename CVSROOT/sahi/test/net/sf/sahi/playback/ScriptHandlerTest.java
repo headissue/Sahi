@@ -3,10 +3,10 @@
  * Date: May 18, 2005
  * Time: 10:19:59 PM
  */
-package com.sahi.playback;
+package net.sf.sahi.playback;
 
 import junit.framework.TestCase;
-import com.sahi.util.Utils;
+import net.sf.sahi.util.Utils;
 
 public class ScriptHandlerTest extends TestCase {
 	private static final long serialVersionUID = 6341354901708835100L;

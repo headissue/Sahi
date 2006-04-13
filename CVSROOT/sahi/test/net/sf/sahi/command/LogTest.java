@@ -1,8 +1,8 @@
-package com.sahi.command;
+package net.sf.sahi.command;
 
 import junit.framework.TestCase;
 
-public class LogTest extends TestCase {	
+public class LogTest extends TestCase {
 	public void testHighlight() {
 		assertEquals("<b>one</b>\ntwo\nthree\nfour", Log.highlight("one\ntwo\nthree\nfour", 1));
 //		assertEquals("", ProxyProcessorHelper.highlight("one\ntwo\nthree\nfour", 1));

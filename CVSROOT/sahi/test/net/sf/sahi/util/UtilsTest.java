@@ -1,4 +1,4 @@
-package com.sahi.util;
+package net.sf.sahi.util;
 
 import junit.framework.TestCase;
 
@@ -13,8 +13,8 @@ public class UtilsTest extends TestCase {
 		assertEquals("a/b", Utils.concatPaths("a/", "/b"));
 		assertEquals("a/b", Utils.concatPaths("a", "/b"));
 	}
-	
-	
+
+
 	public void testBlankLinesDoNotCauseProblemsInNumbering() {
 		String s = "1\na\n\nbx\ny";
 		assertEquals(5, Utils.getTokens(s).size());
@@ -26,5 +26,5 @@ public class UtilsTest extends TestCase {
 		assertEquals(1, Utils.getTokens(s).size());
 		s = "\n";
 		assertEquals(1, Utils.getTokens(s).size());
-	}	
+	}
 }

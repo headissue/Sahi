@@ -1,4 +1,4 @@
-package com.sahi.request;
+package net.sf.sahi.request;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -6,7 +6,7 @@ import java.util.Map;
 import junit.framework.TestCase;
 
 public class HttpRequestTest extends TestCase {
-	
+
 	public void testRebuildCookies() {
 		Map cookies = new LinkedHashMap();
 		cookies.put("_session_id", "cookieVal");

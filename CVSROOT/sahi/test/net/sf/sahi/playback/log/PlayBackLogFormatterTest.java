@@ -1,4 +1,4 @@
-package com.sahi.playback.log;
+package net.sf.sahi.playback.log;
 
 import junit.framework.TestCase;
 

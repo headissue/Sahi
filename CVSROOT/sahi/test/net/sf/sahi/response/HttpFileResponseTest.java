@@ -1,4 +1,4 @@
-package com.sahi.response;
+package net.sf.sahi.response;
 
 import java.util.Properties;
 
@@ -16,7 +16,7 @@ public class HttpFileResponseTest extends TestCase {
         props.setProperty("isPlaying", "false");
         props.setProperty("sessionId", "sahi_1281210");
         String template = " var isRecording=$isRecording;\n var isPlaying=$isPlaying;\n setCookie('$sessionId')";
-        assertEquals(" var isRecording=true;\n var isPlaying=false;\n setCookie('sahi_1281210')",  
+        assertEquals(" var isRecording=true;\n var isPlaying=false;\n setCookie('sahi_1281210')",
                 HttpFileResponse.substitute(template, props));
     }
 }

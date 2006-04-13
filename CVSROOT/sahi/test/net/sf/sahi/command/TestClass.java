@@ -1,7 +1,7 @@
-package com.sahi.command;
+package net.sf.sahi.command;
 
-import com.sahi.request.HttpRequest;
-import com.sahi.response.HttpResponse;
+import net.sf.sahi.request.HttpRequest;
+import net.sf.sahi.response.HttpResponse;
 
 public class TestClass {
 	public HttpResponse act(HttpRequest request) {
