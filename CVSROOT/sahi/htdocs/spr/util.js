@@ -54,12 +54,12 @@ function sahiCreateRequestObject(){
 	return obj;
 }
 function sahiGetServerVar(name){
-	var v = sahiSendToServer("/_s_/dyn/getvar?name="+escape(name));
+	var v = sahiSendToServer("/_s_/dyn/SessionState_getVar?name="+escape(name));
 	if (v == "null") return null;
 	return v;
 }
 function sahiSetServerVar(name, value){
-	sahiSendToServer("/_s_/dyn/setvar?name="+escape(name)+"&value="+escape(value));
+	sahiSendToServer("/_s_/dyn/SessionState_setVar?name="+escape(name)+"&value="+escape(value));
 }
 function sahiSendToServer(url){
 	try{
@@ -73,11 +73,11 @@ function sahiSendToServer(url){
 }
 function sahiLogErr(msg){
     return;
-	sahiSendToServer("/_s_/dyn/log?msg=" + escape(msg) + "&type=err" );
+	sahiSendToServer("/_s_/dyn/Log?msg=" + escape(msg) + "&type=err" );
 }
 
 function sahiLogPlayBack(msg, st, debugInfo){
-	sahiSendToServer("/_s_/dyn/log?msg=" + escape(msg) + "&type=" + st + "&debugInfo=" + escape(debugInfo));
+	sahiSendToServer("/_s_/dyn/Log?msg=" + escape(msg) + "&type=" + st + "&debugInfo=" + escape(debugInfo));
 }
 function sahiGetParentNode(el, tagName){
     var parent = el.parentNode;

@@ -21,8 +21,8 @@ function play(){
 		top.opener.top.unpause();
 		top.opener.top.sahiEx();
 	}catch (e){
-		alert("Please open the Controller again. \n(Press ALT-DblClick on the main window.)");
-		top.close();
+//		alert("Please open the Controller again. \n(Press ALT-DblClick on the main window.)");
+//		top.close();
 	}
 	return true;
 }
@@ -56,7 +56,7 @@ function stopRec(){
     }catch(ex){alert(ex);}
 }
 function doOnTabsUnLoad(s){
-    sahiSendToServer('/_s_/dyn/winclosed');
+    sahiSendToServer('/_s_/dyn/ControllerUI_closed');
     try{
         top.opener.top._isSahiWinOpen = false;
     }catch(ex){
@@ -265,24 +265,10 @@ function showrecord(){
 	hilightTab("record")
 	top.main.location.href='recorder.htm'
 }
-//function showlogs(){
-//	hilightTab("logs");
-//	top.main.location.href='/_s_/spr/logs/';
-//}
-//function showscript(){
-//	hilightTab("script");
-//	top.main.location.href='/_s_/dyn/currentscript/';
-//}
-//function showparsed(){
-//	hilightTab("parsed");
-//	top.main.location.href='/_s_/dyn/currentparsedscript/'
-//}
+
 function hilightTab(n){
-//	document.getElementById("logsTab").className="dimTab";
 	document.getElementById("playbackTab").className="dimTab";
 	document.getElementById("recordTab").className="dimTab";	
-//	document.getElementById("scriptTab").className="dimTab";	
-//	document.getElementById("parsedTab").className="dimTab";	
 	document.getElementById(n+"Tab").className="hiTab";
 	sahiSetServerVar("controller_tab", n);
 }
@@ -330,7 +316,7 @@ function addWait(){
 
 function mark(){
 	top.opener.mark(document.currentForm.comment.value);
-//   sahiSendToServer('/_s_/dyn/record?event=mark&value='+escape(document.currentForm.comment.value));
+//   sahiSendToServer('/_s_/dyn/Recorder_record?event=mark&value='+escape(document.currentForm.comment.value));
 }
 
 function evaluateExpr(showErr){
@@ -363,11 +349,11 @@ function demoSetValue(){
 	evaluateExpr();
 }
 function append(){
-   sahiSendToServer('/_s_/dyn/record?cmd='+escape(document.currentForm.debug.value));
+   sahiSendToServer('/_s_/dyn/Recorder_record?cmd='+escape(document.currentForm.debug.value));
 }
 
 function addSahi(s){
-	return sahiSendToServer("/_s_/dyn/getSahiScript?code="+escape(s));
+	return sahiSendToServer("/_s_/dyn/ControllerUI_getSahiScript?code="+escape(s));
 }
 
 function blankIfNull(s){

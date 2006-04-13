@@ -17,9 +17,9 @@ public class HttpFileResponse extends HttpResponse {
 
     public HttpFileResponse(String fileName, Properties substitutions) {
         this.fileName = fileName;
-    	data(Utils.readFile(fileName));
+    	setData(Utils.readFile(fileName));
         if (substitutions != null) {
-            data(substitute(new String(data()), substitutions).getBytes());
+            setData(substitute(new String(data()), substitutions).getBytes());
         }
         setHeaders();
     }

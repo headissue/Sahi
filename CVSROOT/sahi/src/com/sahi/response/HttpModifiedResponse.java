@@ -10,8 +10,8 @@ import java.io.InputStream;
 public class HttpModifiedResponse extends HttpResponse {
 	private static final String INJECT_TOP = ""
 			+ "<script src='/_s_/spr/concat.js'></script>\n"
-			+ "<script src='http://www.sahidomain.com/_s_/dyn/state.js'></script>\n"
-			+ "<script src='http://www.sahidomain.com/_s_/dyn/script.js'></script>\n"
+			+ "<script src='http://www.sahidomain.com/_s_/dyn/SessionState/state.js'></script>\n"
+			+ "<script src='http://www.sahidomain.com/_s_/dyn/Player_script/script.js'></script>\n"
 			+ "<script src='/_s_/spr/playback.js'></script>\n"
 			+ "<div id='sahi_div' style='display:none'></div>\n" + "";
 
@@ -29,9 +29,9 @@ public class HttpModifiedResponse extends HttpResponse {
 			// removeHeader("ETag");
 			// removeHeader("Last-Modified");
 			if (isHTML())
-				data(getModifiedData());
+				setData(getModifiedData());
 			else if (isJs()) {
-				data(substituteModals(data()));
+				setData(substituteModals(data()));
 			}
 			setHeader("Content-Length", "" + data().length);
 			// System.out.println("$$$$$$$$$$$$$$");

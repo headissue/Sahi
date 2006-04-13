@@ -33,7 +33,7 @@ class SahiTest {
 	String getURL() {
 		String cmd = null;
 		try {
-			cmd = "http://www.sahidomain.com/_s_/dyn/auto?file=" + URLEncoder.encode(scriptName, "UTF8") + "&startUrl="
+			cmd = "http://www.sahidomain.com/_s_/dyn/Player_auto?file=" + URLEncoder.encode(scriptName, "UTF8") + "&startUrl="
 			+ URLEncoder.encode(startURL, "UTF8");
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();

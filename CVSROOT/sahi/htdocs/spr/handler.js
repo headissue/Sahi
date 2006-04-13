@@ -6,7 +6,7 @@ function sahiOnEv(e){
 	var targ = getTarget(e);
 	var qs = getSahiPopUpQS()+sahiGetAccessorInfoQS(sahiGetAccessorInfo(targ));
 	if (sahiHasEventBeenRecorded(qs)) return; //IE
-    sahiSendToServer('/_s_/dyn/record?'+qs);
+    sahiSendToServer('/_s_/dyn/Recorder_record?'+qs);
     e.handled = true; //FF
 }
 function sahiHasEventBeenRecorded(qs){
@@ -26,7 +26,7 @@ function getSahiPopUpQS(){
 function sahiOnPageLoad(){
     var accessorsOnPage = findAllAccessors();
     for(i = 0; i < accessorsOnPage.length; i++){
-        sahiSendToServer('/_s_/dyn/record?' + sahiGetAccessorInfoQS(accessorsOnPage[i]));
+        sahiSendToServer('/_s_/dyn/Recorder_record?' + sahiGetAccessorInfoQS(accessorsOnPage[i]));
     }
 }
 
@@ -56,7 +56,7 @@ function doAssert(e){
     if (!sahiIsRecording()) return;
     try{
         if (!top._lastAccessedInfo) top._lastAccessedInfo = sahiGetAccessorInfo(e);
-        sahiSendToServer('/_s_/dyn/record?'+getSahiPopUpQS()+sahiGetAccessorInfoQS(top._lastAccessedInfo, true));
+        sahiSendToServer('/_s_/dyn/Recorder_record?'+getSahiPopUpQS()+sahiGetAccessorInfoQS(top._lastAccessedInfo, true));
     }catch(ex){sahiHandleException(ex);}
 }
 

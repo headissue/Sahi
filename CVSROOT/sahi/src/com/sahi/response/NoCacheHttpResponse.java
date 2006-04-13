@@ -12,6 +12,10 @@ public class NoCacheHttpResponse extends HttpResponse {
 	private int status = 200;
 	private String statusMessage = "OK";
 
+	public NoCacheHttpResponse() {
+		this("");
+    }
+
 	public NoCacheHttpResponse(String dataStr) {
 		setNoCacheHeaders(dataStr.getBytes());
     }
@@ -24,7 +28,7 @@ public class NoCacheHttpResponse extends HttpResponse {
 	}
 	
     protected void setNoCacheHeaders(byte[] data) {
-        data(data);
+        setData(data);
 		setFirstLine("HTTP/1.1 " + status + " " + statusMessage);
         setHeader("Content-Type", "text/html");
         setHeader("Cache-control", "no-store");

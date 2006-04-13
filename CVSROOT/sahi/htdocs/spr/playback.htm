@@ -8,7 +8,7 @@
 <script type="text/javascript" src="/_s_/spr/controller2.js">
 </script>
 
-<script type="text/javascript" src="/_s_/dyn/scriptslist.js">
+<script type="text/javascript" src="/_s_/dyn/ControllerUI_scriptsList/scriptslist.js">
 </script>
 
 <script type="text/javascript" src="/_s_/spr/util.js">
@@ -87,7 +87,7 @@ font-weight:bolder;
 <td>
 <div id="setfile">
 <form name="scriptfileform" action=
-"http://www.sahidomain.com/_s_/dyn/setscriptfile" method="get"
+"http://www.sahidomain.com/_s_/dyn/Player_setScriptFile" method="get"
 target="channel" onsubmit="return onScriptFormSubmit(this)">
 
 <table>
@@ -118,7 +118,7 @@ click 'Play'.</td>
 <td>
 <div id="seturl" style="display:none">
 <form name="scripturlform" action=
-"http://www.sahidomain.com/_s_/dyn/setscripturl" method="get"
+"http://www.sahidomain.com/_s_/dyn/Player_setScriptUrl" method="get"
 target="channel" onsubmit="return onScriptFormSubmit(this)">
 
 <table>
@@ -159,7 +159,7 @@ click 'Play'.</td>
 <tr>
 <td bgcolor="">
 <form name="playform" action=
-"http://www.sahidomain.com/_s_/dyn/startplay" onsubmit="play()"
+"http://www.sahidomain.com/_s_/dyn/Player_start" onsubmit="play()"
 target="channel">
 <table width="100%" border="0">
 <tr>
@@ -200,9 +200,9 @@ value="Stop" onclick="stopPlay()"> </td>
 </tr>
 </table>
 
-<a href="/_s_/dyn/currentscript/" target="_blank">View
+<a href="/_s_/dyn/Player_currentScript/" target="_blank">View
 Script</a>&nbsp;&nbsp;&nbsp; <a href=
-"/_s_/dyn/currentparsedscript/" target="_blank">View Parsed
+"/_s_/dyn/Player_currentParsedScript" target="_blank">View Parsed
 Script</a>&nbsp;&nbsp;&nbsp; <a href="/_s_/spr/logs/" target=
 "_blank">View Logs</a><br>
 <br>

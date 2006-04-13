@@ -3,6 +3,7 @@ package com.sahi;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
+import com.sahi.command.CommandExecuterTest;
 import com.sahi.playback.FileScriptTest;
 import com.sahi.playback.SahiScriptHTMLAdapterTest;
 import com.sahi.playback.SahiScriptTest;
@@ -28,6 +29,8 @@ public class AllTests extends TestSuite {
         suite.addTestSuite(UtilsTest.class);
         suite.addTestSuite(PlayBackLogFormatterTest.class);        
         suite.addTestSuite(ProxyProcessorHelperTest.class);        
+        suite.addTestSuite(CommandExecuterTest.class);        
+        suite.addTestSuite(LocalRequestProcessorTest.class);        
 		return suite;
 	}
 

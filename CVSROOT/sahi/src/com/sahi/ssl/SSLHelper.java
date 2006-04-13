@@ -1,4 +1,4 @@
-package com.sahi;
+package com.sahi.ssl;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -16,7 +16,7 @@ import javax.net.ssl.X509TrustManager;
 
 import com.sahi.request.HttpRequest;
 
-class SSLHelper {
+public class SSLHelper {
 
 	private SSLSocketFactory getSSLClientSocketFactory() throws IOException {
 		SSLSocketFactory factory = null;

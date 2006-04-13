@@ -19,7 +19,7 @@ public class SimpleHttpResponse extends HttpResponse {
     }
     
     public SimpleHttpResponse(byte[] data, boolean closeConnection) {
-        data(data);
+        setData(data);
         setFirstLine("HTTP/1.1 200 OK");
         setHeader("Content-Type", "text/html");
 		setHeader("Cache-Control","no-cache");

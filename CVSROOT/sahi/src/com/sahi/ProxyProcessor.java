@@ -5,39 +5,24 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.net.SocketException;
-import java.net.URLDecoder;
 import java.net.UnknownHostException;
-import java.util.Properties;
 import java.util.logging.Logger;
 
 import javax.net.ssl.SSLSocket;
 
 import com.sahi.config.Configuration;
-import com.sahi.playback.FileScript;
-import com.sahi.playback.SahiScript;
-import com.sahi.playback.SahiScriptHTMLAdapter;
-import com.sahi.playback.ScriptFactory;
-import com.sahi.playback.ScriptUtil;
-import com.sahi.playback.log.LogFileConsolidator;
-import com.sahi.processor.SuiteProcessor;
+import com.sahi.ssl.SSLHelper;
 import com.sahi.request.HttpRequest;
 import com.sahi.response.HttpFileResponse;
 import com.sahi.response.HttpModifiedResponse;
 import com.sahi.response.HttpResponse;
 import com.sahi.response.NoCacheHttpResponse;
-import com.sahi.response.SimpleHttpResponse;
-import com.sahi.session.Session;
-import com.sahi.test.SahiTestSuite;
-import com.sahi.util.Utils;
 
 /**
  * User: nraman Date: May 13, 2005 Time: 7:06:11 PM To
  */
 public class ProxyProcessor implements Runnable {
 	private Socket client;
-
-	private SuiteProcessor suiteProcessor = new SuiteProcessor();
 
 	private boolean isSSLSocket = false;
 
@@ -133,10 +118,10 @@ public class ProxyProcessor implements Runnable {
 		}
 	}
 
-	private void processHttp(HttpRequest requestFromBrowser)
-			throws IOException, SocketException {
+	private void processHttp(HttpRequest requestFromBrowser){
 		logger.finest("### Type of socket is " + client.getClass().getName());
 		Socket socketToHost = null;
+		try {
 		try {
 			socketToHost = getSocketToHost(requestFromBrowser);
 		} catch (UnknownHostException e) {
@@ -153,336 +138,14 @@ public class ProxyProcessor implements Runnable {
 						.modifyForFetch());
 		sendResponseToBrowser(responseFromHost);
 		socketToHost.close();
+		}catch(Exception ioe) {			
+		}
 	}
 
 	private void processLocally(String uri, HttpRequest requestFromBrowser)
 			throws IOException {
-		if (uri.indexOf("/dyn/") != -1) {
-			// System.out.println(uri);
-			Session session = getSession(requestFromBrowser);
-//			System.out.println("----------- " + session.id() + " " + uri);
-			if (uri.indexOf("/log") != -1) {
-				if (session.getScript() != null) {
-					session.logPlayBack(requestFromBrowser.getParameter("msg"),
-							requestFromBrowser.getParameter("type"),
-							requestFromBrowser.getParameter("debugInfo"));
-				}
-				sendResponseToBrowser(new NoCacheHttpResponse(""));
-			} else if (uri.indexOf("/setscriptfile") != -1) {
-				String fileName = URLDecoder.decode(requestFromBrowser
-						.getParameter("file"), "UTF8");
-				session.setScript(new ScriptFactory().getScript(
-						getScriptFileWithPath(fileName)));
-				startPlayback(requestFromBrowser, session);
-			} else if (uri.indexOf("/setscripturl") != -1) {
-				String url = URLDecoder.decode(requestFromBrowser
-						.getParameter("url"), "UTF8");
-				session.setScript(new ScriptFactory().getScript(url));
-				startPlayback(requestFromBrowser, session);
-			} else if (uri.indexOf("/recordstart") != -1) {
-				// System.out.println("########### "+session.id());
-				startRecorder(requestFromBrowser, session);
-				sendBlankResponse(session);
-			} else if (uri.indexOf("/recordstop") != -1) {
-				session.getRecorder().stop();
-				sendBlankResponse(session);
-			} else if (uri.indexOf("/record") != -1) {
-				session.getRecorder().record(requestFromBrowser.getParameter("cmd"));
-				sendResponseToBrowser(new NoCacheHttpResponse(""));
-			} else if (uri.indexOf("/scriptslist") != -1) {
-				sendResponseToBrowser(new NoCacheHttpResponse(ScriptUtil
-						.getScriptsJs(getScriptName(session))));
-			} else if (uri.indexOf("/script") != -1) {
-				String s = (session.getScript() != null) ? session.getScript()
-						.modifiedScript() : "";
-				sendResponseToBrowser(new NoCacheHttpResponse(s));
-			} else if (uri.indexOf("/winclosed") != -1) {
-				session.setIsWindowOpen(false);
-				sendResponseToBrowser(new NoCacheHttpResponse(""));
-			} else if (uri.indexOf("/winopen") != -1) {
-				session.setIsWindowOpen(true);
-				sendBlankResponse(session);
-			} else if (uri.indexOf("/state") != -1) {
-				sendResponseToBrowser(proxyStateResponse(session));
-			} else if (uri.indexOf("/setCommonCookie") != -1) {
-				sendBlankResponse(session);
-			} else if (uri.indexOf("/auto") != -1) {
-				String fileName = URLDecoder.decode(requestFromBrowser
-						.getParameter("file"), "UTF8");
-				session.setScript(new FileScript(
-						getScriptFileWithPath(fileName)));
-				String startUrl = URLDecoder.decode(requestFromBrowser
-						.getParameter("startUrl"), "UTF8");
-				session.setIsWindowOpen(false);
-				session.startPlayBack();
-				sendResponseToBrowser(proxyAutoResponse(startUrl, session.id()));
-			} else if (uri.indexOf("/setvar") != -1) {
-				String name = requestFromBrowser.getParameter("name");
-				String value = requestFromBrowser.getParameter("value");
-				session.setVariable(name, value);
-				sendResponseToBrowser(new NoCacheHttpResponse(""));
-			} else if (uri.indexOf("/getvar") != -1) {
-				String name = requestFromBrowser.getParameter("name");
-				String value = session.getVariable(name);
-				sendResponseToBrowser(new NoCacheHttpResponse(value != null
-						? value
-						: "null"));
-			} else if (uri.indexOf("/startplay") != -1) {
-				startPlayback(requestFromBrowser, session);
-			} else if (uri.indexOf("/stopplay") != -1) {
-				sendResponseToBrowser(new NoCacheHttpResponse(""));
-				stopPlay(session);
-			} else if (uri.indexOf("/startsuite") != -1) {
-				suiteProcessor.startSuite(requestFromBrowser, session);
-				sendResponseToBrowser(new NoCacheHttpResponse(""));
-			} else if (uri.indexOf("/getSuiteStatus") != -1) {
-				SahiTestSuite suite = SahiTestSuite.getSuite(session.id());
-				String status = "NONE";
-				if (suite != null) {
-					status = session.getPlayBackStatus();
-				}
-				sendResponseToBrowser(new NoCacheHttpResponse(status));
-			} else if (uri.indexOf("/stopserver") != -1) {
-				System.exit(1);
-			} else if (uri.indexOf("/getSahiScript") != -1) {
-				String code = requestFromBrowser.getParameter("code");
-				sendResponseToBrowser(new NoCacheHttpResponse(SahiScript
-						.modifyFunctionNames(code)));
-			} else if (uri.indexOf("/alert.htm") != -1) {
-				String msg = requestFromBrowser.getParameter("msg");
-				sendResponseToBrowser(proxyAlertResponse(msg));
-			} else if (uri.indexOf("/confirm.htm") != -1) {
-				String msg = requestFromBrowser.getParameter("msg");
-				sendResponseToBrowser(proxyConfirmResponse(msg));
-			} else if (uri.indexOf("/sleep") != -1) {
-				long millis = 1000;
-				try {
-					millis = Long.parseLong(requestFromBrowser
-							.getParameter("ms"));
-				} catch (Exception e) {
-				}
-				try {
-					Thread.sleep(millis);
-				} catch (Exception e) {
-				}
-				sendResponseToBrowser(new SimpleHttpResponse(""));
-			} else if (uri.indexOf("/currentscript") != -1) {
-				if (session.getScript() != null) {
-					sendResponseToBrowser(new SimpleHttpResponse("<pre>"
-							+ SahiScriptHTMLAdapter.createHTML(session
-									.getScript().getOriginal()) + "</pre>"));
-				} else {
-					sendResponseToBrowser(new SimpleHttpResponse(
-							"No Script has been set for playback."));
-				}
-			} else if (uri.indexOf("/currentlog") != -1) {
-				if (session.getScriptLogFile() != null) {
-					sendLogResponse(appendLogsRoot(session.getScriptLogFile()));
-				}
-			} else if (uri.indexOf("/highlighted") != -1) {
-				int lineNumber = getLineNumber(requestFromBrowser);
-				String fileName = ProxyProcessorHelper.scriptFileNamefromURI(
-						requestFromBrowser.uri(), "/highlighted/");
-				final HttpFileResponse response = new HttpFileResponse(fileName);
-				if (lineNumber != -1) {
-					response
-							.data(("<html><body><style>b{color:brown}</style><pre>" + ProxyProcessorHelper.highlight(
-									new String(response.data()), lineNumber) + "</pre></body></html>")
-									.getBytes());
-				}
-				response.addHeader("Content-type", "text/html");
-				response.setRawHeaders(response.getRebuiltHeaderBytes());
-//				System.out.println(new String(response.data()));
-				sendResponseToBrowser(response);
-			} else if (uri.indexOf("/currentparsedscript") != -1) {
-				if (session.getScript() != null) {
-					sendResponseToBrowser(new SimpleHttpResponse("<pre>"
-							+ SahiScriptHTMLAdapter.createHTML(session
-									.getScript().modifiedScript()) + "</pre>"));
-				} else {
-					sendResponseToBrowser(new SimpleHttpResponse(
-							"No Script has been set for playback."));
-				}
-			}
-
-		} else if (uri.indexOf("/scripts/") != -1) {
-			String fileName = ProxyProcessorHelper.scriptFileNamefromURI(
-					requestFromBrowser.uri(), "/scripts/");
-			sendResponseToBrowser(new HttpFileResponse(fileName));
-		} else if (uri.indexOf("/logs/") != -1 || uri.endsWith("/logs")) {
-			sendLogResponse(logFileNamefromURI(requestFromBrowser.uri()));
-		} else if (uri.indexOf("/spr/") != -1) {
-			String fileName = fileNamefromURI(requestFromBrowser.uri());
-			sendResponseToBrowser(new HttpFileResponse(fileName));
-		} else {
-			sendResponseToBrowser(new SimpleHttpResponse(
-					"<html><h2>You have reached the Sahi proxy.</h2></html>"));
-		}
-	}
-
-	private int getLineNumber(HttpRequest req) {
-		String p = req.getParameter("n");
-		int i = -1;
-		try {
-			i = Integer.parseInt(p);
-		} catch (Exception e) {
-		}
-		return i;
-	}
-
-	private void startPlayback(HttpRequest requestFromBrowser, Session session)
-			throws IOException {
-		if (session.getScript() != null)
-			session.startPlayBack();
-		session.setVariable("sahi_play", "1");
-		session.setVariable("sahiPaused", "1");
-		sendBlankResponse(session);
-	}
-
-	private void sendLogResponse(String fileName) throws IOException {
-		if ("".equals(fileName))
-			sendResponseToBrowser(new NoCacheHttpResponse(getLogsList()));
-		else
-			sendResponseToBrowser(new HttpFileResponse(fileName));
-	}
-
-	private void sendBlankResponse(Session session) throws IOException {
-		sendResponseToBrowser(new NoCacheHttpResponse(""));
-	}
-
-	private HttpResponse addSahisidCookie(HttpResponse httpResponse,
-			Session session) {
-		httpResponse.addHeader("Set-Cookie", "sahisid=" + session.id()
-				+ "; path=/; ");
-		// P3P: policyref="http://catalog.example.com/P3P/PolicyReferences.xml",
-		// CP="NON DSP COR CURa ADMa DEVa CUSa TAIa OUR SAMa IND"
-		httpResponse
-				.addHeader(
-						"P3P",
-						"policyref=\"http://www.sahidomain.com/p3p.xml\", CP=\"NON DSP COR CURa ADMa DEVa CUSa TAIa OUR SAMa IND\"");
-		httpResponse.setRawHeaders(httpResponse.getRebuiltHeaderBytes());
-		return httpResponse;
-	}
-
-	private void stopPlay(Session session) {
-		if (session.getScript() != null)
-			session.stopPlayBack();
-		SahiTestSuite suite = SahiTestSuite.getSuite(session.id());
-		if (suite != null) {
-			suite.stop(session.getScript().getScriptName());
-			waitASec();
-			if (!suite.executeNext())
-				consolidateLogs(session.getSuiteLogDir());
-		} else {
-			consolidateLogs(session.getScriptLogFile());
-		}
-	}
-
-	private void waitASec() {
-		try {
-			Thread.sleep(1000);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-	}
-
-	private void consolidateLogs(String consolidateBy) {
-		try {
-			new LogFileConsolidator(consolidateBy).summarize();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
-	private String getLogsList() {
-		return LogFileConsolidator.getLogsList();
-	}
-
-	private String getScriptName(Session session) {
-		SahiScript script = session.getScript();
-		if (script == null)
-			return "";
-		return script.getScriptName();
-	}
-
-	private HttpFileResponse proxyAutoResponse(String startUrl, String sessionId) {
-		Properties props = new Properties();
-		props.setProperty("startUrl", startUrl);
-		props.setProperty("sessionId", sessionId);
-		return new HttpFileResponse(Configuration.getHtdocsRoot()
-				+ "spr/auto.htm", props);
-	}
-
-	private HttpFileResponse proxyAlertResponse(String msg) {
-		Properties props = new Properties();
-		props.setProperty("msg", msg);
-		return new HttpFileResponse(Configuration.getHtdocsRoot()
-				+ "spr/alert.htm", props);
-	}
-
-	private HttpFileResponse proxyConfirmResponse(String msg) {
-		Properties props = new Properties();
-		props.setProperty("msg", msg);
-		return new HttpFileResponse(Configuration.getHtdocsRoot()
-				+ "spr/confirm.htm", props);
-	}
-
-	private HttpResponse proxyStateResponse(Session session) {
-		Properties props = new Properties();
-		props.setProperty("sessionId", session.id());
-		props.setProperty("isRecording", "" + session.isRecording());
-		props.setProperty("isWindowOpen", "" + session.isWindowOpen());
-		props.setProperty("hotkey", "" + Configuration.getHotKey());
-		NoCacheHttpResponse httpResponse = new NoCacheHttpResponse(
-				new HttpFileResponse(Configuration.getHtdocsRoot()
-						+ "spr/state.js", props));
-		addSahisidCookie(httpResponse, session);
-		return httpResponse;
-	}
-
-	private Session getSession(HttpRequest requestFromBrowser) {
-		String sessionId = null;
-		sessionId = requestFromBrowser.getParameter("sahisid");
-		// System.out.println("1:"+sessionId);
-		if (isBlankOrNull(sessionId))
-			sessionId = requestFromBrowser.getCookie(new String("sahisid"));
-		if (isBlankOrNull(sessionId))
-			sessionId = "sahi_" + System.currentTimeMillis();
-		// System.out.println("2:"+sessionId);
-		return Session.getInstance(sessionId);
-	}
-
-	private boolean isBlankOrNull(String s) {
-		return (s == null || "".equals(s));
-	}
-
-	private String logFileNamefromURI(String uri) {
-		String fileName = uri.substring(uri.indexOf("/logs/") + 6);
-		if ("".equals(fileName))
-			return "";
-		return appendLogsRoot(fileName);
-	}
-
-	private String appendLogsRoot(String fileName) {
-		return Utils.concatPaths(Configuration.getPlayBackLogsRoot(), fileName);
-	}
-
-	private String fileNamefromURI(String uri) {
-		return Utils.concatPaths(Configuration.getHtdocsRoot(), uri
-				.substring(uri.indexOf("_s_/") + 4));
-	}
-
-	private String getScriptFileWithPath(String fileName) {
-		if (!fileName.endsWith(".sah"))
-			fileName = fileName + ".sah";
-		return Configuration.getScriptRoot() + fileName;
-	}
-
-	private void startRecorder(HttpRequest request, Session session) {
-		String fileName = request.getParameter("file");
-		session.getRecorder().start(getScriptFileWithPath(fileName));
-		session.setVariable("sahi_record", "1");
-		// System.out.println("$$$$$$$$$$$ "+session.id());
+		HttpResponse httpResponse = new LocalRequestProcessor().getLocalResponse(uri, requestFromBrowser);
+		sendResponseToBrowser(httpResponse);		
 	}
 
 	private HttpResponse getResponseFromHost(InputStream inputStreamFromHost,

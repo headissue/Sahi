@@ -131,4 +131,10 @@ public class Configuration {
 		return "ALT";
 	}
 
+	public static String getScriptFileWithPath(String fileName) {
+		if (!fileName.endsWith(".sah"))
+			fileName = fileName + ".sah";
+		return getScriptRoot() + fileName;
+	}
+
 }

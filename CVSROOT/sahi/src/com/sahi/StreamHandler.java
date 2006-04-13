@@ -37,7 +37,7 @@ public abstract class StreamHandler {
 		return data;
 	}
 
-	protected byte[] data(byte[] bytes) {
+	public byte[] setData(byte[] bytes) {
 		data = bytes;
 		return data;
 	}
@@ -56,6 +56,10 @@ public abstract class StreamHandler {
 
 	public byte[] setRawHeaders(byte[] bytes) {
 		return rawHeaders = bytes;
+	}
+
+	public void resetRawHeaders() {
+		setRawHeaders(getRebuiltHeaderBytes());
 	}
 
 	private void setRawHeaders(InputStream in) throws IOException {
@@ -127,7 +131,7 @@ public abstract class StreamHandler {
 		headers.put(key, entry);
 	}
 
-	protected void addHeader(String key, String value) {
+	public void addHeader(String key, String value) {
 		List entry = (List) headers.get(key);
 		if (entry == null) {
 			entry = new ArrayList();

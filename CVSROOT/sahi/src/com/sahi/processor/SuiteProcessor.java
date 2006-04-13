@@ -1,13 +1,11 @@
 package com.sahi.processor;
 
-import java.io.IOException;
 import com.sahi.request.HttpRequest;
 import com.sahi.session.Session;
 import com.sahi.test.SahiTestSuite;
 
 public class SuiteProcessor {
-	public void startSuite(HttpRequest requestFromBrowser, Session session)
-			throws IOException {
+	public void startSuite(HttpRequest requestFromBrowser, Session session) {
 		String suiteName = requestFromBrowser.getParameter("suite");
 		String browser = requestFromBrowser.getParameter("browser");
 		String base = requestFromBrowser.getParameter("base");
@@ -17,7 +15,6 @@ public class SuiteProcessor {
 			threads = Integer.parseInt(threadsStr);
 		} catch (Exception e) {
 		}
-		boolean isSessionMultiThreaded = threads > 1;
 		SahiTestSuite suite = new SahiTestSuite(suiteName, base, browser,
 				session.id());
 		for (int i = 0; i < threads; i++) {

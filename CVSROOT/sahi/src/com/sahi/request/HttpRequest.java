@@ -12,7 +12,9 @@ import java.util.StringTokenizer;
 import java.util.logging.Logger;
 
 import com.sahi.StreamHandler;
+import com.sahi.session.Session;
 import com.sahi.test.SahiTestSuite;
+import com.sahi.util.Utils;
 
 /**
  * User: nraman Date: May 13, 2005 Time: 10:01:13 PM
@@ -229,5 +231,17 @@ public class HttpRequest extends StreamHandler {
         setRawHeaders(getRebuiltHeaderBytes());
 		logger.fine("\n------------\n\nRequest Headers:\n"+headers());      
 		return this;
+	}
+	
+	public Session session() {
+		String sessionId = null;
+		sessionId = getParameter("sahisid");
+		// System.out.println("1:"+sessionId);
+		if (Utils.isBlankOrNull(sessionId))
+			sessionId = getCookie(new String("sahisid"));
+		if (Utils.isBlankOrNull(sessionId))
+			sessionId = "sahi_" + System.currentTimeMillis();
+		// System.out.println("2:"+sessionId);
+		return Session.getInstance(sessionId);
 	}
 }

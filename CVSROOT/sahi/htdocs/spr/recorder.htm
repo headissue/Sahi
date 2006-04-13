@@ -3,7 +3,6 @@
 <title>Sahi Controller</title>
 <script src="/_s_/spr/exception.js"></script>
 <script src="/_s_/spr/controller2.js"></script>
-<script src="/_s_/dyn/scriptslist.js"></script>
 <script src="/_s_/spr/util.js"></script>
 <script src="/_s_/spr/common.js"></script>
 <script src="/_s_/spr/cookie.js"></script>
@@ -68,12 +67,12 @@ font-weight:bolder;
 	Enter a script name and click "Record" to start recording.<br/>
 	Script will be generated in sahi/scripts directory. <br/><br/>
 	</td></tr><tr><td>
-	<form name="recordstartform" action="http://www.sahidomain.com/_s_/dyn/recordstart" target="channel" onsubmit="return onRecordStartFormSubmit(this)">
+	<form name="recordstartform" action="http://www.sahidomain.com/_s_/dyn/Recorder_start" target="channel" onsubmit="return onRecordStartFormSubmit(this)">
 	Script Name: <input type="text" name="file" value="">
 	<input type="submit" value="Record">
 	</form>
 	</td><td>
-	<form name="recordstopform" action="http://www.sahidomain.com/_s_/dyn/recordstop" target="channel" onsubmit="o(this);stopRec()">
+	<form name="recordstopform" action="http://www.sahidomain.com/_s_/dyn/Recorder_stop" target="channel" onsubmit="o(this);stopRec()">
 	<input type="submit" value="Stop">
 	</form>
 	</td>

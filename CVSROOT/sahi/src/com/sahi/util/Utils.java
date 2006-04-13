@@ -119,4 +119,8 @@ public class Utils {
 		}
 		return tokens;
 	}
+
+	public static boolean isBlankOrNull(String s) {
+		return (s == null || "".equals(s));
+	}
 }

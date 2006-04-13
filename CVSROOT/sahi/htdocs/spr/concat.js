@@ -1114,7 +1114,7 @@ function sahiOnEv(e){
 	var cmd = getScript(info);
 	if (cmd == null) return true;
 	if (sahiHasEventBeenRecorded(cmd)) return true; //IE
-    sahiSendToServer('/_s_/dyn/record?cmd='+escape(cmd));
+    sahiSendToServer('/_s_/dyn/Recorder_record?cmd='+escape(cmd));
     e.handled = true; //FF
 	showInController(info);
     return true;
@@ -1149,7 +1149,7 @@ function getPopupName(){
 function sahiOnPageLoad(){
     var accessorsOnPage = findAllAccessors();
     for(i = 0; i < accessorsOnPage.length; i++){
-        sahiSendToServer('/_s_/dyn/record?' + sahiGetAccessorInfoQS(accessorsOnPage[i]));
+        sahiSendToServer('/_s_/dyn/Recorder_record?' + sahiGetAccessorInfoQS(accessorsOnPage[i]));
     }
 }
 
@@ -1179,7 +1179,7 @@ function addWait(time){
     var val = parseInt(time);
     if ((""+val) == "NaN" || val < 200) throw new Error();
     showInController(new AccessorInfo("", "", "", "wait", time));
-//    sahiSendToServer('/_s_/dyn/record?event=wait&value='+val);
+//    sahiSendToServer('/_s_/dyn/Recorder_record?event=wait&value='+val);
 }
 function mark(s){
     showInController(new AccessorInfo("", "", "", "mark", s));
@@ -1189,7 +1189,7 @@ function doAssert(e){
         if (!top._lastAccessedInfo) return;
         top._lastAccessedInfo.event = "assert";
         showInController(top._lastAccessedInfo);
-//      sahiSendToServer('/_s_/dyn/record?'+getSahiPopUpQS()+sahiGetAccessorInfoQS(top._lastAccessedInfo, true));
+//      sahiSendToServer('/_s_/dyn/Recorder_record?'+getSahiPopUpQS()+sahiGetAccessorInfoQS(top._lastAccessedInfo, true));
     }catch(ex){sahiHandleException(ex);}
 }
 
@@ -1530,7 +1530,7 @@ var KEY_K = 75;
 var IDLE_INTERVAL=1000;
 var INTERVAL=100;
 var RETRY_INTERVAL=1000;
-var MAX_RETRIES=10;
+var MAX_RETRIES=0;
 
 var _sahiCmds = new Array();
 var _sahiCmdDebugInfo = new Array();
@@ -1701,11 +1701,11 @@ function isSahiPlaying(){
     return sahiGetServerVar("sahi_play")=="1";
 }
 function sahiStartPlaying(){
-	sahiSendToServer("/_s_/dyn/startplay");
+	sahiSendToServer("/_s_/dyn/Player_start");
 	sahiSetServerVar("sahi_play", 1);
 }
 function sahiStopPlaying(){
-	sahiSendToServer("/_s_/dyn/stopplay");
+	sahiSendToServer("/_s_/dyn/Player_stop");
 	sahiSetServerVar("sahi_play", 0);
 	updateControlWinDisplay("--Stopped Playback--");
 }
@@ -1713,11 +1713,11 @@ function sahiStartRecording(){
    	sahiAddHandlersToAllFrames(top);
 }
 function sahiStopRecording(){
-	sahiSendToServer("/_s_/dyn/recordstop");
+	sahiSendToServer("/_s_/dyn/Recorder_stop");
 	sahiSetServerVar("sahi_record", 0);
 }
 function sahiLogPlayBack(msg, type, debugInfo){
-	sahiSendToServer("/_s_/dyn/log?msg=" + escape(msg) + "&type=" + type + "&debugInfo=" + (debugInfo?escape(debugInfo):""));
+	sahiSendToServer("/_s_/dyn/Log?msg=" + escape(msg) + "&type=" + type + "&debugInfo=" + (debugInfo?escape(debugInfo):""));
 }
 function sahiTrim(s){
     if (s==null) return s;
@@ -1779,16 +1779,16 @@ function sahiCreateRequestObject(){
 	return obj;
 }
 function sahiGetServerVar(name){
-	var v = sahiSendToServer("/_s_/dyn/getvar?name="+escape(name));
+	var v = sahiSendToServer("/_s_/dyn/SessionState_getVar?name="+escape(name));
 	if (v == "null") return null;
 	return v;
 }
 function sahiSetServerVar(name, value){
-	sahiSendToServer("/_s_/dyn/setvar?name="+escape(name)+"&value="+escape(value));
+	sahiSendToServer("/_s_/dyn/SessionState_setVar?name="+escape(name)+"&value="+escape(value));
 }
 function sahiLogErr(msg){
 //    return;
-	sahiSendToServer("/_s_/dyn/log?msg=" + escape(msg) + "&type=err" );
+	sahiSendToServer("/_s_/dyn/Log?msg=" + escape(msg) + "&type=err" );
 }
 
 function sahiGetParentNode(el, tagName){

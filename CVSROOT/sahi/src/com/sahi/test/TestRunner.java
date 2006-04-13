@@ -46,7 +46,7 @@ public class TestRunner {
 
 	public String execute() throws UnsupportedEncodingException, MalformedURLException, IOException, InterruptedException {
 		String sessionId = "sahi_" + System.currentTimeMillis();
-		String urlStr = "http://" + sahiHost + ":" + port + "/_s_/dyn/startsuite?suite=" + encode(suiteName) + "&base=" + encode(base) + "&browser="
+		String urlStr = "http://" + sahiHost + ":" + port + "/_s_/dyn/Suite_start?suite=" + encode(suiteName) + "&base=" + encode(base) + "&browser="
 				+ encode(base) + "&browser=" + encode(browser) + "&threads=" + encode(threads) + "&sahisid=" + encode(sessionId);
 		// System.out.println("urlStr=" + urlStr);
 		URL url = new URL(urlStr);
@@ -67,7 +67,7 @@ public class TestRunner {
 		String status = "NONE";
 		String urlStr = "";
 		try {
-			urlStr = "http://" + sahiHost + ":" + port + "/_s_/dyn/getSuiteStatus?s" + "&sahisid=" + encode(sessionId);
+			urlStr = "http://" + sahiHost + ":" + port + "/_s_/dyn/Suite_status?s" + "&sahisid=" + encode(sessionId);
 			URL url = new URL(urlStr);
 			InputStream in = url.openStream();
 			StringBuffer sb = new StringBuffer();
