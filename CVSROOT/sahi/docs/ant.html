@@ -48,7 +48,7 @@ The demo could be run by running "ant -f demo.xml sahitests" from the sahi base 
 
 &lt;?xml version="1.0" encoding="ISO-8859-1"?&gt;
 &lt;project name="demo" default="sahitests"&gt;
-	&lt;taskdef name="sahi" classname="com.sahi.ant.RunSahiTask" classpath="lib/ant-sahi.jar"/&gt;
+	&lt;taskdef name="sahi" classname="net.sf.sahi.ant.RunSahiTask" classpath="lib/ant-sahi.jar"/&gt;
 
 	&lt;target name="sahitests" description="start the server and run sahi tests"&gt;
 		&lt;parallel&gt;
@@ -77,7 +77,7 @@ The demo could be run by running "ant -f demo.xml sahitests" from the sahi base 
 	&lt;/target&gt;
 
 	&lt;target name="start-web" description="starts web"&gt;
-		&lt;java classname="com.sahi.WebServer" fork="true" dir="bin" &gt;
+		&lt;java classname="net.sf.sahi.WebServer" fork="true" dir="bin" &gt;
 			&lt;classpath location="lib/sahi.jar"/&gt;
 		&lt;/java&gt;
 	&lt;/target&gt;
@@ -93,7 +93,7 @@ The demo could be run by running "ant -f demo.xml sahitests" from the sahi base 
 	&lt;/target&gt;
 
 	&lt;target name="start" description="starts proxy"&gt;
-		&lt;java classname="com.sahi.Proxy" fork="true" dir="bin"&gt;
+		&lt;java classname="net.sf.sahi.Proxy" fork="true" dir="bin"&gt;
 			&lt;classpath location="lib/sahi.jar"/&gt;
 		&lt;/java&gt;
 	&lt;/target&gt;
