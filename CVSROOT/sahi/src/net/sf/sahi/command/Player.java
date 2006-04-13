@@ -1,38 +1,38 @@
-package com.sahi.command;
+package net.sf.sahi.command;
 
 import java.io.IOException;
 import java.util.Properties;
 
-import com.sahi.config.Configuration;
-import com.sahi.playback.FileScript;
-import com.sahi.playback.SahiScriptHTMLAdapter;
-import com.sahi.playback.ScriptFactory;
-import com.sahi.playback.log.LogFileConsolidator;
-import com.sahi.request.HttpRequest;
-import com.sahi.response.HttpFileResponse;
-import com.sahi.response.HttpResponse;
-import com.sahi.response.NoCacheHttpResponse;
-import com.sahi.response.SimpleHttpResponse;
-import com.sahi.session.Session;
-import com.sahi.test.SahiTestSuite;
+import net.sf.sahi.config.Configuration;
+import net.sf.sahi.playback.FileScript;
+import net.sf.sahi.playback.SahiScriptHTMLAdapter;
+import net.sf.sahi.playback.ScriptFactory;
+import net.sf.sahi.playback.log.LogFileConsolidator;
+import net.sf.sahi.request.HttpRequest;
+import net.sf.sahi.response.HttpFileResponse;
+import net.sf.sahi.response.HttpResponse;
+import net.sf.sahi.response.NoCacheHttpResponse;
+import net.sf.sahi.response.SimpleHttpResponse;
+import net.sf.sahi.session.Session;
+import net.sf.sahi.test.SahiTestSuite;
 
 public class Player {
 	public void start(HttpRequest request) {
 		startPlayback(request, request.session());
 	}
-	
+
 	public void stop(HttpRequest request) {
 		request.session().getRecorder().stop();
 		new PlayerStopThread(request.session()).start();
-	}	
-	
+	}
+
 	public void setScriptFile(HttpRequest request) {
 		Session session = request.session();
 		String fileName = request.getParameter("file");
 		session.setScript(new ScriptFactory().getScript(
 				Configuration.getScriptFileWithPath(fileName)));
 		startPlayback(request, session);
-	}	
+	}
 
 	public void setScriptUrl(HttpRequest request){
 		Session session = request.session();
@@ -40,7 +40,7 @@ public class Player {
 		session.setScript(new ScriptFactory().getScript(url));
 		startPlayback(request, session);
 	}
-	
+
 	private void startPlayback(HttpRequest request, Session session) {
 		if (session.getScript() != null)
 			session.startPlayBack();
@@ -60,7 +60,7 @@ public class Player {
 					"No Script has been set for playback.");
 		}
 		return httpResponse;
-	}	
+	}
 
 	public HttpResponse currentParsedScript(HttpRequest request) {
 		Session session = request.session();
@@ -74,8 +74,8 @@ public class Player {
 					"No Script has been set for playback.");
 		}
 		return httpResponse;
-	}	
-	
+	}
+
 
 	public HttpResponse script(HttpRequest request) {
 		Session session = request.session();
@@ -94,8 +94,8 @@ public class Player {
 		session.setIsWindowOpen(false);
 		session.startPlayBack();
 		return proxyAutoResponse(startUrl, session.id());
-	}	
-	
+	}
+
 	private HttpFileResponse proxyAutoResponse(String startUrl, String sessionId) {
 		Properties props = new Properties();
 		props.setProperty("startUrl", startUrl);
@@ -104,14 +104,14 @@ public class Player {
 				+ "spr/auto.htm", props);
 	}
 
-	
+
 	class PlayerStopThread extends Thread {
 		private final Session session;
 
 		PlayerStopThread(Session session){
 			this.session = session;
 		}
-		
+
 		public void run() {
 			stopPlay();
 		}
@@ -128,7 +128,7 @@ public class Player {
 				consolidateLogs(session.getScriptLogFile());
 			}
 		}
-		
+
 		private void waitASec() {
 			try {
 				Thread.sleep(1000);
@@ -136,13 +136,13 @@ public class Player {
 				e.printStackTrace();
 			}
 		}
-	
+
 		private void consolidateLogs(String consolidateBy) {
 			try {
 				new LogFileConsolidator(consolidateBy).summarize();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-		}	
+		}
 	}
 }

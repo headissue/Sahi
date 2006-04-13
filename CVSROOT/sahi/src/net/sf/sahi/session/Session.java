@@ -1,13 +1,13 @@
-package com.sahi.session;
+package net.sf.sahi.session;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import com.sahi.playback.SahiScript;
-import com.sahi.playback.log.LogFileConsolidator;
-import com.sahi.playback.log.PlayBackLogger;
-import com.sahi.record.Recorder;
-import com.sahi.test.SahiTestSuite;
+import net.sf.sahi.playback.SahiScript;
+import net.sf.sahi.playback.log.LogFileConsolidator;
+import net.sf.sahi.playback.log.PlayBackLogger;
+import net.sf.sahi.record.Recorder;
+import net.sf.sahi.test.SahiTestSuite;
 
 /**
  * User: nraman Date: Jun 21, 2005 Time: 8:03:28 PM
@@ -100,7 +100,7 @@ public class Session {
 	}
 
 	public String getSuiteLogDir() {
-		if (getSuite() == null) return null; 
+		if (getSuite() == null) return null;
 		return getSuite().getSuiteLogDir();
 	}
 

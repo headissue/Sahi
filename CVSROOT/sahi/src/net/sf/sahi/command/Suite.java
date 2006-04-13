@@ -1,14 +1,14 @@
-package com.sahi.command;
+package net.sf.sahi.command;
 
-import com.sahi.processor.SuiteProcessor;
-import com.sahi.request.HttpRequest;
-import com.sahi.response.HttpResponse;
-import com.sahi.response.NoCacheHttpResponse;
-import com.sahi.session.Session;
-import com.sahi.test.SahiTestSuite;
+import net.sf.sahi.processor.SuiteProcessor;
+import net.sf.sahi.request.HttpRequest;
+import net.sf.sahi.response.HttpResponse;
+import net.sf.sahi.response.NoCacheHttpResponse;
+import net.sf.sahi.session.Session;
+import net.sf.sahi.test.SahiTestSuite;
 
 public class Suite {
-	
+
 	public void start(HttpRequest request) {
 		SuiteProcessor suiteProcessor = new SuiteProcessor();
 		suiteProcessor.startSuite(request, request.session());
@@ -23,5 +23,5 @@ public class Suite {
 		}
 		return new NoCacheHttpResponse(status);
 	}
-	
+
 }

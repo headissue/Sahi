@@ -1,4 +1,4 @@
-package com.sahi;
+package net.sf.sahi;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -6,13 +6,13 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.util.logging.Logger;
 
-import com.sahi.config.Configuration;
-import com.sahi.request.HttpRequest;
-import com.sahi.response.HttpFileResponse;
-import com.sahi.response.HttpResponse;
-import com.sahi.response.NoCacheHttpResponse;
-import com.sahi.util.FileIsDirectoryException;
-import com.sahi.util.FileNotFoundRuntimeException;
+import net.sf.sahi.config.Configuration;
+import net.sf.sahi.request.HttpRequest;
+import net.sf.sahi.response.HttpFileResponse;
+import net.sf.sahi.response.HttpResponse;
+import net.sf.sahi.response.NoCacheHttpResponse;
+import net.sf.sahi.util.FileIsDirectoryException;
+import net.sf.sahi.util.FileNotFoundRuntimeException;
 ;
 
 /**
@@ -21,7 +21,7 @@ import com.sahi.util.FileNotFoundRuntimeException;
 public class WebProcessor implements Runnable {
 	private Socket client;
 	private static Logger logger = Configuration
-			.getLogger("com.sahi.WebProcessor");
+			.getLogger("net.sf.sahi.WebProcessor");
 
 	public WebProcessor(Socket client) {
 		this.client = client;
@@ -43,16 +43,16 @@ public class WebProcessor implements Runnable {
 				if ("/".equals(uri)) uri = "/demo";
 				sendResponseToBrowser(new NoCacheHttpResponse(200, "OK", "<script>location.href='"+uri+"/index.htm'</script>"));
 			} catch (IOException e) {
-				logger.warning(dirEx.getMessage());			
+				logger.warning(dirEx.getMessage());
 			}
-			logger.warning(dirEx.getMessage());						
+			logger.warning(dirEx.getMessage());
 		} catch (FileNotFoundRuntimeException fnfre) {
 			try {
 				sendResponseToBrowser(new NoCacheHttpResponse(404, "FileNotFound", "<html><h2>404 File Not Found</h2></html>"));
 			} catch (IOException e) {
-				logger.warning(fnfre.getMessage());			
+				logger.warning(fnfre.getMessage());
 			}
-			logger.warning(fnfre.getMessage());			
+			logger.warning(fnfre.getMessage());
 		}
 		catch (Exception e) {
 			System.out.println(">>>>>>>>>>"+e.getClass().getName());

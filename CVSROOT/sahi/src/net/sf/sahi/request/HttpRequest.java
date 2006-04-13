@@ -1,4 +1,4 @@
-package com.sahi.request;
+package net.sf.sahi.request;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,10 +11,10 @@ import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.logging.Logger;
 
-import com.sahi.StreamHandler;
-import com.sahi.session.Session;
-import com.sahi.test.SahiTestSuite;
-import com.sahi.util.Utils;
+import net.sf.sahi.StreamHandler;
+import net.sf.sahi.session.Session;
+import net.sf.sahi.test.SahiTestSuite;
+import net.sf.sahi.util.Utils;
 
 /**
  * User: nraman Date: May 13, 2005 Time: 10:01:13 PM
@@ -26,7 +26,7 @@ public class HttpRequest extends StreamHandler {
 	private String queryString = null;
 	private Map params = new HashMap();
 	private Map cookies = null;
-	private static final Logger logger = Logger.getLogger("com.sahi.request.HttpRequest");
+	private static final Logger logger = Logger.getLogger("net.sf.sahi.request.HttpRequest");
 	private final boolean isSSLSocket;
 
 	public HttpRequest(InputStream in) throws IOException {
@@ -66,11 +66,11 @@ public class HttpRequest extends StreamHandler {
 		boolean isPost = "get".equalsIgnoreCase(method());
 		return isPost;
 	}
-	
+
 	public boolean isConnect() {
 		boolean isConnect = "connect".equalsIgnoreCase(method());
 		return isConnect;
-	}	
+	}
 
 	public boolean isSSL() {
 		return isSSLSocket || (firstLine().indexOf("HTTPS") != -1) || isConnect();
@@ -189,11 +189,11 @@ public class HttpRequest extends StreamHandler {
 		}
 		return (String) cookies.get(key);
 	}
-	
+
 	String rebuildCookies() {
 		return rebuildCookies(cookies);
 	}
-	
+
 	static String rebuildCookies(Map cookies2) {
         StringBuffer sb = new StringBuffer();
         if (cookies2.size() == 0) return "";
@@ -213,10 +213,10 @@ public class HttpRequest extends StreamHandler {
 	public Map cookies() {
 		if (cookies == null) {
 			setCookies();
-		}		
+		}
 		return cookies;
 	}
-	
+
 	public HttpRequest modifyForFetch() {
         setFirstLine(method() + " " + uri() + " " + "HTTP/1.0");
         removeHeader("Proxy-Connection");
@@ -229,10 +229,10 @@ public class HttpRequest extends StreamHandler {
 		cookies().remove("sahisid");
 		setHeader("Cookie", rebuildCookies());
         setRawHeaders(getRebuiltHeaderBytes());
-		logger.fine("\n------------\n\nRequest Headers:\n"+headers());      
+		logger.fine("\n------------\n\nRequest Headers:\n"+headers());
 		return this;
 	}
-	
+
 	public Session session() {
 		String sessionId = null;
 		sessionId = getParameter("sahisid");

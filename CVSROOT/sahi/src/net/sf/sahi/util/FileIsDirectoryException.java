@@ -1,4 +1,4 @@
-package com.sahi.util;
+package net.sf.sahi.util;
 
 public class FileIsDirectoryException extends RuntimeException {
 

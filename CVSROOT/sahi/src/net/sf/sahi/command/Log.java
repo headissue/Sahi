@@ -1,10 +1,10 @@
-package com.sahi.command;
+package net.sf.sahi.command;
 
-import com.sahi.request.HttpRequest;
-import com.sahi.response.HttpFileResponse;
-import com.sahi.response.HttpResponse;
-import com.sahi.session.Session;
-import com.sahi.util.URLParser;
+import net.sf.sahi.request.HttpRequest;
+import net.sf.sahi.response.HttpFileResponse;
+import net.sf.sahi.response.HttpResponse;
+import net.sf.sahi.session.Session;
+import net.sf.sahi.util.URLParser;
 
 public class Log {
 	public HttpResponse highlight(HttpRequest requestFromBrowser) {
@@ -34,7 +34,7 @@ public class Log {
 					request.getParameter("debugInfo"));
 		}
 	}
-	
+
 	private int getLineNumber(HttpRequest req) {
 		String p = req.getParameter("n");
 		int i = -1;
@@ -62,7 +62,7 @@ public class Log {
 		sb.append("<b>");
 		sb.append(s.substring(startIx, endIx));
 		sb.append("</b>");
-		sb.append(s.substring(endIx, len));		
+		sb.append(s.substring(endIx, len));
 		return sb.toString();
 	}
 

@@ -1,4 +1,4 @@
-package com.sahi.response;
+package net.sf.sahi.response;
 
 /**
  * User: nraman
@@ -17,14 +17,14 @@ public class SimpleHttpResponse extends HttpResponse {
     public SimpleHttpResponse(byte[] data) {
     	this(data, true);
     }
-    
+
     public SimpleHttpResponse(byte[] data, boolean closeConnection) {
         setData(data);
         setFirstLine("HTTP/1.1 200 OK");
         setHeader("Content-Type", "text/html");
 		setHeader("Cache-Control","no-cache");
 		setHeader("Pragma","no-cache");
-		setHeader("Expires", "0");        
+		setHeader("Expires", "0");
         if (closeConnection) {
         	setHeader("Connection", "close");
         }

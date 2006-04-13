@@ -1,7 +1,7 @@
-package com.sahi.playback;
+package net.sf.sahi.playback;
 
 import java.util.ArrayList;
-import com.sahi.util.Utils;
+import net.sf.sahi.util.Utils;
 
 public class URLScript extends SahiScript {
 	public URLScript(String fileName) {

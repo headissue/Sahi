@@ -1,8 +1,8 @@
-package com.sahi.processor;
+package net.sf.sahi.processor;
 
-import com.sahi.request.HttpRequest;
-import com.sahi.session.Session;
-import com.sahi.test.SahiTestSuite;
+import net.sf.sahi.request.HttpRequest;
+import net.sf.sahi.session.Session;
+import net.sf.sahi.test.SahiTestSuite;
 
 public class SuiteProcessor {
 	public void startSuite(HttpRequest requestFromBrowser, Session session) {

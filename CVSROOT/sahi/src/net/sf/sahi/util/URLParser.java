@@ -1,6 +1,6 @@
-package com.sahi.util;
+package net.sf.sahi.util;
 
-import com.sahi.config.Configuration;
+import net.sf.sahi.config.Configuration;
 
 public class URLParser {
 
@@ -27,7 +27,7 @@ public class URLParser {
 
 	public static String getCommandFromUri(String uri) {
 		int ix1 = uri.indexOf("/dyn/");
-		if (ix1 == -1) return null; 
+		if (ix1 == -1) return null;
 		ix1 = ix1 + 5;
 		int ix2 = uri.indexOf("/", ix1);
 		int ix3 = uri.indexOf("?", ix1);

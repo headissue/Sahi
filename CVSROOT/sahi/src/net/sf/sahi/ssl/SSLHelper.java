@@ -1,4 +1,4 @@
-package com.sahi.ssl;
+package net.sf.sahi.ssl;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -14,7 +14,7 @@ import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
-import com.sahi.request.HttpRequest;
+import net.sf.sahi.request.HttpRequest;
 
 public class SSLHelper {
 
@@ -39,7 +39,7 @@ public class SSLHelper {
 		}
 		return (SSLSocketFactory) SSLSocketFactory.getDefault();
 	}
-	
+
 
 	private TrustManager[] getAllTrustingManager() {
 		TrustManager[] trustAllCerts = new TrustManager[]{new X509TrustManager() {
@@ -55,7 +55,7 @@ public class SSLHelper {
 		}};
 		return trustAllCerts;
 	}
-	
+
 	public Socket getSocket(HttpRequest request, InetAddress addr) throws IOException {
 		SSLSocketFactory sslFact = getSSLClientSocketFactory();
 		SSLSocket socket = (SSLSocket) sslFact.createSocket(addr, request
@@ -63,8 +63,8 @@ public class SSLHelper {
 		socket.setUseClientMode(true);
 		socket.setEnabledCipherSuites(socket.getSupportedCipherSuites());
 		return socket;
-	}	
-	
+	}
+
 	private SSLSocket convertToSecureSocket(Socket plainSocket) {
 		try {
 			return (SSLSocket) getSSLClientSocketFactory().createSocket(plainSocket,
@@ -74,11 +74,11 @@ public class SSLHelper {
 			e.printStackTrace();
 		}
 		return null;
-	}	
-	
+	}
+
 	public SSLSocket convertToSecureServerSocket(Socket socket) {
 		SSLSocket sslSocket = convertToSecureSocket(socket);
 		sslSocket.setUseClientMode(false);
 		return sslSocket;
-	}	
+	}
 }

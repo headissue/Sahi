@@ -1,6 +1,6 @@
-package com.sahi;
+package net.sf.sahi;
 
-import com.sahi.config.Configuration;
+import net.sf.sahi.config.Configuration;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -30,7 +30,7 @@ public class WebServer {
         ServerSocket server = null;
         try {
             server = new ServerSocket(port);
-			System.out.println(">>>> Sahi demo web server started. Listening on port:"+port);            
+			System.out.println(">>>> Sahi demo web server started. Listening on port:"+port);
             while (true) {
                 Socket client = server.accept();
                 new Thread(new WebProcessor(client)).start();

@@ -1,4 +1,4 @@
-package com.sahi.request;
+package net.sf.sahi.request;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;

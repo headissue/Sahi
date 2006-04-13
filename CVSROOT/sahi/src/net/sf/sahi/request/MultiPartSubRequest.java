@@ -1,6 +1,6 @@
-package com.sahi.request;
+package net.sf.sahi.request;
 
-import com.sahi.StreamHandler;
+import net.sf.sahi.StreamHandler;
 
 import java.io.IOException;
 import java.io.InputStream;

@@ -1,4 +1,4 @@
-package com.sahi.playback;
+package net.sf.sahi.playback;
 
 import java.util.ArrayList;
 

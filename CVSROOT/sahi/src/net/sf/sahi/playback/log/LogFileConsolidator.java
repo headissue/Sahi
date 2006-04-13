@@ -1,4 +1,4 @@
-package com.sahi.playback.log;
+package net.sf.sahi.playback.log;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -8,8 +8,8 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.StringTokenizer;
 
-import com.sahi.config.Configuration;
-import com.sahi.util.Utils;
+import net.sf.sahi.config.Configuration;
+import net.sf.sahi.util.Utils;
 
 public class LogFileConsolidator {
 	private final String logFileName;

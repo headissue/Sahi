@@ -1,4 +1,4 @@
-package com.sahi;
+package net.sf.sahi;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,13 +10,13 @@ import java.util.logging.Logger;
 
 import javax.net.ssl.SSLSocket;
 
-import com.sahi.config.Configuration;
-import com.sahi.ssl.SSLHelper;
-import com.sahi.request.HttpRequest;
-import com.sahi.response.HttpFileResponse;
-import com.sahi.response.HttpModifiedResponse;
-import com.sahi.response.HttpResponse;
-import com.sahi.response.NoCacheHttpResponse;
+import net.sf.sahi.config.Configuration;
+import net.sf.sahi.ssl.SSLHelper;
+import net.sf.sahi.request.HttpRequest;
+import net.sf.sahi.response.HttpFileResponse;
+import net.sf.sahi.response.HttpModifiedResponse;
+import net.sf.sahi.response.HttpResponse;
+import net.sf.sahi.response.NoCacheHttpResponse;
 
 /**
  * User: nraman Date: May 13, 2005 Time: 7:06:11 PM To
@@ -27,7 +27,7 @@ public class ProxyProcessor implements Runnable {
 	private boolean isSSLSocket = false;
 
 	private static Logger logger = Configuration
-			.getLogger("com.sahi.ProxyProcessor");
+			.getLogger("net.sf.sahi.ProxyProcessor");
 
 	private static boolean externalProxyEnabled = Configuration
 			.isExternalProxyEnabled();;
@@ -138,14 +138,14 @@ public class ProxyProcessor implements Runnable {
 						.modifyForFetch());
 		sendResponseToBrowser(responseFromHost);
 		socketToHost.close();
-		}catch(Exception ioe) {			
+		}catch(Exception ioe) {
 		}
 	}
 
 	private void processLocally(String uri, HttpRequest requestFromBrowser)
 			throws IOException {
 		HttpResponse httpResponse = new LocalRequestProcessor().getLocalResponse(uri, requestFromBrowser);
-		sendResponseToBrowser(httpResponse);		
+		sendResponseToBrowser(httpResponse);
 	}
 
 	private HttpResponse getResponseFromHost(InputStream inputStreamFromHost,

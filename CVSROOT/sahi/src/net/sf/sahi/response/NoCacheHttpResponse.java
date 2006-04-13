@@ -1,4 +1,4 @@
-package com.sahi.response;
+package net.sf.sahi.response;
 
 import java.util.logging.Logger;
 
@@ -8,7 +8,7 @@ import java.util.logging.Logger;
  * Time: 11:04:06 PM
  */
 public class NoCacheHttpResponse extends HttpResponse {
-	private static final Logger logger = Logger.getLogger("com.sahi.response.NoCacheHttpResponse");
+	private static final Logger logger = Logger.getLogger("net.sf.sahi.response.NoCacheHttpResponse");
 	private int status = 200;
 	private String statusMessage = "OK";
 
@@ -26,7 +26,7 @@ public class NoCacheHttpResponse extends HttpResponse {
 		this.statusMessage = statusMessage == null ? "" : statusMessage;
 		setNoCacheHeaders(dataStr.getBytes());
 	}
-	
+
     protected void setNoCacheHeaders(byte[] data) {
         setData(data);
 		setFirstLine("HTTP/1.1 " + status + " " + statusMessage);
@@ -39,8 +39,8 @@ public class NoCacheHttpResponse extends HttpResponse {
         setRawHeaders(getRebuiltHeaderBytes());
         logger.fine(new String(rawHeaders()));
     }
-    
+
 	public NoCacheHttpResponse(HttpResponse httpResponse) {
 		setNoCacheHeaders(httpResponse.data());
-    }   
+    }
 }

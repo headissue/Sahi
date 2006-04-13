@@ -1,13 +1,13 @@
-package com.sahi.command;
+package net.sf.sahi.command;
 
 import java.util.Properties;
 
-import com.sahi.config.Configuration;
-import com.sahi.request.HttpRequest;
-import com.sahi.response.HttpFileResponse;
-import com.sahi.response.HttpResponse;
-import com.sahi.response.NoCacheHttpResponse;
-import com.sahi.session.Session;
+import net.sf.sahi.config.Configuration;
+import net.sf.sahi.request.HttpRequest;
+import net.sf.sahi.response.HttpFileResponse;
+import net.sf.sahi.response.HttpResponse;
+import net.sf.sahi.response.NoCacheHttpResponse;
+import net.sf.sahi.session.Session;
 
 public class SessionState {
 

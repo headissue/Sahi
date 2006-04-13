@@ -1,10 +1,10 @@
-package com.sahi;
+package net.sf.sahi;
 
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-import com.sahi.config.Configuration;
+import net.sf.sahi.config.Configuration;
 
 /**
  * User: nraman Date: May 13, 2005 Time: 6:52:31 PM Starts HTTP Proxy

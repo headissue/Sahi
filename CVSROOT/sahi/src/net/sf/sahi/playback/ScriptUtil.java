@@ -1,8 +1,8 @@
-package com.sahi.playback;
+package net.sf.sahi.playback;
 
 import java.io.File;
 
-import com.sahi.config.Configuration;
+import net.sf.sahi.config.Configuration;
 
 public class ScriptUtil {
 	public static String getScriptsJs(String scriptName) {
@@ -14,7 +14,7 @@ public class ScriptUtil {
 			sb.append(fileList[i]);
 			sb.append("');\n");
 		}
-		sb.append("setSelectedScript('" + scriptName + "')");			
+		sb.append("setSelectedScript('" + scriptName + "')");
 		sb.append("\n\n\n");
 		return sb.toString();
 	}

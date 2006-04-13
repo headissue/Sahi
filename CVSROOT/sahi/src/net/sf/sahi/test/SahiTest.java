@@ -1,11 +1,11 @@
-package com.sahi.test;
+package net.sf.sahi.test;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.logging.Logger;
 
-import com.sahi.config.Configuration;
+import net.sf.sahi.config.Configuration;
 
 class SahiTest {
 	private final String scriptName;
@@ -15,7 +15,7 @@ class SahiTest {
 	Process process;
 	private final String browser;
 	private static Logger logger = Configuration
-	.getLogger("com.sahi.test.SahiTest");	
+	.getLogger("net.sf.sahi.test.SahiTest");
 
 	SahiTest(String scriptName, String startURL, String browser, String sessionId) {
 		this.scriptName = scriptName;
@@ -77,7 +77,7 @@ class SahiTest {
 	}
 
 	public void stop() {
-		logger.fine("Killing " + scriptName);		
+		logger.fine("Killing " + scriptName);
 		if (process != null) {
 //			if (isFirefox() && isWindows()) {
 //				try {
@@ -86,7 +86,7 @@ class SahiTest {
 //					e.printStackTrace();
 //				}
 //			}
-			process.destroy();		
+			process.destroy();
 		}
 	}
 

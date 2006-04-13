@@ -3,7 +3,7 @@
  * Date: May 18, 2005
  * Time: 10:19:59 PM
  */
-package com.sahi.playback;
+package net.sf.sahi.playback;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -14,12 +14,12 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.sahi.config.Configuration;
-import com.sahi.util.Utils;
+import net.sf.sahi.config.Configuration;
+import net.sf.sahi.util.Utils;
 
 public abstract class SahiScript {
 	private static Logger logger = Configuration
-	.getLogger("com.sahi.playback.SahiScript");
+	.getLogger("net.sf.sahi.playback.SahiScript");
 	protected String script;
 	private static final String PREFIX = "sahiAdd(\"";
 	private static final String CONJUNCTION = "\", \"";
@@ -53,7 +53,7 @@ public abstract class SahiScript {
 	public String modifiedScript() {
 		return script == null ? "" : script;
 	}
-	
+
 	String modify(String s) {
 		StringBuffer sb = new StringBuffer();
 		Iterator tokens = Utils.getTokens(s).iterator();
@@ -120,7 +120,7 @@ public abstract class SahiScript {
 		return null;
 	}
 
-	
+
 	static String getActionRegExp() {
 		ArrayList keywords = getActionKeyWords();
 		StringBuffer sb = new StringBuffer();
@@ -128,14 +128,14 @@ public abstract class SahiScript {
 		sb.append("^(?:");
 		for (int i = 0; i < size; i++) {
 			String keyword = (String) keywords.get(i);
-			sb.append(keyword);			
+			sb.append(keyword);
 			if (i != size - 1)
 				sb.append("|");
 		}
 		sb.append(")\\s*\\(.*");
-		return sb.toString();	
+		return sb.toString();
 	}
-	
+
 	public static String modifyFunctionNames(String unmodified) {
 		unmodified = stripSahiFromFunctionNames(unmodified);
 		String modified = unmodified.replaceAll(REG_EXP_FOR_ADDING, "sahi$1$2");
@@ -163,7 +163,7 @@ public abstract class SahiScript {
 		sb.append(")(\\s*\\()");
 		return sb.toString();
 	}
-	
+
 	private static ArrayList getActionKeyWords() {
 		ArrayList keywords = new ArrayList();
 		keywords.add("_alert");
@@ -187,9 +187,9 @@ public abstract class SahiScript {
 		keywords.add("_setGlobal");
 		keywords.add("_wait");
 		keywords.add("_popup");
-		keywords.add("_highlight");		
-		keywords.add("_log");		
-		keywords.add("_navigateTo");		
+		keywords.add("_highlight");
+		keywords.add("_log");
+		keywords.add("_navigateTo");
 		return keywords;
 	}
 
@@ -238,8 +238,8 @@ public abstract class SahiScript {
 		keywords.add("_popup");
 		keywords.add("_byId");
 		keywords.add("_highlight");
-		keywords.add("_log");		
-		keywords.add("_navigateTo");		
+		keywords.add("_log");
+		keywords.add("_navigateTo");
 		return keywords;
 	}
 
@@ -256,7 +256,7 @@ public abstract class SahiScript {
 				isVar = true;
 				sb.append("\"+s_v(");
 			}
-			if (isVar && !(Character.isJavaIdentifierPart(c) || c == '.')) { 
+			if (isVar && !(Character.isJavaIdentifierPart(c) || c == '.')) {
 				sb.append(")+\"");
 				isVar = false;
 			}
@@ -302,7 +302,7 @@ public abstract class SahiScript {
 	public String getOriginal() {
 		return original;
 	}
-	
+
 	public String getOriginalInHTML() {
 		return SahiScriptHTMLAdapter.createHTML(original);
 	}

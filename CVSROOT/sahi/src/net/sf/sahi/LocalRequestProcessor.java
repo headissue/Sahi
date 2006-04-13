@@ -1,16 +1,16 @@
-package com.sahi;
+package net.sf.sahi;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
-import com.sahi.command.CommandExecuter;
-import com.sahi.playback.log.LogFileConsolidator;
-import com.sahi.request.HttpRequest;
-import com.sahi.response.HttpFileResponse;
-import com.sahi.response.HttpResponse;
-import com.sahi.response.NoCacheHttpResponse;
-import com.sahi.response.SimpleHttpResponse;
-import com.sahi.util.URLParser;
+import net.sf.sahi.command.CommandExecuter;
+import net.sf.sahi.playback.log.LogFileConsolidator;
+import net.sf.sahi.request.HttpRequest;
+import net.sf.sahi.response.HttpFileResponse;
+import net.sf.sahi.response.HttpResponse;
+import net.sf.sahi.response.NoCacheHttpResponse;
+import net.sf.sahi.response.SimpleHttpResponse;
+import net.sf.sahi.util.URLParser;
 
 public class LocalRequestProcessor {
 	public HttpResponse getLocalResponse(String uri, HttpRequest requestFromBrowser) throws UnsupportedEncodingException, IOException {
@@ -21,7 +21,7 @@ public class LocalRequestProcessor {
 			if (uri.indexOf("/stopserver") != -1) {
 				System.exit(1);
 			} else if (command != null) {
-				httpResponse = new CommandExecuter(command, requestFromBrowser).execute();				
+				httpResponse = new CommandExecuter(command, requestFromBrowser).execute();
 			}
 
 		} else if (uri.indexOf("/scripts/") != -1) {

@@ -1,10 +1,10 @@
-package com.sahi;
+package net.sf.sahi;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 
-import com.sahi.util.Utils;
+import net.sf.sahi.util.Utils;
 
 /**
  * User: nraman Date: May 13, 2005 Time: 7:24:06 PM

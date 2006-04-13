@@ -1,10 +1,10 @@
-package com.sahi.playback.log;
+package net.sf.sahi.playback.log;
 
 import java.io.IOException;
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
-import com.sahi.config.Configuration;
-import com.sahi.util.Utils;
+import net.sf.sahi.config.Configuration;
+import net.sf.sahi.util.Utils;
 
 /**
  * User: nraman Date: Jun 22, 2005 Time: 11:50:44 PM

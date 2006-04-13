@@ -1,4 +1,4 @@
-package com.sahi.playback;
+package net.sf.sahi.playback;
 
 public class SahiScriptHTMLAdapter {
 	public static String createHTML(String original) {

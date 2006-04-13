@@ -1,4 +1,4 @@
-package com.sahi.test;
+package net.sf.sahi.test;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
-import com.sahi.util.Utils;
+import net.sf.sahi.util.Utils;
 
 public class SahiTestSuite {
 	private final String suiteURL;

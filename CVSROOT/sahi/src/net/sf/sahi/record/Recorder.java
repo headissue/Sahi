@@ -1,10 +1,10 @@
-package com.sahi.record;
+package net.sf.sahi.record;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.logging.Logger;
-import com.sahi.config.Configuration;
+import net.sf.sahi.config.Configuration;
 
 /**
  * User: nraman Date: May 20, 2005 Time: 6:59:26 PM
@@ -13,7 +13,7 @@ public class Recorder {
 	private FileOutputStream out;
 	boolean isStarted = false;
 	private static Logger logger = Configuration
-			.getLogger("com.sahi.record.Recorder");
+			.getLogger("net.sf.sahi.record.Recorder");
 	private File file = null;
 
 	public void start(String fileName) {

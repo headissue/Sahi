@@ -1,4 +1,4 @@
-package com.sahi.config;
+package net.sf.sahi.config;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -7,7 +7,7 @@ import java.util.Properties;
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 
-import com.sahi.util.Utils;
+import net.sf.sahi.util.Utils;
 
 /**
  * User: nraman Date: Jun 3, 2005 Time: 12:48:07 AM To
@@ -89,7 +89,7 @@ public class Configuration {
 	public static String getHtdocsRoot() {
 		return HTDOCS_ROOT;
 	}
-	
+
 	public static String getPlaybackLogCSSFileName(boolean addHtdocsRoot) {
 		final String path = "/spr/css/playback_log_format.css";
 		return addHtdocsRoot ? Utils.concatPaths(getHtdocsRoot(), path) : path;
@@ -100,7 +100,7 @@ public class Configuration {
 		final String path = "/spr/css/consolidated_log_format.css";
 		return addHtdocsRoot ? Utils.concatPaths(getHtdocsRoot(), path) : path;
 	}
-	
+
 	public static boolean isExternalProxyEnabled() {
 		return "true".equalsIgnoreCase(properties
 				.getProperty("ext.proxy.enable"));

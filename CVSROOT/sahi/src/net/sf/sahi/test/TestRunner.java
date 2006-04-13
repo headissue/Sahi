@@ -1,4 +1,4 @@
-package com.sahi.test;
+package net.sf.sahi.test;
 
 import java.io.IOException;
 import java.io.InputStream;

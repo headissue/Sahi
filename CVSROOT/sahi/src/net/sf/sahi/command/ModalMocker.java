@@ -1,11 +1,11 @@
-package com.sahi.command;
+package net.sf.sahi.command;
 
 import java.util.Properties;
 
-import com.sahi.config.Configuration;
-import com.sahi.request.HttpRequest;
-import com.sahi.response.HttpFileResponse;
-import com.sahi.response.HttpResponse;
+import net.sf.sahi.config.Configuration;
+import net.sf.sahi.request.HttpRequest;
+import net.sf.sahi.response.HttpFileResponse;
+import net.sf.sahi.response.HttpResponse;
 
 public class ModalMocker {
 
@@ -15,7 +15,7 @@ public class ModalMocker {
 
 	public HttpResponse confirm(HttpRequest requestFromBrowser) {
 		return proxyConfirmResponse(requestFromBrowser.getParameter("msg"));
-	}	
+	}
 
 	private HttpFileResponse proxyAlertResponse(String msg) {
 		Properties props = new Properties();
@@ -29,5 +29,5 @@ public class ModalMocker {
 		props.setProperty("msg", msg);
 		return new HttpFileResponse(Configuration.getHtdocsRoot()
 				+ "spr/confirm.htm", props);
-	}	
+	}
 }

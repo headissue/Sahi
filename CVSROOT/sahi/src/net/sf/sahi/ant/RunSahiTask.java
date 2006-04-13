@@ -1,4 +1,4 @@
-package com.sahi.ant;
+package net.sf.sahi.ant;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -6,7 +6,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Task;
-import com.sahi.test.TestRunner;
+import net.sf.sahi.test.TestRunner;
 
 public class RunSahiTask extends Task {
 	private String suite;
@@ -18,7 +18,7 @@ public class RunSahiTask extends Task {
 	private String haltOnFailure;
 	private String stop;
 	private String threads = "1";
-	
+
 	public String getBaseURL() {
 		return baseURL;
 	}
@@ -49,7 +49,7 @@ public class RunSahiTask extends Task {
 	public void setSahiHost(String sahiHost) {
 		this.sahiHost = sahiHost;
 	}
-	
+
 	public void execute() throws BuildException {
 		if (stop != null) {
 			stopServer();
@@ -57,7 +57,7 @@ public class RunSahiTask extends Task {
 		}
 		startServer();
 	}
-	
+
 	private void stopServer() {
 			try {
 				URL url = new URL("http://"+sahiHost+":"+sahiPort+"/_s_/dyn/stopserver");
@@ -68,12 +68,12 @@ public class RunSahiTask extends Task {
 			} catch (IOException e) {
 			}
 	}
-	
+
 	private void startServer() {
 		boolean isFailure = false;
 		String status = "FAILURE";
 		try {
-			TestRunner testRunner = new TestRunner(suite, browser, baseURL, sahiHost, sahiPort, threads); 
+			TestRunner testRunner = new TestRunner(suite, browser, baseURL, sahiHost, sahiPort, threads);
 			status = testRunner.execute();
 			if (!"SUCCESS".equals(status)) {
 				isFailure = true;
@@ -89,8 +89,8 @@ public class RunSahiTask extends Task {
 			}
 			if ("true".equalsIgnoreCase(haltOnFailure)) {
 				throw new BuildException(status);
-			}			
-		}		
+			}
+		}
 	}
 	public String getFailureProperty() {
 		return failureProperty;

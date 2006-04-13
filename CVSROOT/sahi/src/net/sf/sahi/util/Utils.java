@@ -1,4 +1,4 @@
-package com.sahi.util;
+package net.sf.sahi.util;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -111,7 +111,7 @@ public class Utils {
 		while (ix1 < len && (ix2 = s.indexOf('\n', ix1)) != -1) {
 			String token = s.substring(ix1, ix2+1);
 			tokens.add(token);
-			ix1 = ix2+1;			
+			ix1 = ix2+1;
 		}
 		if (ix2 == -1) {
 			String token =  s.substring(ix1);

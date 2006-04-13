@@ -1,10 +1,10 @@
-package com.sahi.command;
+package net.sf.sahi.command;
 
 import java.lang.reflect.Method;
 
-import com.sahi.request.HttpRequest;
-import com.sahi.response.HttpResponse;
-import com.sahi.response.NoCacheHttpResponse;
+import net.sf.sahi.request.HttpRequest;
+import net.sf.sahi.response.HttpResponse;
+import net.sf.sahi.response.NoCacheHttpResponse;
 
 public class CommandExecuter {
 
@@ -22,7 +22,7 @@ public class CommandExecuter {
 			this.commandMethod = cmd.substring(cmd.indexOf(DELIMITER) + 1);
 		}
 		if (commandClass.indexOf('.')==-1) {
-			commandClass = "com.sahi.command."+commandClass;
+			commandClass = "net.sf.sahi.command."+commandClass;
 		}
 	}
 

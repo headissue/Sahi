@@ -1,4 +1,4 @@
-package com.sahi.util;
+package net.sf.sahi.util;
 
 public class FileNotFoundRuntimeException extends RuntimeException {
 
@@ -17,5 +17,5 @@ public class FileNotFoundRuntimeException extends RuntimeException {
 	public FileNotFoundRuntimeException(Throwable arg0) {
 		super(arg0);
 	}
-	
+
 }
