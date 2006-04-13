@@ -31,7 +31,6 @@ public class AllTests extends TestSuite {
         suite.addTestSuite(PlayBackLogFormatterTest.class);        
         suite.addTestSuite(URLParserTest.class);        
         suite.addTestSuite(CommandExecuterTest.class);        
-        suite.addTestSuite(LocalRequestProcessorTest.class);        
 		return suite;
 	}
 

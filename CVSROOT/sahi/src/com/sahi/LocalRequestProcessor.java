@@ -2,10 +2,8 @@ package com.sahi;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.util.Properties;
 
 import com.sahi.command.CommandExecuter;
-import com.sahi.config.Configuration;
 import com.sahi.playback.log.LogFileConsolidator;
 import com.sahi.request.HttpRequest;
 import com.sahi.response.HttpFileResponse;
@@ -18,16 +16,9 @@ public class LocalRequestProcessor {
 	public HttpResponse getLocalResponse(String uri, HttpRequest requestFromBrowser) throws UnsupportedEncodingException, IOException {
 		HttpResponse httpResponse = new NoCacheHttpResponse("");
 		if (uri.indexOf("/dyn/") != -1) {
-			String command = getCommandFromUri(uri);
-			// System.out.println(uri);
+			String command = URLParser.getCommandFromUri(uri);
 //			System.out.println("----------- " + session.id() + " " + uri);
-			if (uri.indexOf("/alert.htm") != -1) {
-				String msg = requestFromBrowser.getParameter("msg");
-				httpResponse = proxyAlertResponse(msg);
-			} else if (uri.indexOf("/confirm.htm") != -1) {
-				String msg = requestFromBrowser.getParameter("msg");
-				httpResponse =  proxyConfirmResponse(msg);
-			} else if (uri.indexOf("/stopserver") != -1) {
+			if (uri.indexOf("/stopserver") != -1) {
 				System.exit(1);
 			} else if (command != null) {
 				httpResponse = new CommandExecuter(command, requestFromBrowser).execute();				
@@ -49,21 +40,6 @@ public class LocalRequestProcessor {
 		return httpResponse;
 	}
 
-	String getCommandFromUri(String uri) {
-		int ix1 = uri.indexOf("/dyn/");
-		if (ix1 == -1) return null; 
-		ix1 = ix1 + 5;
-		int ix2 = uri.indexOf("/", ix1);
-		int ix3 = uri.indexOf("?", ix1);
-		int endIx = -1;
-		if (ix2 > -1 && ix3 == -1) endIx = ix2;
-		else if (ix3 > -1 && ix2 == -1) endIx = ix3;
-		else {
-			endIx = ix3 < ix2 ? ix3 : ix2;
-		}
-		if (endIx == -1) endIx = uri.length();
-		return uri.substring(ix1, endIx);
-	}
 
 	private HttpResponse getLogResponse(String fileName) throws IOException {
 		if ("".equals(fileName))
@@ -76,19 +52,6 @@ public class LocalRequestProcessor {
 		return LogFileConsolidator.getLogsList();
 	}
 
-	private HttpFileResponse proxyAlertResponse(String msg) {
-		Properties props = new Properties();
-		props.setProperty("msg", msg);
-		return new HttpFileResponse(Configuration.getHtdocsRoot()
-				+ "spr/alert.htm", props);
-	}
-
-	private HttpFileResponse proxyConfirmResponse(String msg) {
-		Properties props = new Properties();
-		props.setProperty("msg", msg);
-		return new HttpFileResponse(Configuration.getHtdocsRoot()
-				+ "spr/confirm.htm", props);
-	}
 
 
 
