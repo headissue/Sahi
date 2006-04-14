@@ -121,7 +121,7 @@ public class Player {
 			SahiTestSuite suite = SahiTestSuite.getSuite(session.id());
 			if (suite != null) {
 				suite.stop(session.getScript().getScriptName());
-				waitASec();
+				//waitASec();
 				if (!suite.executeNext())
 					consolidateLogs(session.getSuiteLogDir());
 			} else {
