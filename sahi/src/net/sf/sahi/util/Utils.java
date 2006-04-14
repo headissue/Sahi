@@ -10,6 +10,8 @@ import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * User: nraman Date: Jun 26, 2005 Time: 4:52:58 PM
@@ -57,6 +59,14 @@ public class Utils {
 			}
 		}
 		return data;
+	}
+
+	static Map fileCache = new HashMap(); 
+	public static byte[] readCachedFile(String fileName) {
+		if (!fileCache.containsKey(fileName)) {
+			fileCache.put(fileName, readFile(fileName));
+		}
+		return (byte[]) fileCache.get(fileName);
 	}
 
 	public static byte[] readFile(String fileName) {
