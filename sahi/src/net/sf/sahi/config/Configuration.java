@@ -141,4 +141,8 @@ public class Configuration {
 		return Utils.concatPaths(getPlayBackLogsRoot(), fileName);
 	}
 
+	public static boolean isDevMode() {
+		return "true".equals(System.getProperty("sahi.mode.dev"));
+	}
+
 }

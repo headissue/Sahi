@@ -3,6 +3,7 @@ package net.sf.sahi.response;
 import java.util.Enumeration;
 import java.util.Properties;
 
+import net.sf.sahi.config.Configuration;
 import net.sf.sahi.util.Utils;
 
 /**
@@ -14,7 +15,12 @@ public class HttpFileResponse extends HttpResponse {
 
 	public HttpFileResponse(String fileName, Properties substitutions) {
 		this.fileName = fileName;
-		setData(Utils.readFile(fileName));
+		byte[] bytes;
+		if (!Configuration.isDevMode() && fileName.indexOf("spr") != -1)
+			bytes = Utils.readCachedFile(fileName);
+		else
+			bytes = Utils.readFile(fileName);
+		setData(bytes);
 		if (substitutions != null) {
 			setData(substitute(new String(data()), substitutions).getBytes());
 		}
