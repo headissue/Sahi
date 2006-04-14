@@ -8,6 +8,7 @@ public class FileScriptTest extends TestCase {
 		FileScript fileScript = new MockFileScript("c:/abc/def/a.sah");
 		assertEquals("c:/abc/def/b.sah", fileScript.getFQN("b.sah"));
 	}
+	
 	private class MockFileScript extends FileScript{
 		public MockFileScript(String fileName) {
 			super(fileName);
