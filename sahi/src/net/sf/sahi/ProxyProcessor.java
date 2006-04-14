@@ -118,49 +118,56 @@ public class ProxyProcessor implements Runnable {
 		}
 	}
 
-	private void processHttp(HttpRequest requestFromBrowser){
+	private void processHttp(HttpRequest requestFromBrowser) {
 		logger.finest("### Type of socket is " + client.getClass().getName());
 		Socket socketToHost = null;
 		try {
-		try {
-			socketToHost = getSocketToHost(requestFromBrowser);
-		} catch (UnknownHostException e) {
-			sendResponseToBrowser(new NoCacheHttpResponse(404, "UnknownHost",
-					"<html><h2>Host " + e.getMessage()
-							+ " Not Found</h2></html>"));
-			return;
-		}
-		socketToHost.setSoTimeout(120000);
-		OutputStream outputStreamToHost = socketToHost.getOutputStream();
-		InputStream inputStreamFromHost = socketToHost.getInputStream();
-		HttpResponse responseFromHost = getResponseFromHost(
-				inputStreamFromHost, outputStreamToHost, requestFromBrowser
-						.modifyForFetch());
-		sendResponseToBrowser(responseFromHost);
-		socketToHost.close();
-		}catch(Exception ioe) {
+			try {
+				socketToHost = getSocketToHost(requestFromBrowser);
+			} catch (UnknownHostException e) {
+				sendResponseToBrowser(new NoCacheHttpResponse(404,
+						"UnknownHost", "<html><h2>Host " + e.getMessage()
+								+ " Not Found</h2></html>"));
+				return;
+			}
+			socketToHost.setSoTimeout(120000);
+			OutputStream outputStreamToHost = socketToHost.getOutputStream();
+			InputStream inputStreamFromHost = socketToHost.getInputStream();
+			HttpResponse responseFromHost = getResponseFromHost(
+					inputStreamFromHost, outputStreamToHost,
+					requestFromBrowser, true);
+			sendResponseToBrowser(responseFromHost);
+			socketToHost.close();
+		} catch (Exception ioe) {
 		}
 	}
 
 	private void processLocally(String uri, HttpRequest requestFromBrowser)
 			throws IOException {
-		HttpResponse httpResponse = new LocalRequestProcessor().getLocalResponse(uri, requestFromBrowser);
+		HttpResponse httpResponse = new LocalRequestProcessor()
+				.getLocalResponse(uri, requestFromBrowser);
 		sendResponseToBrowser(httpResponse);
 	}
 
 	private HttpResponse getResponseFromHost(InputStream inputStreamFromHost,
-			OutputStream outputStreamToHost, HttpRequest request)
+			OutputStream outputStreamToHost, HttpRequest request, boolean modify)
 			throws IOException {
+//		if (modify)
+			request.modifyForFetch();
 		logger.finest(request.uri());
 		logger.finest(new String(request.rawHeaders()));
 		outputStreamToHost.write(request.rawHeaders());
 		if (request.isPost())
 			outputStreamToHost.write(request.data());
 		outputStreamToHost.flush();
-		HttpModifiedResponse modifiedResponse = new HttpModifiedResponse(
-				inputStreamFromHost);
-		logger.finest(new String(modifiedResponse.rawHeaders()));
-		return modifiedResponse;
+		HttpResponse response;
+		if (modify) {
+			response = new HttpModifiedResponse(inputStreamFromHost);
+		} else {
+			response = new HttpResponse(inputStreamFromHost);
+		}
+		logger.finest(new String(response.rawHeaders()));
+		return response;
 	}
 
 	private Socket getSocketToHost(HttpRequest request) throws IOException {
