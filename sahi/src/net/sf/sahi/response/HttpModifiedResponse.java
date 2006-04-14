@@ -13,37 +13,35 @@ public class HttpModifiedResponse extends HttpResponse {
 			+ "<script src='http://www.sahidomain.com/_s_/dyn/SessionState/state.js'></script>\n"
 			+ "<script src='http://www.sahidomain.com/_s_/dyn/Player_script/script.js'></script>\n"
 			+ "<script src='/_s_/spr/playback.js'></script>\n"
-			+ "<div id='sahi_div' style='display:none'></div>\n" + "";
+			+ "<div id='sahi_div' style='display:none'></div>\n" 
+			+ "";
 
 	private static final String INJECT_BOTTOM = ""
-			+ "<!----><script src='/_s_/spr/playback.js'></script>\n" + "";
+			+ "<!----><script src='/_s_/spr/playback.js'></script>\n" 
+			+ "";
 
 	public HttpModifiedResponse(InputStream in) throws IOException {
 		super(in);
 		if (firstLine().indexOf("30") == -1) { // Response code other than
-			// redirects
-			// removeHeader("Transfer-Encoding");
-			// setHeader("Cache-Control","no-cache");
-			// setHeader("Pragma","no-cache");
-			// setHeader("Expires", "0");
-			// removeHeader("ETag");
-			// removeHeader("Last-Modified");
-			if (isHTML())
-				setData(getModifiedData());
-			else if (isJs()) {
-				setData(substituteModals(data()));
+			boolean html = isHTML();
+			boolean js = isJs();
+			if (html || js) {
+				if (html) {
+					removeHeader("Transfer-Encoding");
+					removeHeader("ETag");
+					removeHeader("Last-Modified");
+					setHeader("Cache-Control", "no-cache");
+					setHeader("Pragma", "no-cache");
+					setHeader("Expires", "0");
+					setData(getModifiedData());
+				} else if (js) {
+					setData(substituteModals(data()));
+				}
+				setHeader("Content-Length", "" + data().length);
+				resetRawHeaders();
 			}
-			setHeader("Content-Length", "" + data().length);
-			// System.out.println("$$$$$$$$$$$$$$");
-			// System.out.println(new String(rawHeaders()));
-			// System.out.println("$$$$$$$$$$$$$$");
-			// System.out.println("--------------");
-			// System.out.println(new String(getRebuiltHeaderBytes()));
-			setRawHeaders(getRebuiltHeaderBytes());
-			// System.out.println("--------------");
 		}
 	}
-
 	private boolean isJs() {
 		String contentType = contentType();
 		if (contentType == null
@@ -62,7 +60,7 @@ public class HttpModifiedResponse extends HttpResponse {
 		}
 		s.write(data(), 0, ix);
 		s.write(INJECT_TOP.getBytes());
-		s.write(substituteModals(data()), ix, data().length-ix);
+		s.write(substituteModals(data()), ix, data().length - ix);
 		s.write(INJECT_BOTTOM.getBytes());
 		s.flush();
 		return s.toByteArray();
@@ -76,7 +74,7 @@ public class HttpModifiedResponse extends HttpResponse {
 
 	private boolean isXHTML() {
 		String s = getSampleContent();
-		return s.indexOf("<?xml") != -1;
+		return s.indexOf("<?xml") != -1 || s.indexOf("<!doctype") != -1;
 
 	}
 
