@@ -32,6 +32,17 @@
         </java>
     </target>
 	
+
+    <target name="decorate" description="Decorates doc pages">
+        <java classname="net.sf.sahi.util.HTMLDecorator" fork="true" dir="bin">
+        	<jvmarg line="-Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5099"/>
+            <classpath path="classes"/>
+        	<arg value="../docs/src/layout.htm"/>
+        	<arg value="../docs/src/pages"/>
+            <arg value="../docs/"/>
+        </java>
+    </target>
+	
     <target name="stopsahi" description="stop sahi server">
 		<sahi stop="true" sahihost="localhost" sahiport="9999"/>
 	</target>	
