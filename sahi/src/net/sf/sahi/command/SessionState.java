@@ -20,7 +20,7 @@ public class SessionState {
 		props.setProperty("hotkey", "" + Configuration.getHotKey());
 		NoCacheHttpResponse httpResponse = new NoCacheHttpResponse(
 				new HttpFileResponse(Configuration.getHtdocsRoot()
-						+ "spr/state.js", props));
+						+ "spr/state.js", props, false, true));
 		addSahisidCookie(httpResponse, session);
 		return httpResponse;
 	}

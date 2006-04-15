@@ -21,13 +21,13 @@ public class ModalMocker {
 		Properties props = new Properties();
 		props.setProperty("msg", msg);
 		return new HttpFileResponse(Configuration.getHtdocsRoot()
-				+ "spr/alert.htm", props);
+				+ "spr/alert.htm", props, false, true);
 	}
 
 	private HttpFileResponse proxyConfirmResponse(String msg) {
 		Properties props = new Properties();
 		props.setProperty("msg", msg);
 		return new HttpFileResponse(Configuration.getHtdocsRoot()
-				+ "spr/confirm.htm", props);
+				+ "spr/confirm.htm", props, false, true);
 	}
 }

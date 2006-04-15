@@ -45,7 +45,7 @@ public class LocalRequestProcessor {
 		if ("".equals(fileName))
 			return new NoCacheHttpResponse(getLogsList());
 		else
-			return new HttpFileResponse(fileName);
+			return new HttpFileResponse(fileName, null, false, false);
 	}
 
 	private String getLogsList() {

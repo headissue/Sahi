@@ -101,7 +101,7 @@ public class Player {
 		props.setProperty("startUrl", startUrl);
 		props.setProperty("sessionId", sessionId);
 		return new HttpFileResponse(Configuration.getHtdocsRoot()
-				+ "spr/auto.htm", props);
+				+ "spr/auto.htm", props, false, true);
 	}
 
 
