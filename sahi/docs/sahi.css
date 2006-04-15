@@ -1,3 +1,19 @@
+.content {
+	margin:0px 50px 50px 10px;
+	padding:10px;
+}
+
+.menu {
+	padding:10px;
+	background-color:white;
+	border-top:1px solid orange;
+	border-right:1px solid orange;
+	line-height:17px;
+	width:150px;
+}
+
+
+
 body{
 	font-family:arial;
 	font-size:12px;
