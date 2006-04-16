@@ -1,5 +1,6 @@
 package net.sf.sahi.command;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
 
@@ -15,6 +16,7 @@ import net.sf.sahi.response.NoCacheHttpResponse;
 import net.sf.sahi.response.SimpleHttpResponse;
 import net.sf.sahi.session.Session;
 import net.sf.sahi.test.SahiTestSuite;
+import net.sf.sahi.util.Utils;
 
 public class Player {
 	public void start(HttpRequest request) {
@@ -88,8 +90,15 @@ public class Player {
 	public HttpResponse auto(HttpRequest request) {
 		Session session = request.session();
 		String fileName = request.getParameter("file");
+		
+		final String scriptFileWithPath;
+		if (session.getSuite() != null) {
+			scriptFileWithPath = Utils.concatPaths(new File(session.getSuite().getSuiteURL()).getParent(), fileName);
+		}else {
+			scriptFileWithPath= Configuration.getScriptFileWithPath(fileName);
+		}
 		session.setScript(new FileScript(
-				Configuration.getScriptFileWithPath(fileName)));
+				scriptFileWithPath));
 		String startUrl = request.getParameter("startUrl");
 		session.setIsWindowOpen(false);
 		session.startPlayBack();
@@ -126,14 +135,6 @@ public class Player {
 					consolidateLogs(session.getSuiteLogDir());
 			} else {
 				consolidateLogs(session.getScriptLogFile());
-			}
-		}
-
-		private void waitASec() {
-			try {
-				Thread.sleep(1000);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
 			}
 		}
 
