@@ -101,9 +101,9 @@
        		<fileset dir="test" excludes="CVS/**/*.*"/>
 	    </copy>
         <copy todir="temp/sahi/docs" >
-            <fileset dir="docs" excludes="CVS/**/*.*"/>
+             <fileset dir="docs" excludes="CVS/**/*.*"/>
         </copy>
-        <copy todir="temp/sahi/certs" >
+       <copy todir="temp/sahi/certs" >
             <fileset dir="certs" excludes="CVS/**/*.*"/>
         </copy>
         <copy todir="temp/sahi/config" >
@@ -137,7 +137,10 @@
             <fileset dir="htdocs" excludes="CVS/**/*.*"/>
         </copy>
         <copy todir="temp/sahi/docs" >
-            <fileset dir="docs" excludes="CVS/**/*.*"/>
+            <fileset dir="docs">
+	        	<exclude name="CVS/**/*.*"/>
+            	<exclude name="src/**/*.*"/>
+           	</fileset>
         </copy>
         <copy todir="temp/sahi/certs" >
             <fileset dir="certs" excludes="CVS/**/*.*"/>
