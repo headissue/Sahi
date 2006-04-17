@@ -1,8 +1,9 @@
-* Opening Controller Window by default.
-* Added highlighting of script line when clicked from logs.
-* Added API _cell(tableEl, someTextWhichIdentifiesRow, someTextWhichIdentifiesColumn).
-* Added documentation.
-* Made demo htmls more easily navigable.
+* Reverted to not open Controller Window by default.
+* Refactored code to make Sahi easily extendable on both the server and javascript side.
+* Fixed cookie bug of ending semicolon
+* Modified documentation.
+* Added file and http cache for proxy files.
+* Added _resetSavedRandom(id), _dragDrop(elementToDrag, targetElementToDropOn) and _callServer("ServerClass_method")
 
 Known issues
 * Firefox has problems with multithreaded playback due to windows not closing properly. (Workaround: Do not add the 'threads=n' clause to sahi target)

@@ -23,25 +23,34 @@
 	<ul>
 	<li><a href="index.html">Introduction</a></li>
 	<li><a href="index.html#features">Features</a></li>
-	<li><a href="install.html#download">Downloading Sahi</a></li>
+	</ul>
+	<ul>
+	<li><a href="install.html">Downloading Sahi</a></li>
 	<li><a href="install.html#prereq">Prerequisites</a></li>
 	<li><a href="install.html#install">Installing Sahi</a></li></li>
-	<li><a href="using.html#started">Getting started</a></li>
+	</ul>
+	<ul>
+	<li><a href="using.html">Getting started</a></li>
 	<li><a href="using.html#record">Recording through Sahi</a></li>
 	<li><a href="using.html#playback">Playing back</a></li></li>
+	<li><a href="using.html#suites">Suites</a></li>
+	<li><a href="using.html#logging">Logging</a></li></li>
 	<li>Documentation:
 	<ul>
 	<li><a href="scripting.html">Scripting</a></li>
 	<li><a href="apis.html">APIs</a></li></li>
 	</ul>
 	</li>
-
-	<li><a href="using.html#suites">Suites</a></li>
+	</ul>
+	<ul>
 	<li><a href="ant.html">Ant Support<a/></li></li>
-	<li><a href="install.html#logging">Logging</a></li></li>
+	</ul>
+	<ul>	
 	<li><a href="devnotes.html">Sahi - Technical Aspects</a></li></li>
-	<li><a href="index.html#problems">Problems</a></li>
-	<li><a href="index.html#notyet">Not yet supported, but coming in</a></li>
+	</ul>
+	<ul>
+	<li><a href="problems.html#problems">Problems</a></li>
+	<li><a href="problems.html#notyet">Not yet supported, but coming in</a></li>
 	</ul>
 	</div>
 </td>
@@ -61,7 +70,6 @@ Sahi runs as a proxy server and the browser needs to use the sahi server as its 
 Sahi then injects javascript so that it can access elements in the webpage.<br/>
 This makes the tool independent of the website/ web application.<br/>
 
-(<a href="#top">Top</a>)
 
 <br/><h4><a name="features">Features</a></h4>
 
@@ -90,8 +98,6 @@ Developers can reproduce the bug by pointing to that url in the bug report.<br/>
 <li> Supports external proxy and HTTPS.</li>
 </ul>
 
-(<a href="#top">Top</a>)
-
 <br/><h4><a name="limitations">Limitations</a></h4>
 
 <ul type="square">
@@ -99,39 +105,6 @@ Developers can reproduce the bug by pointing to that url in the bug report.<br/>
 	<li>Frames having pages from different domains in the same frameset does not work properly.</li>
 </ul>
 
-
-(<a href="#top">Top</a>)
-
-<br/><h4><a name="problems">Problems</a></h4>
-
-<ul type="square">
-	<li>Controller window does not open.
-	<ul>
-		<li>Turn off all popup blockers.
-		<li>Try CTRL-ALT-DblClick
-		<li>Try changing the <a href="props.html#hotkey">Hot Key</a>
-	</ul>
-	<li>HTTPS pages display a <a href="ssl_alert.htm" target="_blank">security alert</a>.
-	<ul>
-		<li>One needs to modify the security certificates in the certs folder, with the right parameters.
-	</ul>
-	<li>The Controller does not work correctly or gives an error
-	<ul>
-		<li>Close the Controller and reopen it.
-	</ul>
-</ul>
-
-(<a href="#top">Top</a>)
-
-<h4><a name="notyet">Not yet supported, but coming in</a></h4>
-
-<ul type="square">
-	<li>Assertions on javascript alerts, confirms and prompts</li>
-	<li>SSL certificate creation utility</li>
-	<li>Support for multiple domains in a frameset</li>
-</ul>
-(<a href="#top">Top</a>)
-<br/><br/>
 
 </div>
 </td>
