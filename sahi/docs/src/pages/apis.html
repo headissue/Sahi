@@ -163,6 +163,7 @@ function createCustomer($name, $id, $age){
 <br/>
 <h4><a name="utility"></a>Utility Functions</h4>
 <a href="#random">_savedRandom(id, minNo, maxNo)<br/>
+<a href="#resetrandom">_resetSavedRandom(id)<br/>
 <a href="#global">_setGlobal(name, value)</a><br/>
 <a href="#global">_getGlobal(name)</a><br/>
 <br/>
@@ -189,7 +190,14 @@ $y = _savedRandom("login");               //will also set $y to 145.
 </pre>
 <br/>
 The min and max are needed only during the first call.<br/>
-<br/><br/>
+<br/>
+<b><a name="resetrandom">_resetSavedRandom(id)</a></b>
+<br/>
+_resetSavedRandom(id) resets value of _savedRandom(id) to null; 
+<br/>
+<br/>
+
+
 <hr/>
 <br/>
 <b><a name="global">_setGlobal(name, value) and _getGloblal(name)</a></b>
