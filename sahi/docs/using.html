@@ -1,0 +1,229 @@
+<html>
+<head>
+    <title>Sahi - Record and Playback</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <link rel="stylesheet" type="text/css" href="sahi.css">
+</head>
+
+<body>
+<table width="100%" border="0"><tr><td>
+<br/>
+<h2>Sahi - Record and Playback</h2>
+</td>
+<td align="right">
+<a href="http://sourceforge.net"><img src="http://sourceforge.net/sflogo.php?group_id=151639&amp;type=3" width="125" height="37" border="0" alt="SourceForge.net Logo" /></a>
+<br/>
+<a href="index.html">Sahi</a>&nbsp;&nbsp;
+</td>
+</tr></table>
+<table width="100%">
+<tr><td width="150px" valign="top">
+	<br/>
+	<div  class="menu">
+	<ul>
+	<li><a href="index.html">Introduction</a></li>
+	<li><a href="index.html#features">Features</a></li>
+	<li><a href="install.html#download">Downloading Sahi</a></li>
+	<li><a href="install.html#prereq">Prerequisites</a></li>
+	<li><a href="install.html#install">Installing Sahi</a></li></li>
+	<li><a href="using.html#started">Getting started</a></li>
+	<li><a href="using.html#record">Recording through Sahi</a></li>
+	<li><a href="using.html#playback">Playing back</a></li></li>
+	<li>Documentation:
+	<ul>
+	<li><a href="scripting.html">Scripting</a></li>
+	<li><a href="apis.html">APIs</a></li></li>
+	</ul>
+	</li>
+
+	<li><a href="using.html#suites">Suites</a></li>
+	<li><a href="ant.html">Ant Support<a/></li></li>
+	<li><a href="install.html#logging">Logging</a></li></li>
+	<li><a href="devnotes.html">Sahi - Technical Aspects</a></li></li>
+	<li><a href="index.html#problems">Problems</a></li>
+	<li><a href="index.html#notyet">Not yet supported, but coming in</a></li>
+	</ul>
+	</div>
+</td>
+<td valign="top">
+<div class="content">
+<!--Record and Playback-->
+<h4><a name="started">Getting started</a></h4>
+
+<b>Starting Sahi:</b><br/>
+<p>
+    Windows:<br/>
+
+    - Go to &lt;sahi_root&gt;\bin and run sahi.bat<br/>
+    Linux<br/>
+    - Go to &lt;sahi_root&gt;/bin and run sahi.sh<br/>
+
+
+Note that by default Sahi uses port 9999.
+This can be modified through <a href="props.html">sahi.properties</a>
+</p>
+<br/>
+
+<b>Configuring the browser:</b><br/><br/>
+
+&nbsp;&nbsp;&nbsp;&nbsp;<b>Firefox:</b><br/>
+<ul type="square">
+
+	<li>Go to Tools &gt; Options &gt; General &gt; Connection Settings &gt;</li>
+	<li>Set to "Manual Proxy Configuration"</li>
+	<li>Set "HTTP Proxy" to "localhost"</li>
+
+	<li>Set "Port" to "9999". (This setting can be modified through &lt;sahi_root&gt;/config/<a href="props.html">sahi.properties</a>)</li>
+
+	<li>Keep "Use the same proxy for all protocol" unchecked as Sahi does not understand protocols other than HTTP</li>
+	<li>NOTE: "No Proxy for" should NOT have localhost in it.</li>
+</ul>
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<b>Internet Explorer:</b><br/>
+<ul type="square">
+
+	<li>Go to Tools &gt; Internet Options &gt; Connections &gt; LAN Settings &gt;</li>
+
+	<li>In "Proxy server" section, Check "Use a proxy server for your LAN"</li>
+	<li>Set "Address" to "localhost"</li>
+	<li>Set "Port" to "9999"</li>
+
+	<li>Leave "Bypass proxy server for local addresses" unchecked</li>
+	<li>OK &gt; OK : )</li>
+
+</ul>
+
+While working with Sahi it may become annoying to have to switch between proxy and no proxy, or to another proxy.<br>
+There are a few plugins/freeware available on the net to ease this.<br>
+My personal favorite while working on Firefox is "Proxy Button". It helps in a single click toggling of proxy.<br>
+
+These tools can considerably enhance the experience of using Sahi.<br>
+
+<br/><br/>
+
+<b><a name="demo">Starting the bundled demo web server if needed, for learning and understanding Sahi APIs:</a></b><br/>
+    Windows:<br/>
+
+    - Go to &lt;sahi_root&gt;\bin and run web.bat<br/>
+    Linux<br/>
+    - Go to &lt;sahi_root&gt;/bin and run web.sh<br/>
+
+Go to url http://localhost:10000/demo/index.htm and play around with the different pages.<br/>
+It gives a fair idea of how elements are accessed through Sahi.<br/><br/>
+
+Note that by default Sahi uses port 9999 and the web server uses port 10000 (sahi's port + 1). <br>
+These can be modified through <a href="props.html">sahi.properties</a>
+
+<br/>
+
+(<a href="#top">Top</a>)
+
+<br/><h4><a name="record">Recording through Sahi</a></h4>
+
+
+<ul type="square">
+	<li>Press <a href="props.html#hotkey">ALT</a> and double click on the window which you want to record.</li>
+	<li>On the popup that appears, give a name for the script you wish to generate, and click 'Record'</li>
+	<li>Most actions on the page will now get recorded.</li>
+	<li>Moving the mouse over any html element while pressing Ctrl key will show the javascript accessor info in the popup.</li>
+	<li>Clicking the "Add Assertions" button generates assertions for the element. These assertions can be added to the script by clicking "Add to Script"</li>
+</ul>
+
+The script being generated can be viewed by opening the &lt;script_name&gt;.sah file in the scripts directory.<br/>
+The script can be edited even while recording, so that logical segregation into functions etc. can be done as recording happens.<br/>
+
+
+<ul type="square">
+	<li>Once done, click stop.</li>
+</ul>
+Note that custom code can be tested, by entering code in the "debug" textarea and clicking on "Test ->". <br/>
+The command will be executed and the result will be displayed in the textbox near the "Test ->" button.<br/>
+Once confirmed that the desired result has been achieved, that code snippet can be added to the recording by clicking "Append to Recording"<br/>
+
+<br/>
+You could use the <a href="#demo">demo application</a> bundled with Sahi to get your feet wet.<br/>
+(<a href="#top">Top</a>)
+
+
+<br/><h4><a name="playback">Playing back</a></h4>
+
+<ul type="square">
+	<li>Open (alt-dblclick) the popup window.</li>
+	<li>Select script file from the dropdown.</li>
+	<li>Or go to the "[from url]" section and specify the full url of the script file. (eg. http://<i>proxyhost:proxyport</i>/_s_/scrcipts/<i>scriptName</i>.sah)</li>
+	<li>Click 'Set'.</li>
+	<li>Wait for the pages to reload.</li>
+	<li>Click 'Play'.</li>
+</ul>
+
+(<a href="#top">Top</a>)
+
+<br/><h4><a name="suites">Suites</a></h4>
+
+Multiple tests can be run through ant. For each test in the suite, the ant target opens a browser, runs the test and closes the browser, <br/>
+The ant target specifies a suite file, say SuiteName.suite. <br/><br/>
+The syntax of writing the suite file is:<br/><br/>
+&lt;testName.sah&gt; &lt;absolute url or url relative to the baseurl in ant target&gt;
+
+<br/><br/>
+eg.<br/>
+test1.sah	/startPageForTest1.jsp<br/>
+test2.sah	http://www.d2.com/startPageForTest2.htm<br/>
+test3.sah	abc/startPageForTest3.htm
+
+<br/><br/>The ant target is like:
+
+<pre>
+<b>
+&lt;taskdef name="sahi" classname="net.sf.sahi.ant.RunSahiTask" classpath="${basedir}/sahi/lib/ant-sahi.jar"&gt;
+&lt;/taskdef&gt;
+
+&lt;sahi suite="${basedir}/sahi/scripts/SuiteName.suite"
+	browser="C:\\Program Files\\Internet Explorer\\iexplore.exe"
+	baseurl="http://localhost:8888/path/"
+/&gt;
+
+</b>
+</pre>
+Read more on <a href="ant.html">Sahi Ant Target<a/><br/>
+<b>For details on running this target, please look at demo.xml in sahi root folder</b>
+<br/>To run demo.xml, type "ant -f demo.xml"
+<br/>
+
+(<a href="#top">Top</a>)
+<h4><a name="logging">Logging</a></h4>
+
+Logs are created in "logs/playback/" directory.<br/>
+Log results can be accessed through the browser through http://mydomain/_s_/logs/
+<br/>
+(<a href="#top">Top</a>)
+
+<br/><h4>Running test from the console</a></h4>
+
+If you wish to run a script called "MySahiScript.sah" on a page like say, http://<b>www.domain.com</b>/dir/page1.jsp do<br/>
+<br/>
+<pre>
+"C:\Program Files\Mozilla Firefox\firefox.exe" "http://www.sahidomain.com/_s_/dyn/Player_auto?file=<b>MySahiScript.sah</b>&amp;startUrl=<b>http://www.domain.com/dir/page1.jsp</b>" <br/>
+Note that www.sahidomain.com at the start of the URL is hardcoded, and should be used as is. Only the values in bold need to be changed.
+</pre>
+<br/>
+
+
+</div>
+</td>
+</tr>
+</table>
+
+Please send your feedback to <a href="http://sourceforge.net/users/narayanraman/">V Narayan Raman</a>.
+<br/><br/>
+
+<!--
+<script src="http://www.treepie.org/counter.js"></script>
+-->
+<!--RiteCounter-->
+<script type="text/javascript" src="http://www.ritecounter.com/scripts/counters.php?id=6641"></script>
+<noscript><a href="http://www.ritecounter.com"><img src="http://www.ritecounter.com/scripts/htmlc.php?id=6641" alt="Free Hit Counter Code" border=0></a></noscript>
+<!--END RiteCounter-->
+
+</body>
+</html>
