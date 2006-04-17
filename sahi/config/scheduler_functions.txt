@@ -5,6 +5,7 @@ _assertNotNull
 _assertNull
 _assertTrue
 _assertNotTrue
+_callServer
 _click
 _clickLinkByAccessor
 _dragDrop

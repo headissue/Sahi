@@ -578,6 +578,10 @@ function sahi_log(s, type){
 function sahi_navigateTo(url){
 	top.location.href = url;
 }
+function sahi_callServer(cmd, qs){
+	return sahiSendToServer("/_s_/dyn/"+cmd+"?"+qs);
+}
+
 // finds document of any element
 function sahiGetWin(el){
 	if (el == null) return self;
