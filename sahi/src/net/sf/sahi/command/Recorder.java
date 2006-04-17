@@ -2,8 +2,6 @@ package net.sf.sahi.command;
 
 import net.sf.sahi.config.Configuration;
 import net.sf.sahi.request.HttpRequest;
-import net.sf.sahi.response.HttpResponse;
-import net.sf.sahi.response.NoCacheHttpResponse;
 import net.sf.sahi.session.Session;
 
 public class Recorder {
