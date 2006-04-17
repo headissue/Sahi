@@ -10,6 +10,7 @@ _clickLinkByAccessor
 _dragDrop
 _getCellText
 _getSelectedText
+_resetSavedRandom
 _setSelected
 _setValue
 _simulateEvent
