@@ -530,6 +530,9 @@ function sahi_savedRandom(id, min, max){
 	}
 	return r;
 }
+function sahi_resetSavedRandom(id){
+	sahi_setGlobal("srandom"+id, "");
+}
 function sahi_confirm(s){
 	return true;//confirm(s);
 //	window.open("/_s_/dyn/confirm.htm?msg="+s, "", "height=60px,width=460px,resizable=yes,toolbars=no,statusbar=no");
