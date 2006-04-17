@@ -1,0 +1,9 @@
+<script src='/_s_/spr/concat.js'></script>
+<script src='http://www.sahidomain.com/_s_/dyn/SessionState/state.js'></script>
+<script src='http://www.sahidomain.com/_s_/dyn/Player_script/script.js'></script>
+<script src='/_s_/spr/playback.js'></script>
+<div id='sahi_div' style="font-size:10px;color:gray">
+Through Sahi --- 
+<span span style="color:red" onclick="sahiOpenWin(event)" onmouseover="this.style.cursor='pointer'">Click to open Controller</span>
+--- <span>(Comment out the div tag in config/inject_top.txt to remove this.)</span>
+</div>
