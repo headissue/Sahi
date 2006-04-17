@@ -4,21 +4,18 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import net.sf.sahi.util.Utils;
+
 /**
  * User: nraman Date: May 14, 2005 Time: 1:43:05 AM
  */
 public class HttpModifiedResponse extends HttpResponse {
-	private static final String INJECT_TOP = ""
-			+ "<script src='/_s_/spr/concat.js'></script>\n"
-			+ "<script src='http://www.sahidomain.com/_s_/dyn/SessionState/state.js'></script>\n"
-			+ "<script src='http://www.sahidomain.com/_s_/dyn/Player_script/script.js'></script>\n"
-			+ "<script src='/_s_/spr/playback.js'></script>\n"
-			+ "<div id='sahi_div' style='display:none'></div>\n" 
-			+ "";
-
-	private static final String INJECT_BOTTOM = ""
-			+ "<!----><script src='/_s_/spr/playback.js'></script>\n" 
-			+ "";
+	private static byte[] INJECT_TOP;
+	private static byte[] INJECT_BOTTOM;
+	static {
+		INJECT_TOP = Utils.readCachedFile("../config/inject_top.txt");
+		INJECT_BOTTOM = Utils.readCachedFile("../config/inject_bottom.txt");
+	}
 
 	public HttpModifiedResponse(InputStream in) throws IOException {
 		super(in);
@@ -59,9 +56,9 @@ public class HttpModifiedResponse extends HttpResponse {
 			ix = getHTMLTagIndex();
 		}
 		s.write(data(), 0, ix);
-		s.write(INJECT_TOP.getBytes());
+		s.write(INJECT_TOP);
 		s.write(substituteModals(data()), ix, data().length - ix);
-		s.write(INJECT_BOTTOM.getBytes());
+		s.write(INJECT_BOTTOM);
 		s.flush();
 		return s.toByteArray();
 	}

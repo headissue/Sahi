@@ -6,10 +6,12 @@
 package net.sf.sahi.playback;
 
 import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Properties;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -20,6 +22,8 @@ import net.sf.sahi.util.Utils;
 public abstract class SahiScript {
 	private static Logger logger = Configuration
 	.getLogger("net.sf.sahi.playback.SahiScript");
+	private static ArrayList actionKeywords;
+	private static ArrayList normalKeywords;
 	protected String script;
 	private static final String PREFIX = "sahiAdd(\"";
 	private static final String CONJUNCTION = "\", \"";
@@ -123,6 +127,10 @@ public abstract class SahiScript {
 
 	static String getActionRegExp() {
 		ArrayList keywords = getActionKeyWords();
+		return getActionRegExp(keywords);
+	}
+
+	static String getActionRegExp(ArrayList keywords) {
 		StringBuffer sb = new StringBuffer();
 		int size = keywords.size();
 		sb.append("^(?:");
@@ -149,6 +157,10 @@ public abstract class SahiScript {
 
 	static String getRegExp(boolean isForStripping) {
 		ArrayList keywords = getKeyWords();
+		return getRegExp(isForStripping, keywords);
+	}
+
+	static String getRegExp(boolean isForStripping, ArrayList keywords) {
 		StringBuffer sb = new StringBuffer();
 		int size = keywords.size();
 		if (isForStripping)
@@ -164,85 +176,41 @@ public abstract class SahiScript {
 		return sb.toString();
 	}
 
-	private static ArrayList getActionKeyWords() {
+	static ArrayList getActionKeyWords() {
+		if (actionKeywords == null) actionKeywords = loadActionKeyWords();
+		return actionKeywords;
+	}
+	
+	static ArrayList loadActionKeyWords() {
 		ArrayList keywords = new ArrayList();
-		keywords.add("_alert");
-		keywords.add("_assertEqual");
-		keywords.add("_assertNotEqual");
-		keywords.add("_assertNotNull");
-		keywords.add("_assertNull");
-		keywords.add("_assertTrue");
-		keywords.add("_assertNotTrue");
-		keywords.add("_click");
-		keywords.add("_clickLinkByAccessor");
-		keywords.add("_dragDrop");
-		keywords.add("_getCellText");
-		keywords.add("_getSelectedText");
-		keywords.add("_setSelected");
-		keywords.add("_setValue");
-		keywords.add("_simulateEvent");
-		keywords.add("_submit");
-		keywords.add("_call");
-		keywords.add("_eval");
-		keywords.add("_setGlobal");
-		keywords.add("_wait");
-		keywords.add("_popup");
-		keywords.add("_highlight");
-		keywords.add("_log");
-		keywords.add("_navigateTo");
+		keywords.addAll(loadKeyWords("scheduler"));
+		return keywords;
+	}
+	
+	static ArrayList getKeyWords() {
+		if (normalKeywords == null) normalKeywords = loadKeyWords();
+		return normalKeywords;
+	}
+	
+	static ArrayList loadKeyWords() {
+		ArrayList keywords = new ArrayList();
+		keywords.addAll(loadKeyWords("scheduler"));
+		keywords.addAll(loadKeyWords("normal"));
 		return keywords;
 	}
 
-	private static ArrayList getKeyWords() {
+	static ArrayList loadKeyWords(String type) {
 		ArrayList keywords = new ArrayList();
-		keywords.add("_accessor");
-		keywords.add("_alert");
-		keywords.add("_assertEqual");
-		keywords.add("_assertNotEqual");
-		keywords.add("_assertNotNull");
-		keywords.add("_assertNull");
-		keywords.add("_assertTrue");
-		keywords.add("_assertNotTrue");
-		keywords.add("_button");
-		keywords.add("_check");
-		keywords.add("_checkbox");
-		keywords.add("_click");
-		keywords.add("_clickLinkByAccessor");
-		keywords.add("_dragDrop");
-		keywords.add("_getCellText");
-		keywords.add("_getSelectedText");
-		keywords.add("_image");
-		keywords.add("_imageSubmitButton");
-		keywords.add("_link");
-		keywords.add("_password");
-		keywords.add("_radio");
-		keywords.add("_select");
-		keywords.add("_setSelected");
-		keywords.add("_setValue");
-		keywords.add("_simulateEvent");
-		keywords.add("_submit");
-		keywords.add("_textarea");
-		keywords.add("_textbox");
-		keywords.add("_event");
-		keywords.add("_call");
-		keywords.add("_eval");
-		keywords.add("_setGlobal");
-		keywords.add("_getGlobal");
-		keywords.add("_wait");
-		keywords.add("_random");
-		keywords.add("_savedRandom");
-		keywords.add("_cell");
-		keywords.add("_table");
-		keywords.add("_containsText");
-		keywords.add("_containsHTML");
-		keywords.add("_popup");
-		keywords.add("_byId");
-		keywords.add("_highlight");
-		keywords.add("_log");
-		keywords.add("_navigateTo");
-		return keywords;
+		Properties fns = new Properties();
+		try {
+			fns.load(new FileInputStream("../config/"+type+"_functions.txt"));
+		}catch(Exception e) {
+			
+		}
+		keywords.addAll(fns.keySet());
+		return keywords;				
 	}
-
+	
 	String separateVariables(String s) {
 		StringBuffer sb = new StringBuffer();
 		char c = ' ';
