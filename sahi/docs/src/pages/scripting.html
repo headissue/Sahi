@@ -9,6 +9,12 @@
 <h4><a name="about">About Sahi script</a></h4>
 <br/>
 
+While Sahi scripts can easily be recorded, as a project grows in size, 
+the scripts may have to be more logically organized into functions and split into
+multiple files.
+
+The following section gives more details on the Sahi Script and the rules to follow. 
+
 Sahi script is based on Javascript.
 The constructs of javascript, like functions, variables, loops, conditional statements etc. are all available in Sahi script<br/>
 But the script is parsed and transformed slightly in the Sahi proxy server before it reaches the browser.<br/>
@@ -21,7 +27,7 @@ Example:<br/><br/>
 <pre class="code">_setValue(_textbox("name"), "Kamlesh");</pre><br/>
 <br/>
 will be parsed and scheduled for execution later,<br/>
-while<br/>
+But<br/>
 <br/>
 <pre class="code">var $x = 10;</pre><br/>
 <br/>
@@ -35,7 +41,6 @@ will be executed immediately on <b>every</b> page load.<br/>
 <h4><a name="variables">Rules for variable usage.</a></h4>
 <ul>
 <li><a href="#dollar">Variables which are used as parameters to Sahi APIs should start with a $ (dollar) sign.</a>
-<!--li><a href="#assign">Returned values of accessor functions, or properties of elements returned by accessors, should not be assigned to $ variables.</a-->
 <li><a href="#string">$ Variables passed to Sahi APIs can only represent string and numeric values.</a>
 <li><a href="#operation">Operations like $i++ or $i-- should not be performed inside the API call.</a>
 <li><a href="apis.html#global">For storing and retrieving properties of accessors, functions _getGlobal() and _setGlobal() should be used.</a>
@@ -51,12 +56,10 @@ will be executed immediately on <b>every</b> page load.<br/>
 eg.<br/>
 <br/>
 <pre class="code">
-<b>
-var $name = "Kamlesh";
-_setValue(_textbox("name1"), $name);
-$name = "Raman";
-_setValue(_textbox("name2"), $name);
-</b>
+var $name = "Kamlesh";                // Right way
+_setValue(_textbox("name1"), $name);  // Right way
+$name = "Raman";                      // Right way
+_setValue(_textbox("name2"), $name);  // Right way
 </pre>
 <br/>
 is the right way to use variables.<br/>
@@ -64,10 +67,10 @@ is the right way to use variables.<br/>
 When done the wrong way, i.e., without $ prefix,
 <br/><br/>
 <pre class="code">
-var nameWithoutDollar = "Kamlesh";
-_setValue(_textbox("name1"), nameWithoutDollar)
-nameWithoutDollar = "Raman";
-_setValue(_textbox("name2"), nameWithoutDollar)
+var nameWithoutDollar = "Kamlesh";                // Wrong way
+_setValue(_textbox("name1"), nameWithoutDollar);  // Wrong way
+nameWithoutDollar = "Raman";                      // Wrong way
+_setValue(_textbox("name2"), nameWithoutDollar);  // Wrong way
 </pre>
 <br/>
 This is wrong, and will not work correctly. <br/>

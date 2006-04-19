@@ -1,17 +1,21 @@
 .content {
 	margin:0px 50px 50px 10px;
 	padding:10px;
+	padding-left:15px;
+	border-top:1px solid orange;
+	border-left:1px solid orange;
 }
 
 .menu {
 	padding:10px;
-	background-color:white;
-	border-top:1px solid orange;
-	border-right:1px solid orange;
+	borderw-bottom:1px solid orange;
+	border2-left:1px solid orange;
 	line-height:17px;
-	width:150px;
+	width:180px;
+	background-color:#eeeee0;
 }
 ul{
+	margin-left:10px;
 	padding-left:10px;
 }
 
@@ -20,13 +24,22 @@ body{
 	font-family:arial;
 	font-size:12px;
 }
-h4{
+h2.pageTitle{
+	font-family:arial;
 	color:brown;
+}
+h2{
+	color:black;
+	font-size:18px;
+}
+h4{
+	color:gray;
+	font-size:14px;
 	text-decoration:underline;
 }
 pre{
 	background-color:lightgreen;
-	border:20px solid lightgreen;
+	border:10px solid lightgreen;
 }
 p{
 	padding-left: 10px;
