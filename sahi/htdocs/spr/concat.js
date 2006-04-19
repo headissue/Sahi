@@ -1537,7 +1537,7 @@ var KEY_K = 75;
 var IDLE_INTERVAL=1000;
 var INTERVAL=100;
 var RETRY_INTERVAL=1000;
-var MAX_RETRIES=0;
+var MAX_RETRIES=3;
 
 var _sahiCmds = new Array();
 var _sahiCmdDebugInfo = new Array();
