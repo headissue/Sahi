@@ -8,3 +8,7 @@
 Known issues
 * Firefox has problems with multithreaded playback due to windows not closing properly. (Workaround: Do not add the 'threads=n' clause to sahi target)
 * Multi-select form element does not record correctly.
+
+NOTE:
+Running tests from the console has changed (namely, auto has changed to Player_auto in the url).
+Please look at the documentation.
