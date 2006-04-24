@@ -1,24 +1,25 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
+<meta name="generator" content="HTML Tidy, see www.w3.org">
+<title></title>
 </head>
 <body>
-<form>
-    <input type=checkbox name=source value=1 OnClick="SourceCode(source.checked)">Source
-    <input type=checkbox name=bold value=1 OnClick="RichtText('Bold')"><b>B</b>
-    <input type=checkbox name=under value=1 OnClick="RichtText('underline')"><u>U</u>
-    <input type=checkbox name=italic value=1 OnClick="RichtText('italic')"><i>I</i>
+<form><input type="checkbox" name="source" value="1" onclick=
+"SourceCode(source.checked)">Source <input type="checkbox" name=
+"bold" value="1" onclick="RichtText('Bold')"><b>B</b> <input type=
+"checkbox" name="under" value="1" onclick=
+"RichtText('underline')"><u>U</u> <input type="checkbox" name=
+"italic" value="1" onclick="RichtText('italic')"><i>I</i> <select
+name="align" onchange="RichAlign(this[this.selectedIndex].value)">
+<option value="justifyleft" selected>Left</option>
+<option value="justifycenter">Center</option>
+<option value="justifyright">Right</option>
+</select> <iframe class="mytext" width="100%" id="mytext" name=
+"mytext" height="200"></iframe> 
 
-    <select name=align OnChange="RichAlign(this[this.selectedIndex].value)">
-        <option value="justifyleft" selected>Left</option>
-        <option value="justifycenter">Center</option>
-        <option value="justifyright">Right</option>
-    </select>
-    
-    <iframe class="mytext" width="100%" ID="mytext" name="mytext" height="200">
-    </iframe>
-    
-    <script langauge="JavaScript">
-    	var mytext = window.frames["mytext"];
+<script type="text/javascript" langauge="JavaScript">
+        var mytext = window.frames["mytext"];
         function RichtText(what) {
             mytext.document.execCommand(what);
             mytext.focus();
@@ -51,8 +52,9 @@
         mytext.document.write(bodyTag);
         mytext.document.close();
         mytext.document.designMode="On";
-    </script>
+    
+</script>
 </form>
-
 </body>
 </html>
+

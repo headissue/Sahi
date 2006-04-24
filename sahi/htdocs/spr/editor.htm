@@ -1,27 +1,22 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
 <html>
-
 <head>
-<title>
-Sahi Editor
-</title>
+<meta name="generator" content="HTML Tidy, see www.w3.org">
+<title>Sahi Editor</title>
 </head>
-
-
-
 <body>
-<div id="ed"  onKeyPress="monitor(event)"  style="border:1px solid black; width:400px;height:300px" >
+<div id="ed" onkeypress="monitor(event)" style=
+"border:1px solid black; width:400px;height:300px"></div>
 
-</div>
-
-<script>
+<script type="text/javascript">
 
 function addEvent(el, ev, fn){
-	if (!el) return;
-	if (el.attachEvent){
-		el.attachEvent("on"+ev, fn);
-	}else if (el.addEventListener){
-		el.addEventListener(ev, fn, false);
-	}
+    if (!el) return;
+    if (el.attachEvent){
+        el.attachEvent("on"+ev, fn);
+    }else if (el.addEventListener){
+        el.addEventListener(ev, fn, false);
+    }
 }
 
 function sahiList(el, p){
@@ -38,21 +33,21 @@ function sahiList(el, p){
 }
 
 function getTarget(e){
-	var targ;
-	if (!e) e = window.event;
-	var evType = e.type;
-	if (e.target) targ = e.target;
-	else if (e.srcElement) targ = e.srcElement;
-	if (targ.nodeType == 3) // defeat Safari bug
-		targ = targ.parentNode;
-	return targ;
+    var targ;
+    if (!e) e = window.event;
+    var evType = e.type;
+    if (e.target) targ = e.target;
+    else if (e.srcElement) targ = e.srcElement;
+    if (targ.nodeType == 3) // defeat Safari bug
+        targ = targ.parentNode;
+    return targ;
 }
 
 function monitor(e){
-	if (!e) e = window.event;
-	alert(getTarget(e).tagName);
-	var c = String.fromCharCode(e.charCode);
-//	alert(c);
+    if (!e) e = window.event;
+    alert(getTarget(e).tagName);
+    var c = String.fromCharCode(e.charCode);
+//  alert(c);
 
 }
 
@@ -60,8 +55,6 @@ function monitor(e){
 //var ed = document.getElementById("ed");
 //addEvent(ed, "keyup", monitor);
 </script>
-
-
 </body>
-
 </html>
+
