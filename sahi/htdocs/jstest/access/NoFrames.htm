@@ -1,12 +1,18 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
-<title>
-</title>
-</head>
-<script src="/test/jsunit.js"></script>
-<script src="/spr/apihelper.js"></script>
-<script src="/spr/api.js"></script>
-<script>
+<meta name="generator" content="HTML Tidy, see www.w3.org">
+<title></title>
+<script type="text/javascript" src="/test/jsunit.js">
+</script>
+
+<script type="text/javascript" src="/spr/apihelper.js">
+</script>
+
+<script type="text/javascript" src="/spr/api.js">
+</script>
+
+<script type="text/javascript">
 function testAccessByName() {
     assertEquals("Accessors are not equal", document.f1.t1, sahiFindElement("t1", top, "text"));
 }
@@ -68,22 +74,24 @@ addTest(testAccessByNameForSelectOne);
 addTest(testImageByAlt);
 addTest(testImageById);
 </script>
+</head>
 <body onload="testOnLoad()">
-<form name="f1">
-<input type="text" value="" name="t1"><br>
+<form name="f1"><input type="text" value="" name="t1"><br>
 <textarea value="" name="ta1"></textarea><br>
-Checkbox : <input type="checkbox" value="" name="c1"><input type="checkbox" value="" name="c1"><br>
-Radio : <input type="radio" value="" name="r1"><input type="radio" value="" name="r1"><br>
+Checkbox : <input type="checkbox" value="" name="c1"><input type=
+"checkbox" value="" name="c1"><br>
+Radio : <input type="radio" value="" name="r1"><input type="radio"
+value="" name="r1"><br>
 <input type="password" value="" name="p1"><br>
 <select name="s1">
-<option value="o1">o1
-<option value="o2">o2
-<option value="o3">o3
-</select>
-<br>
+<option value="o1">o1</option>
+<option value="o2">o2</option>
+<option value="o3">o3</option>
+</select><br>
 <input type="button" name="btn1" value="button"><br>
 <input type="submit" value="Add" id="submitBtn"><br>
-<img src="../add.gif" alt="imageAlt1" id="imageId1" onclick="dummy()"></img>
-</form>
+<img src="../add.gif" alt="imageAlt1" id="imageId1" onclick=
+"dummy()"></form>
 </body>
 </html>
+
