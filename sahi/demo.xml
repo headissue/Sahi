@@ -15,7 +15,7 @@
 					sahiport="9999"
 					failureproperty="sahi.failed"
 					haltonfailure="false"
-					threads="2"
+					threads="4"
 					/>
 				<antcall target="stop-web"/>
 				<antcall target="failsahi"/>
