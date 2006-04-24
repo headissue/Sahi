@@ -107,11 +107,11 @@ javascript is injected at the start and end of the response.<br>
 This will allow the browser to record and playback scripts and talk
 back to the proxy when needed.<br>
 <br>
- Apart from handling requests for pages that the browser
-requests,<br>
+ Apart from handling requests for pages that the browser requests,
+<br>
 Sahi also handles custom commands related to recording, playback
 etc. which the browser sends.<br>
-<br>
+ <br>
 <br>
 <hr>
 <br>
@@ -169,7 +169,7 @@ array of the step that is to be run next.<br>
 This counter is updated with each successful execution of a
 step.<br>
 <br>
-<br>
+ <br>
 <hr>
 <br>
  
@@ -210,9 +210,9 @@ sahi_click(sahi_link("Link Test"));
 
 <br>
 For easy identifcation of variables while parsing, it is needed
-that there is some way of tagging variables.<br>
+that there is some way of tagging variables. <br>
 The dollar($) sign serves that purpose.<br>
-<br>
+ <br>
 <br>
 <hr>
 <br>
@@ -226,12 +226,12 @@ browser.<br>
 Since it is all javascript, the API function names need to be
 unique.<br>
 If the application under test has a function with the same name, it
-can cause problems.<br>
+can cause problems. <br>
 For this, all API functions start with "sahi_".<br>
  When Sahi's proxy serves the script to the browser, it parses and
 does a lot of modifications to the script.<br>
 One of these is to correctly replace the API methods starting with
-"_" with "sahi_".<br>
+"_" with "sahi_". <br>
 <br>
 Thus, 
 
@@ -240,7 +240,7 @@ _click(_link("Create Login"));
 </pre>
 
 <br>
-actually becomes<br>
+actually becomes <br>
  
 
 <pre class="code">
@@ -254,6 +254,9 @@ with less scope for ambiguity.<br>
 <br>
 <br>
 <br>
+</body>
+</html>
+
 </div>
 </td>
 </tr>

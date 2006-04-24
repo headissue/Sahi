@@ -87,9 +87,8 @@ in</a></li>
 <h2 class="pageTitle">APIs</h2>
 
 <!--APIs-->
-<br>
 The best way to learn how these APIs work is by recording actions
-using the Sahi controller and looking at the recorded code.<br>
+using the Sahi controller and looking at the recorded code. <br>
 <br>
 <a href="#aform">Accessor Functions : Form elements</a><br>
 <a href="#alink">Accessor Functions : Link</a><br>
@@ -102,7 +101,7 @@ using the Sahi controller and looking at the recorded code.<br>
 <a href="#include">File Inclusion</a><br>
 <a href="#utility">Utility Functions</a><br>
 <a href="#popup">Handling popup windows</a><br>
- (<a href="#top">Top</a>)<br>
+ (<a href="#top">Top</a>) <br>
 <h4><a name="aform"></a>Accessor Functions : Form elements</h4>
 
 <b>_textbox(idStr)<br>
@@ -114,11 +113,11 @@ _radio(idStr)<br>
 _image(idStr)<br>
 _button(idStr)<br>
 _submit(idStr)<br>
-</b> (<a href="#top">Top</a>)<br>
+</b> (<a href="#top">Top</a>) <br>
 <h4><a name="alink"></a>Accessor Functions : Link</h4>
 
 <b>_link(idStr)<br>
-</b> (<a href="#top">Top</a>)<br>
+</b> (<a href="#top">Top</a>) <br>
 <h4><a name="atable"></a>Accessor Functions : Tables</h4>
 
 <b>_table(idStr)<br>
@@ -126,11 +125,11 @@ _cell(tableEl, rowNo, colNo)<br>
 _cell(tableEl, someTextWhichIdentifiesRow,
 someTextWhichIdentifiesColumn)<br>
 _cell(cellIdStr)<br>
-</b> (<a href="#top">Top</a>)<br>
+</b> (<a href="#top">Top</a>) <br>
 <h4><a name="ageneric"></a>Accessor Functions : Generic</h4>
 
 <b>_accessor(idStr)<br>
-</b> (<a href="#top">Top</a>)<br>
+</b> (<a href="#top">Top</a>) <br>
 <h4><a name="scheduler"></a>Scheduler Functions</h4>
 
 <div class="explain">Scheduler Functions behave differently from
@@ -147,7 +146,7 @@ Note: All these functions can also be made to execute instantly
 (single underscore)<br>
 </div>
 
-(<a href="#top">Top</a>)<br>
+(<a href="#top">Top</a>) <br>
 <h4><a name="action"></a>Action Scheduler Functions</h4>
 
 These are <a href="#scheduler">Scheduler Functions</a><br>
@@ -167,8 +166,8 @@ _log(message, type) where type can be "success", "failure",
 "error", "info"<br>
 _highlight(jsElement)<br>
 _navigateTo(URLString)<br>
-</b><br>
- (<a href="#top">Top</a>)<br>
+</b> <br>
+ (<a href="#top">Top</a>) <br>
 <h4><a name="assertion"></a>Assertion Scheduler Functions</h4>
 
 These are <a href="#scheduler">Scheduler Functions</a><br>
@@ -179,30 +178,30 @@ _assertEqual(expected, actual, msg)<br>
 _assertNotEqual(expected, actual, msg)<br>
 _assertTrue(condition, msg)<br>
 _assertNotTrue(condition, msg)<br>
-</b> (<a href="#top">Top</a>)<br>
+</b> (<a href="#top">Top</a>) <br>
 <h4><a name="textaccess"></a>Text Access Functions</h4>
 
 <b>_getSelectedText(selectElement)<br>
  _getCellText(tableCellElement)<br>
-</b> (<a href="#top">Top</a>)<br>
+</b> (<a href="#top">Top</a>) <br>
 <h4><a name="textverify"></a>Text Verification boolean
 Functions</h4>
 
 <b>_containsText(element, textToSearch)<br>
 _containsHTML(element, htmlToSearch)<br>
-</b> (<a href="#top">Top</a>)<br>
+</b> (<a href="#top">Top</a>) <br>
 <br>
 <hr>
 <br>
 <h4><a name="include"></a>File Inclusion</h4>
 
 <b>_include(filePath)<br>
-</b><br>
-<b>_include(filePath)</b><br>
+</b> <br>
+<b>_include(filePath)</b> <br>
 <br>
 One sah file may include other sah files, thus allowing logical
 separation of code.<br>
-Syntax: _include(file2.sah)<br>
+Syntax: _include(file2.sah) <br>
 <br>
  Example:<br>
 <br>
@@ -225,7 +224,7 @@ function createCustomer($name, $id, $age){
 }<br>
 </pre>
 
-(<a href="#top">Top</a>)<br>
+(<a href="#top">Top</a>) <br>
 <hr>
 <br>
 <h4><a name="utility"></a>Utility Functions</h4>
@@ -261,15 +260,16 @@ $y = _savedRandom("login");               //will also set $y to 145.
 <br>
 The min and max are needed only during the first call.<br>
 <br>
-<b><a name="resetrandom">_resetSavedRandom(id)</a></b><br>
-_resetSavedRandom(id) resets value of _savedRandom(id) to null;<br>
+<b><a name="resetrandom">_resetSavedRandom(id)</a></b> <br>
+_resetSavedRandom(id) resets value of _savedRandom(id) to null;
+<br>
 <br>
  
 
 <hr>
 <br>
 <b><a name="global">_setGlobal(name, value) and
-_getGloblal(name)</a></b><br>
+_getGloblal(name)</a></b> <br>
 <br>
 Since a script may span across multiple web pages, variables from
 one page may need to be stored for later use.<br>
@@ -292,10 +292,10 @@ _setValue(_textbox("lookup"), _getGlobal("customerId")); // the second parameter
 These variables are stored on the server in a hashmap associated
 with the session.<br>
 <br>
-Note: that all values will be stored as strings only.<br>
-Note: _setGlobal is a <a href="#scheduler">Scheduler
-Function</a>.<br>
- (<a href="#top">Top</a>)<br>
+Note: that all values will be stored as strings only. <br>
+Note: _setGlobal is a <a href="#scheduler">Scheduler Function</a>.
+<br>
+ (<a href="#top">Top</a>) <br>
 <hr>
 <br>
 <h4><a name="popup"></a>Handling popup windows</h4>
@@ -316,8 +316,9 @@ where popupWinName was defined like this:<br>
 window.open("http://popup.url", "popupWinName");<br>
 or<br>
 &lt;a href="http://popup.url" target="popupWinName"&gt;<br>
- Note that there may be problems in recording this.<br>
-<br>
+ Note that there may be problems in recording this. <br>
+ <br>
+
 </div>
 </td>
 </tr>
