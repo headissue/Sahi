@@ -218,7 +218,7 @@ public class HttpRequest extends StreamHandler {
 	}
 
 	public HttpRequest modifyForFetch() {
-        setFirstLine(method() + " " + uri() + " " + "HTTP/1.0");
+		setFirstLine(firstLine().replaceAll("HTTP/1.1", "HTTP/1.0"));
         removeHeader("Proxy-Connection");
         removeHeader("Accept-Encoding");
         removeHeader("Keep-Alive");
