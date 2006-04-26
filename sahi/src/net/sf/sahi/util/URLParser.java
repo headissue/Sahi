@@ -5,8 +5,8 @@ import net.sf.sahi.config.Configuration;
 public class URLParser {
 
 	public static String logFileNamefromURI(String uri) {
-		String fileName = uri.substring(uri.indexOf("/logs/") + 6);
-		if ("".equals(fileName))
+		String fileName = uri.substring(uri.indexOf("/logs") + 5);
+		if ("/".equals(fileName) || "".equals(fileName))
 			return "";
 		return Configuration.appendLogsRoot(fileName);
 	}
