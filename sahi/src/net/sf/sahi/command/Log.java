@@ -11,7 +11,7 @@ public class Log {
 		int lineNumber = getLineNumber(requestFromBrowser);
 		String fileName = URLParser.scriptFileNamefromURI(
 				requestFromBrowser.uri(), "/Log_highlight/");
-		final HttpFileResponse response = new HttpFileResponse(fileName);
+		final HttpFileResponse response = new HttpFileResponse(fileName, null, false, false);
 		if (lineNumber != -1) {
 			response
 					.setData(("<html><body><style>b{color:brown}</style><pre>"
