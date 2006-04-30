@@ -66,7 +66,7 @@ public class SahiTestSuite {
 	}
 
 	private void processLine(String line) throws MalformedURLException {
-		if (line.startsWith("#") || line.startsWith("//"))
+		if (line.startsWith("#") || line.startsWith("//") || line.trim().equals(""))
 			return;
 		int ix = line.indexOf(' ');
 		if (ix == -1)
