@@ -36,14 +36,6 @@ public class Configuration {
 		}
 	}
 
-	public static String getBrowserExecutable() {
-		try {
-			return properties.getProperty("browser");
-		} catch (Exception e) {
-			return "";
-		}
-	}
-
 	public static int getPort() {
 		try {
 			return Integer.parseInt(properties.getProperty("proxy.port"));
@@ -108,6 +100,15 @@ public class Configuration {
 
 	public static String getExternalProxyHost() {
 		return properties.getProperty("ext.proxy.host");
+	}
+
+	
+	public static int getTimeBetweenTestsInSuite() {
+		try {
+			return Integer.parseInt(properties.getProperty("suite.time_between_tests"));
+		} catch (Exception e) {
+			return 0;
+		}
 	}
 
 	public static int getExternalProxyPort() {

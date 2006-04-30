@@ -130,12 +130,21 @@ public class Player {
 			SahiTestSuite suite = SahiTestSuite.getSuite(session.id());
 			if (suite != null) {
 				suite.stop(session.getScript().getScriptName());
-				//waitASec();
+				waitSomeTime();
 				if (!suite.executeNext())
 					consolidateLogs(session.getSuiteLogDir());
 			} else {
 				consolidateLogs(session.getScriptLogFile());
 			}
+		}
+
+		private void waitSomeTime() {
+			try {
+				Thread.sleep(Configuration.getTimeBetweenTestsInSuite());
+			}catch(Exception e) {
+				
+			}
+			
 		}
 
 		private void consolidateLogs(String consolidateBy) {
