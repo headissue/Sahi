@@ -104,8 +104,8 @@ public class Utils {
 	}
 
 	public static String concatPaths(String s1, String s2) {
-		boolean s1HasSlash = (s1.charAt(s1.length() - 1) == '/');
-		boolean s2HasSlash = (s2.charAt(0) == '/');
+		boolean s1HasSlash = (s1.length()>0 &&  s1.charAt(s1.length() - 1) == '/');
+		boolean s2HasSlash = (s2.length()>0 &&  s2.charAt(0) == '/');
 		if (!s1HasSlash && !s2HasSlash)
 			return s1 + '/' + s2;
 		if (s1HasSlash && s2HasSlash)
