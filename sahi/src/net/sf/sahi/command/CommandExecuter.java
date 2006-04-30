@@ -38,4 +38,12 @@ public class CommandExecuter {
 			return new NoCacheHttpResponse();
 		}
 	}
+
+	String getCommandClass() {
+		return commandClass;
+	}
+
+	String getCommandMethod() {
+		return commandMethod;
+	}
 }

@@ -23,4 +23,11 @@ public class CommandExecuterTest extends TestCase {
 		called = false;
 	}
 
+	public void testCommandClass() throws Exception {
+		final HttpRequest httpRequest = null;
+		assertEquals("com.domain.TestClass", new CommandExecuter("com.domain.TestClass_act", httpRequest).getCommandClass());
+		assertEquals("act", new CommandExecuter("com.domain.TestClass_act", httpRequest).getCommandMethod());
+		assertEquals("net.sf.sahi.command.TestClass", new CommandExecuter("TestClass_act", httpRequest).getCommandClass());
+		assertEquals("act", new CommandExecuter("TestClass_act", httpRequest).getCommandMethod());
+	}
 }
