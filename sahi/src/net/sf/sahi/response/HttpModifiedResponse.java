@@ -87,6 +87,9 @@ public class HttpModifiedResponse extends HttpResponse {
 
 	private boolean isHTML() {
 		String contentType = contentType();
+		if (contentType.toLowerCase().indexOf("text/html") != -1 && hasNoContent()) {
+			return true;
+		}
 		if (contentType == null
 				|| contentType.toLowerCase().indexOf("text/html") != -1) {
 			return hasHtmlContent();
@@ -94,6 +97,9 @@ public class HttpModifiedResponse extends HttpResponse {
 		return false;
 	}
 
+	private boolean hasNoContent() {
+		return "".equals(getSampleContent().trim());
+	}
 	private boolean hasJsContent() {
 		String s = getSampleContent();
 		return s.indexOf("var ") != -1 || s.indexOf("function ") != -1;
