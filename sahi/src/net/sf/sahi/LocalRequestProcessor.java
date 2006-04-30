@@ -17,7 +17,6 @@ public class LocalRequestProcessor {
 		HttpResponse httpResponse = new NoCacheHttpResponse("");
 		if (uri.indexOf("/dyn/") != -1) {
 			String command = URLParser.getCommandFromUri(uri);
-//			System.out.println("----------- " + session.id() + " " + uri);
 			if (uri.indexOf("/stopserver") != -1) {
 				System.exit(1);
 			} else if (command != null) {
@@ -27,7 +26,7 @@ public class LocalRequestProcessor {
 		} else if (uri.indexOf("/scripts/") != -1) {
 			String fileName = URLParser.scriptFileNamefromURI(
 					requestFromBrowser.uri(), "/scripts/");
-			httpResponse = new HttpFileResponse(fileName);
+			httpResponse = new HttpFileResponse(fileName, null, false, false);
 		} else if (uri.indexOf("/logs/") != -1 || uri.endsWith("/logs")) {
 			httpResponse = getLogResponse(URLParser.logFileNamefromURI(requestFromBrowser.uri()));
 		} else if (uri.indexOf("/spr/") != -1) {
