@@ -37,7 +37,7 @@ public class WebProcessor implements Runnable {
 				System.exit(1);
 			}
 			String fileName = fileNamefromURI(uri);
-			sendResponseToBrowser(new HttpFileResponse(fileName));
+			sendResponseToBrowser(new HttpFileResponse(fileName, null, false, false));
 		} catch (FileIsDirectoryException dirEx) {
 			try {
 				if ("/".equals(uri)) uri = "/demo";
