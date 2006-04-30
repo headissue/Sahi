@@ -92,7 +92,10 @@
             <fileset dir="extlib" includes="README.txt"/>
         </copy>        	
         <copy todir="temp/sahi/htdocs" >
-            <fileset dir="htdocs" excludes="CVS/**/*.*"/>
+            <fileset dir="htdocs">
+	        	<exclude name="CVS/**/*.*"/>
+            	<exclude name="demo2/**/*.*"/>
+           	</fileset>        	
         </copy>        
     	<copy todir="temp/sahi/src" >
        		<fileset dir="src" excludes="CVS/**/*.*"/>
@@ -134,7 +137,10 @@
             <fileset dir="extlib" excludes="*.jar"/>
         </copy>        	
         <copy todir="temp/sahi/htdocs" >
-            <fileset dir="htdocs" excludes="CVS/**/*.*"/>
+            <fileset dir="htdocs">
+	        	<exclude name="CVS/**/*.*"/>
+            	<exclude name="demo2/**/*.*"/>
+           	</fileset>        	
         </copy>
         <copy todir="temp/sahi/docs" >
             <fileset dir="docs">
