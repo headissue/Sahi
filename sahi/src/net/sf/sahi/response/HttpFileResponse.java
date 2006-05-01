@@ -41,11 +41,12 @@ public class HttpFileResponse extends HttpResponse {
 	}
 
 	public HttpFileResponse(String fileName) {
-		this(fileName, null, true, true);
+		this(fileName, null, false, false);
+//		this(fileName, null, true, true);
 	}
 
 	private void setHeaders() {
-		setFirstLine("HTTP/1.1 200 OK");
+		setFirstLine("HTTP/1.0 200 OK");
 		setHeader("Content-Type", MimeType.getMimeTypeOfFile(fileName));
 		if (addCacheHeader) {
 			setHeader("Expires", formatForExpiresHeader(new Date(
