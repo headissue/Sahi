@@ -222,9 +222,9 @@ public class HttpRequest extends StreamHandler {
         removeHeader("Proxy-Connection");
         removeHeader("Accept-Encoding");
         removeHeader("Keep-Alive");
-        removeHeader("ETag");
-        removeHeader("If-Modified-Since");
-        removeHeader("If-None-Match");
+//        removeHeader("ETag");
+//        removeHeader("If-Modified-Since");
+//        removeHeader("If-None-Match");
         setHeader("Connection", "close");
 		cookies().remove("sahisid");
 		setHeader("Cookie", rebuildCookies());
