@@ -566,11 +566,10 @@ function sahi_containsText(el, txt){
 	return el && sahiGetText(el).indexOf(txt) != -1;
 }
 function sahi_popup(n){
-	if (top.opener != null && top.name == n){
-		//sahiSetCurrentIndex(sahiGetCurrentIndex()+1);
+	if (top.name == n){
 		return top;
 	}
-	return SahiNotMyWindowException();
+	throw new SahiNotMyWindowException();
 }
 function sahi_log(s, type){
 	sahiLogPlayBack(s, type);
@@ -1602,20 +1601,18 @@ function sahiEx(isStep){
 				}
                 try{
 	                sahiWaitForLoad = SAHI_MAX_WAIT_FOR_LOAD;
-                    if (canEval(_sahiCmds[i])){
-		                updateControlWinDisplay(_sahiCmds[i]);
-		                try{
-		                	sahiSetCurrentIndex(i+1); 
-                    		eval(_sahiCmds[i]);
-                    	}catch(e){
-	                		sahiSetCurrentIndex(i); 
-	                		throw e;
-	                	}
-		                var debugInfo = ""+_sahiCmdDebugInfo[i];
-		                var level = (_sahiCmds[i].indexOf("sahi_assert") == 0)?"success":"info";
-		                sahiLogPlayBack(_sahiCmds[i], level, debugInfo);
-		                sahiSetRetries(0); // _sahi_attempts = 0;
-                    }
+	                updateControlWinDisplay(_sahiCmds[i]);
+	                try{
+	                	sahiSetCurrentIndex(i+1); 
+                		eval(_sahiCmds[i]);
+                	}catch(e){
+                		sahiSetCurrentIndex(i); 
+                		throw e;
+                	}
+	                var debugInfo = ""+_sahiCmdDebugInfo[i];
+	                var level = (_sahiCmds[i].indexOf("sahi_assert") == 0)?"success":"info";
+	                sahiLogPlayBack(_sahiCmds[i], level, debugInfo);
+	                sahiSetRetries(0); // _sahi_attempts = 0;
                 }catch (ex1){
                     if (ex1 instanceof SahiAssertionException) {
                     	var retries = sahiGetRetries();
