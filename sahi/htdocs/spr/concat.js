@@ -567,7 +567,7 @@ function sahi_containsText(el, txt){
 }
 function sahi_popup(n){
 	if (top.opener != null && top.name == n){
-		sahiSetCurrentIndex(sahiGetCurrentIndex()+1);
+		//sahiSetCurrentIndex(sahiGetCurrentIndex()+1);
 		return top;
 	}
 	return SahiNotMyWindowException();
@@ -1588,7 +1588,6 @@ var interval = INTERVAL;
 function sahiEx(isStep){
     try{
         try{
-//        	alert("isPaused()="+isPaused()+" isSahiPlaying()="+isSahiPlaying()+" sahiGetCurrentIndex()"+sahiGetCurrentIndex());
         	if (isPaused()) return;
             var i=sahiGetCurrentIndex();
             if (isSahiPlaying() && _sahiCmds.length == i){
@@ -1596,7 +1595,6 @@ function sahiEx(isStep){
                 return;
             }
             if ((isStep || isSahiPlaying()) && _sahiCmds[i]!=null){
-//            	alert(areWindowsLoaded(top));
 				if (!areWindowsLoaded(top) && sahiWaitForLoad>0){
 					sahiWaitForLoad-- ;
 					if (!isStep) window.setTimeout("try{sahiEx();}catch(ex){}", interval);
@@ -1604,13 +1602,15 @@ function sahiEx(isStep){
 				}
                 try{
 	                sahiWaitForLoad = SAHI_MAX_WAIT_FOR_LOAD;
-	                if (canEvalInBase(_sahiCmds[i])) {
-		                //set before so that this step is not lost when a page unloads due to eval
-	                	sahiSetCurrentIndex(i+1); 
-	                }
                     if (canEval(_sahiCmds[i])){
 		                updateControlWinDisplay(_sahiCmds[i]);
-                    	eval(_sahiCmds[i]);
+		                try{
+		                	sahiSetCurrentIndex(i+1); 
+                    		eval(_sahiCmds[i]);
+                    	}catch(e){
+	                		sahiSetCurrentIndex(i); 
+	                		throw e;
+	                	}
 		                var debugInfo = ""+_sahiCmdDebugInfo[i];
 		                var level = (_sahiCmds[i].indexOf("sahi_assert") == 0)?"success":"info";
 		                sahiLogPlayBack(_sahiCmds[i], level, debugInfo);
@@ -1622,7 +1622,6 @@ function sahiEx(isStep){
 			            if (retries < MAX_RETRIES/2){
 			                sahiSetRetries(retries+1);
 			                interval = IDLE_INTERVAL;
-	                    	sahiSetCurrentIndex(sahiGetCurrentIndex()-1);
 							if (!isStep) window.setTimeout("try{sahiEx();}catch(ex){}", interval);
 							return;			                
 			            }else{
@@ -1634,7 +1633,6 @@ function sahiEx(isStep){
                     }else if (ex1 instanceof SahiNotMyWindowException){
                     	throw ex1;
                     }else {
-                    	sahiSetCurrentIndex(sahiGetCurrentIndex()-1);
 	                    throw ex1;
                     }
                 }
