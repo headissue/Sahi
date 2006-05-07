@@ -361,9 +361,63 @@ function noop(){}
 
 // api for set value start
 function sahi_setValue(el, val){
-    el.value = val;
+    if(!document.createEvent) el.value = val;
+    if (el.type && el.type.indexOf("select") != -1){
+    }else{
+	    if (typeof val == "string"){
+    		for (var i=0; i<val.length; i++){
+    			var c = val.charAt(i);
+    			sahiSimulateKeyEvent(c, el, "keydown");
+    			sahiSimulateKeyEvent(c, el, "keypress");
+    			sahiSimulateKeyEvent(c, el, "keyup");
+    		}
+    	}
+    }
     if (el.onchange) el.onchange();
 }
+
+function sahiSimulateKeyEvent(c, target, evType){
+	var x = findPosX(target);
+	var y = findPosY(target);
+
+	if(document.createEvent){
+		var evt = new Object();
+		evt.type = evType;
+		evt.bubbles = true;
+		evt.cancelable = true;
+		evt.ctrlKey = false; 
+		evt.altKey = false;
+		evt.metaKey = false;
+		evt.keyCode = c.toUpperCase().charCodeAt(0);
+		evt.charCode = c.charCodeAt(0);
+		evt.shiftKey = evt.keyCode != evt.charCode;
+		
+		if (!target) return; 
+		var event = target.ownerDocument.createEvent("KeyEvents"); 
+		event.initKeyEvent(evt.type, evt.bubbles, evt.cancelable, target.ownerDocument.defaultView, 
+		evt.ctrlKey, evt.altKey, evt.shiftKey, evt.metaKey, evt.keyCode, evt.charCode); 
+		target.dispatchEvent(event); 
+	}else{
+		var evt = target.ownerDocument.createEventObject();
+		evt.type = evType;
+		evt.bubbles = true;
+		evt.cancelable = true;
+		evt.clientX = x;
+		evt.clientY = y;
+		evt.ctrlKey = false; 
+		evt.altKey = false;
+		evt.metaKey = false;
+		evt.keyCode = c.toUpperCase().charCodeAt(0);
+		evt.charCode = c.charCodeAt(0);
+		evt.shiftKey = evt.keyCode != evt.charCode;
+		evt.cancelBubble = true;
+//		alert(evt.keyCode+" "+evt.charCode);
+		target.fireEvent("on"+evType, evt);
+		//alert(target.value+" "+c);
+		//if (target.value) target.value+=c;
+	}
+}
+
 function sahi_setSelected(el, val){
     var l = el.options.length;
     for (var i=0; i<l; i++){
