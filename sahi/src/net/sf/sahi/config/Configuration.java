@@ -150,13 +150,6 @@ public class Configuration {
 		return "true".equals(System.getProperty("sahi.mode.dev"));
 	}
 
-	public static long getWaitTimeForSSLKeyStoreCreation() {
-		try {
-			return Long.parseLong(properties.getProperty("ssl.wait_time_for_keystore_creation"));
-		} catch (Exception e) {
-			return 1000;
-		}	}
-
 	public static boolean autoCreateSSLCertificates() {
 		return "true".equals(properties.getProperty("ssl.auto_create_keystore"));
 	}
