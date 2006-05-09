@@ -558,9 +558,11 @@ function sahiGetColIndexWith(txt, tableEl){
 	}
 	return -1;	
 }
+
+var _sahiLastAlert = "";
 function sahi_alert(s){
 	if (isSahiPlaying()){
-		
+		_sahiLastAlert = s;
 	}else{
 		return alert(s);
 	}
@@ -1656,6 +1658,8 @@ function sahiEx(isStep){
                 try{
 	                sahiWaitForLoad = SAHI_MAX_WAIT_FOR_LOAD;
 	                updateControlWinDisplay(_sahiCmds[i]);
+	                var debugInfo = ""+_sahiCmdDebugInfo[i];
+	                var level = (_sahiCmds[i].indexOf("sahi_assert") == 0)?"success":"info";
 	                try{
 	                	sahiSetCurrentIndex(i+1); 
                 		eval(_sahiCmds[i]);
@@ -1663,8 +1667,6 @@ function sahiEx(isStep){
                 		sahiSetCurrentIndex(i); 
                 		throw e;
                 	}
-	                var debugInfo = ""+_sahiCmdDebugInfo[i];
-	                var level = (_sahiCmds[i].indexOf("sahi_assert") == 0)?"success":"info";
 	                sahiLogPlayBack(_sahiCmds[i], level, debugInfo);
 	                sahiSetRetries(0); // _sahi_attempts = 0;
                 }catch (ex1){
