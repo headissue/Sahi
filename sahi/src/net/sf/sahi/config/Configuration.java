@@ -64,6 +64,10 @@ public class Configuration {
 		return addEndSlash(properties.getProperty("logs.dir"));
 	}
 
+	public static String getSSLPassword() {
+		return properties.getProperty("ssl.password");
+	}
+
 	public static String getScriptRoot() {
 		return addEndSlash(properties.getProperty("scripts.dir"));
 	}
@@ -144,6 +148,17 @@ public class Configuration {
 
 	public static boolean isDevMode() {
 		return "true".equals(System.getProperty("sahi.mode.dev"));
+	}
+
+	public static long getWaitTimeForSSLKeyStoreCreation() {
+		try {
+			return Long.parseLong(properties.getProperty("ssl.wait_time_for_keystore_creation"));
+		} catch (Exception e) {
+			return 1000;
+		}	}
+
+	public static boolean autoCreateSSLCertificates() {
+		return "true".equals(properties.getProperty("ssl.auto_create_keystore"));
 	}
 
 }

@@ -108,9 +108,9 @@ public class ProxyProcessor implements Runnable {
 	private void processConnect(HttpRequest requestFromBrowser) {
 		try {
 			client.getOutputStream().write(
-					("HTTP/1.0 200 Ok\r\n\r\n").getBytes());
+					("HTTP/1.0 200 OK\r\n\r\n").getBytes());
 			SSLSocket sslSocket = new SSLHelper()
-					.convertToSecureServerSocket(client);
+					.convertToSecureServerSocket(client, requestFromBrowser.host());
 			ProxyProcessor delegatedProcessor = new ProxyProcessor(sslSocket);
 			delegatedProcessor.run();
 		} catch (IOException e) {

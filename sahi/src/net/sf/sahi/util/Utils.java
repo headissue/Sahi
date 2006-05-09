@@ -10,8 +10,10 @@ import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * User: nraman Date: Jun 26, 2005 Time: 4:52:58 PM
@@ -132,5 +134,15 @@ public class Utils {
 
 	public static boolean isBlankOrNull(String s) {
 		return (s == null || "".equals(s));
+	}
+
+	public static String substitute(String content, Properties substitutions) {
+		Enumeration keys = substitutions.keys();
+		while (keys.hasMoreElements()) {
+			String key = (String) keys.nextElement();
+			content = content.replaceAll("\\$" + key, substitutions
+					.getProperty(key));
+		}
+		return content;
 	}
 }
