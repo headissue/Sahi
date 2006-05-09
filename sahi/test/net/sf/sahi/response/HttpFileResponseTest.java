@@ -3,6 +3,9 @@ package net.sf.sahi.response;
 import java.util.GregorianCalendar;
 import java.util.Properties;
 
+import net.sf.sahi.util.Utils;
+
+
 import junit.framework.TestCase;
 
 /**
@@ -17,7 +20,7 @@ public class HttpFileResponseTest extends TestCase {
 		String template = " var isRecording=$isRecording;\n var isPlaying=$isPlaying;\n setCookie('$sessionId')";
 		assertEquals(
 				" var isRecording=true;\n var isPlaying=false;\n setCookie('sahi_1281210')",
-				HttpFileResponse.substitute(template, props));
+				Utils.substitute(template, props));
 	}
 
 	public void testFormatForExpiresHeader() {
