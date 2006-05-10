@@ -1682,6 +1682,7 @@ function sahiEx(isStep){
 	                        var msg = " Assertion Failed. " + (ex1.messageText ? ex1.messageText : "");
 	                        sahiLogPlayBack(_sahiCmds[i] + msg, "failure", debugInfo);
 	                        sahiSetRetries(0);
+	                        sahiSetCurrentIndex(i+1); 
 	                    }
                     }else if (ex1 instanceof SahiNotMyWindowException){
                     	throw ex1;
