@@ -1,8 +1,10 @@
+
 package net.sf.sahi.response;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Properties;
 
 import net.sf.sahi.util.Utils;
 
@@ -10,15 +12,25 @@ import net.sf.sahi.util.Utils;
  * User: nraman Date: May 14, 2005 Time: 1:43:05 AM
  */
 public class HttpModifiedResponse extends HttpResponse {
+	boolean isSSL = false;
+	private static byte[] INJECT_TOP_SSL = null;
+	private static byte[] INJECT_BOTTOM_SSL = null;
 	private static byte[] INJECT_TOP;
 	private static byte[] INJECT_BOTTOM;
 	static {
-		INJECT_TOP = Utils.readCachedFile("../config/inject_top.txt");
-		INJECT_BOTTOM = Utils.readCachedFile("../config/inject_bottom.txt");
+		INJECT_TOP = Utils.readFile("../config/inject_top.txt");
+		INJECT_BOTTOM = Utils.readFile("../config/inject_bottom.txt");
+		INJECT_TOP_SSL = makeHTTPS(INJECT_TOP);
+		INJECT_BOTTOM_SSL = makeHTTPS(INJECT_BOTTOM);
 	}
 
-	public HttpModifiedResponse(InputStream in) throws IOException {
+	private static byte[] makeHTTPS(byte[] content) {
+		return new String(content).replaceAll("http", "https").getBytes();
+	}
+
+	public HttpModifiedResponse(InputStream in, boolean isSSL) throws IOException {
 		super(in);
+		this.isSSL = isSSL;
 		if (firstLine().indexOf("30") == -1) { // Response code other than
 			boolean html = isHTML();
 			boolean js = isJs();
@@ -56,9 +68,9 @@ public class HttpModifiedResponse extends HttpResponse {
 			ix = getHTMLTagIndex();
 		}
 		s.write(data(), 0, ix);
-		s.write(INJECT_TOP);
+		s.write(isSSL ? INJECT_TOP_SSL : INJECT_TOP);
 		s.write(substituteModals(data()), ix, data().length - ix);
-		s.write(INJECT_BOTTOM);
+		s.write(isSSL ? INJECT_BOTTOM_SSL : INJECT_BOTTOM);
 		s.flush();
 		return s.toByteArray();
 	}
@@ -87,7 +99,7 @@ public class HttpModifiedResponse extends HttpResponse {
 
 	private boolean isHTML() {
 		String contentType = contentType();
-		if (contentType.toLowerCase().indexOf("text/html") != -1 && hasNoContent()) {
+		if (contentType != null && contentType.toLowerCase().indexOf("text/html") != -1 && hasNoContent()) {
 			return true;
 		}
 		if (contentType == null

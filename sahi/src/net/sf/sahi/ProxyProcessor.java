@@ -162,7 +162,7 @@ public class ProxyProcessor implements Runnable {
 		outputStreamToHost.flush();
 		HttpResponse response;
 		if (modify) {
-			response = new HttpModifiedResponse(inputStreamFromHost);
+			response = new HttpModifiedResponse(inputStreamFromHost, request.isSSL());
 		} else {
 			response = new HttpResponse(inputStreamFromHost);
 		}
