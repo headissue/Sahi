@@ -4,7 +4,6 @@ package net.sf.sahi.response;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Properties;
 
 import net.sf.sahi.util.Utils;
 
