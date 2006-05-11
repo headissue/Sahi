@@ -29,11 +29,11 @@ public class NoCacheHttpResponse extends HttpResponse {
 
     protected void setNoCacheHeaders(byte[] data) {
         setData(data);
-		setFirstLine("HTTP/1.0 " + status + " " + statusMessage);
+		setFirstLine("HTTP/1.1 " + status + " " + statusMessage);
         setHeader("Content-Type", "text/html");
         setHeader("Cache-control", "no-store");
         setHeader("Pragma", "no-cache");
-        setHeader("Expires", "0");
+        setHeader("Expires", "-1");
         setHeader("Connection", "close");
         setHeader("Content-Length", "" + data().length);
         setRawHeaders(getRebuiltHeaderBytes());
