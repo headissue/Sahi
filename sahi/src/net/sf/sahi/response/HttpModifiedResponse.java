@@ -40,7 +40,7 @@ public class HttpModifiedResponse extends HttpResponse {
 					removeHeader("Last-Modified");
 					setHeader("Cache-Control", "no-cache");
 					setHeader("Pragma", "no-cache");
-					setHeader("Expires", "0");
+					setHeader("Expires", "-1");
 					setData(getModifiedData());
 				} else if (js) {
 					setData(substituteModals(data()));
