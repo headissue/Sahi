@@ -25,6 +25,29 @@
 		</parallel>
 	</target>	
 
+
+	<target name="ff" description="start the server and run sahi tests">
+		<parallel>
+			<sequential>
+				<waitfor maxwait="3" maxwaitunit="minute" checkevery="100">
+					<http url="http://localhost:10000/demo/index.htm"/>
+				</waitfor>
+				<sahi suite="../scripts/demo.suite"
+					browser="C:\\Program Files\\Firefox15\\firefox.exe"
+					baseurl="http://localhost:10000/demo/"
+					sahihost="localhost"
+					sahiport="9999"
+					failureproperty="sahi.failed"
+					haltonfailure="false"
+					/>
+				<antcall target="stop-web"/>
+				<antcall target="failsahi"/>
+				<!--antcall target="stopsahi"/-->
+			</sequential>
+			<antcall target="start-web"/>
+		</parallel>
+	</target>	
+	
 	<target name="failsahi" if="sahi.failed">
 		<fail message="Sahi tests failed!"/>
 	</target>
