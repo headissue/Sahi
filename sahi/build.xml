@@ -28,7 +28,7 @@
         <java classname="net.sf.sahi.Proxy" fork="true" dir="bin">
         	<jvmarg line="-Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5099"/>
             <classpath path="classes"/>
-        	<sysproperty key="sahi.mode.dev" value="true"/>
+        	<!--sysproperty key="sahi.mode.dev" value="true"/-->
         </java>
     </target>
 	
