@@ -2,6 +2,8 @@ package net.sf.sahi.response;
 
 import java.util.GregorianCalendar;
 import java.util.Properties;
+import java.util.TimeZone;
+import java.util.Date;
 
 import net.sf.sahi.util.Utils;
 
@@ -24,8 +26,12 @@ public class HttpFileResponseTest extends TestCase {
 	}
 
 	public void testFormatForExpiresHeader() {
-		assertEquals("Sat, 05 May 2001 12:00:00 IST", HttpFileResponse
-				.formatForExpiresHeader(new GregorianCalendar(2001, 4, 5)
-						.getTime()));
+        Date date = new GregorianCalendar(2001, 4, 5).getTime();
+
+        assertEquals("Sat, 05 May 2001 12:00:00 " + getTimeZone(date), HttpFileResponse.formatForExpiresHeader(date));
 	}
+
+    private String getTimeZone(Date date) {
+        return TimeZone.getDefault().getDisplayName(TimeZone.getDefault().inDaylightTime(date), TimeZone.SHORT);
+    }
 }
