@@ -86,11 +86,11 @@ class SahiTest {
 //					e.printStackTrace();
 //				}
 //			}
-			process.destroy();
+			if (!isFirefox()) process.destroy();
 		}
 	}
 
-//	private boolean isFirefox() {
-//		return browser.indexOf("firefox")!=-1;
-//	}
+	private boolean isFirefox() {
+		return browser.toLowerCase().indexOf("firefox")!=-1;
+	}
 }
