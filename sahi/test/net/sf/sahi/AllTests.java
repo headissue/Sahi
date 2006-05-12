@@ -11,6 +11,7 @@ import net.sf.sahi.playback.ScriptHandlerTest;
 import net.sf.sahi.playback.URLScriptTest;
 import net.sf.sahi.playback.log.PlayBackLogFormatterTest;
 import net.sf.sahi.response.HttpFileResponseTest;
+import net.sf.sahi.ssl.SSLHelperTest;
 import net.sf.sahi.util.URLParserTest;
 import net.sf.sahi.util.UtilsTest;
 
@@ -31,6 +32,7 @@ public class AllTests extends TestSuite {
         suite.addTestSuite(PlayBackLogFormatterTest.class);
         suite.addTestSuite(URLParserTest.class);
         suite.addTestSuite(CommandExecuterTest.class);
+        suite.addTestSuite(SSLHelperTest.class);
 		return suite;
 	}
 
