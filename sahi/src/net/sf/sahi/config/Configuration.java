@@ -154,4 +154,16 @@ public class Configuration {
 		return "true".equals(properties.getProperty("ssl.auto_create_keystore"));
 	}
 
+	public static String getCertsPath() {
+		return "../certs/";
+	}
+	
+	public static String getConfigPath() {
+		return "../config/";
+	}
+
+	public static String getKeytoolPath() {
+		return properties.getProperty("keytool.path", "keytool");
+	}
+
 }

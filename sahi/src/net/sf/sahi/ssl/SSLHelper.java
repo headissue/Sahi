@@ -63,7 +63,7 @@ public class SSLHelper {
 	}
 
 	private String getTrustStoreFilePath(String domain) {
-		String fileWithPath = "../certs/" + domain.replace('.', '_');
+		String fileWithPath = Utils.concatPaths(Configuration.getCertsPath(), domain.replace('.', '_'));
 		if ((new File(fileWithPath)).exists())
 			return fileWithPath;
 		if (!Configuration.autoCreateSSLCertificates())
@@ -77,14 +77,21 @@ public class SSLHelper {
 	}
 
 	private void createKeyStore(String domain, String keyStoreFilePath) throws IOException, InterruptedException {
-		String contents = new String(Utils.readCachedFile("../config/ssl.txt"));
-		Properties props = new Properties();
-		props.put("domain", domain);
-		props.put("keystore", keyStoreFilePath);
-		String command = Utils.substitute(contents, props);
+		String command = getSSLCommand(domain, keyStoreFilePath, Configuration.getSSLPassword(), Configuration.getKeytoolPath());
 		System.out.println(command);
 		Process p = Runtime.getRuntime().exec(command);
 		p.waitFor();
+	}
+
+	String getSSLCommand(String domain, String keyStoreFilePath, String password, String keytool) {
+		String contents = new String(Utils.readCachedFile(Utils.concatPaths(Configuration.getConfigPath(), "ssl.txt")));
+		Properties props = new Properties();
+		props.put("domain", domain);
+		props.put("keystore", keyStoreFilePath);
+		props.put("password", password);
+		props.put("keytool", keytool);
+		String command = Utils.substitute(contents, props);
+		return command;
 	}
 
 	private TrustManager[] getAllTrustingManager() {
