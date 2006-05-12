@@ -1,6 +1,9 @@
-Reintroduced interval between tests when run in suite. Made the interval configurable.
-Sahi code is now injected into blank html pages too.
-Fixed bug which prevented using an external proxy.
+Fixed bug which caused improper functioning in popups.
+SSL certificates for proxy is generated on demand using keytool.
+This fixes the security alerts problem.
+Fixed bug which caused null pointer exception when content type was not set.
+Triggering keyboard events when value is set to textboxes
 
 Known issues
-* Firefox has problems with multithreaded playback due to session sharing across windows. (Workaround: Do not add the 'threads=n' clause to sahi target)
+* Firefox has problems with multithreaded playback due to session sharing across windows. 
+(Workaround: Do not add the 'threads=n' clause to sahi target)
