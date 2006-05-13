@@ -211,7 +211,7 @@ function sahi_click(el){
 		n = n.parentNode;
 	}
 	
-	if (sahiIsIE() && el && el.type=="submit"){
+	if (sahiIsIE() && el && (el.type=="submit" || el.type=="image" || el.type=="checkbox" || el.type=="radio")){
 		return el.click();
 	}
 	
@@ -229,16 +229,6 @@ function sahi_click(el){
 		}
 		n = n.parentNode;
 	}  
-	if (sahiIsIE() && el && el.type){
-		if (el.type == "checkbox"){
-			el.checked = !el.checked;
-		}else if (el.type == "radio"){
-			el.checked = true;
-		}else if (el.type == "image"){
-			if (el.form.onsubmit && !el.form.onsubmit()) return;
-			el.form.submit();
-		}
-	}
 }
 function sahiSimulateMouseEvent(el, type){
 	var x = findPosX(el);
