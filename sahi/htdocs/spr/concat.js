@@ -211,7 +211,7 @@ function sahi_click(el){
 		n = n.parentNode;
 	}
 	
-	if (sahiIsIE() && el && el.type=="submit" && el.name == "submit"){
+	if (sahiIsIE() && el && el.type=="submit"){
 		return el.click();
 	}
 	
@@ -230,10 +230,7 @@ function sahi_click(el){
 		n = n.parentNode;
 	}  
 	if (sahiIsIE() && el && el.type){
-		if (el.type=="submit"){
-			if (el.form.onsubmit && !el.form.onsubmit()) return;
-			el.form.submit();
-		}else if (el.type == "checkbox"){
+		if (el.type == "checkbox"){
 			el.checked = !el.checked;
 		}else if (el.type == "radio"){
 			el.checked = true;
