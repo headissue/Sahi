@@ -1049,19 +1049,30 @@ function sahiFindTable(id){
 	return sahiFindTagHelper(id, top, "table", res, "id").element;
 }
 
-function sahiFindResByIndexInList(ix, list, res){
-	if (list == null) return res;
-	var el = list[ix];	
-    if (el == null) return res;
-	res.element = el;
-	res.found = true;
-	return res;
+function sahiFindResByIndexInList(ix, win, type, res){
+    var tags = win.document.getElementsByTagName(type);
+    if (tags[ix - res.cnt]) {
+    	res.element = tags[ix - res.cnt];
+    	res.found = true;
+    	return res;
+    }
+	res.cnt += tags.length;
+    var frs = win.frames;
+    if (frs){
+        for (var j=0; j<frs.length; j++){
+            res = sahiFindResByIndexInList(ix, frs[j], type, res);
+            if (res && res.found) return res;
+        }
+    }  
+    return res;  
 }
+
 
 function sahiFindTagHelper(id, win, type, res, param){
 	if ((typeof id) == "number"){
-		res = sahiFindResByIndexInList(id, win.document.getElementsByTagName(type), res);
-		if (res.found) return res;
+		res.cnt = 0;
+		res = sahiFindResByIndexInList(id, win, type, res);
+		return res;
 	}else{
 		var o = getArrayNameAndIndex(id);
 	    var ix = o.index;
