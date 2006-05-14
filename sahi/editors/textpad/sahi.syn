@@ -106,6 +106,7 @@ _confirm
 _prompt
 _log
 _navigateTo
+_dragDrop
 
 [Keywords 4]
 __click
@@ -130,7 +131,7 @@ __confirm
 __prompt
 __log
 __navigateTo
-
+__dragDrop
 
 [Preprocessor keywords]
 
