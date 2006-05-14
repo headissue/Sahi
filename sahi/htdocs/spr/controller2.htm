@@ -51,13 +51,16 @@ try{
 }catch(ex){
     sahiHandleException(ex);
 }
+function informOpen(){
+	var ishttps = location.href.indexOf("https") == 0; 
+	window.channel.location.href = (ishttps? "https" : "http")  +"://www.sahidomain.com/_s_/dyn/ControllerUI_opened";
+}
 </script>
 </head>
-<frameset rows="30px,*,0px" border="0px">
+<frameset rows="30px,*,0px" border="0px" onload="informOpen()">
 <frame src="tabs.htm" scrolling="no" style="margin:0px">
 <frame src="/_s_/spr/blank.htm" name="main" scrolling="no" style="margin:0px">
-<frame src="https://www.sahidomain.com/_s_/dyn/ControllerUI_opened"
-name="channel" scrolling="no" style="margin:0px">
+<frame src="/_s_/spr/blank.htm" name="channel" scrolling="no" style="margin:0px">
 </frameset>
 </html>
 
