@@ -3,6 +3,8 @@ SSL certificates for proxy is generated on demand using keytool.
 This fixes the security alerts problem.
 Fixed bug which caused null pointer exception when content type was not set.
 Triggering keyboard events when value is set to textboxes
+Fixed bug where _table(index) was not working properly
+Fixed bug for multiple submit buttons on IE
 
 Known issues
 * Firefox has problems with multithreaded playback due to session sharing across windows. 
