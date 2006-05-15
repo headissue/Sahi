@@ -1,211 +1,222 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <project name="sahi" default="all">
-    <property name="sahi.output.dir" value="classes"/>
-    <property name="sahi.testoutput.dir" value="classes"/>
-    <property name="compiler.debug" value="on"/>
-    <property name="compiler.generate.no.warnings" value="off"/>
-    <property name="compiler.args" value=""/>
-    <property name="compiler.max.memory" value="128m"/>
-    <patternset id="compiler.excluded"/>
+	<property name="sahi.output.dir" value="classes" />
+	<property name="sahi.testoutput.dir" value="classes" />
+	<property name="compiler.debug" value="on" />
+	<property name="compiler.generate.no.warnings" value="off" />
+	<property name="compiler.args" value="" />
+	<property name="compiler.max.memory" value="128m" />
+	<patternset id="compiler.excluded" />
 
-    <target name="compile" description="compile module sahi">
-        <mkdir dir="${sahi.output.dir}"/>
-        <javac destdir="${sahi.output.dir}" debug="${compiler.debug}"
-            nowarn="${compiler.generate.no.warnings}"
-            memoryMaximumSize="${compiler.max.memory}" fork="true"
-            srcdir="src" />
-    </target>
+	<target name="compile" description="compile module sahi">
+		<mkdir dir="${sahi.output.dir}" />
+		<javac destdir="${sahi.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memoryMaximumSize="${compiler.max.memory}" fork="true" srcdir="src" />
+	</target>
 
-    <target name="compile-test" description="compile module sahi test">
-        <mkdir dir="${sahi.output.dir}"/>
-        <javac destdir="${sahi.output.dir}" debug="${compiler.debug}"
-            nowarn="${compiler.generate.no.warnings}"
-            memoryMaximumSize="${compiler.max.memory}" fork="true"
-            srcdir="test" />
-    </target>
+	<target name="compile-test" description="compile module sahi test">
+		<mkdir dir="${sahi.output.dir}" />
+		<javac destdir="${sahi.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memoryMaximumSize="${compiler.max.memory}" fork="true" srcdir="test" />
+	</target>
 
-    <target name="start" description="starts proxy">
-        <java classname="net.sf.sahi.Proxy" fork="true" dir="bin">
-        	<jvmarg line="-Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5099"/>
-            <classpath path="classes"/>
-        	<!--sysproperty key="sahi.mode.dev" value="true"/-->
-        </java>
-    </target>
-	
+	<target name="start" description="starts proxy">
+		<java classname="net.sf.sahi.Proxy" fork="true" dir="bin">
+			<jvmarg line="-Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5099" />
+			<classpath path="classes" />
+			<!--sysproperty key="sahi.mode.dev" value="true"/-->
+		</java>
+	</target>
 
-    <target name="decorate" description="Decorates doc pages">
-        <java classname="net.sf.sahi.util.HTMLDecorator" fork="true" dir="bin">
-        	<jvmarg line="-Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5099"/>
-            <classpath path="classes"/>
-        	<arg value="../docs/src/layout.htm"/>
-        	<arg value="../docs/src/pages"/>
-            <arg value="../docs/"/>
-        </java>
-    </target>
-	
-    <target name="stopsahi" description="stop sahi server">
-		<sahi stop="true" sahihost="localhost" sahiport="9999"/>
-	</target>	
 
-    <target name="all">
-    	<antcall target="clean"/>
-    	<antcall target="test"/>
-    	<antcall target="clean"/>
-    	<antcall target="compile"/>
-    	<antcall target="jar"/>
-    	<antcall target="jar-ant"/>
-    	<antcall target="clean-deploy"/>
-    	<antcall target="deploy"/>
-    	<antcall target="deploy-src"/>
-   	</target>
-    
-    <target name="quick">
-    	<antcall target="compile"/>
-    	<antcall target="jar"/>
-   	</target>
-	
+	<target name="decorate" description="Decorates doc pages">
+		<java classname="net.sf.sahi.util.HTMLDecorator" fork="true" dir="bin">
+			<jvmarg line="-Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5099" />
+			<classpath path="classes" />
+			<arg value="../docs/src/layout.htm" />
+			<arg value="../docs/src/pages" />
+			<arg value="../docs/" />
+		</java>
+	</target>
+
+	<target name="stopsahi" description="stop sahi server">
+		<sahi stop="true" sahihost="localhost" sahiport="9999" />
+	</target>
+
+	<target name="all">
+		<antcall target="clean" />
+		<antcall target="test" />
+		<antcall target="clean" />
+		<antcall target="compile" />
+		<antcall target="jar" />
+		<antcall target="jar-ant" />
+		<antcall target="clean-deploy" />
+		<antcall target="deploy" />
+		<antcall target="deploy-src" />
+	</target>
+
+	<target name="quick">
+		<antcall target="compile" />
+		<antcall target="jar" />
+	</target>
+
 	<target name="clean" description="cleans up class files only">
 		<delete includeEmptyDirs="true" quiet="true" failonerror="false">
-			<fileset dir="classes" includes="**/*.*"/>
-			<fileset dir="classes" includes="**/*"/>
+			<fileset dir="classes" includes="**/*.*" />
+			<fileset dir="classes" includes="**/*" />
 		</delete>
-    </target>
+	</target>
 
-    <target name="deploy-src" depends="clean-temp">
-    	<tstamp/>    	
-        <mkdir dir="temp/sahi"/>
-        <mkdir dir="temp/sahi/logs"/>
-        <mkdir dir="temp/sahi/scripts"/>
-        <mkdir dir="temp/sahi/extlib"/>
-        <mkdir dir="temp/sahi/deploy"/>
-        <copy file="build.xml"  todir="temp/sahi/" />
-        <copy file="demo.xml"  todir="temp/sahi/" />
-        <copy file="lib/ant-sahi.jar"  todir="temp/sahi/lib" />
-        <copy file="lib/sahi.jar"  todir="temp/sahi/lib" />
-        <copy todir="temp/sahi/bin" >
-            <fileset dir="bin" excludes="CVS/**/*.*"/>
-        </copy>    	
-        <copy todir="temp/sahi/scripts" >
-            <fileset dir="scripts" excludes="CVS/**/*.*"/>
-        </copy>        
-        <copy todir="temp/sahi/extlib" >
-            <fileset dir="extlib" includes="README.txt"/>
-        </copy>        	
-        <copy todir="temp/sahi/htdocs" >
-            <fileset dir="htdocs">
-	        	<exclude name="CVS/**/*.*"/>
-            	<exclude name="demo2/**/*.*"/>
-           	</fileset>        	
-        </copy>        
-    	<copy todir="temp/sahi/src" >
-       		<fileset dir="src" excludes="CVS/**/*.*"/>
-	    </copy>
-    	<copy todir="temp/sahi/test" >
-       		<fileset dir="test" excludes="CVS/**/*.*"/>
-	    </copy>
-        <copy todir="temp/sahi/docs" >
-             <fileset dir="docs" excludes="CVS/**/*.*"/>
-        </copy>
-       <copy todir="temp/sahi/certs" >
-            <fileset dir="certs" excludes="CVS/**/*.*"/>
-        </copy>
-        <copy todir="temp/sahi/config" >
-            <fileset dir="config" excludes="CVS/**/*.*"/>
-        </copy>    	
-        <zip file="deploy/sahi-src_${DSTAMP}.zip" basedir="temp" >
-        </zip>
-        <antcall target="clean-temp"/>
-    </target>
+	<target name="deploy-src" depends="clean-temp">
+		<tstamp />
+		<mkdir dir="temp/sahi" />
+		<mkdir dir="temp/sahi/logs" />
+		<mkdir dir="temp/sahi/scripts" />
+		<mkdir dir="temp/sahi/extlib" />
+		<mkdir dir="temp/sahi/deploy" />
+		<copy file="build.xml" todir="temp/sahi/" />
+		<copy file="demo.xml" todir="temp/sahi/" />
+		<copy file="lib/ant-sahi.jar" todir="temp/sahi/lib" />
+		<copy file="lib/sahi.jar" todir="temp/sahi/lib" />
+		<copy todir="temp/sahi/bin">
+			<fileset dir="bin" />
+		</copy>
+		<copy todir="temp/sahi/scripts">
+			<fileset dir="scripts" >
+				<include name="blank.sah" />
+				<include name="demo.suite" />
+				<include name="google.sah" />
+				<include name="find_in_google.sah" />
+				<include name="g2.sah" />
+				<include name="language.sah" />
+				<include name="opentest.sah" />
+				<include name="sahi_demo.sah" />
+				<include name="sahi_demo_frames.sah" />
+				<include name="sahi_demo_include.sah" />
+			</fileset>
+		</copy>
+		<copy todir="temp/sahi/extlib">
+			<fileset dir="extlib" includes="README.txt" />
+		</copy>
+		<copy todir="temp/sahi/htdocs">
+			<fileset dir="htdocs">
+				<exclude name="demo2/**/*.*" />
+			</fileset>
+		</copy>
+		<copy todir="temp/sahi/src">
+			<fileset dir="src" />
+		</copy>
+		<copy todir="temp/sahi/test">
+			<fileset dir="test" />
+		</copy>
+		<copy todir="temp/sahi/docs">
+			<fileset dir="docs" />
+		</copy>
+		<copy todir="temp/sahi/certs">
+			<fileset dir="certs" includes="www_sahidomain_com" />
+		</copy>
+		<copy todir="temp/sahi/config">
+			<fileset dir="config" />
+		</copy>
+		<zip file="deploy/sahi-src_${DSTAMP}.zip" basedir="temp">
+		</zip>
+		<antcall target="clean-temp" />
+	</target>
 
-    <target name="deploy" depends="clean-temp">
-    	<tstamp/>
-        <mkdir dir="deploy"/>
-        <mkdir dir="temp/sahi"/>
-        <mkdir dir="temp/sahi/logs"/>
-        <mkdir dir="temp/sahi/scripts"/>
-        <mkdir dir="temp/sahi/extlib"/>
-        <copy file="demo.xml"  todir="temp/sahi/" />    	
-        <copy file="lib/ant-sahi.jar"  todir="temp/sahi/lib" />
-        <copy file="lib/sahi.jar"  todir="temp/sahi/lib" />
-        <copy todir="temp/sahi/bin" >
-            <fileset dir="bin"/>
-        </copy>
-        <copy todir="temp/sahi/scripts" >
-            <fileset dir="scripts" excludes="CVS/**/*.*"/>
-        </copy>        	
-        <copy todir="temp/sahi/extlib" >
-            <fileset dir="extlib" excludes="*.jar"/>
-        </copy>        	
-        <copy todir="temp/sahi/htdocs" >
-            <fileset dir="htdocs">
-	        	<exclude name="CVS/**/*.*"/>
-            	<exclude name="demo2/**/*.*"/>
-           	</fileset>        	
-        </copy>
-        <copy todir="temp/sahi/docs" >
-            <fileset dir="docs">
-	        	<exclude name="CVS/**/*.*"/>
-            	<exclude name="src/**/*.*"/>
-           	</fileset>
-        </copy>
-        <copy todir="temp/sahi/certs" >
-            <fileset dir="certs" excludes="CVS/**/*.*"/>
-        </copy>    	
-        <copy todir="temp/sahi/config" >
-            <fileset dir="config"/>
-        </copy>
-        <zip file="deploy/sahi_${DSTAMP}.zip" basedir="temp" >
-        </zip>
-        <antcall target="clean-temp"/>
-    </target>
+	<target name="deploy" depends="clean-temp">
+		<tstamp />
+		<mkdir dir="deploy" />
+		<mkdir dir="temp/sahi" />
+		<mkdir dir="temp/sahi/logs" />
+		<mkdir dir="temp/sahi/scripts" />
+		<mkdir dir="temp/sahi/extlib" />
+		<copy file="demo.xml" todir="temp/sahi/" />
+		<copy file="lib/ant-sahi.jar" todir="temp/sahi/lib" />
+		<copy file="lib/sahi.jar" todir="temp/sahi/lib" />
+		<copy todir="temp/sahi/bin">
+			<fileset dir="bin" />
+		</copy>
+		<copy todir="temp/sahi/scripts">
+			<fileset dir="scripts" >
+				<include name="blank.sah" />
+				<include name="demo.suite" />
+				<include name="google.sah" />
+				<include name="find_in_google.sah" />
+				<include name="g2.sah" />
+				<include name="language.sah" />
+				<include name="opentest.sah" />
+				<include name="sahi_demo.sah" />
+				<include name="sahi_demo_frames.sah" />
+				<include name="sahi_demo_include.sah" />
+			</fileset>
+		</copy>
+		<copy todir="temp/sahi/extlib">
+			<fileset dir="extlib" excludes="*.jar" />
+		</copy>
+		<copy todir="temp/sahi/htdocs">
+			<fileset dir="htdocs">
+				<exclude name="demo2/**/*.*" />
+			</fileset>
+		</copy>
+		<copy todir="temp/sahi/docs">
+			<fileset dir="docs">
+				<exclude name="src/**/*.*" />
+			</fileset>
+		</copy>
+		<copy todir="temp/sahi/certs">
+			<fileset dir="certs" includes="www_sahidomain_com" />
+		</copy>
+		<copy todir="temp/sahi/config">
+			<fileset dir="config" />
+		</copy>
+		<zip file="deploy/sahi_${DSTAMP}.zip" basedir="temp">
+		</zip>
+		<antcall target="clean-temp" />
+	</target>
 
-    <target name="jar">
-        <jar file="lib/sahi.jar">
-            <fileset dir="classes">
-	        	<exclude name="net/sf/sahi/ant/**.*"/>
-            	<exclude name="net/sf/sahi/test/TestRunner.*"/>
-        	</fileset>
-        </jar>
-    </target>
+	<target name="jar">
+		<jar file="lib/sahi.jar">
+			<fileset dir="classes">
+				<exclude name="net/sf/sahi/ant/**.*" />
+				<exclude name="net/sf/sahi/test/TestRunner.*" />
+			</fileset>
+		</jar>
+	</target>
 
-    <target name="jar-ant">
-        <jar file="lib/ant-sahi.jar">
-            <fileset dir="classes">
-            	<include name="net/sf/sahi/ant/**.*"/>
-            	<include name="net/sf/sahi/test/TestRunner.*"/>
-            </fileset>
-        </jar>
-    </target>
+	<target name="jar-ant">
+		<jar file="lib/ant-sahi.jar">
+			<fileset dir="classes">
+				<include name="net/sf/sahi/ant/**.*" />
+				<include name="net/sf/sahi/test/TestRunner.*" />
+			</fileset>
+		</jar>
+	</target>
 
-    <target name="clean-temp">
-        <delete includeEmptyDirs="true" quiet="true" failonerror="false">
-            <fileset dir="temp" includes="**/*.*"/>
-            <fileset dir="temp" includes="**/*"/>
-        </delete>
-    </target>
+	<target name="clean-temp">
+		<delete includeEmptyDirs="true" quiet="true" failonerror="false">
+			<fileset dir="temp" includes="**/*.*" />
+			<fileset dir="temp" includes="**/*" />
+		</delete>
+	</target>
 
-    <target name="clean-deploy">
-        <delete includeEmptyDirs="true" quiet="true" failonerror="false">
-            <fileset dir="deploy" includes="**/*.*"/>
-        </delete>    	
-    </target>
-	
+	<target name="clean-deploy">
+		<delete includeEmptyDirs="true" quiet="true" failonerror="false">
+			<fileset dir="deploy" includes="**/*.*" />
+		</delete>
+	</target>
+
 	<target name="test" depends="compile, compile-test">
-		<junit dir="bin" printsummary="false" fork="true" 
-			maxMemory="128M" failureProperty="junit.failed">
+		<junit dir="bin" printsummary="false" fork="true" maxMemory="128M" failureProperty="junit.failed">
 			<!--
 			<jvmarg line="-Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5050"/>
 			-->
 			<classpath>
-				<path path="classes"/>
-				<pathelement location="extlib/junit.jar"/>
-				<pathelement location="extlib/log4j.jar"/>
+				<path path="classes" />
+				<pathelement location="extlib/junit.jar" />
+				<pathelement location="extlib/log4j.jar" />
 			</classpath>
-			<formatter type="brief" usefile="false"/>
+			<formatter type="brief" usefile="false" />
 			<test todir="logs/junit" name="net.sf.sahi.AllTests" failureProperty="junit.failed" />
 		</junit>
-		<delete file="bin/junittestrun.out" failonerror="false"/>
-		<fail message="JUnit tests failed. MAKE SURE THAT junit.jar AND log4j.jar ARE PRESENT IN {sahi}/extlib/ FOLDER" if="junit.failed"/>
+		<delete file="bin/junittestrun.out" failonerror="false" />
+		<fail message="JUnit tests failed. MAKE SURE THAT junit.jar AND log4j.jar ARE PRESENT IN {sahi}/extlib/ FOLDER" if="junit.failed" />
 	</target>
-	
 </project>
