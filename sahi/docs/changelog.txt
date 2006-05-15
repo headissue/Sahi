@@ -9,3 +9,4 @@ Fixed bug for multiple submit buttons on IE
 Known issues
 * Firefox has problems with multithreaded playback due to session sharing across windows. 
 (Workaround: Do not add the 'threads=n' clause to sahi target)
+* Debug does not step correctly.
