@@ -1,0 +1,18 @@
+Sahi Nightly Release 2006-05-15
+
+Requirements
+------------
+
+* JRE 1.4 or above
+* ant, log4j.jar and junit.jar if the module is to be rebuilt.
+
+Changes
+--------------------
+
+See changelog.txt
+
+
+Installation guide
+------------------
+Please refer to docs directory in release.
+

@@ -1,0 +1,66 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Frameset//EN">
+<html>
+<head>
+<meta name="generator" content="HTML Tidy, see www.w3.org">
+<title>Sahi Controller</title>
+<script type="text/javascript">
+function checkOpener(){
+    try{
+        var x = top.opener.document;
+    }
+    catch (e){
+    }
+}
+window.onerror=checkOpener;
+
+
+var isOpen = true;
+var KEY_SHIFT = 16;
+var KEY_CONTROL = 17;
+var KEY_ALT = 18;
+var KEY_Q = 81;
+var KEY_K = 75;
+
+try{
+top.opener.top._isControlKeyPressed = false;
+top.opener.top._isQKeyPressed = false;
+top.opener.top._isAltKeyPressed = false;
+}
+catch (e){
+}
+
+function sahiKeyUp(e){
+    if (!e) e = window.event;
+    if (e.keyCode == KEY_CONTROL) top.opener.top._isControlKeyPressed = false;
+    if (e.keyCode == KEY_ALT) top.opener.top._isAltKeyPressed = false;
+}
+function sahiKeyDown(e){
+    try{
+        if (!e) e = window.event;
+        if (e.keyCode == KEY_CONTROL) top.opener.top._isControlKeyPressed = true;
+        else if (e.keyCode == KEY_ALT) top.opener.top._isAltKeyPressed = true;
+    }catch(e){
+        //throw e;
+        sahiHandleException(e);
+    }
+}
+try{
+    document.onkeydown=sahiKeyDown;
+    document.onkeypress=sahiKeyUp;
+    document.onkeyup=sahiKeyUp;
+}catch(ex){
+    sahiHandleException(ex);
+}
+function informOpen(){
+	var ishttps = location.href.indexOf("https") == 0; 
+	window.channel.location.href = (ishttps? "https" : "http")  +"://www.sahidomain.com/_s_/dyn/ControllerUI_opened";
+}
+</script>
+</head>
+<frameset rows="30px,*,0px" border="0px" onload="informOpen()">
+<frame src="tabs.htm" scrolling="no" style="margin:0px">
+<frame src="/_s_/spr/blank.htm" name="main" scrolling="no" style="margin:0px">
+<frame src="/_s_/spr/blank.htm" name="channel" scrolling="no" style="margin:0px">
+</frameset>
+</html>
+

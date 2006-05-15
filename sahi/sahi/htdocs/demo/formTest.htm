@@ -1,0 +1,229 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta name="generator" content="HTML Tidy, see www.w3.org">
+<title>Form Test</title>
+<script type="text/javascript">
+function abc(){
+}
+function dummy(){
+}
+function testFormName(){
+    alert(typeof document.f1.name);
+}
+</script>
+</head>
+<body onload="testFormName()">
+<h2>Form Test</h2>
+
+<form name="f1">
+<table>
+<tr>
+<td>Text:</td>
+<td></td>
+</tr>
+
+<tr>
+<td>&lt;input type="text" value="" name="t1"&gt;</td>
+<td><input type="text" value="" name="t1"></td>
+</tr>
+
+<tr>
+<td>&lt;input type="text" value="" &gt;</td>
+<td><input type="text" value=""> </td>
+</tr>
+
+<tr>
+<td>&lt;input type="text" value="" name="name"&gt;</td>
+<td><input type="text" value="" name="name"> </td>
+</tr>
+</table>
+
+<hr>
+TextArea:<br>
+&lt;textarea value="" name="ta1"&gt;&lt;/textarea&gt;<br>
+<textarea value="" name="ta1"></textarea><br>
+<br>
+ &lt;textarea value=""&gt;&lt;/textarea&gt;<br>
+<textarea value=""></textarea><br>
+<br>
+ 
+
+<hr>
+Checkbox :<br>
+<pre>
+&lt;input type="checkbox" value="" name="c1"&gt;
+&lt;input type="checkbox" value=""&gt;
+&lt;input type="checkbox" value="" name="c1"&gt;
+&lt;input type="checkbox" value=""&gt;
+</pre>
+
+<br>
+<input type="checkbox" value="" name="c1"> <input type="checkbox"
+value=""> <input type="checkbox" value="" name="c1"> <input type=
+"checkbox" value=""><br>
+<br>
+ 
+
+<hr>
+Radio :<br>
+&lt;input type="radio" value="" name="r1"&gt;&lt;input type="radio"
+value="" name="r1"&gt;<br>
+<input type="radio" value="" name="r1"><input type="radio" value=""
+name="r1"><br>
+<br>
+ 
+
+<hr>
+Password:<br>
+&lt;input type="password" value="" name="p1"&gt;<br>
+<input type="password" value="" name="p1"><br>
+<br>
+ &lt;input type="password" value="" &gt;<br>
+<input type="password" value=""><br>
+<br>
+ 
+
+<hr>
+Select:<br>
+<pre>
+&lt;select name="s1" id="s1Id"&gt;
+&lt;option value="o1"&gt;o1
+&lt;option value="o2"&gt;o2
+&lt;option value="o3"&gt;o3
+&lt;/select&gt;
+</pre>
+
+<br>
+<select name="s1" id="s1Id">
+<option value="o1">o1</option>
+<option value="o2">o2</option>
+<option value="o3">o3</option>
+</select><br>
+<br>
+<br>
+ 
+
+<pre>
+&lt;select id="s1Id"&gt;
+&lt;option value="o1"&gt;o1
+&lt;option value="o2"&gt;o2
+&lt;option value="o3"&gt;o3
+&lt;/select&gt;
+</pre>
+
+<br>
+<select id="s1Id">
+<option value="o1">o1</option>
+<option value="o2">o2</option>
+<option value="o3">o3</option>
+</select><br>
+<br>
+ 
+
+<pre>
+&lt;select&gt;
+&lt;option value="o1"&gt;o1
+&lt;option value="o2"&gt;o2
+&lt;option value="o3"&gt;o3
+&lt;/select&gt;
+</pre>
+
+<br>
+<select>
+<option value="o1">o1</option>
+<option value="o2">o2</option>
+<option value="o3">o3</option>
+</select><br>
+<br>
+ 
+
+<hr>
+Button:<br>
+&lt;input type="button" name="btnName" value="button value"
+id="btnId"&gt;<br>
+<input type="button" name="btnName" value="button value" id=
+"btnId"><br>
+<br>
+ &lt;input type="button" name="btnName" id="btnId"&gt;<br>
+<input type="button" name="btnName" id="btnId"><br>
+<br>
+ &lt;input type="button" id="btnId"&gt;<br>
+<input type="button" id="btnId"><br>
+<br>
+ &lt;input type="button"&gt;<br>
+<input type="button"><br>
+<br>
+ 
+
+<hr>
+Submit:<br>
+&lt;input type="submit" value="Add" id="submitBtnId"
+name="submitBtnName"&gt;<br>
+<input type="submit" value="Add" id="submitBtnId" name=
+"submitBtnName"><br>
+<br>
+ &lt;input type="submit" id="submitBtnId"
+name="submitBtnName"&gt;<br>
+<input type="submit" id="submitBtnId" name="submitBtnName"><br>
+<br>
+ &lt;input type="submit" id="submitBtnId"&gt;<br>
+<input type="submit" id="submitBtnId"><br>
+<br>
+ &lt;input type="submit"&gt;<br>
+<input type="submit"><br>
+<br>
+ 
+
+<hr>
+Image:<br>
+&lt;img src="add.gif" alt="imageAlt1" id="imageId1"
+onclick="dummy()"&gt;&lt;/img&gt;<br>
+<img src="add.gif" alt="imageAlt1" id="imageId1" onclick=
+"dummy()"><br>
+<br>
+ &lt;img src="add.gif" id="imageId1"
+onclick="dummy()"&gt;&lt;/img&gt;<br>
+<img src="add.gif" id="imageId1" onclick="dummy()"><br>
+<br>
+ &lt;img src="add.gif" onclick="dummy()"&gt;&lt;/img&gt;<br>
+<img src="add.gif" onclick="dummy()"><br>
+<br>
+ 
+
+<hr>
+Search:<br>
+<br>
+&lt;input style="width: 210px;" name="q" type="text" id="q"
+value="" maxlength="255" /&gt;<br>
+<br>
+<input style="width: 210px;" name="q" type="text" id="q" value=""
+maxlength="255"><br>
+<br>
+&lt;input class="button" type="image" src="add.gif" name="qs"
+border="0" value="Search" alt="Search" width="25" height="19"
+/&gt;<br>
+<br>
+<input class="button" type="image" src="add.gif" name="qs" border=
+"0" value="Search" alt="Search" width="25" height="19"><br>
+<br>
+&lt;input class="button" type="image" src="add.gif" name="qs"
+border="0" value="Search" width="25" height="19" /&gt;<br>
+<br>
+<input class="button" type="image" src="add.gif" name="qs" border=
+"0" value="Search" width="25" height="19"><br>
+<br>
+&lt;img src="add.gif" alt="imgaa" border="0" value="Search"
+width="25" height="19" onclick="alert('111')"/&gt;<br>
+<br>
+<img src="add.gif" alt="imgaa" border="0" value="Search" width="25"
+height="19" onclick="alert('111')"><br>
+<br>
+</form>
+
+<br>
+<br>
+ <a href="index.htm">Back</a>
+</body>
+</html>
+

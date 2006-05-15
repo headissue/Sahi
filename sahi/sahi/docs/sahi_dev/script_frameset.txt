@@ -1,0 +1,4 @@
+script tag before <frameset> tag works fine.
+script tag after </frameset> tag does not work.
+onload of top frameset/window returns true only after all internal frames and iframes are loaded.
+after a frameset is loaded, reloading a frame does not call the frameset's onload event.

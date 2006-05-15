@@ -1,0 +1,364 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta name="generator" content="HTML Tidy, see www.w3.org">
+<title>Sahi - APIs</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="sahi.css">
+</head>
+<body>
+<table width="100%" border="0">
+<tr>
+<td><br>
+<h2>Sahi - Web Automation and Test Tool</h2>
+</td>
+<td align="right"><a href="http://sourceforge.net"><img src=
+"http://sourceforge.net/sflogo.php?group_id=151639&amp;type=3"
+width="125" height="37" border="0" alt="SourceForge.net Logo"></a>
+<br>
+<a href="http://www.thoughtworks.co.in" target=
+"_blank">ThoughtWorks, India</a>&nbsp;&nbsp;</td>
+</tr>
+</table>
+
+<table width="100%">
+<tr>
+<td width="180px" valign="top">
+
+<div class="menu">
+<ul>
+<li><a href="index.html">Introduction</a></li>
+
+<li><a href="index.html#features">Features</a></li>
+
+</ul>
+<ul>
+<li><a href="screenshots.html">Screen Shots</a></li>
+</ul>
+
+<ul>
+<li><a href="install.html">Downloading Sahi</a></li>
+
+<li><a href="install.html#prereq">Prerequisites</a></li>
+
+<li><a href="install.html#install">Installing Sahi</a></li>
+</ul>
+
+<ul>
+<li><a href="using.html">Getting started</a></li>
+
+<li><a href="using.html#record">Recording through Sahi</a></li>
+
+<li><a href="using.html#playback">Playing back</a></li>
+
+<li><a href="using.html#suites">Suites</a></li>
+
+<li><a href="using.html#logging">Logging</a></li>
+</ul>
+
+<ul>
+<li>Documentation: 
+
+<ul>
+<li><a href="scripting.html">Scripting</a></li>
+
+<li><a href="apis.html">APIs</a></li>
+</ul>
+</li>
+</ul>
+
+<ul>
+<li><a href="ant.html">Ant Support<a></a></li>
+</ul>
+
+<ul>
+<li><a href="ide.html">Editor Support<a></a></li>
+</ul>
+
+<ul>
+<li><a href="devnotes.html">Sahi - Technical Aspects</a></li>
+</ul>
+
+<ul>
+<li><a href="problems.html#problems">Problems</a></li>
+
+<li><a href="problems.html#notyet">Not yet supported, but coming
+in</a></li>
+</ul>
+
+<hr>
+
+<ul>
+<li><a href="http://sourceforge.net/projects/sahi" target="_blank">On Sourceforge</a></li>
+<li><a href="http://sourceforge.net/forum/?group_id=151639" target="_blank">Forums</a></li>
+<li><a href="http://sourceforge.net/tracker/?group_id=151639&atid=781586" target="_blank">Report/View Bugs</a></li>
+<li><a href="https://lists.sourceforge.net/lists/listinfo/sahi-users" target="_blank">Mailing List</a></li>
+<li><a href="http://sourceforge.net/users/narayanraman/" target="_blank">Appreciation/Criticism</a></li>
+</ul>
+
+
+</div>
+</td>
+<td valign="top">
+<div class="content">
+<h2 class="pageTitle">APIs</h2>
+
+<!--APIs-->
+The best way to learn how these APIs work is by recording actions
+using the Sahi controller and looking at the recorded code. <br>
+<br>
+<a href="#aform">Accessor Functions : Form elements</a><br>
+<a href="#alink">Accessor Functions : Link</a><br>
+<a href="#atable">Accessor Functions : Tables</a><br>
+<a href="#ageneric">Accessor Functions : Generic</a><br>
+<a href="#action">Action Scheduler Functions</a><br>
+<a href="#assertion">Assertion Scheduler Functions</a><br>
+<a href="#textaccess">Text Access Functions</a><br>
+<a href="#textverify">Text Verification boolean Functions</a><br>
+<a href="#include">File Inclusion</a><br>
+<a href="#utility">Utility Functions</a><br>
+<a href="#popup">Handling popup windows</a><br>
+ (<a href="#top">Top</a>) <br>
+<h4><a name="aform"></a>Accessor Functions : Form elements</h4>
+
+<b>_textbox(idStr)<br>
+_password(idStr)<br>
+_checkbox(idStr)<br>
+_textarea(idStr)<br>
+_select(idStr)<br>
+_radio(idStr)<br>
+_image(idStr)<br>
+_button(idStr)<br>
+_submit(idStr)<br>
+</b> (<a href="#top">Top</a>) <br>
+<h4><a name="alink"></a>Accessor Functions : Link</h4>
+
+<b>_link(idStr)<br>
+</b> (<a href="#top">Top</a>) <br>
+<h4><a name="atable"></a>Accessor Functions : Tables</h4>
+
+<b>_table(idStr)<br>
+_cell(tableEl, rowNo, colNo)<br>
+_cell(tableEl, someTextWhichIdentifiesRow,
+someTextWhichIdentifiesColumn)<br>
+_cell(cellIdStr)<br>
+</b> (<a href="#top">Top</a>) <br>
+<h4><a name="ageneric"></a>Accessor Functions : Generic</h4>
+
+<b>_accessor(idStr)<br>
+</b> (<a href="#top">Top</a>) <br>
+<h4><a name="scheduler"></a>Scheduler Functions</h4>
+
+<div class="explain">Scheduler Functions behave differently from
+normal functions.<br>
+They schedule the execution of the action for later execution in a
+different thread. They essentailly have the effect of converting
+the whole statement into a string and adding it to a global
+array.<br>
+Each statement from the array is then executed one at a time, with
+a delay, when its turn comes.<br>
+<br>
+Note: All these functions can also be made to execute instantly
+(and not delayed) by using __ (double underscores) instead of _
+(single underscore)<br>
+</div>
+
+(<a href="#top">Top</a>) <br>
+<h4><a name="action"></a>Action Scheduler Functions</h4>
+
+These are <a href="#scheduler">Scheduler Functions</a><br>
+<br>
+<b>_click(jsElement)<br>
+_clickImage(jsElement)<br>
+ _dragDrop(draggableElement, dropDestinationElement);
+_setValue(jsElement, val)<br>
+_setSelected(jsElement, val)<br>
+_check(jsElement, val)<br>
+ _simulateEvent(jsElement, ev)<br>
+_wait(millis)<br>
+_alert(str)<br>
+_setGlobal(name, value)<br>
+<a href="scripting.html#functions">_call(fn())</a><br>
+_log(message, type) where type can be "success", "failure",
+"error", "info"<br>
+_highlight(jsElement)<br>
+_navigateTo(URLString)<br>
+</b> <br>
+ (<a href="#top">Top</a>) <br>
+<h4><a name="assertion"></a>Assertion Scheduler Functions</h4>
+
+These are <a href="#scheduler">Scheduler Functions</a><br>
+<br>
+<b>_assertNotNull(jsElement, msg)<br>
+_assertNull(jsElement, msg)<br>
+_assertEqual(expected, actual, msg)<br>
+_assertNotEqual(expected, actual, msg)<br>
+_assertTrue(condition, msg)<br>
+_assertNotTrue(condition, msg)<br>
+</b> (<a href="#top">Top</a>) <br>
+<h4><a name="textaccess"></a>Text Access Functions</h4>
+
+<b>_getSelectedText(selectElement)<br>
+ _getCellText(tableCellElement)<br>
+</b> (<a href="#top">Top</a>) <br>
+<h4><a name="textverify"></a>Text Verification boolean
+Functions</h4>
+
+<b>_containsText(element, textToSearch)<br>
+_containsHTML(element, htmlToSearch)<br>
+</b> (<a href="#top">Top</a>) <br>
+<br>
+<hr>
+<br>
+<h4><a name="include"></a>File Inclusion</h4>
+
+<b>_include(filePath)<br>
+</b> <br>
+<b>_include(filePath)</b> <br>
+<br>
+One sah file may include other sah files, thus allowing logical
+separation of code.<br>
+Syntax: _include(file2.sah) <br>
+<br>
+ Example:<br>
+<br>
+<b style="background-color:lightgreen;padding:10px">File
+create_customer.sah</b><br>
+<pre class="code">
+_include("create_customer_Functions.sah");
+createCustomer("Narayan", 1001, 27);
+</pre>
+
+<br>
+<br>
+<b style="background-color:lightgreen;padding:10px">File
+create_customer_Functions.sah</b><br>
+<pre class="code">
+function createCustomer($name, $id, $age){
+   _setValue(_textbox("name"), $name);
+   _setValue(_textbox("id"), $id);
+   _setValue(_textbox("age"), $age);
+}<br>
+</pre>
+
+(<a href="#top">Top</a>) <br>
+<hr>
+<br>
+<h4><a name="utility"></a>Utility Functions</h4>
+
+<a href="#random">_savedRandom(id, minNo, maxNo)<br>
+<a href="#resetrandom">_resetSavedRandom(id)<br>
+<a href="#global">_setGlobal(name, value)</a><br>
+<a href="#global">_getGlobal(name)</a><br>
+<br>
+ <b><a name="random">_savedRandom(id, min, max)</a></b><br>
+<br>
+ If a script was recorded for say, creating a user, and if the user
+name is mandated to be unique in the application,<br>
+ we need to add random numbers to the user name so that it remains
+unique.<br>
+<br>
+ One can obtain a random number by using _savedRandom(id, min,
+max).<br>
+During the first call to it, it creates a random number between min
+and max, associates with the id and returns the number.<br>
+ On subsequent accesses with that id, it returns the same random
+number which it had created in the first access.<br>
+<br>
+ Example:<br>
+</a></a>
+<pre class="code">
+var $x = _savedRandom("login", 100, 200); //sets $x to say 145 (a random number between 100, 200).
+                                          //Defaults for min and max, if omitted, are 0 and 10000
+$y = _savedRandom("login", 100, 200);     //will set $y to 145 again.
+$y = _savedRandom("login");               //will also set $y to 145.
+</pre>
+
+<br>
+The min and max are needed only during the first call.<br>
+<br>
+<b><a name="resetrandom">_resetSavedRandom(id)</a></b> <br>
+_resetSavedRandom(id) resets value of _savedRandom(id) to null;
+<br>
+<br>
+ 
+
+<hr>
+<br>
+<b><a name="global">_setGlobal(name, value) and
+_getGloblal(name)</a></b> <br>
+<br>
+Since a script may span across multiple web pages, variables from
+one page may need to be stored for later use.<br>
+For example, an id which is generated on customer creation may need
+to stored for later look up of the customer, on a different
+page.<br>
+This can be accomplished by _setGlobal(name, value) and
+_getGloblal(name).<br>
+<br>
+Example:<br>
+<pre class="code">
+_setGlobal("customerId", _getCellText(_cell("custId"))); // sets the text in table cell with id "custId" into a global variable keyed by "customerId"
+</pre>
+
+Then on a later page, one can retrieve the customerId through<br>
+<pre class="code">
+_setValue(_textbox("lookup"), _getGlobal("customerId")); // the second parameter retrieves the text stored.
+</pre>
+
+These variables are stored on the server in a hashmap associated
+with the session.<br>
+<br>
+Note: that all values will be stored as strings only. <br>
+Note: _setGlobal is a <a href="#scheduler">Scheduler Function</a>.
+<br>
+ (<a href="#top">Top</a>) <br>
+<hr>
+<br>
+<h4><a name="popup"></a>Handling popup windows</h4>
+
+<a href="#popup1">_popup(windowName)<br>
+<br>
+ <b><a name="popup1">_popup(windowName)</a></b><br>
+<br>
+ In order to execute sahi commands in a popup window, for example
+click a link,<br>
+use</a>
+<pre class="code">
+_popup("popupWinName")._click(_link("Click Me"));
+</pre>
+
+<br>
+where popupWinName was defined like this:<br>
+window.open("http://popup.url", "popupWinName");<br>
+or<br>
+&lt;a href="http://popup.url" target="popupWinName"&gt;<br>
+ Note that there may be problems in recording this. <br>
+ <br>
+
+</div>
+</td>
+</tr>
+</table>
+
+<br>
+<br>
+Please send your feedback to <a href=
+"http://sourceforge.net/users/narayanraman/">V Narayan Raman</a>.
+<br>
+<br>
+ <!--
+<script src="http://www.treepie.org/counter.js"></script>
+-->
+<!--RiteCounter-->
+<script type="text/javascript" src=
+"http://www.ritecounter.com/scripts/counters.php?id=6641">
+</script>
+
+<noscript><a href="http://www.ritecounter.com"><img src=
+"http://www.ritecounter.com/scripts/htmlc.php?id=6641" alt=
+"Free Hit Counter Code" border="0"></a></noscript>
+<!--END RiteCounter-->
+</body>
+</html>
+

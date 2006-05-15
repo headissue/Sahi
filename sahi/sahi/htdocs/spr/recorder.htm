@@ -1,0 +1,161 @@
+<html>
+<head>
+<meta name="generator" content="HTML Tidy, see www.w3.org">
+<title>Sahi Controller</title>
+<script type="text/javascript" src="/_s_/spr/exception.js">
+</script>
+
+<script type="text/javascript" src="/_s_/spr/controller2.js">
+</script>
+
+<script type="text/javascript" src="/_s_/spr/util.js">
+</script>
+
+<script type="text/javascript" src="/_s_/spr/common.js">
+</script>
+
+<script type="text/javascript" src="/_s_/spr/cookie.js">
+</script>
+
+<style type="text/css">
+.hiTab{
+    border-left: solid white 2px;
+    border-right: solid gray 2px;
+    border-top: solid white 2px;
+    cursor:pointer;
+}
+.dimTab{
+    border-left: solid white 1px;
+    border-right: solid gray 1px;
+    border-top: solid white 1px;
+    border-bottom: solid white 1px;
+    font-size: 11pt;
+    cursor:pointer;
+}
+.recPane{
+    display:block;
+    background-color:white;
+    border-left: solid white 2px;
+    border-right: solid gray 2px;
+    border-top: solid white 2px;
+    border-bottom: solid gray 2px;
+    margin:2px;
+}
+.playbackPane{
+    display:none;
+    background-color:white;
+    border-left: solid white 2px;
+    border-right: solid gray 2px;
+    border-top: solid white 2px;
+    border-bottom: solid gray 2px;
+    margin:2px;
+}
+a,body,input,td{
+    font-size:12;
+    font-family:verdana;
+}
+.button{
+    width:50px;
+}
+form{
+    margin-bottom:0;
+}
+body{
+    margin:8px;
+    background-color:lightgrey; 
+}
+.comment{
+color:darkred;
+font-size:10px;
+font-weight:bolder;
+}
+</style>
+</head>
+<body onload="doOnRecLoad()" onbeforeunload="doOnRecUnLoad()">
+<div id="rec" class="recPane">
+<table bgcolor="">
+<tr>
+<td colspan="2" class="comment">Enter a script name and click
+"Record" to start recording.<br>
+ Script will be generated in sahi/scripts directory.<br>
+<br>
+ </td>
+</tr>
+
+<tr>
+<td>
+<form name="recordstartform" action=
+"http://www.sahidomain.com/_s_/dyn/Recorder_start" target="channel"
+onsubmit="return onRecordStartFormSubmit(this)">Script Name: <input
+type="text" name="file" value=""> <input type="submit" value=
+"Record"></form>
+</td>
+<td>
+<form name="recordstopform" action=
+"http://www.sahidomain.com/_s_/dyn/Recorder_stop" target="channel"
+onsubmit="o(this);stopRec()"><input type="submit" value=
+"Stop"></form>
+</td>
+</tr>
+</table>
+
+<hr>
+<table>
+<tr>
+<td></td>
+</tr>
+
+<tr>
+<td bgcolor="">
+<form name="currentForm">
+<table>
+<tr>
+<td colspan="2" class="comment">Press CTRL key and hover mouse over
+any HTML element. <a class='comment' href='sahi_recorder_help.htm'
+target='_blank'>More ...</a><br>
+</td>
+</tr>
+
+<tr>
+<td>Accessor:</td>
+<td><input name="accessor" value="" size="45"> </td>
+<td><input type="button" class="button" value=" Click " onclick=
+"demoClick()"> </td>
+</tr>
+
+<tr>
+<td>Alternative:</td>
+<td><input name="alternative" value="" size="45"> </td>
+<td><input type="button" class="button" value=" Hilight " onclick=
+"demoHighlight()"> </td>
+</tr>
+
+<tr>
+<td>Value:</td>
+<td><input name="elValue" value="" size="45"> </td>
+<td><input type="button" class="button" value=" Set " onclick=
+"demoSetValue()"> </td>
+</tr>
+</table>
+
+<br>
+<input type="button" class="button" value="Assert" onclick=
+"top.opener.doAssert()"> <input type="button" class="button" value=
+"Wait" onclick="addWait()"> <input type="input" name="waitTime"
+value="3000" size="6"> ms <input type="button" value="Comment"
+onclick="mark()"> <input type="input" name="comment" value="" size=
+"20"><br>
+<hr>
+Evaluate expression: <textarea name="debug" rows="10" cols="50"
+style="white-space:normal"></textarea> <input type="button"
+onclick="evaluateExpr(true)" value="Test --&gt; "><input type=
+"text" size="24" name="result" value="">
+&nbsp;&nbsp;&nbsp;&nbsp;<input type="button" onclick="append()"
+value="Append to Script"></form>
+</td>
+</tr>
+</table>
+</div>
+</body>
+</html>
+

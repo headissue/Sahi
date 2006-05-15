@@ -1,0 +1,97 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta name="generator" content="HTML Tidy, see www.w3.org">
+<title></title>
+<script type="text/javascript" src="/test/jsunit.js">
+</script>
+
+<script type="text/javascript" src="/spr/apihelper.js">
+</script>
+
+<script type="text/javascript" src="/spr/api.js">
+</script>
+
+<script type="text/javascript">
+function testAccessByName() {
+    assertEquals("Accessors are not equal", document.f1.t1, sahiFindElement("t1", top, "text"));
+}
+function testAccessByNameForButton() {
+    assertEquals("Accessors are not equal for button", document.f1.btn1, sahiFindElement("button", top, "button"));
+}
+function testAccessByNameForSubmit() {
+    assertEquals("Accessors for submit btn", document.getElementById("submitBtn"), sahiFindElement("Add", top, "submit"));
+}
+function testSahiSetValue(){
+    var expected = "text 1";
+    sahi_setValue(sahi_textbox("t1"), expected);
+    assertEquals("Text not correctly set through sahi_setValue", expected, document.f1.t1.value);
+}
+function testAccessByNameForPassword(){
+    var expected = "password 1";
+    sahi_setValue(sahi_password("p1"), expected);
+    assertEquals("Password not correctly set through sahi_setValue", expected, document.f1.p1.value);
+}
+function testAccessByNameForTextArea() {
+    assertEquals("Accessors for textarea", document.f1.ta1, sahi_textarea("ta1"));
+    sahi_setValue(sahi_textarea("ta1"), "textarea 1");
+    assertEquals("TextArea not correctly set through sahi_setValue", "textarea 1", document.f1.ta1.value);
+}
+function testAccessByNameForCheckBox() {
+    assertEquals("Accessors for CheckBox", document.f1.c1[0], sahi_checkbox("c1[0]"));
+    sahi_check(sahi_checkbox("c1[0]"), true);
+    assertEquals("Checkbox not correctly set through sahi_check", true, document.f1.c1[0].checked)
+}
+function testAccessByNameForRadio() {
+    assertEquals("Accessors for Radio", document.f1.r1[0], sahi_radio("r1[0]"));
+    sahi_check(sahi_radio("r1[0]"), true);
+    assertEquals("Radio not correctly set through sahi_setValue", true, document.f1.r1[0].checked)
+}
+function testAccessByNameForSelectOne() {
+    assertEquals("Accessors for Select", document.f1.s1, sahi_select("s1"));
+    sahi_setValue(sahi_select("s1"), "o2");
+    assertEquals("Select-one not correctly set through sahi_setValue", "o2", document.f1.s1.value);
+}
+function dummy(){
+}
+function testImageByAlt(){
+    assertEquals("Img lookup through alt by sahi_image failed", document.getElementById("imageId1"), sahi_image("imageAlt1"));
+}
+function testImageById(){
+    assertEquals("Img lookup through id by sahi_image failed", document.getElementById("imageId1"), sahi_image("imageId1"));
+}
+
+
+addTest(testAccessByName);
+addTest(testSahiSetValue);
+addTest(testAccessByNameForButton);
+addTest(testAccessByNameForSubmit);
+addTest(testAccessByNameForTextArea);
+addTest(testAccessByNameForCheckBox);
+addTest(testAccessByNameForRadio);
+addTest(testAccessByNameForPassword);
+addTest(testAccessByNameForSelectOne);
+addTest(testImageByAlt);
+addTest(testImageById);
+</script>
+</head>
+<body onload="testOnLoad()">
+<form name="f1"><input type="text" value="" name="t1"><br>
+<textarea value="" name="ta1"></textarea><br>
+Checkbox : <input type="checkbox" value="" name="c1"><input type=
+"checkbox" value="" name="c1"><br>
+Radio : <input type="radio" value="" name="r1"><input type="radio"
+value="" name="r1"><br>
+<input type="password" value="" name="p1"><br>
+<select name="s1">
+<option value="o1">o1</option>
+<option value="o2">o2</option>
+<option value="o3">o3</option>
+</select><br>
+<input type="button" name="btn1" value="button"><br>
+<input type="submit" value="Add" id="submitBtn"><br>
+<img src="../add.gif" alt="imageAlt1" id="imageId1" onclick=
+"dummy()"></form>
+</body>
+</html>
+
