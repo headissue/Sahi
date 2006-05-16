@@ -125,9 +125,9 @@ public class ProxyProcessor implements Runnable {
 			try {
 				socketToHost = getSocketToHost(requestFromBrowser);
 			} catch (UnknownHostException e) {
-				sendResponseToBrowser(new NoCacheHttpResponse(404,
-						"UnknownHost", "<html><h2>Host " + e.getMessage()
-								+ " Not Found</h2></html>"));
+				sendResponseToBrowser(HttpModifiedResponse.modify(new NoCacheHttpResponse(404,
+						"UnknownHost", "<html><b>Host " + e.getMessage()
+								+ " Not Found</b></html>")));
 				return;
 			}
 			socketToHost.setSoTimeout(120000);

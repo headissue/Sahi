@@ -61,14 +61,18 @@ public class HttpModifiedResponse extends HttpResponse {
 	}
 
 	private byte[] getModifiedData() throws IOException {
-		ByteArrayOutputStream s = new ByteArrayOutputStream();
 		int ix = 0;
 		if (isXHTML()) {
 			ix = getHTMLTagIndex();
 		}
-		s.write(data(), 0, ix);
+		return inject(data(), ix, isSSL);
+	}
+
+	private static byte[] inject(byte[] orig, int ix, boolean isSSL) throws IOException {
+		ByteArrayOutputStream s = new ByteArrayOutputStream();
+		s.write(orig, 0, ix);
 		s.write(isSSL ? INJECT_TOP_SSL : INJECT_TOP);
-		s.write(substituteModals(data()), ix, data().length - ix);
+		s.write(substituteModals(orig), ix, orig.length - ix);
 		s.write(isSSL ? INJECT_BOTTOM_SSL : INJECT_BOTTOM);
 		s.flush();
 		return s.toByteArray();
@@ -86,7 +90,7 @@ public class HttpModifiedResponse extends HttpResponse {
 
 	}
 
-	byte[] substituteModals(byte[] content) {
+	static byte[] substituteModals(byte[] content) {
 		// long start = System.currentTimeMillis();
 		String s = new String(content);
 		s = s.replaceAll("(\\W+)((alert)|(confirm)|(prompt))\\s*\\(",
@@ -129,5 +133,10 @@ public class HttpModifiedResponse extends HttpResponse {
 			sampleContent = new String(data(), 0, length).toLowerCase();
 		}
 		return sampleContent;
+	}
+	
+	public static HttpResponse modify(HttpResponse response) throws IOException {
+		response.setData(inject(response.data(), 0, false));
+		return response;
 	}
 }
