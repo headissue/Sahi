@@ -150,5 +150,13 @@ public abstract class StreamHandler {
 			return null;
 		return (String) entry.get(entry.size() - 1);
 	}
+	
+	protected void copyFrom(StreamHandler orig) {
+		this.headers=orig.headers;
+		this.rawHeaders=orig.rawHeaders;
+		this.contentLength=orig.contentLength;
+		this.data=orig.data;
+		this.firstLine=orig.firstLine;		
+	}
 
 }

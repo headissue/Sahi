@@ -3,7 +3,6 @@ package net.sf.sahi.response;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 
 import net.sf.sahi.util.Utils;
 
@@ -27,8 +26,8 @@ public class HttpModifiedResponse extends HttpResponse {
 		return new String(content).replaceAll("http", "https").getBytes();
 	}
 
-	public HttpModifiedResponse(InputStream in, boolean isSSL) throws IOException {
-		super(in);
+	public HttpModifiedResponse(HttpResponse response, boolean isSSL) throws IOException {
+		copyFrom(response);
 		this.isSSL = isSSL;
 		if (firstLine().indexOf("30") == -1) { // Response code other than
 			boolean html = isHTML();

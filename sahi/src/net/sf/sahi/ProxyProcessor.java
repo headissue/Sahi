@@ -6,6 +6,7 @@ import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.Properties;
 import java.util.logging.Logger;
 
 import javax.net.ssl.SSLSocket;
@@ -26,11 +27,9 @@ public class ProxyProcessor implements Runnable {
 
 	private boolean isSSLSocket = false;
 
-	private static Logger logger = Configuration
-			.getLogger("net.sf.sahi.ProxyProcessor");
+	private static Logger logger = Configuration.getLogger("net.sf.sahi.ProxyProcessor");
 
-	private static boolean externalProxyEnabled = Configuration
-			.isExternalProxyEnabled();;
+	private static boolean externalProxyEnabled = Configuration.isExternalProxyEnabled();;
 
 	private static String externalProxyHost = null;
 
@@ -40,8 +39,8 @@ public class ProxyProcessor implements Runnable {
 		if (externalProxyEnabled) {
 			externalProxyHost = Configuration.getExternalProxyHost();
 			externalProxyPort = Configuration.getExternalProxyPort();
-			logger.config("External Proxy is enabled for Host:"
-					+ externalProxyHost + " and Port:" + externalProxyPort);
+			logger.config("External Proxy is enabled for Host:" + externalProxyHost + " and Port:"
+					+ externalProxyPort);
 		} else {
 			logger.config("External Proxy is disabled");
 		}
@@ -61,13 +60,11 @@ public class ProxyProcessor implements Runnable {
 					processLocally(uri, requestFromBrowser);
 				} else {
 					if (isHostTheProxy(requestFromBrowser.host())
-							&& requestFromBrowser.port() == Configuration
-									.getPort()) {
+							&& requestFromBrowser.port() == Configuration.getPort()) {
 						processLocally(uri, requestFromBrowser);
 					} else if (uri.indexOf("favicon.ico") != -1) {
-						sendResponseToBrowser(new HttpFileResponse(
-								Configuration.getHtdocsRoot()
-										+ "spr/favicon.ico"));
+						sendResponseToBrowser(new HttpFileResponse(Configuration.getHtdocsRoot()
+								+ "spr/favicon.ico"));
 					} else {
 						processAsProxy(requestFromBrowser);
 					}
@@ -89,15 +86,13 @@ public class ProxyProcessor implements Runnable {
 		try {
 			return InetAddress.getByName(host).getHostAddress().equals(
 					InetAddress.getLocalHost().getHostAddress())
-					|| InetAddress.getByName(host).getHostAddress().equals(
-							"127.0.0.1");
+					|| InetAddress.getByName(host).getHostAddress().equals("127.0.0.1");
 		} catch (Exception e) {
 			return false;
 		}
 	}
 
-	private void processAsProxy(HttpRequest requestFromBrowser)
-			throws IOException {
+	private void processAsProxy(HttpRequest requestFromBrowser) throws IOException {
 		if (requestFromBrowser.isConnect()) {
 			processConnect(requestFromBrowser);
 		} else {
@@ -107,10 +102,9 @@ public class ProxyProcessor implements Runnable {
 
 	private void processConnect(HttpRequest requestFromBrowser) {
 		try {
-			client.getOutputStream().write(
-					("HTTP/1.0 200 OK\r\n\r\n").getBytes());
-			SSLSocket sslSocket = new SSLHelper()
-					.convertToSecureServerSocket(client, requestFromBrowser.host());
+			client.getOutputStream().write(("HTTP/1.0 200 OK\r\n\r\n").getBytes());
+			SSLSocket sslSocket = new SSLHelper().convertToSecureServerSocket(client,
+					requestFromBrowser.host());
 			ProxyProcessor delegatedProcessor = new ProxyProcessor(sslSocket);
 			delegatedProcessor.run();
 		} catch (IOException e) {
@@ -124,36 +118,42 @@ public class ProxyProcessor implements Runnable {
 		try {
 			try {
 				socketToHost = getSocketToHost(requestFromBrowser);
-			} catch (UnknownHostException e) {
-				sendResponseToBrowser(HttpModifiedResponse.modify(new NoCacheHttpResponse(404,
-						"UnknownHost", "<html><b>Host " + e.getMessage()
-								+ " Not Found</b></html>")));
+			} catch (IOException e) {
+				sendCannotConnectResponse(e);
 				return;
 			}
 			socketToHost.setSoTimeout(120000);
 			OutputStream outputStreamToHost = socketToHost.getOutputStream();
 			InputStream inputStreamFromHost = socketToHost.getInputStream();
-			HttpResponse responseFromHost = getResponseFromHost(
-					inputStreamFromHost, outputStreamToHost,
-					requestFromBrowser, true);
+			HttpResponse responseFromHost = getResponseFromHost(inputStreamFromHost,
+					outputStreamToHost, requestFromBrowser, true);
 			sendResponseToBrowser(responseFromHost);
 			socketToHost.close();
 		} catch (Exception ioe) {
 		}
 	}
 
-	private void processLocally(String uri, HttpRequest requestFromBrowser)
-			throws IOException {
-		HttpResponse httpResponse = new LocalRequestProcessor()
-				.getLocalResponse(uri, requestFromBrowser);
+	private void sendCannotConnectResponse(IOException e) throws IOException {
+		Properties props = new Properties();
+		props.put("server", e.getMessage());
+		final HttpFileResponse httpFileResponse = new HttpFileResponse(Configuration
+				.getHtdocsRoot()
+				+ "spr/cannotConnect.htm", props, false, true);
+		final HttpResponse modifiedResponse = HttpModifiedResponse.modify(httpFileResponse);
+		sendResponseToBrowser(modifiedResponse);
+	}
+
+	private void processLocally(String uri, HttpRequest requestFromBrowser) throws IOException {
+		HttpResponse httpResponse = new LocalRequestProcessor().getLocalResponse(uri,
+				requestFromBrowser);
 		sendResponseToBrowser(httpResponse);
 	}
 
 	private HttpResponse getResponseFromHost(InputStream inputStreamFromHost,
 			OutputStream outputStreamToHost, HttpRequest request, boolean modify)
 			throws IOException {
-//		if (modify)
-			request.modifyForFetch();
+		// if (modify)
+		request.modifyForFetch();
 		logger.finest(request.uri());
 		logger.finest(new String(request.rawHeaders()));
 		outputStreamToHost.write(request.rawHeaders());
@@ -162,7 +162,8 @@ public class ProxyProcessor implements Runnable {
 		outputStreamToHost.flush();
 		HttpResponse response;
 		if (modify) {
-			response = new HttpModifiedResponse(inputStreamFromHost, request.isSSL());
+			response = new HttpModifiedResponse(new HttpResponse(inputStreamFromHost), request
+					.isSSL());
 		} else {
 			response = new HttpResponse(inputStreamFromHost);
 		}
@@ -187,8 +188,7 @@ public class ProxyProcessor implements Runnable {
 		return new HttpRequest(in, isSSLSocket);
 	}
 
-	protected void sendResponseToBrowser(HttpResponse responseFromHost)
-			throws IOException {
+	protected void sendResponseToBrowser(HttpResponse responseFromHost) throws IOException {
 		OutputStream outputStreamToBrowser = client.getOutputStream();
 		logger.fine(new String(responseFromHost.rawHeaders()));
 		outputStreamToBrowser.write(responseFromHost.rawHeaders());
