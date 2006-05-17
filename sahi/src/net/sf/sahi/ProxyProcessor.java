@@ -12,12 +12,11 @@ import java.util.logging.Logger;
 import javax.net.ssl.SSLSocket;
 
 import net.sf.sahi.config.Configuration;
-import net.sf.sahi.ssl.SSLHelper;
 import net.sf.sahi.request.HttpRequest;
 import net.sf.sahi.response.HttpFileResponse;
 import net.sf.sahi.response.HttpModifiedResponse;
 import net.sf.sahi.response.HttpResponse;
-import net.sf.sahi.response.NoCacheHttpResponse;
+import net.sf.sahi.ssl.SSLHelper;
 
 /**
  * User: nraman Date: May 13, 2005 Time: 7:06:11 PM To
