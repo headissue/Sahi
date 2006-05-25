@@ -348,10 +348,12 @@ function noop(){}
 
 // api for set value start
 function sahi_setValue(el, val){
+	var prevVal = el.value;
     if(!document.createEvent) el.value = val;
     if (el.type && el.type.indexOf("select") != -1){
     }else{
     	var append = false;
+    	el.value = "";
 	    if (typeof val == "string"){
     		for (var i=0; i<val.length; i++){
     			var c = val.charAt(i);
@@ -365,7 +367,7 @@ function sahi_setValue(el, val){
     		}
     	}
     }
-    if (el.value != val && el.onchange){
+    if (prevVal != val && el.onchange){
     	sahiSimulateEvent(el, "change");
     }
 }
@@ -375,10 +377,9 @@ function sahiSimulateEvent(target, evType){
 		var evt = new Object();
 		evt.type = evType;
 		evt.bubbles = true;
-		evt.cancelable = true;
-		
+		evt.cancelable = true;		
 		if (!target) return; 
-		var event = target.ownerDocument.createEvent("KeyEvents"); 
+		var event = target.ownerDocument.createEvent("HTMLEvents"); 
 		event.initEvent(evt.type, evt.bubbles, evt.cancelable); 
 		target.dispatchEvent(event); 
 	}else{
