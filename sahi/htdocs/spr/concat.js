@@ -351,16 +351,44 @@ function sahi_setValue(el, val){
     if(!document.createEvent) el.value = val;
     if (el.type && el.type.indexOf("select") != -1){
     }else{
+    	var append = false;
 	    if (typeof val == "string"){
     		for (var i=0; i<val.length; i++){
     			var c = val.charAt(i);
     			sahiSimulateKeyEvent(c, el, "keydown");
     			sahiSimulateKeyEvent(c, el, "keypress");
+    			if (i==0 && el.value != c){
+    				append = true;
+    			}
+    			if (append) el.value += c;
     			sahiSimulateKeyEvent(c, el, "keyup");
     		}
     	}
     }
-    if (el.onchange) el.onchange();
+    if (el.value != val && el.onchange){
+    	sahiSimulateEvent(el, "change");
+    }
+}
+
+function sahiSimulateEvent(target, evType){
+	if(document.createEvent){
+		var evt = new Object();
+		evt.type = evType;
+		evt.bubbles = true;
+		evt.cancelable = true;
+		
+		if (!target) return; 
+		var event = target.ownerDocument.createEvent("KeyEvents"); 
+		event.initEvent(evt.type, evt.bubbles, evt.cancelable); 
+		target.dispatchEvent(event); 
+	}else{
+		var evt = target.ownerDocument.createEventObject();
+		evt.type = evType;
+		evt.bubbles = true;
+		evt.cancelable = true;
+		evt.cancelBubble = true;
+		target.fireEvent("on"+evType, evt);
+	}
 }
 
 function sahiSimulateKeyEvent(c, target, evType){
