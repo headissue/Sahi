@@ -1213,6 +1213,7 @@ function showInController(info){
 		var c = getSahiWinHandle();
 		if (c) {
 			var d = c.top.main.document.currentForm.debug;
+			c.top.main.document.currentForm.history.value += "\n"+d.value;
 			d.value=getScript(info);
 //			d.value+="\n"+getScript(info);
 //			d.scrollTop = d.scrollHeight;			

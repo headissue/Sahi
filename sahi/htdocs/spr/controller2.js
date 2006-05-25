@@ -89,6 +89,7 @@ function sendRecorderSnapshot(){
 	s+=addVar("controller_accessor", document.currentForm.accessor.value);	
 	s+=addVar("controller_alternative", document.currentForm.alternative.value);	
 	s+=addVar("controller_debug", document.currentForm.debug.value);
+	s+=addVar("controller_history", document.currentForm.history.value);
 	s+=addVar("controller_waitTime", document.currentForm.waitTime.value);
 	s+=addVar("controller_result", document.currentForm.result.value);
 	sahiSetServerVar("recorder_state", s);
@@ -278,6 +279,7 @@ function initRecorderTab(){
 	document.currentForm.accessor.value = getRecVar("controller_accessor");	
 	document.currentForm.alternative.value = getRecVar("controller_alternative");		
 	document.currentForm.comment.value = getRecVar("controller_comment");	
+	document.currentForm.history.value = getRecVar("controller_history");
 	document.currentForm.debug.value = getRecVar("controller_debug");
 	document.currentForm.waitTime.value = getRecVar("controller_waitTime");
 	document.currentForm.result.value = getRecVar("controller_result");
@@ -336,17 +338,21 @@ function evaluateExpr(showErr){
 	sahiSetServerVar("sahiEvaluateExpr", "false");
 }
 function demoClick(){
-	document.currentForm.debug.value = "_click("+document.currentForm.accessor.value+");";
+	setDebugValue("_click("+document.currentForm.accessor.value+");");
 	evaluateExpr();
 }
 function demoHighlight(){
-	document.currentForm.debug.value = "_highlight("+document.currentForm.accessor.value+");";
+	setDebugValue("_highlight("+document.currentForm.accessor.value+");");
 	evaluateExpr();
 }
 
 function demoSetValue(){
-	document.currentForm.debug.value = "_setValue("+document.currentForm.accessor.value+", \""+document.currentForm.elValue.value+"\");";
+	setDebugValue("_setValue("+document.currentForm.accessor.value+", \""+document.currentForm.elValue.value+"\");");
 	evaluateExpr();
+}
+function setDebugValue(s){
+	document.currentForm.history.value += "\n"+document.currentForm.debug.value;
+	document.currentForm.debug.value = s;
 }
 function append(){
    sahiSendToServer('/_s_/dyn/Recorder_record?cmd='+escape(document.currentForm.debug.value));
@@ -389,4 +395,24 @@ function reloadPage(u){
 		top.opener.top.location.href = u;
 	}	
 //	top.location.reload();
+}
+function getSel()
+{
+	var txt = '';
+	if (window.getSelection)
+	{
+		txt = window.getSelection();
+	}
+	else if (document.getSelection)
+	{
+		txt = document.getSelection();
+	}
+	else if (document.selection)
+	{
+		txt = document.selection.createRange().text;
+	}
+	return txt;
+}
+function showHistory(){
+	var histWin = window.open("history.htm", "sahi_history", "height=500px,width=450px");
 }

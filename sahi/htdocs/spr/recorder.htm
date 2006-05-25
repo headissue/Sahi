@@ -146,7 +146,9 @@ value="3000" size="6"> ms <input type="button" value="Comment"
 onclick="mark()"> <input type="input" name="comment" value="" size=
 "20"><br>
 <hr>
-Evaluate expression: <textarea name="debug" rows="10" cols="50"
+Evaluate expression: <a href="javascript:showHistory()">History</a><br/>
+<input type="hidden" name="history">
+<textarea name="debug" rows="10" cols="50"
 style="white-space:normal"></textarea> <input type="button"
 onclick="evaluateExpr(true)" value="Test --&gt; "><input type=
 "text" size="24" name="result" value="">

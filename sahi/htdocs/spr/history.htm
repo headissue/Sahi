@@ -1,0 +1,28 @@
+<html>
+
+<head>
+<title>
+Sahi History
+</title>
+</head>
+<script>
+function loadHistory(){
+	document.h.history.value = opener.document.currentForm.history.value;
+}
+function clearHistory(){
+	if (confirm("Clear history?")){
+		document.h.history.value = "";
+		opener.document.currentForm.history.value = "";
+	}
+}
+</script>
+<body onload="loadHistory()">
+<form name="h">
+<textarea name="history" rows="27" cols="50"></textarea><br/>
+<input type="button" value="Refresh" onclick="loadHistory()">
+<input type="button" value="Clear" onclick="clearHistory()">
+<input type="button" value="Close" onclick="self.close()">
+</form>
+</body>
+
+</html>
