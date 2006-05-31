@@ -41,10 +41,9 @@ public class HttpModifiedResponse extends HttpResponse {
 					setHeader("Pragma", "no-cache");
 					setHeader("Expires", "-1");
 					setData(getModifiedData());
-				} else if (js) {
-					setData(substituteModals(data()));
-				}
+				} 
 				setHeader("Content-Length", "" + data().length);
+				System.out.println("Modified Content Length: "+data().length);				
 				resetRawHeaders();
 			}
 		}
@@ -71,7 +70,7 @@ public class HttpModifiedResponse extends HttpResponse {
 		ByteArrayOutputStream s = new ByteArrayOutputStream();
 		s.write(orig, 0, ix);
 		s.write(isSSL ? INJECT_TOP_SSL : INJECT_TOP);
-		s.write(substituteModals(orig), ix, orig.length - ix);
+		s.write(orig, ix, orig.length - ix);
 		s.write(isSSL ? INJECT_BOTTOM_SSL : INJECT_BOTTOM);
 		s.flush();
 		return s.toByteArray();
