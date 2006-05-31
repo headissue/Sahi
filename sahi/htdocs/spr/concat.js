@@ -348,6 +348,7 @@ function noop(){}
 
 // api for set value start
 function sahi_setValue(el, val){
+	val = ""+val;
 	var prevVal = el.value;
     if(!document.createEvent) el.value = val;
     if (el.type && el.type.indexOf("select") != -1){
@@ -580,7 +581,7 @@ function sahi_alert(s){
 	if (isSahiPlaying()){
 		_sahiLastAlert = s;
 	}else{
-		return alert(s);
+		return sahi_real_alert(s);
 	}
 }
 function sahi_eval(s){
@@ -610,7 +611,7 @@ function sahi_confirm(s){
 //	window.open("/_s_/dyn/confirm.htm?msg="+s, "", "height=60px,width=460px,resizable=yes,toolbars=no,statusbar=no");
 }
 function sahi_prompt(n){
-	return prompt(n);
+	return sahi_real_prompt(n);
 }
 function sahi_cell(id, row, col){
 	if (row==null && col==null){
@@ -686,7 +687,7 @@ function point(el){
 function sahiAreEqual(el, param, value){
 	if (param == "linkText"){
         var str = sahiGetText(el);
-//        alert(str+ " " +value);
+//        sahi_real_alert(str+ " " +value);
         return (sahiTrim(str) == sahiTrim(value));
 	}
 	else{
@@ -1145,7 +1146,6 @@ function sahiCanSimulateClick(el){
 	return (el.click || el.dispatchEvent);
 }
 function sahiIsRecording(){
-//	alert(sahiGetServerVar("sahi_record"));
 	return sahiGetServerVar("sahi_record") == "1";
 }
 function sahiCreateCookie(name,value,days)
@@ -1739,7 +1739,7 @@ function sahiEx(isStep){
         if (!isStep) window.setTimeout("try{sahiEx();}catch(ex){}", interval);
     }catch(ex2){
         if (isSahiPlaying()){
-            if (!isStep) window.setTimeout("try{sahiEx();}catch(ex){alert(ex)}", 1000);
+            if (!isStep) window.setTimeout("try{sahiEx();}catch(ex){sahi_real_alert(ex)}", 1000);
         }
     }
 }
@@ -2043,3 +2043,13 @@ function sahiQuoteIfString(shortHand) {
 	return quoted(sahiConvertUnicode(shortHand));
 }
 sahiActivateHotKey();
+
+window.sahi_real_alert = window.alert;
+window.sahi_real_confirm = window.confirm;
+window.sahi_real_prompt = window.prompt;
+
+window.alert = sahi_alert;
+window.confirm = sahi_confirm;
+window.prompt = sahi_prompt;
+
+
