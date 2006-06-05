@@ -554,15 +554,19 @@ function sahi_getText(el){
     return sahiTrim(sahiIsIE() ? el.innerText : el.textContent);
 }
 function sahiGetRowIndexWith(txt, tableEl){
+	var r = sahiGetRowWith(txt, tableEl);
+	return (r == null) ? -1 : r.rowIndex;
+}
+function sahiGetRowWith(txt, tableEl){
 	for (var i=0; i<tableEl.rows.length; i++){
 		var r = tableEl.rows[i];
 		for (var j=0; j<r.cells.length; j++){
 			if (sahi_getText(r.cells[j]).indexOf(txt) != -1){
-				return i;
+				return r;
 			}
 		}
 	}
-	return -1;
+	return null;
 }
 function sahiGetColIndexWith(txt, tableEl){
 	for (var i=0; i<tableEl.rows.length; i++){
@@ -632,6 +636,15 @@ function sahi_cell(id, row, col){
 function sahi_table(n){
 	return sahiFindTable(n);
 }
+function sahi_row(tableEl, rowIx){
+	if (typeof rowIx == "string"){
+		return sahiGetRowWith(rowIx, tableEl);
+	}
+	if (typeof rowIx == "number"){
+		return tableEl.rows[rowIx];
+	}
+	return null;
+}
 function sahi_containsHTML(el, htm){
 	return el && el.innerHTML && el.innerHTML.indexOf(htm) != -1;
 }
@@ -651,7 +664,7 @@ function sahi_navigateTo(url){
 	top.location.href = url;
 }
 function sahi_callServer(cmd, qs){
-	return sahiSendToServer("/_s_/dyn/"+cmd+"?"+qs);
+	return sahiSendToServer("/_s_/dyn/"+cmd+(qs == null ? "" :  ("?"+qs)));
 }
 
 // finds document of any element
@@ -1626,7 +1639,7 @@ var _sahiCmds = new Array();
 var _sahiCmdDebugInfo = new Array();
 var _sahi_wait = -1;
 
-function sahiAdd(cmd, debugInfo){
+function sahiSchedule(cmd, debugInfo){
 	if (!_sahiCmds) return;
     var i = _sahiCmds.length;
 	_sahiCmds[i] = cmd;
@@ -1755,13 +1768,18 @@ function canEval(cmd){
             || (top.opener != null && isForPopup(cmd)); // for popups
 }
 function pause(){
+	_isSahiPaused = true;
 	sahiSetServerVar("sahiPaused", 1);
 }
 function unpause(){
+	_isSahiPaused = false;
 	sahiSetServerVar("sahiPaused", 0);
 }
+var _isSahiPaused = null;
 function isPaused(){
-	return sahiGetServerVar("sahiPaused") == "1";
+	if (_isSahiPaused == null)
+		_isSahiPaused = sahiGetServerVar("sahiPaused") == "1";
+	return _isSahiPaused;
 }
 function updateControlWinDisplay(s){
 	try{
@@ -1783,18 +1801,22 @@ function sahiGetCurrentIndex(){
     var i = parseInt(sahiGetServerVar("sahiIx"));
     return (""+i != "NaN") ? i : 0;
 }
-
+var _isSahiPlaying = null;
 function isSahiPlaying(){
-    return sahiGetServerVar("sahi_play")=="1";
+	if (_isSahiPlaying == null)
+		_isSahiPlaying = sahiGetServerVar("sahi_play")=="1";
+    return _isSahiPlaying;
 }
 function sahiStartPlaying(){
 	sahiSendToServer("/_s_/dyn/Player_start");
 	sahiSetServerVar("sahi_play", 1);
+	_isSahiPlaying = true;
 }
 function sahiStopPlaying(){
 	sahiSendToServer("/_s_/dyn/Player_stop");
 	sahiSetServerVar("sahi_play", 0);
 	updateControlWinDisplay("--Stopped Playback--");
+	_isSahiPlaying = false;
 }
 function sahiStartRecording(){
    	sahiAddHandlersToAllFrames(top);
