@@ -11,6 +11,7 @@ import net.sf.sahi.util.Utils;
  */
 public class HttpModifiedResponse extends HttpResponse {
 	boolean isSSL = false;
+	private String fileExtension;
 	private static byte[] INJECT_TOP_SSL = null;
 	private static byte[] INJECT_BOTTOM_SSL = null;
 	private static byte[] INJECT_TOP;
@@ -26,12 +27,13 @@ public class HttpModifiedResponse extends HttpResponse {
 		return new String(content).replaceAll("http", "https").getBytes();
 	}
 
-	public HttpModifiedResponse(HttpResponse response, boolean isSSL) throws IOException {
+	public HttpModifiedResponse(HttpResponse response, boolean isSSL, String fileExtension) throws IOException {
+		this.fileExtension = fileExtension;
 		copyFrom(response);
 		this.isSSL = isSSL;
 		if (firstLine().indexOf("30") == -1) { // Response code other than
-			boolean html = isHTML();
 			boolean js = isJs();
+			boolean html = !js && isHTML();
 			if (html || js) {
 				if (html) {
 					removeHeader("Transfer-Encoding");
@@ -43,16 +45,19 @@ public class HttpModifiedResponse extends HttpResponse {
 					setData(getModifiedData());
 				} 
 				setHeader("Content-Length", "" + data().length);
-				System.out.println("Modified Content Length: "+data().length);				
 				resetRawHeaders();
 			}
 		}
 	}
 	private boolean isJs() {
 		String contentType = contentType();
-		if (contentType == null
-				|| contentType.toLowerCase()
-						.indexOf("application/x-javascript") != -1) {
+		if (contentType != null && contentType.toLowerCase().indexOf("application/x-javascript") != -1) {
+			return true;
+		}
+		if (".js".equalsIgnoreCase(fileExtension)) {
+			return true;
+		}
+		if (contentType == null) {
 			return hasJsContent();
 		}
 		return false;

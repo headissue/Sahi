@@ -83,7 +83,7 @@ public class SahiTestSuite {
 		if (!(startURL.startsWith("http://") || startURL.startsWith("https://"))) {
 				startURL = new URL(new URL(base), startURL).toString();
 		}
-		SahiTest sahiTest = new SahiTest(testName, startURL, browser, sessionId);
+		TestLauncher sahiTest = new TestLauncher(testName, startURL, browser, sessionId);
 		tests.add(sahiTest);
 		testsMap.put(testName, sahiTest);
 	}
@@ -91,7 +91,7 @@ public class SahiTestSuite {
 	public synchronized boolean executeNext() {
 		boolean hasMoreTests = currentTestIndex < tests.size();
 		if (hasMoreTests) {
-			SahiTest test = (SahiTest) tests.get(currentTestIndex);
+			TestLauncher test = (TestLauncher) tests.get(currentTestIndex);
 			currentTestIndex++;
 			test.execute();
 		}
@@ -103,7 +103,7 @@ public class SahiTestSuite {
 	}
 
 	public synchronized void stop(String scriptName) {
-		((SahiTest) (testsMap.get(scriptName))).stop();
+		((TestLauncher) (testsMap.get(scriptName))).stop();
 		finishedTests++;
 	}
 

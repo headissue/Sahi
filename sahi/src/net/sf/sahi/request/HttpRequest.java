@@ -1,3 +1,4 @@
+
 package net.sf.sahi.request;
 
 import java.io.IOException;
@@ -23,11 +24,12 @@ public class HttpRequest extends StreamHandler {
 	private String host;
 	private int port;
 	private String uri;
-	private String queryString = null;
+	private String queryString = "";
 	private Map params = new HashMap();
 	private Map cookies = null;
 	private static final Logger logger = Logger.getLogger("net.sf.sahi.request.HttpRequest");
 	private final boolean isSSLSocket;
+	private String fileExtension;
 
 	public HttpRequest(InputStream in) throws IOException {
 		this(in, false);
@@ -40,6 +42,7 @@ public class HttpRequest extends StreamHandler {
 		if (isPost() || isGet() || isConnect()) {
 			setHostAndPort();
 			setUri();
+			setQueryString();
 		}
 		logger.fine("\nFirst line:"+firstLine());
 		logger.fine("isSSL="+isSSL());
@@ -120,15 +123,20 @@ public class HttpRequest extends StreamHandler {
 	}
 
 	private void setQueryString() {
-		if (uri == null)
-			return;
+		if (uri == null) return;
+
 		int qIx = uri.indexOf("?");
+		String uriWithoutQueryString = uri;
 		if (qIx != -1 && qIx + 1 < uri.length()) {
+			uriWithoutQueryString = uri.substring(0, qIx);
 			queryString = uri.substring(qIx + 1);
-			return;
 		}
-		queryString = "";
-		return;
+		
+		fileExtension = "";
+		int dotIx = uriWithoutQueryString.indexOf(".");
+		if (dotIx != -1) {
+			fileExtension = uriWithoutQueryString.substring(dotIx+1);
+		}
 	}
 
 	private void setGetParameters() {
@@ -151,9 +159,6 @@ public class HttpRequest extends StreamHandler {
 	}
 
 	public String queryString() {
-		if (queryString == null) {
-			setQueryString();
-		}
 		return queryString;
 	}
 
@@ -243,5 +248,9 @@ public class HttpRequest extends StreamHandler {
 			sessionId = "sahi_" + System.currentTimeMillis();
 		// System.out.println("2:"+sessionId);
 		return Session.getInstance(sessionId);
+	}
+	
+	public String fileExtension() {
+		return fileExtension;
 	}
 }

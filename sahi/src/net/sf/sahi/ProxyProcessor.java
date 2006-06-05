@@ -1,5 +1,6 @@
 package net.sf.sahi;
 
+import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -17,6 +18,7 @@ import net.sf.sahi.response.HttpFileResponse;
 import net.sf.sahi.response.HttpModifiedResponse;
 import net.sf.sahi.response.HttpResponse;
 import net.sf.sahi.ssl.SSLHelper;
+import net.sf.sahi.util.SocketPool;
 
 /**
  * User: nraman Date: May 13, 2005 Time: 7:06:11 PM To
@@ -33,6 +35,8 @@ public class ProxyProcessor implements Runnable {
 	private static String externalProxyHost = null;
 
 	private static int externalProxyPort = 80;
+
+	private static SocketPool socketPool = new SocketPool(20);
 
 	static {
 		if (externalProxyEnabled) {
@@ -63,7 +67,7 @@ public class ProxyProcessor implements Runnable {
 						processLocally(uri, requestFromBrowser);
 					} else if (uri.indexOf("favicon.ico") != -1) {
 						sendResponseToBrowser(new HttpFileResponse(Configuration.getHtdocsRoot()
-								+ "spr/favicon.ico"));
+								+ "spr/favicon.ico"), false);
 					} else {
 						processAsProxy(requestFromBrowser);
 					}
@@ -126,26 +130,27 @@ public class ProxyProcessor implements Runnable {
 			InputStream inputStreamFromHost = socketToHost.getInputStream();
 			HttpResponse responseFromHost = getResponseFromHost(inputStreamFromHost,
 					outputStreamToHost, requestFromBrowser, true);
-			sendResponseToBrowser(responseFromHost);
-			socketToHost.close();
+			socketPool.release(socketToHost);
+			sendResponseToBrowser(responseFromHost, true);
 		} catch (Exception ioe) {
 		}
 	}
 
 	private void sendCannotConnectResponse(IOException e) throws IOException {
 		Properties props = new Properties();
-		props.put("server", e.getMessage());
+		props.put("message", e.getMessage());
 		final HttpFileResponse httpFileResponse = new HttpFileResponse(Configuration
 				.getHtdocsRoot()
 				+ "spr/cannotConnect.htm", props, false, true);
 		final HttpResponse modifiedResponse = HttpModifiedResponse.modify(httpFileResponse);
-		sendResponseToBrowser(modifiedResponse);
+		sendResponseToBrowser(modifiedResponse, true);
+		e.printStackTrace();
 	}
 
 	private void processLocally(String uri, HttpRequest requestFromBrowser) throws IOException {
 		HttpResponse httpResponse = new LocalRequestProcessor().getLocalResponse(uri,
 				requestFromBrowser);
-		sendResponseToBrowser(httpResponse);
+		sendResponseToBrowser(httpResponse, false);
 	}
 
 	private HttpResponse getResponseFromHost(InputStream inputStreamFromHost,
@@ -162,7 +167,7 @@ public class ProxyProcessor implements Runnable {
 		HttpResponse response;
 		if (modify) {
 			response = new HttpModifiedResponse(new HttpResponse(inputStreamFromHost), request
-					.isSSL());
+					.isSSL(), request.fileExtension());
 		} else {
 			response = new HttpResponse(inputStreamFromHost);
 		}
@@ -171,14 +176,18 @@ public class ProxyProcessor implements Runnable {
 	}
 
 	private Socket getSocketToHost(HttpRequest request) throws IOException {
-		InetAddress addr = InetAddress.getByName(request.host());
 		if (request.isSSL()) {
-			return new SSLHelper().getSocket(request, addr);
+			return new SSLHelper().getSocket(request, InetAddress.getByName(request.host()));
 		} else {
 			if (externalProxyEnabled) {
-				return new Socket(externalProxyHost, externalProxyPort);
+				Socket socket = socketPool.get(externalProxyHost, externalProxyPort);
+				socket.setReuseAddress(true);
+				return socket;
+			}else {
+				Socket socket = socketPool.get(request.host(), request.port());
+				socket.setReuseAddress(true);
+				return socket; 
 			}
-			return new Socket(addr, request.port());
 		}
 	}
 
@@ -187,11 +196,22 @@ public class ProxyProcessor implements Runnable {
 		return new HttpRequest(in, isSSLSocket);
 	}
 
-	protected void sendResponseToBrowser(HttpResponse responseFromHost) throws IOException {
-		OutputStream outputStreamToBrowser = client.getOutputStream();
-		logger.fine(new String(responseFromHost.rawHeaders()));
+	protected void sendResponseToBrowser(HttpResponse responseFromHost, boolean wait) throws IOException {
+		OutputStream outputStreamToBrowser = new BufferedOutputStream(client.getOutputStream());
 		outputStreamToBrowser.write(responseFromHost.rawHeaders());
-		outputStreamToBrowser.write(responseFromHost.data());
+		outputStreamToBrowser.flush();
+		outputStreamToBrowser.flush();
+		final byte[] data = responseFromHost.data();
+		outputStreamToBrowser.write(data);
+		outputStreamToBrowser.flush();
+		if (wait) {
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+		outputStreamToBrowser.close();
 	}
 
 	protected Socket client() {

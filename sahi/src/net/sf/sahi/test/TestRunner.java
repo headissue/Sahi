@@ -54,7 +54,7 @@ public class TestRunner {
 		in.close();
 		String status = "NONE";
 		while (true) {
-			Thread.sleep(1000);
+			Thread.sleep(2000);
 			status = getSuiteStatus(sessionId);
 			if (!"RUNNING".equals(status)) {
 				break;

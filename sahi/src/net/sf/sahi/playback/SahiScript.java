@@ -25,7 +25,7 @@ public abstract class SahiScript {
 	private static ArrayList actionKeywords;
 	private static ArrayList normalKeywords;
 	protected String script;
-	private static final String PREFIX = "sahiAdd(\"";
+	private static final String PREFIX = "sahiSchedule(\"";
 	private static final String CONJUNCTION = "\", \"";
 	private static final String SUFFIX = "\")";
 	protected String scriptName;

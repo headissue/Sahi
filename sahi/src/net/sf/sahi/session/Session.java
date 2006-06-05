@@ -13,6 +13,7 @@ import net.sf.sahi.test.SahiTestSuite;
  * User: nraman Date: Jun 21, 2005 Time: 8:03:28 PM
  */
 public class Session {
+	public static final String STATE_RUNNING = "RUNNING";
 	private static Map sessions = new HashMap();
 	private String sessionId;
 	private boolean isWindowOpen = false;
@@ -106,7 +107,7 @@ public class Session {
 
 	public String getPlayBackStatus() {
 		if (getSuite().isRunning()) {
-			return "RUNNING";
+			return STATE_RUNNING;
 		}
 		return new LogFileConsolidator(getSuiteLogDir()).getStatus();
 	}

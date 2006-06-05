@@ -1,8 +1,10 @@
 package net.sf.sahi;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketAddress;
 
 import net.sf.sahi.config.Configuration;
 
@@ -27,7 +29,9 @@ public class Proxy {
 	private void startProxy() throws IOException {
 		ServerSocket server = null;
 		try {
-			server = new ServerSocket(port);
+			server = new ServerSocket();
+			server.setReuseAddress(true);
+			server.bind(new InetSocketAddress(port));
 			System.out.println(">>>> Sahi started. Listening on port:" + port);
 			System.out.println(">>>> Configure your browser to use this server and port as its proxy");
 			System.out.println(">>>> Browse any page and CTRL-ALT-DblClick on the page to bring up the Sahi Controller");

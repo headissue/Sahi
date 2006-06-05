@@ -50,7 +50,7 @@ public class HttpFileResponse extends HttpResponse {
 		setHeader("Content-Type", MimeType.getMimeTypeOfFile(fileName));
 		if (addCacheHeader) {
 			setHeader("Expires", formatForExpiresHeader(new Date(
-							System.currentTimeMillis() + 10 * 60 * 1000)));
+							System.currentTimeMillis() + 10 * 60 * 1000))); // 10 minutes
 		}
 		
 		setHeader("Connection", "close");
