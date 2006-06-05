@@ -20,3 +20,6 @@ _table
 _containsText
 _containsHTML
 _byId
+_row
+_getText
+_getCellText
