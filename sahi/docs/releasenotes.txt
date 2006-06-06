@@ -1,4 +1,4 @@
-Sahi Nightly Release 2006-05-15
+Sahi Nightly Release 2006-06-06
 
 Requirements
 ------------
