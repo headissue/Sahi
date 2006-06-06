@@ -6,9 +6,15 @@
 </head>
 <body>
 <h2>Alert Test</h2>
-
 <script type="text/javascript">
-alert("Here");
+
+function x(s){
+	document.write(s);
+}
+
+window.prompt = x;
+
+prompt("Prompt");
 </script>
 </body>
 </html>
