@@ -9,8 +9,17 @@ Requirements
 Changes
 --------------------
 
-See changelog.txt
+* Fixed bug for some submitted pages not working properly on IE
+* Added socket pool to prevent Connect exceptions when there are a lot of tests
+* Fixed bug to prevent injection of html code into js files
+* Added documentation for _callServer and a few other apis
+* Displaying an error page when remote server is down. Tests do not stop anymore.
 
+Known issues
+* Firefox has problems with multithreaded playback due to session sharing across windows. 
+(Workaround: Do not add the 'threads=n' clause to sahi target)
+* Debug does not step correctly.
+* Form elements with $ in them are not recorded correctly. You have to explicity replace $ with \$ in script.
 
 Installation guide
 ------------------
