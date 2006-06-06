@@ -1,22 +1,77 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <project name="demo" default="sahitests">
 	<taskdef name="sahi" classname="net.sf.sahi.ant.RunSahiTask" classpath="lib/ant-sahi.jar"/>
-
 	<target name="sahitests" description="start the server and run sahi tests">
 		<parallel>
 			<sequential>
 				<waitfor maxwait="3" maxwaitunit="minute" checkevery="100">
 					<http url="http://localhost:10000/demo/index.htm"/>
 				</waitfor>
-				<sahi suite="../scripts/demo.suite"
-					browser="C:\\Program Files\\Internet Explorer\\iexplore.exe"
-					baseurl="http://localhost:10000/demo/"
-					sahihost="localhost"
-					sahiport="9999"
-					failureproperty="sahi.failed"
-					haltonfailure="false"
-					threads="4"
-					/>
+				<antcall target="runietests"/>
+				<antcall target="stop-web"/>
+				<antcall target="failsahi"/>
+				<!--antcall target="stopsahi"/-->
+			</sequential>
+			<antcall target="start-web"/>
+		</parallel>
+	</target>	
+
+	<target name="stressie" description="start the server and run sahi tests">
+		<parallel>
+			<sequential>
+				<waitfor maxwait="3" maxwaitunit="minute" checkevery="100">
+					<http url="http://localhost:10000/demo/index.htm"/>
+				</waitfor>
+				<antcall target="runietests"/>
+				<antcall target="runietests"/>
+				<antcall target="runietests"/>
+				<antcall target="runietests"/>
+				<antcall target="runietests"/>
+				<antcall target="runietests"/>
+				<antcall target="runietests"/>
+				<antcall target="runietests"/>
+				<antcall target="runietests"/>
+				<antcall target="runietests"/>
+				<antcall target="runietests"/>
+				<antcall target="runietests"/>
+				<antcall target="runietests"/>
+				<antcall target="runietests"/>
+				<antcall target="runietests"/>
+				<antcall target="runietests"/>
+				<antcall target="runietests"/>
+				<antcall target="runietests"/>
+				<antcall target="runietests"/>
+				<antcall target="runietests"/>
+				<antcall target="runietests"/>
+				<antcall target="runietests"/>
+				<antcall target="runietests"/>
+				<antcall target="runietests"/>
+				<antcall target="runietests"/>
+				<antcall target="runietests"/>
+				<antcall target="runietests"/>
+				<antcall target="runietests"/>
+				<antcall target="runietests"/>
+				<antcall target="runietests"/>
+				<antcall target="runietests"/>
+				<antcall target="runietests"/>
+				<antcall target="runietests"/>
+				<antcall target="runietests"/>
+				<antcall target="runietests"/>
+				<antcall target="runietests"/>
+				<antcall target="runietests"/>
+				<antcall target="runietests"/>
+				<antcall target="runietests"/>
+				<antcall target="runietests"/>
+				<antcall target="runietests"/>
+				<antcall target="runietests"/>
+				<antcall target="runietests"/>
+				<antcall target="runietests"/>
+				<antcall target="runietests"/>
+				<antcall target="runietests"/>
+				<antcall target="runietests"/>
+				<antcall target="runietests"/>
+				<antcall target="runietests"/>
+				<antcall target="runietests"/>
 				<antcall target="stop-web"/>
 				<antcall target="failsahi"/>
 				<!--antcall target="stopsahi"/-->
@@ -32,14 +87,26 @@
 				<waitfor maxwait="3" maxwaitunit="minute" checkevery="100">
 					<http url="http://localhost:10000/demo/index.htm"/>
 				</waitfor>
-				<sahi suite="../scripts/demo.suite"
-					browser="C:\\Program Files\\Firefox15\\firefox.exe"
-					baseurl="http://localhost:10000/demo/"
-					sahihost="localhost"
-					sahiport="9999"
-					failureproperty="sahi.failed"
-					haltonfailure="false"
-					/>
+				<antcall target="runfftests"/>
+				<antcall target="stop-web"/>
+				<antcall target="failsahi"/>
+				<!--antcall target="stopsahi"/-->
+			</sequential>
+			<antcall target="start-web"/>
+		</parallel>
+	</target>	
+
+	<target name="stressff" description="start the server and run sahi tests">
+		<parallel>
+			<sequential>
+				<waitfor maxwait="3" maxwaitunit="minute" checkevery="100">
+					<http url="http://localhost:10000/demo/index.htm"/>
+				</waitfor>
+				<antcall target="runfftests"/>
+				<antcall target="runfftests"/>
+				<antcall target="runfftests"/>
+				<antcall target="runfftests"/>
+				<antcall target="runfftests"/>
 				<antcall target="stop-web"/>
 				<antcall target="failsahi"/>
 				<!--antcall target="stopsahi"/-->
@@ -48,6 +115,29 @@
 		</parallel>
 	</target>	
 	
+	<target name="runfftests">
+		<sahi suite="../scripts/demo.suite"
+			browser="C:\\Program Files\\Firefox15\\firefox.exe"
+			baseurl="http://localhost:10000/demo/"
+			sahihost="localhost"
+			sahiport="9999"
+			failureproperty="sahi.failed"
+			haltonfailure="false"
+			/>
+	</target>	
+	
+	<target name="runietests">
+		<sahi suite="../scripts/demo.suite"
+			browser="C:\\Program Files\\Internet Explorer\\iexplore.exe"
+			baseurl="http://localhost:10000/demo/"
+			sahihost="localhost"
+			sahiport="9999"
+			failureproperty="sahi.failed"
+			haltonfailure="false"
+			threads="3"
+			/>
+	</target>
+
 	<target name="failsahi" if="sahi.failed">
 		<fail message="Sahi tests failed!"/>
 	</target>

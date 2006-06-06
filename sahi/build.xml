@@ -91,6 +91,7 @@
 				<include name="sahi_demo.sah" />
 				<include name="sahi_demo_frames.sah" />
 				<include name="sahi_demo_include.sah" />
+				<include name="onchange.sah" />
 			</fileset>
 		</copy>
 		<copy todir="temp/sahi/extlib">
