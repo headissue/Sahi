@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta name="generator" content="HTML Tidy, see www.w3.org">
-<title>Sahi - Features Not Yet Supported and Problems</title>
+<title>Sahi - TIME_WAIT</title>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <link rel="stylesheet" type="text/css" href="sahi.css">
 </head>
@@ -102,53 +102,50 @@ in</a></li>
 </td>
 <td valign="top">
 <div class="content">
-<h2 class="pageTitle">Features Not Yet Supported and Problems</h2>
+<h2 class="pageTitle">TIME_WAIT</h2>
 
-<!--Features Not Yet Supported and Problems-->
-<h4><a name="problems">Problems</a></h4>
+<!--TIME_WAIT-->
+<pre>
+4. Windows Communication Foundation (WCF) Known Issues
 
-<ul type="square">
-<li>Controller window does not open. 
+4.1 WCF Can Run Out of Sockets If Creating Many Non-one-way Channels in a Short Timespan
+By design, TCP has a limited number of available client TCP ports. The cleanup of those ports is slow when connections are closed because there is a default four-minute delay. If you open and close more than 1000 connections a minute, you might run out of available ports and Microsoft Windows Communication Foundation (WCF) will throw a socket exception.
 
-<ul>
-<li>Turn off all popup blockers.</li>
+You are most likely to experience this issue in the following scenarios:
 
-<li>Try CTRL-ALT-DblClick</li>
+    * When using the WCF TCP standard Binding
+    * With any custom WCF binding that uses TCP and does not use the WCF Composite Duplex binding
+    * When using any TCP binding with sessions
+    * Msdtc.exe can experience this issue when using WS-AtomicTransaction
 
-<li>Try changing the <a href="props.html#hotkey">Hot Key</a></li>
-</ul>
-</li>
+You are less likely to experience this issue in the following scenarios:
 
-<li>The Controller does not work correctly or gives an error 
+    * When using WCF HTTP-based bindings
+    * When using WCF Named Pipes bindings
+    * For any sessionless TCP bindings on which you do only one-way messaging
+    * When using TCP with the WCF Composite Duplex binding
 
-<ul>
-<li>Close the Controller and reopen it.</li>
-</ul>
-</li>
-</ul>
+If your application needs to use more connections than the system can handle, there are two possible workarounds. You can use either one of the workarounds, or both workarounds in combination:
 
-<h4><a name="notyet">Not yet supported, but coming in</a></h4>
+1. Increase the number of client ports by increasing the value of the following registry key:
 
-<ul type="square">
-<li>Assertions on javascript alerts, confirms and prompts.</li>
+    System Key: [HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters]
+    Value Name: MaxUserPort
+    Value Type: DWORD
+    Value data: 65534
+    Valid Range: 5000-65534 (decimal)
+    Default: 0x1388 (5000 decimal)
+    Description: This parameter controls the maximum number of ports used when a program requests any available user port from the system. Typically, ephemeral (short-lived) ports are allocated values between 1024 and 5000 (decimal), inclusive.
 
-<li>Support for multiple domains in a frameset</li>
-</ul>
+2. Decrease the TIME_WAIT period to 30 seconds by adding the following registry key (or decrease the value of the registry key if it is already present):
 
-<h4><a name="limitations">Limitations</a></h4>
-
-<ul type="square">
-<li>FileUpload using &lt;input type="file"&gt; is not
-supported.</li>
-
-<li>Frames having pages from different domains in the same frameset
-does not work properly.</li>
-</ul>
-
-(<a href="#top">Top</a>) <br>
-<br>
-
-</div>
+    System Key: [HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters]
+    Value Name: TcpTimedWaitDelay
+    Value Type: REG_DWORD - Time in seconds
+    Valid Range: 30-300 (decimal)
+    Default: 0xF0 (240 decimal)
+    Description: This parameter determines the time that a connection stays in the TIME_WAIT state when it is closing. While a connection is in the TIME_WAIT state, the socket pair cannot be re-used. This is also known as the "2MSL" state. According to RFC793, the value should be two times the maximum segment lifetime on the network. See the RFC for more details.
+</pre></div>
 </td>
 </tr>
 </table>

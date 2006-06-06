@@ -37,6 +37,8 @@ _cell(tableEl, rowNo, colNo)<br>
 _cell(tableEl, someTextWhichIdentifiesRow,
 someTextWhichIdentifiesColumn)<br>
 _cell(cellIdStr)<br>
+_row(tableEl, rowNo)<br>
+_row(tableEl, someTextWhichIdentifiesRow)<br>
 </b> (<a href="#top">Top</a>) <br>
 <h4><a name="ageneric"></a>Accessor Functions : Generic</h4>
 
@@ -77,7 +79,8 @@ _setGlobal(name, value)<br>
 _log(message, type) where type can be "success", "failure",
 "error", "info"<br>
 _highlight(jsElement)<br>
-_navigateTo(URLString)<br>
+_navigateTo("URLString")<br>
+<a href="#callserver">_callServer("class_method", "querystring")</a><br>
 </b> <br>
  (<a href="#top">Top</a>) <br>
 <h4><a name="assertion"></a>Assertion Scheduler Functions</h4>
@@ -176,7 +179,7 @@ The min and max are needed only during the first call.<br>
 _resetSavedRandom(id) resets value of _savedRandom(id) to null;
 <br>
 <br>
- 
+
 
 <hr>
 <br>
@@ -208,6 +211,7 @@ Note: that all values will be stored as strings only. <br>
 Note: _setGlobal is a <a href="#scheduler">Scheduler Function</a>.
 <br>
  (<a href="#top">Top</a>) <br>
+
 <hr>
 <br>
 <h4><a name="popup"></a>Handling popup windows</h4>
@@ -231,3 +235,52 @@ or<br>
  Note that there may be problems in recording this. <br>
  <br>
 
+<hr>
+<br>
+<b>_callServer("class_method", "querystring")</b> <br>
+<br>
+
+_callServer allows Sahi to execute any server side code.
+
+
+Example:<br>
+<pre class="code">
+
+<b>Create this Counter class. You will need sahi.jar in the compilation path.</b>
+
+package sahi.ext;
+
+import net.sf.sahi.request.HttpRequest;
+import net.sf.sahi.response.HttpResponse;
+import net.sf.sahi.response.SimpleHttpResponse;
+
+
+public class Counter {
+	static int counter = 0;
+
+	public void incrementCounter(HttpRequest request) {
+			counter++;
+	}
+
+	public HttpResponse getCounter(HttpRequest request) {
+		return new SimpleHttpResponse(""+counter);
+	}
+
+}
+
+
+<b>Add this class to Sahi's class path.</b>
+For example, if you are using sahi.bat, you could add it to the path like this:
+java -classpath ..\lib\sahi.jar;<b>C:\sahiext\classes;</b> net.sf.sahi.Proxy
+
+<b>Restart Sahi</b>
+
+<b>Now we can call the methods of Counter class from any Sahi script in this way:</b>
+var $currentCount = parseInt(<i>_callServer("sahi.ext.Counter_getCounter")</i>);
+<i>_callServer("sahi.ext.Counter_incrementCounter");</i>
+_assertEqual($currentCount + 1, <i>_callServer("sahi.ext.Counter_getCounter")</i>);
+
+</pre>
+
+<br>
+ (<a href="#top">Top</a>) <br>
