@@ -202,6 +202,7 @@ function sahi_dragDrop(draggable, droppable){
 }
 
 function sahi_click(el){
+	if (el == null) return;
 	var n = el;
 	while (n != null){
 		if (n.tagName && n.tagName == "A"){
@@ -220,7 +221,10 @@ function sahi_click(el){
 	sahiSimulateMouseEvent(el, "mouseover");
 	sahiSimulateMouseEvent(el, "mousedown");
 	sahiSimulateMouseEvent(el, "mouseup");
+	try{
 	sahiSimulateMouseEvent(el, "click");
+	}catch(e){
+	} 
 	sahiSimulateMouseEvent(el, "blur");
 	var n = el;
 	while (n != null){
@@ -228,7 +232,7 @@ function sahi_click(el){
 			n.onclick = n.prevClick;
 		}
 		n = n.parentNode;
-	}  
+	} 
 }
 function sahiSimulateMouseEvent(el, type){
 	var x = findPosX(el);
