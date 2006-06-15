@@ -914,7 +914,7 @@ function sahiFindElementHelper(id, win, type, res, param){
 	    var ix = o.index;
 	    var fetch = o.name;
 		if (type == "image"){
-			var els = document.getElementsByTagName("input");
+			var els = win.document.getElementsByTagName("input");
 	    	for (var j=0; j<els.length; j++){
 		        if (els[j].type == type && sahiAreEqual(els[j], param, fetch)){
 		        	res.cnt++;
