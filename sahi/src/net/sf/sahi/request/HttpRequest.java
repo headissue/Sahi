@@ -1,4 +1,3 @@
-
 package net.sf.sahi.request;
 
 import java.io.IOException;
@@ -16,6 +15,7 @@ import net.sf.sahi.StreamHandler;
 import net.sf.sahi.session.Session;
 import net.sf.sahi.test.SahiTestSuite;
 import net.sf.sahi.util.Utils;
+import net.sf.sahi.config.Configuration;
 
 /**
  * User: nraman Date: May 13, 2005 Time: 10:01:13 PM
@@ -44,8 +44,8 @@ public class HttpRequest extends StreamHandler {
 			setUri();
 			setQueryString();
 		}
-		logger.fine("\nFirst line:"+firstLine());
-		logger.fine("isSSL="+isSSL());
+		logger.fine("\nFirst line:" + firstLine());
+		logger.fine("isSSL=" + isSSL());
 	}
 
 	public String host() {
@@ -76,7 +76,7 @@ public class HttpRequest extends StreamHandler {
 	}
 
 	public boolean isSSL() {
-		return isSSLSocket || (firstLine().indexOf("HTTPS") != -1) || isConnect();
+		return isSSLSocket || isConnect();
 	}
 
 	public String method() {
@@ -85,7 +85,7 @@ public class HttpRequest extends StreamHandler {
 
 	private void setUri() {
 		String withHost = firstLine().substring(firstLine().indexOf(" "),
-			firstLine().lastIndexOf(" ")).trim();
+				firstLine().lastIndexOf(" ")).trim();
 		uri = withHost;
 		int indexOfHost = withHost.indexOf(host);
 		if (indexOfHost != -1) {
@@ -108,13 +108,13 @@ public class HttpRequest extends StreamHandler {
 		String hostWithPort = (String) getLastSetValueOfHeader("Host");
 		host = hostWithPort;
 		port = 80;
-		if (isSSL()) port = 443;
+		if (isSSL())
+			port = 443;
 		int indexOfColon = hostWithPort.indexOf(":");
 		if (indexOfColon != -1) {
 			host = hostWithPort.substring(0, indexOfColon);
 			try {
-				port = Integer.parseInt(hostWithPort
-						.substring(indexOfColon + 1).trim());
+				port = Integer.parseInt(hostWithPort.substring(indexOfColon + 1).trim());
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -123,7 +123,8 @@ public class HttpRequest extends StreamHandler {
 	}
 
 	private void setQueryString() {
-		if (uri == null) return;
+		if (uri == null)
+			return;
 
 		int qIx = uri.indexOf("?");
 		String uriWithoutQueryString = uri;
@@ -131,11 +132,11 @@ public class HttpRequest extends StreamHandler {
 			uriWithoutQueryString = uri.substring(0, qIx);
 			queryString = uri.substring(qIx + 1);
 		}
-		
+
 		fileExtension = "";
 		int dotIx = uriWithoutQueryString.indexOf(".");
 		if (dotIx != -1) {
-			fileExtension = uriWithoutQueryString.substring(dotIx+1);
+			fileExtension = uriWithoutQueryString.substring(dotIx + 1);
 		}
 	}
 
@@ -200,18 +201,19 @@ public class HttpRequest extends StreamHandler {
 	}
 
 	static String rebuildCookies(Map cookies2) {
-        StringBuffer sb = new StringBuffer();
-        if (cookies2.size() == 0) return "";
-        Iterator keys = cookies2.keySet().iterator();
-        while (keys.hasNext()) {
-            String key = (String) keys.next();
-            String value = (String) cookies2.get(key);
-            sb.append(" ").append(key).append("=").append(value).append(";");
-        }
-        String cookieStr = sb.toString().trim();
-        if (cookieStr.endsWith(";")) {
-        	cookieStr = cookieStr.substring(0, cookieStr.length()-1);
-        }
+		StringBuffer sb = new StringBuffer();
+		if (cookies2.size() == 0)
+			return "";
+		Iterator keys = cookies2.keySet().iterator();
+		while (keys.hasNext()) {
+			String key = (String) keys.next();
+			String value = (String) cookies2.get(key);
+			sb.append(" ").append(key).append("=").append(value).append(";");
+		}
+		String cookieStr = sb.toString().trim();
+		if (cookieStr.endsWith(";")) {
+			cookieStr = cookieStr.substring(0, cookieStr.length() - 1);
+		}
 		return cookieStr;
 	}
 
@@ -223,18 +225,23 @@ public class HttpRequest extends StreamHandler {
 	}
 
 	public HttpRequest modifyForFetch() {
-		setFirstLine(firstLine().replaceAll("HTTP/1.1", "HTTP/1.0"));
-        removeHeader("Proxy-Connection");
-        removeHeader("Accept-Encoding");
-        removeHeader("Keep-Alive");
-//        removeHeader("ETag");
-//        removeHeader("If-Modified-Since");
-//        removeHeader("If-None-Match");
-        setHeader("Connection", "close");
+		if (Configuration.isExternalProxyEnabled()) {
+			setFirstLine(firstLine().replaceAll("HTTP/1.1", "HTTP/1.0"));
+		} else {
+			setFirstLine(method() + " " + uri() + " HTTP/1.0");
+		}
+		removeHeader("Proxy-Connection");
+		removeHeader("Accept-Encoding");
+		removeHeader("Keep-Alive");
+		// removeHeader("ETag");
+		// removeHeader("If-Modified-Since");
+		// removeHeader("If-None-Match");
+		setHeader("Connection", "close");
 		cookies().remove("sahisid");
 		setHeader("Cookie", rebuildCookies());
-        setRawHeaders(getRebuiltHeaderBytes());
-		logger.fine("\n------------\n\nRequest Headers:\n"+headers());
+		setRawHeaders(getRebuiltHeaderBytes());
+		logger.fine(firstLine());
+		logger.fine("\n------------\n\nRequest Headers:\n" + headers());
 		return this;
 	}
 
@@ -249,7 +256,7 @@ public class HttpRequest extends StreamHandler {
 		// System.out.println("2:"+sessionId);
 		return Session.getInstance(sessionId);
 	}
-	
+
 	public String fileExtension() {
 		return fileExtension;
 	}
