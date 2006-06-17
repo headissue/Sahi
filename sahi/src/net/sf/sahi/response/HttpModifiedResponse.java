@@ -1,4 +1,3 @@
-
 package net.sf.sahi.response;
 
 import java.io.ByteArrayOutputStream;
@@ -27,40 +26,28 @@ public class HttpModifiedResponse extends HttpResponse {
 		return new String(content).replaceAll("http", "https").getBytes();
 	}
 
-	public HttpModifiedResponse(HttpResponse response, boolean isSSL, String fileExtension) throws IOException {
+	public HttpModifiedResponse(HttpResponse response, boolean isSSL, String fileExtension)
+			throws IOException {
 		this.fileExtension = fileExtension;
 		copyFrom(response);
 		this.isSSL = isSSL;
 		if (firstLine().indexOf("30") == -1) { // Response code other than
-			boolean js = isJs();
-			boolean html = !js && isHTML();
-			if (html || js) {
-				if (html) {
-					removeHeader("Transfer-Encoding");
-					removeHeader("ETag");
-					removeHeader("Last-Modified");
-					setHeader("Cache-Control", "no-cache");
-					setHeader("Pragma", "no-cache");
-					setHeader("Expires", "-1");
-					setData(getModifiedData());
-				} 
+			boolean html = isHTML();
+			if (html) {
+				removeHeader("Transfer-Encoding");
+				removeHeader("ETag");
+				removeHeader("Last-Modified");
+				setHeader("Cache-Control", "no-cache");
+				setHeader("Pragma", "no-cache");
+				setHeader("Expires", "-1");
+				setData(getModifiedData());
 				setHeader("Content-Length", "" + data().length);
 				resetRawHeaders();
 			}
 		}
 	}
 	private boolean isJs() {
-		String contentType = contentType();
-		if (contentType != null && contentType.toLowerCase().indexOf("application/x-javascript") != -1) {
-			return true;
-		}
-		if (".js".equalsIgnoreCase(fileExtension)) {
-			return true;
-		}
-		if (contentType == null) {
-			return hasJsContent();
-		}
-		return false;
+		return ".js".equalsIgnoreCase(fileExtension);
 	}
 
 	private byte[] getModifiedData() throws IOException {
@@ -96,35 +83,28 @@ public class HttpModifiedResponse extends HttpResponse {
 	static byte[] substituteModals(byte[] content) {
 		// long start = System.currentTimeMillis();
 		String s = new String(content);
-		s = s.replaceAll("(\\W+)((alert)|(confirm)|(prompt))\\s*\\(",
-				"$1sahi_$2(");
+		s = s.replaceAll("(\\W+)((alert)|(confirm)|(prompt))\\s*\\(", "$1sahi_$2(");
 		// System.out.println("substituteModals took ms
 		// "+(System.currentTimeMillis() - start));
 		return s.getBytes();
 	}
 
 	private boolean isHTML() {
+		if (isJs()) return false;
 		String contentType = contentType();
 		if (contentType != null && contentType.toLowerCase().indexOf("text/html") != -1) {
 			return true;
 		}
-		if (contentType == null
-				|| contentType.toLowerCase().indexOf("text/plain") != -1) {
+		if (contentType == null || contentType.toLowerCase().indexOf("text/plain") != -1) {
 			return hasHtmlContent();
 		}
 		return false;
 	}
-	
-	private boolean hasJsContent() {
-		String s = getSampleContent();
-		return s.indexOf("var ") != -1 || s.indexOf("function ") != -1;
-	}
 
 	private boolean hasHtmlContent() {
 		String s = getSampleContent();
-		return s.indexOf("<html") != -1 || s.indexOf("<body") != -1
-				|| s.indexOf("<table") != -1 || s.indexOf("<script") != -1
-				|| s.indexOf("<form") != -1;
+		return s.indexOf("<html") != -1 || s.indexOf("<body") != -1 || s.indexOf("<table") != -1
+				|| s.indexOf("<script") != -1 || s.indexOf("<form") != -1;
 	}
 
 	private String sampleContent = null;
@@ -137,7 +117,7 @@ public class HttpModifiedResponse extends HttpResponse {
 		}
 		return sampleContent;
 	}
-	
+
 	public static HttpResponse modify(HttpResponse response) throws IOException {
 		response.setData(inject(response.data(), 0, false));
 		return response;
