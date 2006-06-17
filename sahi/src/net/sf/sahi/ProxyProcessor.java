@@ -30,7 +30,7 @@ public class ProxyProcessor implements Runnable {
 
 	private static Logger logger = Configuration.getLogger("net.sf.sahi.ProxyProcessor");
 
-	private static boolean externalProxyEnabled = Configuration.isExternalProxyEnabled();;
+	private static boolean externalProxyEnabled = Configuration.isExternalProxyEnabled();
 
 	private static String externalProxyHost = null;
 
