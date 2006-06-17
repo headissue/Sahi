@@ -409,7 +409,7 @@ function sahiSimulateKeyEvent(c, target, evType){
 		evt.ctrlKey = false; 
 		evt.altKey = false;
 		evt.metaKey = false;
-		evt.keyCode = c.toUpperCase().charCodeAt(0);
+		if ((c!='.')) evt.keyCode = c.toUpperCase().charCodeAt(0);
 		evt.charCode = c.charCodeAt(0);
 		evt.shiftKey = evt.keyCode != evt.charCode;
 		
