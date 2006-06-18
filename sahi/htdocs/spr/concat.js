@@ -1688,7 +1688,7 @@ var interval = INTERVAL;
 function sahiEx(isStep){
     try{
         try{
-        	if (isPaused()) return;
+        	if (isPaused() && !isStep) return;
             var i=sahiGetCurrentIndex();
             if (isSahiPlaying() && _sahiCmds.length == i){
                 sahiStopPlaying();
@@ -1778,6 +1778,8 @@ function pause(){
 function unpause(){
 	_isSahiPaused = false;
 	sahiSetServerVar("sahiPaused", 0);
+	sahiSetServerVar("sahi_play", 1);
+	_isSahiPlaying = true;
 }
 var _isSahiPaused = null;
 function isPaused(){

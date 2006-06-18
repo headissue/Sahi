@@ -27,16 +27,10 @@ function play(){
 	return true;
 }
 function stepWisePlay(){
-	top.opener.top.unpause();
-//    top.opener.sahiStartPlaying();
-    if (parseInt(document.playform.step.value) == 0){
-	    top.opener.sahiSetCurrentIndex(parseInt(document.playform.step.value));
-    	top.opener.top.location.reload(true);
-//    	top.opener.top.sahiEx(isStep);
-	}
-	else{
-		top.opener.top.sahiEx(true);
-	}
+	var i = parseInt(document.playform.step.value);
+	top.opener.top.sahiSetCurrentIndex(i);
+    top.opener.sahiStartPlaying();
+	top.opener.top.eval("sahiEx(true)");
 }
 function pause(){
 	top.opener.top.pause();
@@ -156,7 +150,7 @@ function doOnTabsLoad(){
 function displayStepNum(){
 	try{
 		if (document.playform)
-		    document.playform.step.value = ""+sahiGetCurrentIndex();
+		    document.playform.step.value = ""+(sahiGetCurrentIndex()+1);
     }catch(e){
     	sahiHandleException(e);
     }
