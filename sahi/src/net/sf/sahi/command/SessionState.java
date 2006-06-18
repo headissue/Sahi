@@ -17,6 +17,9 @@ public class SessionState {
 		props.setProperty("sessionId", session.id());
 		props.setProperty("isRecording", "" + session.isRecording());
 		props.setProperty("isWindowOpen", "" + session.isWindowOpen());
+		props.setProperty("isSahiPaused", "" + isPaused(session));
+		props.setProperty("isSahiPlaying", ""+session.isPlayingBack());
+		props.setProperty("isSahiRecording", ""+session.isRecording());
 		props.setProperty("hotkey", "" + Configuration.getHotKey());
 		NoCacheHttpResponse httpResponse = new NoCacheHttpResponse(
 				new HttpFileResponse(Configuration.getHtdocsRoot()
@@ -27,10 +30,21 @@ public class SessionState {
 
 
 
+	private boolean isPaused(Session session) {
+		return "1".equals(session.getVariable("sahi_paused"));
+	}
+
+
+
 	public void setVar(HttpRequest request) {
 		Session session = request.session();
 		String name = request.getParameter("name");
 		String value = request.getParameter("value");
+		Hits.increment("SessionState_setVar :: "+name);
+		setVar(name, value, session);
+	}
+
+	public void setVar(String name, String value, Session session) {
 		session.setVariable(name, value);
 	}
 
@@ -38,6 +52,7 @@ public class SessionState {
 		Session session = request.session();
 		HttpResponse httpResponse;
 		String name = request.getParameter("name");
+		Hits.increment("SessionState_getVar :: "+name);
 		String value = session.getVariable(name);
 		httpResponse = new NoCacheHttpResponse(value != null
 				? value

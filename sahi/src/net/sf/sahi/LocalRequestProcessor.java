@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
 import net.sf.sahi.command.CommandExecuter;
+import net.sf.sahi.command.Hits;
 import net.sf.sahi.playback.log.LogFileConsolidator;
 import net.sf.sahi.request.HttpRequest;
 import net.sf.sahi.response.HttpFileResponse;
@@ -17,6 +18,7 @@ public class LocalRequestProcessor {
 		HttpResponse httpResponse = new NoCacheHttpResponse("");
 		if (uri.indexOf("/dyn/") != -1) {
 			String command = URLParser.getCommandFromUri(uri);
+			Hits.increment(command);
 			if (uri.indexOf("/stopserver") != -1) {
 				System.exit(1);
 			} else if (command != null) {
@@ -32,13 +34,13 @@ public class LocalRequestProcessor {
 		} else if (uri.indexOf("/spr/") != -1) {
 			String fileName = URLParser.fileNamefromURI(requestFromBrowser.uri());
 			httpResponse = new HttpFileResponse(fileName, null, true, true);
-			//httpResponse = new HttpFileResponse(fileName);
 		} else {
 			httpResponse = new SimpleHttpResponse(
 					"<html><h2>You have reached the Sahi proxy.</h2></html>");
 		}
 		return httpResponse;
 	}
+
 
 
 	private HttpResponse getLogResponse(String fileName) throws IOException {

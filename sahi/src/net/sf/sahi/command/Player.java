@@ -47,7 +47,7 @@ public class Player {
 		if (session.getScript() != null)
 			session.startPlayBack();
 		session.setVariable("sahi_play", "1");
-		session.setVariable("sahiPaused", "1");
+		session.setVariable("sahi_paused", "1");
 	}
 
 	public HttpResponse currentScript(HttpRequest request) {
@@ -105,6 +105,13 @@ public class Player {
 		return proxyAutoResponse(startUrl, session.id());
 	}
 
+
+	public void success(HttpRequest request) {
+		Session session = request.session();
+		new SessionState().setVar("sahi_retries", "0", session);
+		new Log().execute(request);
+	}
+	
 	private HttpFileResponse proxyAutoResponse(String startUrl, String sessionId) {
 		Properties props = new Properties();
 		props.setProperty("startUrl", startUrl);

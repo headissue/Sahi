@@ -1162,8 +1162,11 @@ function sahiFindTagIxHelper(id, toMatch, win, type, res, param){
 function sahiCanSimulateClick(el){
 	return (el.click || el.dispatchEvent);
 }
+
 function sahiIsRecording(){
-	return sahiGetServerVar("sahi_record") == "1";
+	if (top._isSahiRecording == null)
+		top._isSahiRecording = sahiGetServerVar("sahi_record") == "1";
+	return top._isSahiRecording;
 }
 function sahiCreateCookie(name,value,days)
 {
@@ -1530,10 +1533,10 @@ function removeEvent(el, ev, fn){
 	}	
 }
 function sahiSetRetries(i){
-    sahiSetServerVar("sahiRetries", i);
+    sahiSetServerVar("sahi_retries", i);
 }
 function sahiGetRetries(){
-    var i = parseInt(sahiGetServerVar("sahiRetries"));
+    var i = parseInt(sahiGetServerVar("sahi_retries"));
     return (""+i != "NaN") ? i : 0;
 }
 function sahiOnError(msg, url, lno){
@@ -1712,8 +1715,8 @@ function sahiEx(isStep){
                 		sahiSetCurrentIndex(i); 
                 		throw e;
                 	}
-	                sahiLogPlayBack(_sahiCmds[i], level, debugInfo);
-	                sahiSetRetries(0); // _sahi_attempts = 0;
+	                sahiReportSuccess(_sahiCmds[i], level, debugInfo);
+//	                sahiSetRetries(0); // _sahi_attempts = 0;
                 }catch (ex1){
                     if (ex1 instanceof SahiAssertionException) {
                     	var retries = sahiGetRetries();
@@ -1772,20 +1775,19 @@ function canEval(cmd){
             || (top.opener != null && isForPopup(cmd)); // for popups
 }
 function pause(){
-	_isSahiPaused = true;
-	sahiSetServerVar("sahiPaused", 1);
+	top._isSahiPaused = true;
+	sahiSetServerVar("sahi_paused", 1);
 }
 function unpause(){
-	_isSahiPaused = false;
-	sahiSetServerVar("sahiPaused", 0);
+	top._isSahiPaused = false;
+	sahiSetServerVar("sahi_paused", 0);
 	sahiSetServerVar("sahi_play", 1);
-	_isSahiPlaying = true;
+	top._isSahiPlaying = true;
 }
-var _isSahiPaused = null;
 function isPaused(){
-	if (_isSahiPaused == null)
-		_isSahiPaused = sahiGetServerVar("sahiPaused") == "1";
-	return _isSahiPaused;
+	if (top._isSahiPaused == null)
+		top._isSahiPaused = sahiGetServerVar("sahi_paused") == "1";
+	return top._isSahiPaused;
 }
 function updateControlWinDisplay(s){
 	try{
@@ -1807,29 +1809,33 @@ function sahiGetCurrentIndex(){
     var i = parseInt(sahiGetServerVar("sahiIx"));
     return (""+i != "NaN") ? i : 0;
 }
-var _isSahiPlaying = null;
 function isSahiPlaying(){
-	if (_isSahiPlaying == null)
-		_isSahiPlaying = sahiGetServerVar("sahi_play")=="1";
-    return _isSahiPlaying;
+	if (top._isSahiPlaying == null)
+		top._isSahiPlaying = sahiGetServerVar("sahi_play")=="1";
+    return top._isSahiPlaying;
 }
 function sahiStartPlaying(){
 	sahiSendToServer("/_s_/dyn/Player_start");
 	sahiSetServerVar("sahi_play", 1);
-	_isSahiPlaying = true;
+//	top._isSahiPlaying = true;
 }
 function sahiStopPlaying(){
 	sahiSendToServer("/_s_/dyn/Player_stop");
 	sahiSetServerVar("sahi_play", 0);
 	updateControlWinDisplay("--Stopped Playback--");
-	_isSahiPlaying = false;
+	top._isSahiPlaying = false;
 }
 function sahiStartRecording(){
+	top._isSahiRecording = true;
    	sahiAddHandlersToAllFrames(top);
 }
 function sahiStopRecording(){
+	top._isSahiRecording = false;
 	sahiSendToServer("/_s_/dyn/Recorder_stop");
 	sahiSetServerVar("sahi_record", 0);
+}
+function sahiReportSuccess(msg, type, debugInfo){
+	sahiSendToServer("/_s_/dyn/Player_success?msg=" + escape(msg) + "&type=" + type + "&debugInfo=" + (debugInfo?escape(debugInfo):""));
 }
 function sahiLogPlayBack(msg, type, debugInfo){
 	sahiSendToServer("/_s_/dyn/Log?msg=" + escape(msg) + "&type=" + type + "&debugInfo=" + (debugInfo?escape(debugInfo):""));

@@ -40,6 +40,7 @@ function stopPlay(){
 }
 function resetStep(){
     document.playform.step.value = 0;
+    sahiSetServerVar("sahiIx", 0);
 }
 function clearLogs(){
     document.logForm.logs.value = "";
@@ -377,6 +378,7 @@ function checkScript(f){
 }
 function onScriptFormSubmit(f){
 	if (!checkScript(f)) return false;
+	if (f.starturl.value == "") f.starturl.value = top.opener.top.location.href;
 	var url = checkURL(f.starturl.value);
 	resetStep();
 	clearLogs();
