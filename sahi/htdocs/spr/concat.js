@@ -94,6 +94,23 @@ function sahiGetFormElement(src){
     	var els = document.getElementsByTagName('input');
 		return "getElementsByTagName('input')[" + sahiFindInArray(els, src) + "]";
     }
+    if (src.type == "textarea"){
+    	var els = document.getElementsByTagName('textarea');
+		return "getElementsByTagName('textarea')[" + sahiFindInArray(els, src) + "]";
+    }
+    if (src.type == "select-one" || src.type == "select-multiple"){
+    	var els = document.getElementsByTagName('select');
+		return "getElementsByTagName('select')[" + sahiFindInArray(els, src) + "]";
+    }    
+    if (src.type == "button"){
+    	var els = document.getElementsByTagName('button');
+		return "getElementsByTagName('button')[" + sahiFindInArray(els, src) + "]";
+    }
+	else {
+    	var els = document.getElementsByTagName('input');
+		return "getElementsByTagName('input')[" + sahiFindInArray(els, src) + "]";
+    }
+    /*
     if (!isBlankOrNull(src.name)){
         n = 'elements["'+src.name+'"]';
     }else {
@@ -106,6 +123,7 @@ function sahiGetFormElement(src){
     }
     var f = sahiGetForm(src.form);
     return (n == "") ? f : f+"."+n;
+    */
 }
 
 function sahiGetTable(src){
@@ -140,7 +158,7 @@ function sahiGetTableEl(src){
 
 function sahiGetArrayElement(s, src){
     var tag = src.tagName.toLowerCase();
-    if (tag=="input" || tag=="textarea" || tag=="select"){
+    if (tag=="input" || tag=="textarea" || tag.indexOf("select") != -1){
         var el2 = eval(s);
         if (el2 == src) return s;
         var ix = -1;
@@ -457,10 +475,10 @@ function sahi_check(el, val){
 }
 
 function sahi_button(n){
-     return sahiFindElement(n, "button");
+     return sahiFindElement(n, "button", "input");
 }
 function sahi_submit(n){
-     return sahiFindElement(n, "submit");
+     return sahiFindElement(n, "submit", "input");
 }
 
 function sahi_wait(i){
@@ -468,17 +486,17 @@ function sahi_wait(i){
 }
 
 function sahi_textbox(n){
-    return sahiFindElement(n, "text");
+    return sahiFindElement(n, "text", "input");
 
 }
 function sahi_password(n){
-    return sahiFindElement(n, "password");
+    return sahiFindElement(n, "password", "input");
 }
 function sahi_checkbox(n){
-    return sahiFindElement(n, "checkbox");
+    return sahiFindElement(n, "checkbox", "input");
 }
 function sahi_textarea(n){
-    return sahiFindElement(n, "textarea");
+    return sahiFindElement(n, "textarea", "textarea");
 }
 function sahi_accessor(n){
     return eval(n);
@@ -487,18 +505,18 @@ function sahi_byId(id){
 	return sahiFindElementById(top, id);
 }
 function sahi_select(n){
-    var el = sahiFindElement(n, "select-one");
-    if (!el) el = sahiFindElement(n, "select-multiple");
+    var el = sahiFindElement(n, "select-one", "select");
+    if (!el) el = sahiFindElement(n, "select-multiple", "select");
     return el;
 }
 function sahi_radio(n){
-    return sahiFindElement(n, "radio");
+    return sahiFindElement(n, "radio", "input");
 }
 function sahi_image(n){
     return sahiFindImage(n, top, "img");
 }
 function sahi_imageSubmitButton(n){
-    return sahiFindElement(n, "image");
+    return sahiFindElement(n, "image", "input");
 }
 function sahi_link(n){
     return sahiFindLink(n, top);
@@ -842,24 +860,24 @@ function sahiFindElementById(win, id){
     }  
     return res;  
 }
-function sahiFindElement(id, type){
+function sahiFindElement(id, type, tagName){
 	var res = getBlankResult();
 	var retVal = null;
 	if (type == "button" || type == "submit"){
-		retVal = sahiFindElementHelper(id, top, type, res, "value").element;
+		retVal = sahiFindElementHelper(id, top, type, res, "value", tagName).element;
 		if (retVal != null) return retVal;
 	}
 	else if (type == "image"){
-		retVal = sahiFindElementHelper(id, top, type, res, "alt").element;
+		retVal = sahiFindElementHelper(id, top, type, res, "alt", tagName).element;
 		if (retVal != null) return retVal;
 	}
 	
 	res = getBlankResult();
-	retVal = sahiFindElementHelper(id, top, type, res, "name").element;
+	retVal = sahiFindElementHelper(id, top, type, res, "name", tagName).element;
 	if (retVal != null) return retVal;
 	
 	res = getBlankResult();
-	return sahiFindElementHelper(id, top, type, res, "id").element;
+	return sahiFindElementHelper(id, top, type, res, "id", tagName).element;
 }
 
 function sahiFindFormElementByIndex(ix, win, type, res){
@@ -905,7 +923,7 @@ function sahiFindFormElementByIndex(ix, win, type, res){
     return res;
 }
 
-function sahiFindElementHelper(id, win, type, res, param){
+function sahiFindElementHelper(id, win, type, res, param, tagName){
 	if ((typeof id) == "number"){
 		res = sahiFindFormElementByIndex(id, win, type, res);
 		if (res.found) return res;
@@ -913,107 +931,71 @@ function sahiFindElementHelper(id, win, type, res, param){
 		var o = getArrayNameAndIndex(id);
 	    var ix = o.index;
 	    var fetch = o.name;
-		if (type == "image"){
-			var els = win.document.getElementsByTagName("input");
-	    	for (var j=0; j<els.length; j++){
-		        if (els[j].type == type && sahiAreEqual(els[j], param, fetch)){
-		        	res.cnt++;
-		        	if (res.cnt == ix || ix == -1){
-			        	res.element = els[j];
-		        		res.found = true;
-		        		return res;
-		        	}
-		        }
-	        }
-		}else{
-		    var fs = win.document.forms;
-		    if (fs){
-			    for (var i=0; i<fs.length; i++){
-			    	var els = fs[i].elements;
-			    	for (var j=0; j<els.length; j++){
-				        if (els[j].type == type && sahiAreEqual(els[j], param, fetch)){
-				        	res.cnt++;
-				        	if (res.cnt == ix || ix == -1){
-					        	res.element = els[j];
-				        		res.found = true;
-				        		return res;
-				        	}
-				        }
-			        }
-			    }
-		    }
-	    }    
+		var els = win.document.getElementsByTagName(tagName);
+		for (var j=0; j<els.length; j++){
+			if (els[j].type == type && sahiAreEqual(els[j], param, fetch)){
+				res.cnt++;
+				if (res.cnt == ix || ix == -1){
+					res.element = els[j];
+					res.found = true;
+					return res;
+				}
+			}
+		}
+    
     }
     var frs = win.frames;
     if (frs){
         for (var j=0; j<frs.length; j++){
-            res = sahiFindElementHelper(id, frs[j], type, res, param);
+            res = sahiFindElementHelper(id, frs[j], type, res, param, tagName);
 			if (res && res.found) return res;
         }
     }
     return res;
 }
 
-function sahiFindElementIx(id, toMatch, type){
+function sahiFindElementIx(id, toMatch, type, tagName){
 	var res = getBlankResult();
 	var retVal = -1;
 
 	if (id == null || id == ""){
-		retVal = sahiFindElementIxHelper(id, type, toMatch, top, res, null).cnt;
+		retVal = sahiFindElementIxHelper(id, type, toMatch, top, res, null, tagName).cnt;
 		if (retVal != -1) return retVal;
 	}
 
 	if (type == "button" || type == "submit"){
-		retVal = sahiFindElementIxHelper(id, type, toMatch, top, res, "value").cnt;
+		retVal = sahiFindElementIxHelper(id, type, toMatch, top, res, "value", tagName).cnt;
 		if (retVal != -1) return retVal;
 	}	
 	else if (type == "image"){
-		retVal = sahiFindElementIxHelper(id, type, toMatch, top, res, "alt").cnt;
+		retVal = sahiFindElementIxHelper(id, type, toMatch, top, res, "alt", tagName).cnt;
 		if (retVal != -1) return retVal;
 	}
 	res = getBlankResult();
-	retVal = sahiFindElementIxHelper(id, type, toMatch, top, res, "name").cnt;
+	retVal = sahiFindElementIxHelper(id, type, toMatch, top, res, "name", tagName).cnt;
 	if (retVal != -1) return retVal;
 
 	res = getBlankResult();
-	retVal = sahiFindElementIxHelper(id, type, toMatch, top, res, "id").cnt;
+	retVal = sahiFindElementIxHelper(id, type, toMatch, top, res, "id", tagName).cnt;
 	return retVal;
 
 }
-function sahiFindElementIxHelper(id, type, toMatch, win, res, param){
+function sahiFindElementIxHelper(id, type, toMatch, win, res, param, tagName){
 	if (res && res.found) return res;
-	if (type == "image"){
-		var els = document.getElementsByTagName("input");
-    	for (var j=0; j<els.length; j++){
-	        if (els[j].type == type && sahiAreEqual(els[j], param, id)){
-	        	res.cnt++;
-	        	if (els[j] == toMatch){
-	        		res.found = true;
-	        		return res;
-	        	}
-	        }
+	var els = document.getElementsByTagName(tagName);
+	for (var j=0; j<els.length; j++){
+        if (els[j].type == type && sahiAreEqual(els[j], param, id)){
+        	res.cnt++;
+        	if (els[j] == toMatch){
+        		res.found = true;
+        		return res;
+        	}
         }
-	}else{
-	    var fs = win.document.forms;
-	    if (fs){
-		    for (var i=0; i<fs.length; i++){
-		    	var els = fs[i].elements;
-		    	for (var j=0; j<els.length; j++){
-			        if (els[j].type == type &&  (param == null || sahiAreEqual(els[j], param, id))){
-			        	res.cnt++;
-			        	if (els[j] == toMatch){
-			        		res.found = true;
-			        		return res;
-			        	}
-			        }
-		        }
-		    }
-	    }
     }
     var frs = win.frames;
     if (frs){
         for (var j=0; j<frs.length; j++){
-            res = sahiFindElementIxHelper(id, type, toMatch, frs[j], res, param);
+            res = sahiFindElementIxHelper(id, type, toMatch, frs[j], res, param, tagName);
 			if (res && res.found) return res;
         }
     }
@@ -1317,7 +1299,6 @@ function getTarget(e){
 function sahiGetAccessorInfo(el){
 	if (el == null) return null;
     var type = el.type;
-
     var accessor = sahiGetAccessor(el);
     var shortHand = getShortHand(el, accessor);
 //    alert(type+" -- "+accessor+" --- "+shortHand);
@@ -1343,7 +1324,8 @@ function sahiGetAccessorInfo(el){
 function getShortHand(el, accessor){
     var shortHand = "";
     try{
-        if (el.tagName.toLowerCase() == "img"){
+    	var tagLC = el.tagName.toLowerCase();
+        if (tagLC == "img"){
             shortHand = el.alt;
             if (!shortHand || shortHand=="") shortHand = el.id;
             if (shortHand && shortHand!=""){
@@ -1357,7 +1339,7 @@ function getShortHand(el, accessor){
             	if (ix != -1) shortHand = ix;
             }
             return shortHand;
-        }else if (el.tagName.toLowerCase() == "a"){
+        }else if (tagLC == "a"){
             shortHand = sahiGetText(el);//(el.innerText) ? el.innerText : el.text;
             shortHand = sahiTrim(shortHand);
             if (!shortHand || shortHand=="") shortHand = el.id;
@@ -1369,19 +1351,19 @@ function getShortHand(el, accessor){
 	            }            
             }
             return shortHand;
-        }else if (el.tagName.toLowerCase() == "button" || el.tagName.toLowerCase() == "input" || el.tagName.toLowerCase() == "textarea" || el.tagName.toLowerCase().indexOf("select") != -1){
+        }else if (tagLC == "button" || tagLC == "input" || tagLC == "textarea" || tagLC.indexOf("select") != -1){
         	if (el.type == "button" || el.type == "submit") shortHand = el.value;
         	if (el.type == "image")	shortHand = el.alt;
             else if (!shortHand || shortHand=="") shortHand = el.name;
             if (!shortHand || shortHand=="") shortHand = el.id;
             if (shortHand && shortHand!=""){
-	            if (sahiFindElement(shortHand, el.type) != el){
-	            	var ix = sahiFindElementIx(shortHand, el, el.type);
+	            if (sahiFindElement(shortHand, el.type, tagLC) != el){
+	            	var ix = sahiFindElementIx(shortHand, el, el.type, tagLC);
 	            	if (ix == -1) return "";
 					return shortHand + "["+ ix +"]";
 	            }            
             }else{
-            	var ix = sahiFindElementIx(null, el, el.type);
+	            var ix = sahiFindElementIx(null, el, el.type, tagLC);
             	if (ix != -1) shortHand = ix;
             }
             return shortHand;
