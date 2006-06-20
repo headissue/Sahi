@@ -102,7 +102,7 @@ function sahiGetFormElement(src){
     	var els = document.getElementsByTagName('select');
 		return "getElementsByTagName('select')[" + sahiFindInArray(els, src) + "]";
     }    
-    if (src.type == "button"){
+    if (src.tagName.toLowerCase() == "button"){
     	var els = document.getElementsByTagName('button');
 		return "getElementsByTagName('button')[" + sahiFindInArray(els, src) + "]";
     }
@@ -880,43 +880,23 @@ function sahiFindElement(id, type, tagName){
 	return sahiFindElementHelper(id, top, type, res, "id", tagName).element;
 }
 
-function sahiFindFormElementByIndex(ix, win, type, res){
-	if (type == "image"){
-		var els = win.document.getElementsByTagName("input");
-    	for (var j=0; j<els.length; j++){
-		   	var el = els[j];
-	    	if (el != null && el.type == type){
-	    		res.cnt++;
-	    		if (res.cnt == ix){
-		    		res.element = el;
-		    		res.found = true;
-		    		return res;
-	    		}
-	    	}
-		}
-	}else{
-	    var fs = win.document.forms;
-	    if (fs){
-		    for (var i=0; i<fs.length; i++){
-		    	var els = fs[i].elements;
-		    	for (var j=0; j<els.length; j++){
-			    	var el = els[j];
-			    	if (el != null && el.type == type){
-			    		res.cnt++;
-			    		if (res.cnt == ix){
-				    		res.element = el;
-				    		res.found = true;
-				    		return res;
-			    		}
-			    	}
-			    }
-		    }
-	    }
-    }
+function sahiFindFormElementByIndex(ix, win, type, res, tagName){
+	var els = win.document.getElementsByTagName(tagName);
+	for (var j=0; j<els.length; j++){
+	   	var el = els[j];
+    	if (el != null && el.type == type){
+    		res.cnt++;
+    		if (res.cnt == ix){
+	    		res.element = el;
+	    		res.found = true;
+	    		return res;
+    		}
+    	}
+	}
     var frs = win.frames;
     if (frs){
         for (var j=0; j<frs.length; j++){
-            res = sahiFindFormElementByIndex(ix, frs[j], type, res);
+            res = sahiFindFormElementByIndex(ix, frs[j], type, res, tagName);
             if (res && res.found) return res;
         }
     }    
@@ -925,7 +905,7 @@ function sahiFindFormElementByIndex(ix, win, type, res){
 
 function sahiFindElementHelper(id, win, type, res, param, tagName){
 	if ((typeof id) == "number"){
-		res = sahiFindFormElementByIndex(id, win, type, res);
+		res = sahiFindFormElementByIndex(id, win, type, res, tagName);
 		if (res.found) return res;
 	}else{
 		var o = getArrayNameAndIndex(id);
@@ -982,7 +962,7 @@ function sahiFindElementIx(id, toMatch, type, tagName){
 }
 function sahiFindElementIxHelper(id, type, toMatch, win, res, param, tagName){
 	if (res && res.found) return res;
-	var els = document.getElementsByTagName(tagName);
+	var els = win.document.getElementsByTagName(tagName);
 	for (var j=0; j<els.length; j++){
         if (els[j].type == type && sahiAreEqual(els[j], param, id)){
         	res.cnt++;
