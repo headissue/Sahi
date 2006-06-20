@@ -4,10 +4,6 @@
 <meta name="generator" content="HTML Tidy, see www.w3.org">
 <title>Sahi Editor</title>
 </head>
-<body>
-<div id="ed" onkeypress="monitor(event)" style=
-"border:1px solid black; width:400px;height:300px"></div>
-
 <script type="text/javascript">
 
 function addEvent(el, ev, fn){
@@ -44,17 +40,25 @@ function getTarget(e){
 }
 
 function monitor(e){
+	//alert(1);
     if (!e) e = window.event;
-    alert(getTarget(e).tagName);
     var c = String.fromCharCode(e.charCode);
-//  alert(c);
-
+    var doc = document.getElementById("ed").contentWindow.document;
+    doc.open();
+    doc.write(c);
+    doc.close();
+    return false;
+    //document.getElementById("ed").focus();s
 }
 
 
-//var ed = document.getElementById("ed");
-//addEvent(ed, "keyup", monitor);
 </script>
+
+
+<body onkeydown="return monitor(event)">
+
+
+<iframe id="ed" style="border:1px solid black; width:400px;height:300px" src="blankeditor.htm"></iframe>
 </body>
 </html>
 
