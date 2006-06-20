@@ -89,27 +89,7 @@ function nameNotAnInputElement(src){
 	return (typeof src.name != "object");
 }
 function sahiGetFormElement(src){
-    var n = "";
-    if (src.type == "image"){
-    	var els = document.getElementsByTagName('input');
-		return "getElementsByTagName('input')[" + sahiFindInArray(els, src) + "]";
-    }
-    if (src.type == "textarea"){
-    	var els = document.getElementsByTagName('textarea');
-		return "getElementsByTagName('textarea')[" + sahiFindInArray(els, src) + "]";
-    }
-    if (src.type == "select-one" || src.type == "select-multiple"){
-    	var els = document.getElementsByTagName('select');
-		return "getElementsByTagName('select')[" + sahiFindInArray(els, src) + "]";
-    }    
-    if (src.tagName.toLowerCase() == "button"){
-    	var els = document.getElementsByTagName('button');
-		return "getElementsByTagName('button')[" + sahiFindInArray(els, src) + "]";
-    }
-	else {
-    	var els = document.getElementsByTagName('input');
-		return "getElementsByTagName('input')[" + sahiFindInArray(els, src) + "]";
-    }
+	return sahiGetByTagName(src);
     /*
     if (!isBlankOrNull(src.name)){
         n = 'elements["'+src.name+'"]';
@@ -124,6 +104,12 @@ function sahiGetFormElement(src){
     var f = sahiGetForm(src.form);
     return (n == "") ? f : f+"."+n;
     */
+}
+
+function sahiGetByTagName(src, tagName){
+	var tagName = src.tagName.toLowerCase();
+	var els = document.getElementsByTagName(tagName);
+	return "getElementsByTagName('"+tagName+"')[" + sahiFindInArray(els, src) + "]";
 }
 
 function sahiGetTable(src){
