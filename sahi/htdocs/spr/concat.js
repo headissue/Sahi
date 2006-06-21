@@ -499,24 +499,32 @@ function sahi_radio(n){
     return sahiFindElement(n, "radio", "input");
 }
 function sahi_div(id){
-	return sahiDivSpanByText(id, "div");
+	return sahiDivSpanByText(top, id, "div");
 }
 function sahi_span(id){
-	return sahiDivSpanByText(id, "span");
+	return sahiDivSpanByText(top, id, "span");
 }
 function sahi_spandiv(id){
-	var el = sahiDivSpanByText(id, "span");
-	if (el == null) el = sahiDivSpanByText(id, "div");
+	var el = sahiDivSpanByText(top, id, "span");
+	if (el == null) el = sahiDivSpanByText(top, id, "div");
 	return el;
 }
-function sahiDivSpanByText(id, tagName){
-	var els = document.getElementsByTagName(tagName);
+function sahiDivSpanByText(win, id, tagName){
+	var res = null;
+	var els = win.document.getElementsByTagName(tagName);
 	for (var i=0; i<els.length; i++){
 		if (sahi_getText(els[i]) == id){
 			return els[i];
 		}
 	}
-	return null;	
+    var frs = win.frames;
+    if (frs){
+        for (var j=0; j<frs.length; j++){
+            res = sahiDivSpanByText(frs[j], id, tagName);
+            if (res) return res;
+        }
+    }  
+    return res;  
 }
 function sahi_image(n){
     return sahiFindImage(n, top, "img");
@@ -1223,36 +1231,6 @@ function getPopupName(){
 	}
 	return "";
 }
-/*
-function sahiOnPageLoad(){
-    var accessorsOnPage = findAllAccessors();
-    for(i = 0; i < accessorsOnPage.length; i++){
-        sahiSendToServer('/_s_/dyn/Recorder_record?' + sahiGetAccessorInfoQS(accessorsOnPage[i]));
-    }
-}
-
-function findAllAccessors(){
-    var forms = document.forms;
-    var accessorsOnPage =  new Array();
-    var k = 0;
-    for(i = 0; i < forms.length; i++){
-        var form = forms[i];
-        for(j =0; j< form.elements.length; j++){
-            var element = form.elements[j];
-            var type = element.type;
-            var accessorInfo = sahiGetAccessorInfo(element);
-            if(accessorInfo != null){
-                if(accessorInfo.value == "click"){
-                    accessorsOnPage[k] = accessorInfo;
-                    k++;
-                }
-            }
-        }
-    }
-    return accessorsOnPage;
-}
-*/
-
 function addWait(time){
     var val = parseInt(time);
     if ((""+val) == "NaN" || val < 200) throw new Error();
