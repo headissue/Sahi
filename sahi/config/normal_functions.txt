@@ -23,3 +23,7 @@ _byId
 _row
 _getText
 _getCellText
+_div
+_span
+_spandiv
+

@@ -272,7 +272,7 @@ function sahiSimulateMouseEvent(el, type){
 }
 var sahiPointTimer;
 function sahi_highlight(el){
-	var d =	sahiFindElementById(top, "sahi_div");
+	var d =	sahiFindElementById(top, "sahi_pointer_div");
 	d.innerHTML = "<span style='color:red;font-family:verdana;font-size:20px;'>&raquo;</span>";
 	d.style.position = "absolute";
 	var x = findPosX(el)-10;
@@ -286,7 +286,7 @@ function sahi_highlight(el){
 }
 function sahiFade(){
 	window.clearTimeout(sahiPointTimer);
-	var d =	sahiFindElementById(top, "sahi_div");
+	var d =	sahiFindElementById(top, "sahi_pointer_div");
 	d.style.position = "absolute";
 	d.style.left = "0px";
 	d.style.top = "0px";
@@ -448,7 +448,7 @@ function sahi_setSelected(el, val){
     for (var i=0; i<l; i++){
         if (el.options[i].text.indexOf(sahiTrim(val)) != -1){
             el.options[i].selected = true;
-            if (el.onchange) el.onchange();
+//            if (el.onchange) el.onchange();
             return;
         }
     }
@@ -497,6 +497,26 @@ function sahi_select(n){
 }
 function sahi_radio(n){
     return sahiFindElement(n, "radio", "input");
+}
+function sahi_div(id){
+	return sahiDivSpanByText(id, "div");
+}
+function sahi_span(id){
+	return sahiDivSpanByText(id, "span");
+}
+function sahi_spandiv(id){
+	var el = sahiDivSpanByText(id, "span");
+	if (el == null) el = sahiDivSpanByText(id, "div");
+	return el;
+}
+function sahiDivSpanByText(id, tagName){
+	var els = document.getElementsByTagName(tagName);
+	for (var i=0; i<els.length; i++){
+		if (sahi_getText(els[i]) == id){
+			return els[i];
+		}
+	}
+	return null;	
 }
 function sahi_image(n){
     return sahiFindImage(n, top, "img");
@@ -1633,7 +1653,7 @@ function areWindowsLoaded(win){
 		return true;//for diff domains.
 	}
 }
-var SAHI_MAX_WAIT_FOR_LOAD = 60;
+var SAHI_MAX_WAIT_FOR_LOAD = 5;
 var sahiWaitForLoad = SAHI_MAX_WAIT_FOR_LOAD;
 var interval = INTERVAL;
 function sahiEx(isStep){
