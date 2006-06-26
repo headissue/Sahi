@@ -218,7 +218,6 @@ function sahi_rightClick(el){
 }
 
 function sahiSimulateClick(el, isRight, isDouble){
-	if (el == null) return;
 	var n = el;
 	while (n != null){
 		if (n.tagName && n.tagName == "A"){
