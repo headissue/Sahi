@@ -317,9 +317,11 @@ function mark(){
 }
 
 function evaluateExpr(showErr){
+	if (!showErr) showErr = false;
 	sahiSetServerVar("sahiEvaluateExpr", "true");
+	var res = "";
 	try{
-		var res = top.opener.sahi_eval(addSahi(document.currentForm.debug.value));
+		res = top.opener.sahi_eval(addSahi(document.currentForm.debug.value));
 	}catch(e){
 		if (e.exceptionType &&  e.exceptionType == "SahiAssertionException"){
 			res = "[Assertion Failed]"+(e.messageText?e.messageText:"");
@@ -329,7 +331,9 @@ function evaluateExpr(showErr){
 		}
 		sahiHandleException(e);
 	}
-	if (showErr) document.currentForm.result.value = res;
+	if (showErr) {
+		document.currentForm.result.value = ""+res;
+	}
 	sahiSetServerVar("sahiEvaluateExpr", "false");
 }
 function demoClick(){
