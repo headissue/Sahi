@@ -206,6 +206,18 @@ function sahi_dragDrop(draggable, droppable){
 }
 
 function sahi_click(el){
+	sahiSimulateClick(el, false, false);
+}
+
+function sahi_doubleClick(el){
+	sahiSimulateClick(el, false, true);
+}
+
+function sahi_rightClick(el){
+	sahiSimulateClick(el, true, false);
+}
+
+function sahiSimulateClick(el, isRight, isDouble){
 	if (el == null) return;
 	var n = el;
 	while (n != null){
@@ -223,12 +235,15 @@ function sahi_click(el){
 	sahiSimulateMouseEvent(el, "mousemove");
 	sahiSimulateMouseEvent(el, "focus");
 	sahiSimulateMouseEvent(el, "mouseover");
-	sahiSimulateMouseEvent(el, "mousedown");
-	sahiSimulateMouseEvent(el, "mouseup");
-	try{
-	sahiSimulateMouseEvent(el, "click");
-	}catch(e){
-	} 
+	sahiSimulateMouseEvent(el, "mousedown", isRight);
+	sahiSimulateMouseEvent(el, "mouseup", isRight);
+	if (isRight){
+		sahiSimulateMouseEvent(el, "contextmenu", isRight, isDouble);
+	}else{
+		try{
+			sahiSimulateMouseEvent(el, "click", isRight, isDouble);
+		}catch(e){} 
+	}
 	sahiSimulateMouseEvent(el, "blur");
 	var n = el;
 	while (n != null){
@@ -238,16 +253,17 @@ function sahi_click(el){
 		n = n.parentNode;
 	} 
 }
-function sahiSimulateMouseEvent(el, type){
+function sahiSimulateMouseEvent(el, type, isRight, isDouble){
 	var x = findPosX(el);
 	var y = findPosY(el);
 	if(document.createEvent){
 		var evt = el.ownerDocument.createEvent("MouseEvents");
-		evt.initMouseEvent(type,
+		evt.initMouseEvent(
+		(isDouble ? "dbl" : "") + type,
 		true, //can bubble
 		true,
 		el.ownerDocument.defaultView,
-		1,
+		(isDouble ? 2 : 1),
 		x, //screen x
 		y, //screen y
 		x, //client x
@@ -256,7 +272,7 @@ function sahiSimulateMouseEvent(el, type){
 		false,
 		false,
 		false,
-		0,
+		isRight ? 2 : 0,
 		null);
 		el.dispatchEvent(evt);
 	}else{
@@ -265,8 +281,8 @@ function sahiSimulateMouseEvent(el, type){
 		// event handler to determine what element was clicked on.
 		evt.clientX = x;
 		evt.clientY = y;
-		evt.button = 1;
-		el.fireEvent("on"+type,evt);
+		evt.button = isRight ? 2 : 1;
+		el.fireEvent("on"+ (isDouble?"dbl":"") +type,evt);
 		evt.cancelBubble = true;
 	}
 }
@@ -1486,11 +1502,13 @@ function sahiGetRetries(){
     return (""+i != "NaN") ? i : 0;
 }
 function sahiOnError(msg, url, lno){
-    var debugInfo = "Javascript error on page";
-    if (msg && msg.indexOf("Access to XPConnect service denied") != -1){ //FF hack    
-    	sahiLogPlayBack("msg: "+msg+"\nurl: "+url+"\nLine no: "+lno, "info", debugInfo);
-    }
-	else sahiLogPlayBack("msg: "+msg+"\nurl: "+url+"\nLine no: "+lno, "error", debugInfo);
+	try{
+	    var debugInfo = "Javascript error on page";
+	    if (msg && msg.indexOf("Access to XPConnect service denied") != -1){ //FF hack    
+	    	sahiLogPlayBack("msg: "+msg+"\nurl: "+url+"\nLine no: "+lno, "info", debugInfo);
+	    }
+		else sahiLogPlayBack("msg: "+msg+"\nurl: "+url+"\nLine no: "+lno, "info", debugInfo);
+	}catch(swallow){}
 }
 window.onerror=sahiOnError;
 var _sahiControl;
