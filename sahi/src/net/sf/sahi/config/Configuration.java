@@ -155,7 +155,7 @@ public class Configuration {
 	}
 
 	public static String getCertsPath() {
-		return "../certs/";
+		return addEndSlash(properties.getProperty("certs.dir"));
 	}
 	
 	public static String getConfigPath() {
