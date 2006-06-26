@@ -24,3 +24,5 @@ _highlight
 _log
 _navigateTo
 _callServer
+_doubleClick
+_rightClick
