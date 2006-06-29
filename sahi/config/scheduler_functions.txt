@@ -26,3 +26,5 @@ _navigateTo
 _callServer
 _doubleClick
 _rightClick
+_addMock
+_removeMock

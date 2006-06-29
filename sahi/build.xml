@@ -22,7 +22,7 @@
 		<java classname="net.sf.sahi.Proxy" fork="true" dir="bin">
 			<jvmarg line="-Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5099" />
 			<classpath path="classes" />
-			<!--sysproperty key="sahi.mode.dev" value="true"/-->
+			<sysproperty key="sahi.mode.dev" value="true"/>
 		</java>
 	</target>
 
@@ -109,7 +109,9 @@
 			<fileset dir="test" />
 		</copy>
 		<copy todir="temp/sahi/docs">
-			<fileset dir="docs" />
+			<fileset dir="docs">
+				<exclude name="sahi_tutorial.*" />
+			</fileset>
 		</copy>
 		<copy todir="temp/sahi/certs">
 			<fileset dir="certs" includes="www_sahidomain_com" />
@@ -147,6 +149,7 @@
 				<include name="sahi_demo.sah" />
 				<include name="sahi_demo_frames.sah" />
 				<include name="sahi_demo_include.sah" />
+				<include name="onchange.sah" />				
 			</fileset>
 		</copy>
 		<copy todir="temp/sahi/extlib">
@@ -160,6 +163,7 @@
 		<copy todir="temp/sahi/docs">
 			<fileset dir="docs">
 				<exclude name="src/**/*.*" />
+				<exclude name="sahi_tutorial.*" />
 			</fileset>
 		</copy>
 		<copy todir="temp/sahi/certs">
@@ -179,6 +183,13 @@
 				<exclude name="net/sf/sahi/ant/**.*" />
 				<exclude name="net/sf/sahi/test/TestRunner.*" />
 			</fileset>
+			<manifest>
+            <attribute name="Built-By" value="Narayan Raman"/>
+            <attribute name="Main-Class"  value="net/sf/sahi/Proxy"/>
+            <section name="YourMainClass">
+              <attribute name="Sealed" value="false"/>
+            </section>
+			</manifest>
 		</jar>
 	</target>
 
