@@ -10,12 +10,12 @@ import net.sf.sahi.session.Session;
 public class ControllerUI {
 
 	public void opened(HttpRequest request) {
-		request.session().setIsWindowOpen(true);;
-	}
+		request.session().setIsWindowOpen(true);
+    }
 
 	public void closed(HttpRequest request) {
-		request.session().setIsWindowOpen(false);;
-	}
+		request.session().setIsWindowOpen(false);
+    }
 
 	public HttpResponse getSahiScript(HttpRequest request) {
 		String code = request.getParameter("code");

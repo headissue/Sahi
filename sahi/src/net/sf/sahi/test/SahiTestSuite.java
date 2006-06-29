@@ -98,7 +98,7 @@ public class SahiTestSuite {
 		return hasMoreTests;
 	}
 
-	public boolean isRunning() {
+	public synchronized boolean isRunning() {
 		return (finishedTests < tests.size());
 	}
 

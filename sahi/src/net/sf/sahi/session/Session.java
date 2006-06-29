@@ -7,6 +7,7 @@ import net.sf.sahi.playback.SahiScript;
 import net.sf.sahi.playback.log.LogFileConsolidator;
 import net.sf.sahi.playback.log.PlayBackLogger;
 import net.sf.sahi.record.Recorder;
+import net.sf.sahi.command.MockResponder;
 import net.sf.sahi.test.SahiTestSuite;
 
 /**
@@ -22,6 +23,7 @@ public class Session {
 	private Map variables;
 	private PlayBackLogger playBackLogger;
 	private String scriptLogFile;
+	private MockResponder mockResponder = new MockResponder();
 
 	public static Session getInstance(String sessionId) {
 		if (!sessions.containsKey(sessionId)) {
@@ -119,4 +121,9 @@ public class Session {
 	public boolean isPlayingBack() {
 		return playBackLogger != null;
 	}
+
+	public MockResponder mockResponder() {
+		return mockResponder;
+	}
+	
 }

@@ -30,6 +30,7 @@ public class HttpRequest extends StreamHandler {
 	private static final Logger logger = Logger.getLogger("net.sf.sahi.request.HttpRequest");
 	private final boolean isSSLSocket;
 	private String fileExtension;
+	private String hostWithPort;
 
 	public HttpRequest(InputStream in) throws IOException {
 		this(in, false);
@@ -61,18 +62,15 @@ public class HttpRequest extends StreamHandler {
 	}
 
 	public boolean isPost() {
-		boolean isPost = "post".equalsIgnoreCase(method());
-		return isPost;
+        return "post".equalsIgnoreCase(method());
 	}
 
 	public boolean isGet() {
-		boolean isPost = "get".equalsIgnoreCase(method());
-		return isPost;
+        return "get".equalsIgnoreCase(method());
 	}
 
 	public boolean isConnect() {
-		boolean isConnect = "connect".equalsIgnoreCase(method());
-		return isConnect;
+        return "connect".equalsIgnoreCase(method());
 	}
 
 	public boolean isSSL() {
@@ -105,7 +103,7 @@ public class HttpRequest extends StreamHandler {
 	}
 
 	private void setHostAndPort() {
-		String hostWithPort = (String) getLastSetValueOfHeader("Host");
+		hostWithPort = getLastSetValueOfHeader("Host");
 		host = hostWithPort;
 		port = 80;
 		if (isSSL())
@@ -172,7 +170,7 @@ public class HttpRequest extends StreamHandler {
 
 	private void setCookies() {
 		cookies = new LinkedHashMap();
-		String cookieString = (String) getLastSetValueOfHeader("Cookie");
+		String cookieString = getLastSetValueOfHeader("Cookie");
 		if (cookieString == null)
 			return;
 		StringTokenizer tokenizer = new StringTokenizer(cookieString, ";");
@@ -246,11 +244,11 @@ public class HttpRequest extends StreamHandler {
 	}
 
 	public Session session() {
-		String sessionId = null;
+		String sessionId;
 		sessionId = getParameter("sahisid");
 		// System.out.println("1:"+sessionId);
 		if (Utils.isBlankOrNull(sessionId))
-			sessionId = getCookie(new String("sahisid"));
+			sessionId = getCookie("sahisid");
 		if (Utils.isBlankOrNull(sessionId))
 			sessionId = "sahi_" + System.currentTimeMillis();
 		// System.out.println("2:"+sessionId);
@@ -259,5 +257,9 @@ public class HttpRequest extends StreamHandler {
 
 	public String fileExtension() {
 		return fileExtension;
+	}
+
+	public String url() {
+		return (isSSL() ? "https" : "http") + "://" + hostWithPort + (uri == null ? "" : uri);
 	}
 }

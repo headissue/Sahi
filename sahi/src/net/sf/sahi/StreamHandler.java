@@ -28,7 +28,7 @@ public abstract class StreamHandler {
 	}
 
 	private void setContentLength() {
-		String contentLenStr = (String) (getLastSetValueOfHeader("Content-Length"));
+		String contentLenStr = getLastSetValueOfHeader("Content-Length");
 		if (contentLenStr != null)
 			contentLength = Integer.parseInt(contentLenStr);
 	}

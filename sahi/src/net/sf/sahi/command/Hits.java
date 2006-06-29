@@ -27,7 +27,7 @@ public class Hits {
 		StringBuffer sb = new StringBuffer();
 		while(it.hasNext()) {
 			String key = ((String)it.next());
-			sb.append("<br>"+key+" "+Hits.hits.get(key));
+            sb.append("<br>").append(key).append(" ").append(Hits.hits.get(key));
 		}
 		return new NoCacheHttpResponse(sb.toString());
 	}

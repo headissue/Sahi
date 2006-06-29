@@ -9,7 +9,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class SocketPool {
-	private List unused = new LinkedList();
+	private final List unused = new LinkedList();
 	private final int START_PORT = 13300;
 	private int lastPort;
 
