@@ -256,7 +256,8 @@ function sahiSimulateMouseEvent(el, type, isRight, isDouble){
 	var x = findPosX(el);
 	var y = findPosY(el);
 	if(document.createEvent){
-		var evt = el.ownerDocument.createEvent("MouseEvents");
+        // FF
+        var evt = el.ownerDocument.createEvent("MouseEvents");
 		evt.initMouseEvent(
 		(isDouble ? "dbl" : "") + type,
 		true, //can bubble
@@ -275,13 +276,11 @@ function sahiSimulateMouseEvent(el, type, isRight, isDouble){
 		null);
 		el.dispatchEvent(evt);
 	}else{
-		var evt = el.ownerDocument.createEventObject();
-		// Set an expando property on the event object. This will be used by the
-		// event handler to determine what element was clicked on.
+        // IE
+        var evt = el.ownerDocument.createEventObject();
 		evt.clientX = x;
 		evt.clientY = y;
-		evt.button = isRight ? 2 : 1;
-		el.fireEvent("on"+ (isDouble?"dbl":"") +type,evt);
+		el.fireEvent("on"+ (isDouble?"dbl":"") +type, evt);
 		evt.cancelBubble = true;
 	}
 }
@@ -428,9 +427,8 @@ function sahiSimulateKeyEvent(c, target, evType){
 		evt.ctrlKey = false;
 		evt.altKey = false;
 		evt.metaKey = false;
-		if ((c!='.')) evt.keyCode = c.toUpperCase().charCodeAt(0);
 		evt.charCode = c.charCodeAt(0);
-		evt.shiftKey = evt.keyCode != evt.charCode;
+		evt.shiftKey = c.toUpperCase().charCodeAt(0) == evt.charCode;
 
 		if (!target) return;
 		var event = target.ownerDocument.createEvent("KeyEvents");
@@ -447,14 +445,12 @@ function sahiSimulateKeyEvent(c, target, evType){
 		evt.ctrlKey = false;
 		evt.altKey = false;
 		evt.metaKey = false;
-		evt.keyCode = c.toUpperCase().charCodeAt(0);
+		evt.keyCode = c.charCodeAt(0);
 		evt.charCode = c.charCodeAt(0);
-		evt.shiftKey = evt.keyCode != evt.charCode;
-		evt.cancelBubble = true;
-//		alert(evt.keyCode+" "+evt.charCode);
+		evt.shiftKey = c.toUpperCase().charCodeAt(0) == evt.charCode;
+        evt.shiftLeft = c.toUpperCase().charCodeAt(0) == evt.charCode;
+        evt.cancelBubble = true;
 		target.fireEvent("on"+evType, evt);
-		//alert(target.value+" "+c);
-		//if (target.value) target.value+=c;
 	}
 }
 
@@ -1609,7 +1605,7 @@ var KEY_K = 75;
 var IDLE_INTERVAL=1000;
 var INTERVAL=50;
 var RETRY_INTERVAL=1000;
-var MAX_RETRIES=3;
+var MAX_RETRIES=5;
 
 var _sahiCmds = new Array();
 var _sahiCmdDebugInfo = new Array();
