@@ -1,0 +1,76 @@
+<html>
+<head>
+    <title>
+        Event Viewer
+    </title>
+</head>
+
+<script type="text/javascript">
+    function sahiList(el, p) {
+        var s = "";
+        var j = 0;
+        for (var i in el) {
+            if (!p || ("" + i).indexOf(p) != -1) {
+                if (typeof el[i] != "function") {
+                    s += i + "=" + el[i] + ",";
+                }
+                j++;
+                //                if (j % 4 == 0)
+                s += "\n";
+            }
+        }
+        return s;
+    }
+
+    function kp(e, n) {
+        if (!e) e = window.event;
+        document.f1.elements[n].value = sahiList(e);
+    }
+    function diff(){
+        document.f1.d1.value = "";
+        document.f1.d2.value = "";
+        var x1 = document.f1.ta1.value.replace(/\r/g, '').split("\n");
+        var x2 = document.f1.ta2.value.replace(/\r/g, '').split("\n");
+        for (var i=0; i<x1.length; i++){
+            if (x1[i] != x2[i]){
+                  document.f1.d1.value += "\n" + x1[i];
+                  document.f1.d2.value += "\n" + x2[i];
+            }
+        }
+    }
+</script>
+
+<body>
+
+<form name="f1">
+    <table>
+        <tr>
+            <td align="center">
+                <input type="text" name="t1" onkeypress="kp(event, 'ta1')">
+                <input type="button" name="b1" value="Click" onclick="kp(event, 'ta1')">
+                <input type="button" name="rb1" value="Right Click" oncontextmenu="kp(event, 'ta1')">
+                <input type="button" name="db1" value="Double Click" ondblclick="kp(event, 'ta1')">
+                <br>
+                <textarea name="ta1" rows="25" cols="75"></textarea>
+                <textarea name="d1" rows="10" cols="75"></textarea>
+            </td>
+            <td align="center">
+                <input type="button" value="Diff" onclick="diff()">
+            </td>
+            <td align="center">
+                <input type="text" name="t2" onkeypress="kp(event, 'ta2')">
+                <input type="button" name="b2" value="Click" onclick="kp(event, 'ta2')">
+                <input type="button" name="rb2" value="Right Click" oncontextmenu="kp(event, 'ta2')">
+                <input type="button" name="db2" value="Double Click" ondblclick="kp(event, 'ta2')">
+                <br>
+                <textarea name="ta2" rows="25" cols="75"></textarea>
+                <textarea name="d2" rows="10" cols="75"></textarea>
+            </td>
+        </tr>
+    </table>
+</form>
+
+</body>
+
+
+</html>
