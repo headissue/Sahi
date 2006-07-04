@@ -104,9 +104,17 @@ public class SahiScriptTest extends TestCase {
 	}
 
 	class TestScript extends SahiScript {
-		String getFQN(String include) {
-			return null;
-		}
+        public TestScript() {
+            super(null, new ArrayList(), null);
+        }
+
+        public TestScript(String fileName, ArrayList parents, String scriptName) {
+            super(fileName, parents, scriptName);
+        }
+
+        String getFQN(String include) {
+            return null;
+        }
 
 		SahiScript getNewInstance(String scriptName, ArrayList parentScriptName) {
 			return null;

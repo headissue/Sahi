@@ -93,7 +93,7 @@ public class Player {
 		
 		final String scriptFileWithPath;
 		if (session.getSuite() != null) {
-			scriptFileWithPath = Utils.concatPaths(new File(session.getSuite().getSuiteURL()).getParent(), fileName);
+			scriptFileWithPath = Utils.getRelativeFile(new File(session.getSuite().getSuiteURL()), fileName).getAbsolutePath();
 		}else {
 			scriptFileWithPath= Configuration.getScriptFileWithPath(fileName);
 		}

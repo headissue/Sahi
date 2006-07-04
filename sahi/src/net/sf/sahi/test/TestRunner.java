@@ -11,7 +11,8 @@ public class TestRunner {
 	private final String suiteName;
 	private final String browser;
 	private final String base;
-	private final String sahiHost;
+    private String logDir;
+    private final String sahiHost;
 	private final String port;
 	private final String threads;
 
@@ -27,7 +28,7 @@ public class TestRunner {
 			String sahiHost = args[3];
 			String port = args[4];
 			String threads = args[5];
-			TestRunner testRunner = new TestRunner(suiteName, base, browser, sahiHost, port, threads);
+			TestRunner testRunner = new TestRunner(suiteName, base, browser, sahiHost, port, threads, threads);
 			String status = testRunner.execute();
 			System.out.println("Status:" + status);
 		} catch (Exception e) {
@@ -35,11 +36,12 @@ public class TestRunner {
 		}
 	}
 
-	public TestRunner(String suiteName, String browser, String base, String sahiHost, String port, String threads) {
+	public TestRunner(String suiteName, String browser, String base, String logDir, String sahiHost, String port, String threads) {
 		this.suiteName = suiteName;
 		this.browser = browser;
 		this.base = base;
-		this.sahiHost = sahiHost;
+        this.logDir = logDir;
+        this.sahiHost = sahiHost;
 		this.port = port;
 		this.threads = threads;
 	}
@@ -47,7 +49,7 @@ public class TestRunner {
 	public String execute() throws UnsupportedEncodingException, MalformedURLException, IOException, InterruptedException {
 		String sessionId = "sahi_" + System.currentTimeMillis();
 		String urlStr = "http://" + sahiHost + ":" + port + "/_s_/dyn/Suite_start?suite=" + encode(suiteName) + "&base=" + encode(base) + "&browser="
-				+ encode(base) + "&browser=" + encode(browser) + "&threads=" + encode(threads) + "&sahisid=" + encode(sessionId);
+				+ encode(base) + "&logDir=" + encode(logDir)+ "&browser=" + encode(browser) + "&threads=" + encode(threads) + "&sahisid=" + encode(sessionId);
 		// System.out.println("urlStr=" + urlStr);
 		URL url = new URL(urlStr);
 		InputStream in = url.openStream();

@@ -23,14 +23,13 @@ public class Configuration {
 			properties.load(new FileInputStream("../config/sahi.properties"));
 			System.setProperty("java.util.logging.config.file",
 					"../config/log.properties");
-			createLogFolders(getPlayBackLogsRoot());
+			createLogFolders(new File(getPlayBackLogsRoot()));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 
-	public static void createLogFolders(String dir) {
-		File file = new File(dir);
+	public static void createLogFolders(File file) {
 		if (!file.exists()) {
 			file.mkdirs();
 		}

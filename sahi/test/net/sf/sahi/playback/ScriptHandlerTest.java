@@ -17,7 +17,7 @@ public class ScriptHandlerTest extends TestCase {
     }
 
     public void testModify() {
-        assertEquals("sahiSchedule(\"sahi_setValue ( elements['username'] , 'test'+\"+s_v($ix)+\" )\", \"null?n=1\")\r\n", script.modify("_setValue ( elements['username'] , 'test'+$ix )"));
+        assertEquals("sahiSchedule(\"sahi_setValue ( elements['username'] , 'test'+\"+s_v($ix)+\" )\", \"fileName?n=1\")\r\n", script.modify("_setValue ( elements['username'] , 'test'+$ix )"));
     }
 
     public void testSeparateVariables() {

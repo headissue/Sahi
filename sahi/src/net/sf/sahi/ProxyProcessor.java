@@ -1,8 +1,8 @@
 package net.sf.sahi;
 
+import net.sf.sahi.command.MockResponder;
 import net.sf.sahi.config.Configuration;
 import net.sf.sahi.request.HttpRequest;
-import net.sf.sahi.command.MockResponder;
 import net.sf.sahi.response.HttpFileResponse;
 import net.sf.sahi.response.HttpModifiedResponse;
 import net.sf.sahi.response.HttpResponse;

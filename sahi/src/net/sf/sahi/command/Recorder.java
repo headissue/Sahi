@@ -23,6 +23,5 @@ public class Recorder {
 		String fileName = request.getParameter("file");
 		session.getRecorder().start(Configuration.getScriptFileWithPath(fileName));
 		session.setVariable("sahi_record", "1");
-		// System.out.println("$$$$$$$$$$$ "+session.id());
 	}
 }

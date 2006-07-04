@@ -20,7 +20,7 @@ public class LogFileConsolidator {
 	}
 
 	private void consolidate() {
-		String withPath = Configuration.getPlayBackLogsRoot() + logFileName;
+		String withPath = Utils.concatPaths(Configuration.getPlayBackLogsRoot(), logFileName);
 		File logFile = new File(withPath);
 		if (logFile.exists()) {
 			if (logFile.isDirectory()) {
@@ -145,7 +145,7 @@ public class LogFileConsolidator {
 
 	public void summarize() throws IOException {
 		consolidate();
-		String withPath = Configuration.getPlayBackLogsRoot() + logFileName;
+		String withPath = Utils.concatPaths(Configuration.getPlayBackLogsRoot(), logFileName);
 		File logFile = new File(withPath);
 		File summaryFile = null;
 		if (logFile.exists()) {

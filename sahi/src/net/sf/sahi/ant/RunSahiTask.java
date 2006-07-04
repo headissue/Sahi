@@ -10,6 +10,8 @@ import net.sf.sahi.test.TestRunner;
 
 public class RunSahiTask extends Task {
 	private String suite;
+	private String scriptsDir;
+	private String logDir = "";
 	private String browser;
 	private String baseURL;
 	private String sahiHost;
@@ -73,7 +75,7 @@ public class RunSahiTask extends Task {
 		boolean isFailure = false;
 		String status = "FAILURE";
 		try {
-			TestRunner testRunner = new TestRunner(suite, browser, baseURL, sahiHost, sahiPort, threads);
+			TestRunner testRunner = new TestRunner(suite, browser, baseURL, logDir, sahiHost, sahiPort, threads);
 			status = testRunner.execute();
 			if (!"SUCCESS".equals(status)) {
 				isFailure = true;
@@ -113,4 +115,20 @@ public class RunSahiTask extends Task {
 	public void setThreads(String threads) {
 		this.threads = threads;
 	}
+
+    public String getScriptsDir() {
+        return scriptsDir;
+    }
+
+    public void setScriptsDir(String scriptsDir) {
+        this.scriptsDir = scriptsDir;
+    }
+
+    public String getLogDir() {
+        return logDir;
+    }
+
+    public void setLogDir(String logDir) {
+        this.logDir = logDir;
+    }
 }
