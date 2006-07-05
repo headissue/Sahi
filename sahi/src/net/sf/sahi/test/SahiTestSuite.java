@@ -1,5 +1,6 @@
 package net.sf.sahi.test;
 
+import net.sf.sahi.config.Configuration;
 import net.sf.sahi.request.HttpRequest;
 import net.sf.sahi.session.Session;
 import net.sf.sahi.util.Utils;
@@ -165,7 +166,10 @@ public class SahiTestSuite {
 
     private void deleteLogDir(String logDir) {
         try {
-            File logDirFile = new File(logDir);
+            if (suiteLogDir == null || suiteLogDir.equals("")) {
+                return;
+            }
+            File logDirFile = new File(Utils.concatPaths(Configuration.getPlayBackLogsRoot(), suiteLogDir));
             if (logDirFile.exists()) {
                 File[] files = logDirFile.listFiles();
                 for (int i = 0; i < files.length; i++) {

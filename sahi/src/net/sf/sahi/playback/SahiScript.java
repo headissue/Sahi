@@ -25,6 +25,7 @@ public abstract class SahiScript {
     private static final String PREFIX = "sahiSchedule(\"";
     private static final String CONJUNCTION = "\", \"";
     private static final String SUFFIX = "\")";
+    private String fileName;
     protected String scriptName;
     protected ArrayList parents;
     private String original = "";
@@ -34,6 +35,7 @@ public abstract class SahiScript {
     protected String path;
 
     public SahiScript(String fileName, ArrayList parents, String scriptName) {
+        this.fileName = fileName;
         this.scriptName = scriptName;
         this.parents = parents;
         init(fileName);
@@ -64,7 +66,7 @@ public abstract class SahiScript {
                 sb.append(modifyFunctionNames(separateVariables(Utils
                         .escapeDoubleQuotesAndBackSlashes(line))));
                 sb.append(CONJUNCTION);
-                sb.append(scriptName);
+                sb.append(fileName);
                 sb.append("?n=");
                 sb.append(lineNumber);
                 sb.append(SUFFIX);

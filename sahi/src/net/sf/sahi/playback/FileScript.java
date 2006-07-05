@@ -22,7 +22,7 @@ public class FileScript extends SahiScript {
         if (scriptName.indexOf("http") == 0){
             return scriptName;
         }
-        return Utils.concatPaths(new File(path).getParent(), scriptName);
+        return Utils.getRelativeFile(new File(path), scriptName).getAbsolutePath();
     }
 
 

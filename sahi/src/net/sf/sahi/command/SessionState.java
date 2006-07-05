@@ -21,7 +21,13 @@ public class SessionState {
 		props.setProperty("isSahiPlaying", ""+session.isPlayingBack());
 		props.setProperty("isSahiRecording", ""+session.isRecording());
 		props.setProperty("hotkey", "" + Configuration.getHotKey());
-		NoCacheHttpResponse httpResponse = new NoCacheHttpResponse(
+
+        props.setProperty("interval", "" + Configuration.getTimeBetweenSteps());
+        props.setProperty("onErrorInterval", "" + Configuration.getTimeBetweenStepsOnError());
+        props.setProperty("maxRetries", "" + Configuration.getMaxReAttemptsOnError());
+        props.setProperty("maxWaitForLoad", "" + Configuration.getMaxCyclesForPageLoad());             
+
+        NoCacheHttpResponse httpResponse = new NoCacheHttpResponse(
 				new HttpFileResponse(Configuration.getHtdocsRoot()
 						+ "spr/state.js", props, false, true));
 		addSahisidCookie(httpResponse, session);

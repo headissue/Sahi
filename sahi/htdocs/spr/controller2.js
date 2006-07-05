@@ -346,7 +346,11 @@ function demoHighlight(){
 }
 
 function demoSetValue(){
-	setDebugValue("_setValue("+document.currentForm.accessor.value+", \""+document.currentForm.elValue.value+"\");");
+    var acc = document.currentForm.accessor.value;
+    if (acc.indexOf("_select")==0 || acc.indexOf('e("select")')!=-1){
+        setDebugValue("_setSelected("+acc+", \""+document.currentForm.elValue.value+"\");");    
+    }else
+        setDebugValue("_setValue("+acc+", \""+document.currentForm.elValue.value+"\");");
 	evaluateExpr();
 }
 function setDebugValue(s){

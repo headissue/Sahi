@@ -87,15 +87,21 @@ Password:<br>
 <hr>
 Select:<br>
 <pre>
-&lt;select name="s1" id="s1Id"&gt;
+&lt;select name="s1" id="s1Id" onchange="a(event)"&gt;
 &lt;option value="o1"&gt;o1
 &lt;option value="o2"&gt;o2
 &lt;option value="o3"&gt;o3
 &lt;/select&gt;
 </pre>
+<script>
+function a(e){
+    if (!e)  e = window.event;
+    sahi_real_alert(e.type);
+}
+</script>
 
 <br>
-<select name="s1" id="s1Id">
+<select name="s1" id="s1Id" onchange="a(event)">
 <option value="o1">o1</option>
 <option value="o2">o2</option>
 <option value="o3">o3</option>
@@ -137,6 +143,22 @@ Select:<br>
 </select><br>
 <br>
  
+<pre>
+&lt;select multiple="multiple" onchange="a(event)"&gt;
+&lt;option value="o1"&gt;o1
+&lt;option value="o2"&gt;o2
+&lt;option value="o3"&gt;o3
+&lt;/select&gt;
+</pre>
+
+<br>
+<select multiple="multiple" onchange="a(event)">
+<option value="o1">o1</option>
+<option value="o2">o2</option>
+<option value="o3">o3</option>
+</select><br>
+<br>
+
 
 <hr>
 Button:<br>
