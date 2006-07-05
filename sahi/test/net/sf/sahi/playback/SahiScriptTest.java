@@ -7,6 +7,7 @@ import junit.framework.TestCase;
 
 public class SahiScriptTest extends TestCase {
 	private static final long serialVersionUID = -3933249717685341073L;
+    TestScript testScript = new TestScript("scrName", null, "scrName");
 
 	public void testGetInclude() {
 		assertEquals("prof.sah", SahiScript
@@ -18,42 +19,42 @@ public class SahiScriptTest extends TestCase {
 	}
 
 	public void testModify() {
-		assertEquals("sahiSchedule(\"sahi_assertEqual(sahi_table(\\\"aa\\\"))\", \"null?n=1\")\r\n",
-				new TestScript().modify("_assertEqual(_table(\"aa\"))"));
+        assertEquals("sahiSchedule(\"sahi_assertEqual(sahi_table(\\\"aa\\\"))\", \"scrName&n=1\")\r\n",
+                testScript.modify("_assertEqual(_table(\"aa\"))"));
 
-		assertEquals("sahi_assertEqual(sahi_table(\"aa\"))\r\n", new TestScript()
+		assertEquals("sahi_assertEqual(sahi_table(\"aa\"))\r\n", testScript
 				.modify("__assertEqual(_table(\"aa\"))"));
 
-		assertEquals("if(sahi_table(\"aa\"))\r\n", new TestScript().modify("if(_table(\"aa\"))"));
+		assertEquals("if(sahi_table(\"aa\"))\r\n", testScript.modify("if(_table(\"aa\"))"));
 
 		assertEquals(
-				"sahiSchedule(\"sahi_setGlobal(\\\"newFinanceTypeName\\\", \'sahiTestFT\'+sahi_random(10000))\", \"null?n=1\")\r\n",
-				new TestScript()
+				"sahiSchedule(\"sahi_setGlobal(\\\"newFinanceTypeName\\\", \'sahiTestFT\'+sahi_random(10000))\", \"scrName&n=1\")\r\n",
+				testScript
 						.modify("_setGlobal(\"newFinanceTypeName\", \'sahiTestFT\'+_random(10000))"));
 
-		assertEquals("var $n = sahi_getGlobal(\"nv\");\r\n", new TestScript()
+		assertEquals("var $n = sahi_getGlobal(\"nv\");\r\n", testScript
 				.modify("var $n = _getGlobal(\"nv\");\r\n"));
 
-		assertEquals("var $n = sahi_getGlobal(\"nv\");\r\n", new TestScript()
+		assertEquals("var $n = sahi_getGlobal(\"nv\");\r\n", testScript
 				.modify("var $n = sahi_getGlobal(\"nv\");\r\n"));
 
-		assertEquals("sahi_setGlobal(\"n\", \'aa\'+sahi_random(10000));\r\n", new TestScript()
+		assertEquals("sahi_setGlobal(\"n\", \'aa\'+sahi_random(10000));\r\n", testScript
 				.modify("sahi_setGlobal(\"n\", \'aa\'+_random(10000));"));
 
-		assertEquals("sahi_textbox(\"username\").value=\"kk\";\r\n", new TestScript()
+		assertEquals("sahi_textbox(\"username\").value=\"kk\";\r\n", testScript
 				.modify("_textbox(\"username\").value=\"kk\";"));
 
-		assertEquals("sahi_textbox(\"username\").value=\"kk\";\r\n", new TestScript()
+		assertEquals("sahi_textbox(\"username\").value=\"kk\";\r\n", testScript
 				.modify("__textbox(\"username\").value=\"kk\";"));
-		assertEquals("sahiSchedule(\"sahi_call(fn1())\", \"null?n=1\")\r\n", new TestScript()
+		assertEquals("sahiSchedule(\"sahi_call(fn1())\", \"scrName&n=1\")\r\n", testScript
 				.modify("_call(fn1())"));
 
 	}
 
 	public void testKeywordsAsASubstringFails() {
 		assertEquals(
-				"sahiSchedule(\"sahi_setValue(sahi_textbox (\\\"form_loginname\\\"), \\\"narayanraman\\\");\", \"null?n=1\")\r\n",
-				new TestScript()
+				"sahiSchedule(\"sahi_setValue(sahi_textbox (\\\"form_loginname\\\"), \\\"narayanraman\\\");\", \"scrName&n=1\")\r\n",
+				testScript
 						.modify("_setValue(_textbox (\"form_loginname\"), \"narayanraman\");"));
 	}
 

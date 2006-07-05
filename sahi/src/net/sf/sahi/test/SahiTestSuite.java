@@ -11,7 +11,7 @@ import java.net.URL;
 import java.util.*;
 
 public class SahiTestSuite {
-    private final String suiteURL;
+    private final String suitePath;
     private final String base;
     private List tests = new ArrayList();
     private Map testsMap = new HashMap();
@@ -25,14 +25,14 @@ public class SahiTestSuite {
     private static HashMap suites = new HashMap();
 
 
-    private SahiTestSuite(String suiteURL, String base, String browser, String logDir,
+    private SahiTestSuite(String suitePath, String base, String browser, String logDir,
                           String sessionId) {
-        this.suiteURL = suiteURL;
+        this.suitePath = suitePath;
         this.base = base;
         this.browser = browser;
         this.suiteLogDir = logDir;
         this.sessionId = stripSah(sessionId);
-        setSuiteName(suiteURL);
+        setSuiteName(suitePath);
         init();
         suites.put(this.sessionId, this);
     }
@@ -46,7 +46,7 @@ public class SahiTestSuite {
     }
 
     private void init() {
-        File suite = new File(suiteURL);
+        File suite = new File(suitePath);
         if (suite.isDirectory()) {
             processSuiteDir(suite);
 
@@ -84,7 +84,7 @@ public class SahiTestSuite {
     }
 
     private void processSuiteFile() {
-        String contents = new String(Utils.readFile(suiteURL));
+        String contents = new String(Utils.readFile(suitePath));
         StringTokenizer tokens = new StringTokenizer(contents, "\n");
         while (tokens.hasMoreTokens()) {
             String line = tokens.nextToken();
@@ -114,7 +114,7 @@ public class SahiTestSuite {
         if (!(startURL.startsWith("http://") || startURL.startsWith("https://"))) {
             startURL = new URL(new URL(base), startURL).toString();
         }
-        addTest(testName, startURL);
+        addTest(Utils.concatPaths(suitePath, testName), startURL);
     }
 
     private void addTest(String testName, String startURL) {
@@ -146,8 +146,8 @@ public class SahiTestSuite {
         return suiteName;
     }
 
-    public String getSuiteURL() {
-        return suiteURL;
+    public String getSuitePath() {
+        return suitePath;
     }
 
     protected void setSuiteName(String url) {
@@ -183,7 +183,7 @@ public class SahiTestSuite {
 
     public static void startSuite(HttpRequest request) {
         Session session = request.session();
-        String suiteName = request.getParameter("suite");
+        String suitePath = request.getParameter("suite");
         String browser = request.getParameter("browser");
         String base = request.getParameter("base");
         String threadsStr = request.getParameter("threads");
@@ -194,7 +194,7 @@ public class SahiTestSuite {
         } catch (Exception e) {
         }
         logDir = "".equals(logDir) ? null : logDir;
-        SahiTestSuite suite = new SahiTestSuite(suiteName, base, browser, logDir, session.id());
+        SahiTestSuite suite = new SahiTestSuite(suitePath, base, browser, logDir, session.id());
         for (int i = 0; i < threads; i++) {
             suite.executeNext();
             try {
