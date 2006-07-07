@@ -68,9 +68,23 @@ public class Configuration {
         return properties.getProperty("ssl.password");
     }
 
-    public static String getScriptRoot() {
-        return addEndSlash(properties.getProperty("scripts.dir"));
+    public static String[] getScriptRoots() {
+        return getPropertyArray("scripts.dir");
     }
+
+    public static String[] getScriptExtensions() {
+        return getPropertyArray("script.extension");
+    }
+
+    private static String[] getPropertyArray(String key) {
+        String property = properties.getProperty(key);
+        String[] tokens = property.split(";");
+        for (int i = 0; i < tokens.length; i++) {
+            tokens[i] = tokens[i].trim();
+        }
+        return tokens;
+    }
+
 
     public static String getPlayBackLogsRoot() {
         return Utils.concatPaths(getLogsRoot(), PLAYBACK_LOG_ROOT);
@@ -124,8 +138,12 @@ public class Configuration {
     }
 
     public static void createScriptsDirIfNeeded() {
-        File file = new File(Configuration.getScriptRoot());
-        file.mkdirs();
+        String[] scriptRoots = Configuration.getScriptRoots();
+        for (int i = 0; i < scriptRoots.length; i++) {
+            String scriptRoot = scriptRoots[i];
+            File file = new File(scriptRoot);
+            file.mkdirs();
+        }
     }
 
     public static String getHotKey() {
@@ -134,12 +152,6 @@ public class Configuration {
                 || "CTRL".equals(hotkey))
             return hotkey;
         return "ALT";
-    }
-
-    public static String getScriptFileWithPath(String fileName) {
-        if (!fileName.endsWith(".sah"))
-            fileName = fileName + ".sah";
-        return getScriptRoot() + fileName;
     }
 
     public static String appendLogsRoot(String fileName) {

@@ -1,12 +1,10 @@
 package net.sf.sahi.command;
 
 import net.sf.sahi.request.HttpRequest;
-import net.sf.sahi.response.HttpFileResponse;
 import net.sf.sahi.response.HttpResponse;
 import net.sf.sahi.response.SimpleHttpResponse;
 import net.sf.sahi.session.Session;
 import net.sf.sahi.util.Utils;
-import net.sf.sahi.config.Configuration;
 
 public class Log {
 
@@ -17,7 +15,7 @@ public class Log {
         if (href.startsWith("http://") || href.startsWith("https://")){
             content = new String(Utils.readURL(href));
         }else{
-//            String fileName = Utils.concatPaths(Configuration.getScriptRoot(), href);
+//            String fileName = Utils.concatPaths(Configuration.getScriptRoots(), href);
             content = new String(Utils.readFile(href));
         }
         final SimpleHttpResponse response = new SimpleHttpResponse(content);

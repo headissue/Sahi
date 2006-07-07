@@ -123,6 +123,13 @@ function getPbVar(name){
 	return blankIfNull(_pbVars[name]);
 }
 function doOnRecLoad(){
+    var f = document.recordstartform;
+    f.dir.options.length = 0;
+    for (var i=1; i<=_scriptList.length; i++){
+        f.dir.options[i] = new Option(_scriptList[i-1], _scriptList[i-1]);
+        if (_scriptList[i-1] == _selectedScript)
+            f.dir.options[i].selected = true;
+    }
 	initRecorderTab();
 }
 function doOnPlaybackLoad(){

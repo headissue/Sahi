@@ -91,11 +91,7 @@ public class Player {
         String fileName = request.getParameter("file");
 
         final String scriptFileWithPath;
-        if (session.getSuite() != null) {         //TODO: Folder
-            scriptFileWithPath = fileName;
-        } else {
-            scriptFileWithPath = Configuration.getScriptFileWithPath(fileName);
-        }
+        scriptFileWithPath = fileName;
         session.setScript(new FileScript(
                 scriptFileWithPath));
         String startUrl = request.getParameter("startUrl");

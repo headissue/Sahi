@@ -15,20 +15,21 @@ public class Recorder {
 	private static Logger logger = Configuration
 			.getLogger("net.sf.sahi.record.Recorder");
 	private File file = null;
+    private String dir;
 
-	public void start(String fileName) {
-		logger.fine("Starting to write  to " + fileName + ".");
-		if (isStarted)
-			return;
-		Configuration.createScriptsDirIfNeeded();
-		file = new File(fileName).getAbsoluteFile();
-		try {
-			file.createNewFile();
-			isStarted = true;
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
+    public void start(String fileName) {
+        logger.fine("Starting to write  to " + fileName + ".");
+        if (isStarted)
+            return;
+        Configuration.createScriptsDirIfNeeded();
+        file = new File(fileName).getAbsoluteFile();
+        try {
+            file.createNewFile();
+            isStarted = true;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
 	public void stop() {
 		logger.fine("Stopping.");
@@ -63,4 +64,12 @@ public class Recorder {
 			e.printStackTrace();
 		}
 	}
+
+    public void setDir(String dir) {
+        this.dir = dir;
+    }
+
+    public String getDir() {
+        return dir;
+    }
 }

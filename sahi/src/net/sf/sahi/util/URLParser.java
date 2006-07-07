@@ -20,7 +20,7 @@ public class URLParser {
 		int endIndex = uri.indexOf("?");
 		endIndex = endIndex == -1 ? uri.length() :  endIndex;
         String fileName = uri.substring(uri.lastIndexOf(token) + token.length(), endIndex);
-        return Utils.concatPaths(Configuration.getScriptRoot(), fileName);
+        return Utils.concatPaths(Configuration.getScriptRoots()[0], fileName); //TODO FIX ME
 	}
 
 	public static String getCommandFromUri(String uri) {

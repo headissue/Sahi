@@ -251,4 +251,7 @@ public abstract class SahiScript {
         return SahiScriptHTMLAdapter.createHTML(original);
     }
 
+    public String getFilePath() {
+        return filePath;
+    }
 }
