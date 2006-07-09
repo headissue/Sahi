@@ -11,6 +11,7 @@ import java.util.*;
  */
 public class Utils {
     public static String escapeDoubleQuotesAndBackSlashes(String line) {
+        if (line == null) return null;
         return line.replaceAll("\\\\", "\\\\\\\\").replaceAll("\"", "\\\\\"");
     }
 

@@ -10,23 +10,23 @@ import java.util.List;
 public class ScriptUtil {
     public static String getScriptsJs(String scriptName) {
         String[] fileList = getScriptFiles();
-        return getJs(fileList, scriptName);
+        return getJs(fileList, scriptName, false);
     }
 
     public static String getScriptRootsJs(String dir) {
         String[] fileList = Configuration.getScriptRoots();
-        return getJs(fileList, dir);
+        return getJs(fileList, Utils.escapeDoubleQuotesAndBackSlashes(dir), true);
     }
 
-    private static String getJs(String[] list, String scriptName) {
+    private static String getJs(String[] list, String selected, boolean isDir) {
         StringBuffer sb = new StringBuffer();
         for (int i = 0; i < list.length; i++) {
             String absolutePath = list[i];
-            sb.append("addToScriptList('");
+            sb.append("addToScript").append(isDir ? "Dir" : "").append("List").append("('");
             sb.append(Utils.escapeDoubleQuotesAndBackSlashes(absolutePath));
             sb.append("');\n");
         }
-        sb.append("setSelectedScript('" + scriptName + "')");
+        sb.append("setSelectedScript").append(isDir ? "Dir" : "").append("('").append(selected).append("')");
         sb.append("\n\n\n");
         return sb.toString();
     }

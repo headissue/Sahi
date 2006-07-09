@@ -69,7 +69,11 @@ public class Configuration {
     }
 
     public static String[] getScriptRoots() {
-        return getPropertyArray("scripts.dir");
+        String[] propertyArray = getPropertyArray("scripts.dir");
+        for (int i = 0; i < propertyArray.length; i++) {
+            propertyArray[i] = new File(propertyArray[i]).getAbsolutePath() + System.getProperty("file.separator");
+        }
+        return propertyArray;
     }
 
     public static String[] getScriptExtensions() {
