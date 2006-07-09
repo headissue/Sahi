@@ -1423,17 +1423,6 @@ function sahiGetAccessorInfoQS(ai, isAssert) {
     return s;
 }
 
-function sahiGetAccessorInfoDisplay(el) {
-    var ai = sahiGetAccessorInfo(el);
-    var s = "accessor=" + ai.accessor;
-    s += "\nshorthand=" + ai.shortHand;
-    s += "\ntype=" + ai.type;
-    if (ai.value) {
-        s += "\nvalue=" + ai.value;
-    }
-    return s;
-}
-
 function sahiGetOptionText(sel, val) {
     var l = sel.options.length;
     for (var i = 0; i < l; i++) {
@@ -1593,7 +1582,7 @@ function sahiMouseOver(e) {
             controlWin.main.displayStepNum();
             var acc = sahiGetAccessorInfo(sahiGetKnownTags(getTarget(e)));
             try {
-                if (acc) controlWin.main.displayInfo(acc, getAccessor1(acc), sahiConvertUnicode(acc.value));
+                if (acc) controlWin.main.displayInfo(acc, getAccessor1(acc), sahiEscapeValue(acc.value));
             } catch(ex2) {
             }
             top._lastAccessedInfo = acc ? acc : top._lastAccessedInfo;
@@ -2076,13 +2065,18 @@ function getScript(info) {
     return cmd;
 }
 
-function sahiEscapeValue(s){
-    return sahiConvertUnicode(quoted(s)).replace(/\r/g, "").replace(/\n/g, "\\n");
+function sahiQuotedEscapeValue(s){
+    return quoted(sahiEscapeValue(s));
 }
+
+function sahiEscapeValue(s){
+    return sahiConvertUnicode(s).replace(/\r/g, "").replace(/\n/g, "\\n");
+}
+
 
 function sahiQuoteIfString(shortHand) {
     if (("" + shortHand).match(/^[0-9]+$/)) return shortHand;
-    return sahiEscapeValue(shortHand);
+    return sahiQuotedEscapeValue(shortHand);
 }
 sahiActivateHotKey();
 
