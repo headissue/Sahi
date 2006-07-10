@@ -219,16 +219,20 @@ function sahi_rightClick(el) {
 
 function sahiSimulateClick(el, isRight, isDouble) {
     var n = el;
+
+    if (sahiIsIE()) {
+        if (el && ((el.type && (el.type == "submit" || el.type == "button" || el.type == "image" || el.type == "checkbox" || el.type == "radio"))
+                || (el.tagName && el.tagName == "A"))) {
+            return el.click();
+        }
+    }
+
     while (n != null) {
         if (n.tagName && n.tagName == "A") {
             n.prevClick = n.onclick;
             n.onclick = linkClick;
         }
         n = n.parentNode;
-    }
-
-    if (sahiIsIE() && el && (el.type == "submit" || el.type == "image" || el.type == "checkbox" || el.type == "radio")) {
-        return el.click();
     }
 
     sahiSimulateMouseEvent(el, "mousemove");
@@ -388,7 +392,10 @@ function sahi_setValue(el, val) {
                 if (i == 0 && el.value != c) {
                     append = true;
                 }
-                if (append) el.value += c;
+                if (append) {
+                    if (!el.maxLength || el.value.length < el.maxLength)
+                        el.value += c;
+                }
                 sahiSimulateKeyEvent(c, el, "keyup");
             }
         }
@@ -508,7 +515,7 @@ function sahi_byId(id) {
 }
 function sahi_select(n) {
     var el = sahiFindElement(n, "select", "select");
-//    if (!el) el = sahiFindElement(n, "select-multiple", "select");
+    //    if (!el) el = sahiFindElement(n, "select-multiple", "select");
     return el;
 }
 function sahi_radio(n) {
@@ -584,6 +591,7 @@ function sahi_assertNotTrue(n, s) {
     if (n) throw new SahiAssertionException(6, s);
     return true;
 }
+sahi_assertFalse = sahi_assertNotTrue;
 function sahi_assertEqual(expected, actual, s) {
     if (sahiTrim(expected) != sahiTrim(actual)) throw new SahiAssertionException(3, (s?s:"") + "\nExpected:[" + expected + "]\nActual:[" + actual + "]");
     return true;
@@ -2065,11 +2073,12 @@ function getScript(info) {
     return cmd;
 }
 
-function sahiQuotedEscapeValue(s){
+function sahiQuotedEscapeValue(s) {
     return quoted(sahiEscapeValue(s));
 }
 
-function sahiEscapeValue(s){
+function sahiEscapeValue(s) {
+    if (s == null) return s;
     return sahiConvertUnicode(s).replace(/\r/g, "").replace(/\n/g, "\\n");
 }
 
@@ -2087,5 +2096,3 @@ window.sahi_real_prompt = window.prompt;
 window.alert = sahi_alert;
 window.confirm = sahi_confirm;
 window.prompt = sahi_prompt;
-
-

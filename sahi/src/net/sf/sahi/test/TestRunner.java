@@ -55,12 +55,18 @@ public class TestRunner {
 		InputStream in = url.openStream();
 		in.close();
 		String status = "NONE";
-		while (true) {
+        int retries = 0;
+        while (true) {
 			Thread.sleep(2000);
 			status = getSuiteStatus(sessionId);
-			if (!"RUNNING".equals(status)) {
+			if ("SUCCESS".equals(status) || "FAILURE".equals(status)) {
 				break;
-			}
+			}else if ("RETRY".equals(status)){
+                if (retries++ == 10) {
+                    status = "FAILURE";
+                    break;
+                }
+            }
 		}
 		return status;
 	}
@@ -80,7 +86,8 @@ public class TestRunner {
 			status = sb.toString();
 			in.close();
 		} catch (Exception e) {
-			e.printStackTrace();
+            System.out.println("Exception while connecting to Sahi proxy to check status. Retrying ...");
+            status = "RETRY";
 		}
 		return status;
 	}

@@ -187,6 +187,9 @@ _log(message, type) where type can be "success", "failure",
 _highlight(jsElement)<br>
 _navigateTo("URLString")<br>
 <a href="#callserver">_callServer("class_method", "querystring")</a><br>
+<a href="#mock">_addMock("pattern")</a><br>
+<a href="#mock">_addMock("pattern", "class_method")</a><br>
+<a href="#mock">_removeMock("pattern")</a><br>
 </b> <br>
  (<a href="#top">Top</a>) <br>
 <h4><a name="assertion"></a>Assertion Scheduler Functions</h4>
@@ -386,6 +389,46 @@ var $currentCount = parseInt(<i>_callServer("sahi.ext.Counter_getCounter")</i>);
 _assertEqual($currentCount + 1, <i>_callServer("sahi.ext.Counter_getCounter")</i>);
 
 </pre>
+
+<hr>
+<br>
+<h4><a name="mock">Mocks</a></h4>
+
+Mocks are used to mock out responses to urls which match a particular pattern.<br>
+For example:<br>
+A web page has embedded advertisements in an iframe<br>
+and we do not wish to test these advertisements everytime we test our web page.<br>
+So we can add a mock by specifying<br>
+_addMock("www[.]adserver[.]com", "sahi.ext.MyCustomMock_filterAds");<br>
+to our script.<br>
+<br>
+Whenever Sahi encounters a URL request which matches www[.]adserver[.]com<br>
+It will delegate the response handling to sahi.ext.MyCustomMock's filterAds method.<br>
+One can call any class's any method, as long as the method has one of these two signatures.<br>
+<br>
+public net.sf.sahi.response.HttpResponse methodName(net.sf.sahi.request.HttpRequest request);<br>
+public void methodName(net.sf.sahi.request.HttpRequest request);<br>
+<br>
+If _addMock("pattern") is called without a second parameter,<br>
+net.sf.sahi.command.MockResponder.simple(HttpRequest) is used to process the request.<br>
+The response uses the template at htdocs/spr/simpleMock.htm.<br>
+One can modify this to show a generic mock response.        <br>
+<br>
+This script may explain mocks better:<br>
+<br>
+<pre class="code">
+_navigateTo("http://localhost:10000/demo/index.htm");<br>
+_assertNotNull(_link("Link Test"));<br>
+_addMock(".*localhost.*");<br>
+_navigateTo("http://localhost:10000/demo/index.htm");<br>
+_assertNull(_link("Link Test"));<br>
+_containsText(document.body, "http://localhost:10000/demo/index.htm");<br>
+_removeMock(".*localhost.*");<br>
+_navigateTo("http://localhost:10000/demo/index.htm");<br>
+_assertNotNull(_link("Link Test"));<br>
+</pre>    
+<br>
+
 
 <br>
  (<a href="#top">Top</a>) <br>

@@ -15,7 +15,7 @@ import java.util.logging.Logger;
 public class Configuration {
     private static Properties properties;
     private static final String LOG_PATTERN = "sahi%g.log";
-    public static final String PLAYBACK_LOG_ROOT = "playback/";
+    public static final String PLAYBACK_LOG_ROOT = "playback";
     private static final String HTDOCS_ROOT = "../htdocs/";
 
     static {
@@ -61,7 +61,10 @@ public class Configuration {
     }
 
     public static String getLogsRoot() {
-        return addEndSlash(properties.getProperty("logs.dir"));
+        String fileName = properties.getProperty("logs.dir");
+        File file = new File(fileName);
+        if (!file.exists()) file.mkdirs();        
+        return fileName;
     }
 
     public static String getSSLPassword() {
@@ -91,7 +94,10 @@ public class Configuration {
 
 
     public static String getPlayBackLogsRoot() {
-        return Utils.concatPaths(getLogsRoot(), PLAYBACK_LOG_ROOT);
+        String fileName = Utils.concatPaths(getLogsRoot(), PLAYBACK_LOG_ROOT);
+        File file = new File(fileName);
+        if (!file.exists()) file.mkdirs();
+        return fileName;
     }
 
     private static String addEndSlash(String dir) {
