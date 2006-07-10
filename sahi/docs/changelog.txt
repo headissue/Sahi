@@ -1,11 +1,17 @@
-* Fixed bug for some submitted pages not working properly on IE
-* Added socket pool to prevent Connect exceptions when there are a lot of tests
-* Fixed bug to prevent injection of html code into js files
-* Added documentation for _callServer and a few other apis
-* Displaying an error page when remote server is down. Tests do not stop anymore.
+* Added _addMock("pattern") for mocking responses for urls matching given pattern
+* Fixed errors occuring due to incorrect uri and host header
+* Debug stepping corrected
+* Added multiple script folder support
+* Added automatic running of all scripts in a directory
+* Added error log redirection to specified folders through ant target
+* Added _option(selectedElement, text) for identifying options in a select box
+* Added support for single and multi select in multi-select boxes
+* Added _div("text"), _span("text") and _spandiv("text") for identification of spans and divs.
+* Rectified ssl certificate creation bug caused by invalid timeout value
+* Made script running parameters configureable through sahi.properties
+
 
 Known issues
 * Firefox has problems with multithreaded playback due to session sharing across windows. 
 (Workaround: Do not add the 'threads=n' clause to sahi target)
-* Debug does not step correctly.
 * Form elements with $ in them are not recorded correctly. You have to explicity replace $ with \$ in script.
