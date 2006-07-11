@@ -237,7 +237,7 @@ public class HttpRequest extends StreamHandler {
 		setHeader("Connection", "close");
 		cookies().remove("sahisid");
 		setHeader("Cookie", rebuildCookies());
-		setRawHeaders(getRebuiltHeaderBytes());
+        setRawHeaders(getRebuiltHeaderBytes());
 		logger.fine(firstLine());
 		logger.fine("\n------------\n\nRequest Headers:\n" + headers());
 		return this;

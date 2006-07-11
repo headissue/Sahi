@@ -33,8 +33,8 @@ public class LocalRequestProcessor {
 			httpResponse = getLogResponse(URLParser.logFileNamefromURI(requestFromBrowser.uri()));
 		} else if (uri.indexOf("/spr/") != -1) {
 			String fileName = URLParser.fileNamefromURI(requestFromBrowser.uri());
-			httpResponse = new HttpFileResponse(fileName, null, false, false);
-//			httpResponse = new HttpFileResponse(fileName, null, true, true);
+//			httpResponse = new HttpFileResponse(fileName, null, false, false);
+			httpResponse = new HttpFileResponse(fileName, null, true, true);
 		} else {
 			httpResponse = new SimpleHttpResponse(
 					"<html><h2>You have reached the Sahi proxy.</h2></html>");

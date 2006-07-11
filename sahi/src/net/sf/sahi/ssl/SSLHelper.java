@@ -87,7 +87,7 @@ public class SSLHelper {
 		String contents = new String(Utils.readCachedFile(Utils.concatPaths(Configuration.getConfigPath(), "ssl.txt")));
 		Properties props = new Properties();
 		props.put("domain", domain);
-		props.put("keystore", keyStoreFilePath);
+		props.put("keystore", Utils.escapeDoubleQuotesAndBackSlashes(keyStoreFilePath));
 		props.put("password", password);
 		props.put("keytool", keytool);
 		String command = Utils.substitute(contents, props);

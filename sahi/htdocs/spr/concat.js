@@ -1470,8 +1470,8 @@ function sahiDocEventHandler(e) {
 function sahiAddHandlers(win) {
     if (!win) win = self;
     var doc = win.document;
-    addEvent(doc, "keyup", sahiDocEventHandler);
-    addEvent(doc, "mousemove", sahiDocEventHandler);
+    sahiAddEvent(doc, "keyup", sahiDocEventHandler);
+    sahiAddEvent(doc, "mousemove", sahiDocEventHandler);
 }
 
 function sahiAttachEvents(el) {
@@ -1488,20 +1488,20 @@ function sahiAttachFormElementEvents(el) {
     var type = el.type;
     if (el.onchange == sahiOnEv || el.onblur == sahiOnEv || el.onclick == sahiOnEv) return;
     if (type == "text" || type == "textarea" || type == "password") {
-        addEvent(el, "change", sahiOnEv);
+        sahiAddEvent(el, "change", sahiOnEv);
     } else if (type == "select-one" || type == "select-multiple") {
-        addEvent(el, "change", sahiOnEv);
+        sahiAddEvent(el, "change", sahiOnEv);
     } else if (type == "button" || type == "submit" || type == "checkbox" || type == "radio" || type == "image") {
-        addEvent(el, "click", sahiOnEv);
+        sahiAddEvent(el, "click", sahiOnEv);
     }
 }
 function sahiAttachLinkEvents(el) {
-    addEvent(el, "click", sahiOnEv);
+    sahiAddEvent(el, "click", sahiOnEv);
 }
 function sahiAttachImageEvents(el) {
-    addEvent(el, "click", sahiOnEv);
+    sahiAddEvent(el, "click", sahiOnEv);
 }
-function addEvent(el, ev, fn) {
+function sahiAddEvent(el, ev, fn) {
     if (!el) return;
     if (el.attachEvent) {
         el.attachEvent("on" + ev, fn);
@@ -1509,7 +1509,7 @@ function addEvent(el, ev, fn) {
         el.addEventListener(ev, fn, false);
     }
 }
-function removeEvent(el, ev, fn) {
+function sahiRemoveEvent(el, ev, fn) {
     if (!el) return;
     if (el.attachEvent) {
         el.detachEvent("on" + ev, fn);
@@ -2016,8 +2016,8 @@ function sahiInit(e) {
 }
 function sahiActivateHotKey() {
     try {
-        addEvent(document, "dblclick", sahiOpenControllerWindow);
-        addEvent(document, "mousemove", sahiMouseOver);
+        sahiAddEvent(document, "dblclick", sahiOpenControllerWindow);
+        sahiAddEvent(document, "mousemove", sahiMouseOver);
     } catch(ex) {
         sahiHandleException(ex);
     }
@@ -2048,17 +2048,17 @@ function getScript(info) {
     } else if (ev == "click") {
         cmd = "_click(" + accessor + ");";
     } else if (ev == "setvalue") {
-        cmd = "_setValue(" + accessor + ", " + sahiEscapeValue(value) + ");";
+        cmd = "_setValue(" + accessor + ", " + sahiQuotedEscapeValue(value) + ");";
     } else if (ev == "setselected") {
-        cmd = "_setSelected(" + accessor + ", " + sahiEscapeValue(value) + ");";
+        cmd = "_setSelected(" + accessor + ", " + sahiQuotedEscapeValue(value) + ");";
     } else if (ev == "assert") {
         cmd = "_assertNotNull(" + accessor + ");\r\n";
         if (type == "cell") {
-            cmd += "_assertEqual(" + sahiEscapeValue(value) + ", _getCellText(" + accessor + "));";
+            cmd += "_assertEqual(" + sahiQuotedEscapeValue(value) + ", _getCellText(" + accessor + "));";
         } else if (type == "select-one" || type == "select-multiple") {
-            cmd += "_assertEqual(" + sahiEscapeValue(value) + ", _getSelectedText(" + accessor + "));";
+            cmd += "_assertEqual(" + sahiQuotedEscapeValue(value) + ", _getSelectedText(" + accessor + "));";
         } else if (type == "text" || type == "textarea" || type == "password") {
-            cmd += "_assertEqual(" + sahiEscapeValue(value) + ", " + accessor + ".value);";
+            cmd += "_assertEqual(" + sahiQuotedEscapeValue(value) + ", " + accessor + ".value);";
         } else if (type == "checkbox" || type == "radio") {
             cmd += "_assert" + ("true" == "" + value ? "":"Not" ) + "True(" + accessor + ".checked);";
         }

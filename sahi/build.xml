@@ -49,7 +49,7 @@
 		<antcall target="jar" />
 		<antcall target="jar-ant" />
 		<antcall target="clean-deploy" />
-		<antcall target="deploy" />
+		<antcall target="create-deploy" />
 		<antcall target="deploy-src" />
 	</target>
 
@@ -81,7 +81,8 @@
 		</copy>
 		<copy todir="temp/sahi/scripts">
 			<fileset dir="scripts" >
-				<include name="blank.sah" />
+                <include name="includes/sahi_demo_include.sah"/>
+                <include name="blank.sah" />
 				<include name="demo.suite" />
 				<include name="google.sah" />
 				<include name="find_in_google.sah" />
@@ -124,7 +125,7 @@
 		<antcall target="clean-temp" />
 	</target>
 
-	<target name="deploy" depends="clean-temp">
+	<target name="create-deploy" depends="clean-temp">
 		<tstamp />
 		<mkdir dir="deploy" />
 		<mkdir dir="temp/sahi" />
@@ -139,6 +140,7 @@
 		</copy>
 		<copy todir="temp/sahi/scripts">
 			<fileset dir="scripts" >
+                <include name="includes/sahi_demo_include.sah"/>
 				<include name="blank.sah" />
 				<include name="demo.suite" />
 				<include name="google.sah" />
@@ -231,4 +233,11 @@
 		<delete file="bin/junittestrun.out" failonerror="false" />
 		<fail message="JUnit tests failed. MAKE SURE THAT junit.jar AND log4j.jar ARE PRESENT IN {sahi}/extlib/ FOLDER" if="junit.failed" />
 	</target>
+
+    <target name="deploy">
+        <delete dir="D:/sahitest"/>
+        <mkdir dir="D:/sahitest"/>
+        <unzip src="deploy/sahi_20060711.zip" dest="D:/sahitest"></unzip>
+    </target>
+
 </project>
