@@ -100,24 +100,18 @@ public class Configuration {
         return fileName;
     }
 
-    private static String addEndSlash(String dir) {
-        if (dir.endsWith("/") || dir.endsWith("\\"))
-            return dir;
-        return dir + "/";
-    }
-
     public static String getHtdocsRoot() {
         return HTDOCS_ROOT;
     }
 
     public static String getPlaybackLogCSSFileName(boolean addHtdocsRoot) {
-        final String path = "/spr/css/playback_log_format.css";
+        final String path = "spr/css/playback_log_format.css";
         return addHtdocsRoot ? Utils.concatPaths(getHtdocsRoot(), path) : path;
     }
 
 
     public static String getConsolidatedLogCSSFileName(boolean addHtdocsRoot) {
-        final String path = "/spr/css/consolidated_log_format.css";
+        final String path = "spr/css/consolidated_log_format.css";
         return addHtdocsRoot ? Utils.concatPaths(getHtdocsRoot(), path) : path;
     }
 
@@ -177,7 +171,7 @@ public class Configuration {
     }
 
     public static String getCertsPath() {
-        return addEndSlash(properties.getProperty("certs.dir"));
+        return properties.getProperty("certs.dir");
     }
 
     public static String getConfigPath() {

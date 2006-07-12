@@ -1,3 +1,4 @@
+* Fixed bug fixes relating to logfile paths on Linux
 * Added _addMock("pattern") for mocking responses for urls matching given pattern
 * Fixed errors occuring due to incorrect uri and host header
 * Debug stepping corrected

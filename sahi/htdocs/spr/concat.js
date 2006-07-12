@@ -221,8 +221,7 @@ function sahiSimulateClick(el, isRight, isDouble) {
     var n = el;
 
     if (sahiIsIE()) {
-        if (el && ((el.type && (el.type == "submit" || el.type == "button" || el.type == "image" || el.type == "checkbox" || el.type == "radio"))
-                || (el.tagName && el.tagName == "A"))) {
+        if (el && ((el.type && (el.type == "submit" || el.type == "button" || el.type == "image" || el.type == "checkbox" || el.type == "radio")))) {
             return el.click();
         }
     }
@@ -393,7 +392,7 @@ function sahi_setValue(el, val) {
                     append = true;
                 }
                 if (append) {
-                    if (!el.maxLength || el.value.length < el.maxLength)
+//                    if (!el.maxLength || el.value.length < el.maxLength)
                         el.value += c;
                 }
                 sahiSimulateKeyEvent(c, el, "keyup");
