@@ -49,7 +49,7 @@ public class Configuration {
         try {
             int limit = 1000000; // 1 Mb
             int numLogFiles = 3;
-            handler = new FileHandler(getLogsRoot() + LOG_PATTERN, limit,
+            handler = new FileHandler(Utils.concatPaths(getLogsRoot(), LOG_PATTERN), limit,
                     numLogFiles);
         } catch (IOException e) {
             e.printStackTrace();
@@ -63,7 +63,7 @@ public class Configuration {
     public static String getLogsRoot() {
         String fileName = properties.getProperty("logs.dir");
         File file = new File(fileName);
-        if (!file.exists()) file.mkdirs();        
+        if (!file.exists()) file.mkdirs();
         return fileName;
     }
 

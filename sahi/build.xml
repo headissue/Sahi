@@ -37,10 +37,6 @@
 		</java>
 	</target>
 
-	<target name="stopsahi" description="stop sahi server">
-		<sahi stop="true" sahihost="localhost" sahiport="9999" />
-	</target>
-
 	<target name="all">
 		<antcall target="clean" />
 		<antcall target="test" />
