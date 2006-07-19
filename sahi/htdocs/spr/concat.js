@@ -220,7 +220,7 @@ function sahi_rightClick(el) {
 function sahiSimulateClick(el, isRight, isDouble) {
     var n = el;
 
-    if (sahiIsIE()) {
+    if (sahiIsIE() && !isRight) {
         if (el && ((el.type && (el.type == "submit" || el.type == "button" || el.type == "image" || el.type == "checkbox" || el.type == "radio")))) {
             return el.click();
         }
@@ -647,7 +647,7 @@ function sahiGetColIndexWith(txt, tableEl) {
 }
 
 var _sahiLastAlert = "";
-function sahi_alert(s) {
+function sahi_alert_mock(s) {
     if (isSahiPlaying()) {
         _sahiLastAlert = s;
     } else {
@@ -676,12 +676,30 @@ function sahi_savedRandom(id, min, max) {
 function sahi_resetSavedRandom(id) {
     sahi_setGlobal("srandom" + id, "");
 }
-function sahi_confirm(s) {
-    return true;
-    //confirm(s);
-    //	window.open("/_s_/dyn/confirm.htm?msg="+s, "", "height=60px,width=460px,resizable=yes,toolbars=no,statusbar=no");
+
+function sahiResetConfirm(){
+    _sahiConfirmReturnValue = true;
+    _sahiExpectedConfirmText = null;
+    _sahiExpectedConfirmMsg = null;
 }
-function sahi_prompt(n) {
+sahiResetConfirm();
+function sahi_expectConfirm(value, text, msg){
+    if (text) {
+        _sahiExpectedConfirmText = text;
+        _sahiExpectedConfirmMsg = msg;
+    }
+    _sahiConfirmReturnValue = value;
+}
+function sahConfirmMock(s) {
+    if (_sahiExpectedConfirmText){
+        if (s != _sahiExpectedConfirmText) throw new SahiAssertionException(7, _sahiExpectedConfirmMsg);
+    }
+    var retVal = _sahiConfirmReturnValue;
+    sahiResetConfirm();
+    return retVal;
+}
+
+function sahPromptMock(n) {
     return sahi_real_prompt(n);
 }
 function sahi_cell(id, row, col) {
@@ -2092,6 +2110,6 @@ window.sahi_real_alert = window.alert;
 window.sahi_real_confirm = window.confirm;
 window.sahi_real_prompt = window.prompt;
 
-window.alert = sahi_alert;
-window.confirm = sahi_confirm;
-window.prompt = sahi_prompt;
+window.alert = sahi_alert_mock;
+window.confirm = sahConfirmMock;
+window.prompt = sahPromptMock;
