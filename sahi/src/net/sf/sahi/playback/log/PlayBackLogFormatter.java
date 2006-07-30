@@ -16,7 +16,7 @@ public class PlayBackLogFormatter extends Formatter {
 			sb.append("<style>\r\n")
 			.append(new String(Utils.readFile(Configuration.getPlaybackLogCSSFileName(true))))
 			.append("</style>\r\n")
-			.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"/_s_"+Configuration.getPlaybackLogCSSFileName(false)+"\">\r\n");
+			.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"/_s_/"+Configuration.getPlaybackLogCSSFileName(false)+"\">\r\n");
 		}
 
 		sb.append("<div class=\""+level.getName()+"\">");

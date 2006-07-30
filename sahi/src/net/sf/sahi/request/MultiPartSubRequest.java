@@ -29,7 +29,7 @@ public class MultiPartSubRequest extends StreamHandler {
         StringTokenizer tokenizer = new StringTokenizer(s, ";");
         tokenizer.nextToken();
         name = getValue(tokenizer.nextToken());
-        fileName = getValue(tokenizer.nextToken());
+        if (tokenizer.hasMoreTokens()) fileName = getValue(tokenizer.nextToken());
 
     }
 
@@ -47,7 +47,7 @@ public class MultiPartSubRequest extends StreamHandler {
 
     public void setFileName(String fileName) {
         this.fileName = fileName;
-        setHeader("Content-Disposition", "form-data; fileName=\""+name +"\"; filename=\""+this.fileName +"\"");
+        setHeader("Content-Disposition", "form-data; name=\""+name +"\"; filename=\""+this.fileName +"\"");
         resetRawHeaders();
     }
 }

@@ -66,7 +66,7 @@ public class LogFileConsolidator {
 				new String(Utils.readFile(Configuration
 						.getConsolidatedLogCSSFileName(true)))).append(
 				"</style>\r\n").append(
-				"<link rel=\"stylesheet\" type=\"text/css\" href=\"/_s_"
+				"<link rel=\"stylesheet\" type=\"text/css\" href=\"/_s_/"
 						+ Configuration.getConsolidatedLogCSSFileName(false)
 						+ "\">\r\n");
 		sb.append("<table>");

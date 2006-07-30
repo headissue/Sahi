@@ -3,9 +3,7 @@ package net.sf.sahi.request;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.ByteArrayOutputStream;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Iterator;
+import java.util.*;
 
 /**
  * User: nraman
@@ -14,7 +12,7 @@ import java.util.Iterator;
  */
 public class MultiPartRequest {
     private final HttpRequest httpRequest;
-    Map subRequests;
+    List subRequests;
     public String delimiter;
 
     public MultiPartRequest(HttpRequest httpRequest) throws IOException {
@@ -27,11 +25,11 @@ public class MultiPartRequest {
         delimiter = getDelimiter(dataStr);
         int nextIx;
         int prevIx = delimiter.length();
-        subRequests = new HashMap();
+        subRequests = new ArrayList();
         while (prevIx + 1 < dataStr.length() && (nextIx = dataStr.indexOf(delimiter, prevIx + 1)) != -1) {
             String subReqStr = dataStr.substring(prevIx, nextIx).trim();
             MultiPartSubRequest multiPartSubRequest = new MultiPartSubRequest(new ByteArrayInputStream(subReqStr.getBytes()));
-            subRequests.put(multiPartSubRequest.name(), multiPartSubRequest);
+            subRequests.add(multiPartSubRequest);
             prevIx = nextIx + delimiter.length();
         }
     }
@@ -45,7 +43,7 @@ public class MultiPartRequest {
         return httpRequest;
     }
 
-    public Map getMultiPartSubRequests() {
+    public List getMultiPartSubRequests() {
         return subRequests;
     }
 
@@ -98,7 +96,7 @@ public class MultiPartRequest {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         byte[] delimBytes = (delimiter + "\r\n").getBytes();
         try {
-            for (Iterator iterator = subRequests.values().iterator(); iterator.hasNext();) {
+            for (Iterator iterator = subRequests.iterator(); iterator.hasNext();) {
                 out.write(delimBytes);
                 MultiPartSubRequest part = (MultiPartSubRequest) iterator.next();
                 part.resetRawHeaders();
@@ -106,8 +104,7 @@ public class MultiPartRequest {
                 out.write(part.data());
                 out.write("\r\n".getBytes());
             }
-            out.write(delimBytes);
-            out.flush();
+            out.write((delimiter+"--\r\n").getBytes());
         } catch (IOException e) {
             e.printStackTrace();
         }

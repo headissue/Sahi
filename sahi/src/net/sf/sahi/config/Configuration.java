@@ -17,6 +17,7 @@ public class Configuration {
     private static final String LOG_PATTERN = "sahi.log";
     public static final String PLAYBACK_LOG_ROOT = "playback";
     private static final String HTDOCS_ROOT = "../htdocs/";
+    public static FileHandler handler;
 
     static {
         properties = new Properties();
@@ -45,14 +46,12 @@ public class Configuration {
     }
 
     public static Logger getLogger(String name) {
-        FileHandler handler = null;
-        try {
-            int limit = 1000000; // 1 Mb
-            int numLogFiles = 3;
-            handler = new FileHandler(Utils.concatPaths(getLogsRoot(), LOG_PATTERN), limit,
-                    numLogFiles);
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (handler == null) {
+            try {
+                handler = new FileHandler(Utils.concatPaths(getLogsRoot(), LOG_PATTERN).replaceAll("\\\\", "/"));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         Logger logger = Logger.getLogger(name);
         if (handler != null)

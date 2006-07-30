@@ -507,9 +507,11 @@ function sahi_wait(i) {
     _sahi_wait = i;
 }
 
+function sahi_file(n) {
+    return sahiFindElement(n, "file", "input");
+}
 function sahi_textbox(n) {
     return sahiFindElement(n, "text", "input");
-
 }
 function sahi_password(n) {
     return sahiFindElement(n, "password", "input");
@@ -1357,6 +1359,8 @@ function sahiGetAccessorInfo(el) {
         return new AccessorInfo(accessor, shortHand, type, "click");
     } else if (type == "checkbox" || type == "radio") {
         return new AccessorInfo(accessor, shortHand, type, "click", el.checked);
+    } else if (type == "file") {
+        return new AccessorInfo(accessor, shortHand, type, "setFile", el.value);
     } else if (el.tagName.toLowerCase() == "td") {
         return new AccessorInfo(accessor, shortHand, "cell", "click", sahiIsIE()? el.innerText : el.textContent);
     } else if (el.tagName.toLowerCase() == "div" || el.tagName.toLowerCase() == "span") {
@@ -1520,7 +1524,7 @@ function sahiAttachEvents(el) {
 function sahiAttachFormElementEvents(el) {
     var type = el.type;
     if (el.onchange == sahiOnEv || el.onblur == sahiOnEv || el.onclick == sahiOnEv) return;
-    if (type == "text" || type == "textarea" || type == "password") {
+    if (type == "text" || type == "file" || type == "textarea" || type == "password") {
         sahiAddEvent(el, "change", sahiOnEv);
     } else if (type == "select-one" || type == "select-multiple") {
         sahiAddEvent(el, "change", sahiOnEv);
@@ -1647,6 +1651,8 @@ function getAccessor1(info) {
             return "_select(" + escapeForScript(info.shortHand) + ")";
         } else if ("text" == info.type) {
             return "_textbox(" + escapeForScript(info.shortHand) + ")";
+        } else if ("file" == info.type) {
+            return "_file(" + escapeForScript(info.shortHand) + ")";
         } else if ("cell" == info.type) {
             return "_cell(" + info.shortHand + ")";
         }
@@ -2099,6 +2105,8 @@ function getScript(info) {
         cmd = "_wait(" + value + ");";
     } else if (ev == "mark") {
         cmd = "//MARK: " + value;
+    } else if (ev == "setFile"){
+        cmd = "_setFile(" + accessor + ", " + sahiQuotedEscapeValue(value) + ");";
     }
     if (cmd != null && popup != null && popup != "") {
         cmd = "_popup(\"" + popup + "\")." + cmd;
@@ -2112,7 +2120,7 @@ function sahiQuotedEscapeValue(s) {
 
 function sahiEscapeValue(s) {
     if (s == null) return s;
-    return sahiConvertUnicode(s).replace(/\r/g, "").replace(/\n/g, "\\n");
+    return sahiConvertUnicode(s).replace(/\r/g, "").replace(/\\/g, "\\\\").replace(/\n/g, "\\n");
 }
 
 

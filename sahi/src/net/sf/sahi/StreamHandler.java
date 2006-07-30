@@ -27,6 +27,11 @@ public abstract class StreamHandler {
         setContentLength();
     }
 
+    private void setContentLength(int length) {
+        setHeader("Content-Length", ""+length);
+        contentLength = length;
+    }
+
     private void setContentLength() {
         String contentLenStr = getLastSetValueOfHeader("Content-Length");
         if (contentLenStr != null)
@@ -39,7 +44,7 @@ public abstract class StreamHandler {
 
     public byte[] setData(byte[] bytes) {
         data = bytes;
-        contentLength = bytes.length;
+        setContentLength(bytes.length);
         resetRawHeaders();
         return data;
     }

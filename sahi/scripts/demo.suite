@@ -3,3 +3,5 @@ sahi_demo_frames.sah framesTest.htm
 blank.sah index.htm
 onchange.sah onchange.htm
 confirm.sah confirmTest.htm
+reset.sah formTest.htm
+

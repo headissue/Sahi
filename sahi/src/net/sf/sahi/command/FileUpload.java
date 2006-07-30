@@ -11,7 +11,7 @@ import net.sf.sahi.util.Utils;
 import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
-import java.util.Map;
+import java.util.List;
 
 public class FileUpload {
     public void setFile(HttpRequest request) {
@@ -23,14 +23,14 @@ public class FileUpload {
         HttpRequest rebuiltRequest = request;
         if (request.isMultipart()) {
             Session session = request.session();
-            MultiPartRequest multiPartRequest = null;
+            MultiPartRequest multiPartRequest;
             try {
                 multiPartRequest = new MultiPartRequest(request);
             } catch (IOException e) {
                 return null;
             }
-            Map parts = multiPartRequest.getMultiPartSubRequests();
-            for (Iterator iterator = parts.values().iterator(); iterator.hasNext();) {
+            List parts = multiPartRequest.getMultiPartSubRequests();
+            for (Iterator iterator = parts.iterator(); iterator.hasNext();) {
                 MultiPartSubRequest part = (MultiPartSubRequest) iterator.next();
                 String fileName = session.getVariable("file:" + part.name());
                 if (Utils.isBlankOrNull(fileName)) continue;
