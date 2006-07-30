@@ -221,7 +221,7 @@ function sahiSimulateClick(el, isRight, isDouble) {
     var n = el;
 
     if (sahiIsIE() && !isRight) {
-        if (el && ((el.type && (el.type == "submit" || el.type == "button" || el.type == "image" || el.type == "checkbox" || el.type == "radio")))) {
+        if (el && ((el.type && (el.type == "submit" || el.type == "button" || el.type == "reset" || el.type == "image" || el.type == "checkbox" || el.type == "radio")))) {
             return el.click();
         }
     }
@@ -490,6 +490,11 @@ function sahi_check(el, val) {
 function sahi_button(n) {
     var el = sahiFindElement(n, "button", "input");
     if (el == null) el = sahiFindElement(n, "button", "button");
+    return el;
+}
+function sahi_reset(n) {
+    var el = sahiFindElement(n, "reset", "input");
+    if (el == null) el = sahiFindElement(n, "reset", "button");
     return el;
 }
 function sahi_submit(n) {
@@ -943,7 +948,7 @@ function sahiFindElementById(win, id) {
 function sahiFindElement(id, type, tagName) {
     var res = getBlankResult();
     var retVal = null;
-    if (type == "button" || type == "submit") {
+    if (type == "button" || type == "reset" || type == "submit") {
         retVal = sahiFindElementHelper(id, top, type, res, "value", tagName).element;
         if (retVal != null) return retVal;
     }
@@ -1023,7 +1028,7 @@ function sahiFindElementIx(id, toMatch, type, tagName) {
         if (retVal != -1) return retVal;
     }
 
-    if (type == "button" || type == "submit") {
+    if (type == "button" || type == "reset" || type == "submit") {
         retVal = sahiFindElementIxHelper(id, type, toMatch, top, res, "value", tagName).cnt;
         if (retVal != -1) return retVal;
     }
@@ -1348,7 +1353,7 @@ function sahiGetAccessorInfo(el) {
         return new AccessorInfo(accessor, shortHand, type, "setselected", sahiGetOptionText(el, el.value));
     } else if (el.tagName.toLowerCase() == "a") {
         return new AccessorInfo(accessor, shortHand, "link", "click");
-    } else if (type == "button" || type == "submit" || type == "image") {
+    } else if (type == "button" || type == "reset"  || type == "submit" || type == "image") {
         return new AccessorInfo(accessor, shortHand, type, "click");
     } else if (type == "checkbox" || type == "radio") {
         return new AccessorInfo(accessor, shortHand, type, "click", el.checked);
@@ -1391,7 +1396,7 @@ function getShortHand(el, accessor) {
             }
             return shortHand;
         } else if (tagLC == "button" || tagLC == "input" || tagLC == "textarea" || tagLC.indexOf("select") != -1) {
-            if (el.type == "button" || el.type == "submit") shortHand = el.value;
+            if (el.type == "button" || el.type == "reset" || el.type == "submit") shortHand = el.value;
             if (el.type == "image")    shortHand = el.alt;
             else if (!shortHand || shortHand == "") shortHand = el.name;
             if (!shortHand || shortHand == "") shortHand = el.id;
@@ -1519,7 +1524,7 @@ function sahiAttachFormElementEvents(el) {
         sahiAddEvent(el, "change", sahiOnEv);
     } else if (type == "select-one" || type == "select-multiple") {
         sahiAddEvent(el, "change", sahiOnEv);
-    } else if (type == "button" || type == "submit" || type == "checkbox" || type == "radio" || type == "image") {
+    } else if (type == "button" || type == "submit" || type == "reset" || type == "checkbox" || type == "radio" || type == "image") {
         sahiAddEvent(el, "click", sahiOnEv);
     }
 }

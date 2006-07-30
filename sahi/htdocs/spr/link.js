@@ -27,6 +27,7 @@ var _div = sahi_div;
 var _span = sahi_span;
 var _spandiv = sahi_spandiv;
 var _lastConfirm = sahi_lastConfirm;
+var _reset = sahi_reset;
 
 var _alert = sahi_alert;
 var _assertEqual  = sahi_assertEqual ;
@@ -59,3 +60,4 @@ var _rightClick = sahi_rightClick;
 var _addMock = sahi_addMock;
 var _removeMock = sahi_removeMock;
 var _expectConfirm = sahi_expectConfirm;
+var _setFile = sahi_setFile;

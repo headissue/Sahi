@@ -28,3 +28,4 @@ _span
 _spandiv
 _option
 _lastConfirm
+_reset
