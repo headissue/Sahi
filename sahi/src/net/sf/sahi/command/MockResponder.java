@@ -1,15 +1,16 @@
 package net.sf.sahi.command;
 
+import net.sf.sahi.RemoteRequestProcessor;
 import net.sf.sahi.config.Configuration;
 import net.sf.sahi.request.HttpRequest;
 import net.sf.sahi.response.HttpFileResponse;
-import net.sf.sahi.response.HttpResponse;
 import net.sf.sahi.response.HttpModifiedResponse;
+import net.sf.sahi.response.HttpResponse;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Properties;
-import java.io.IOException;
 
 public class MockResponder {
 
@@ -53,6 +54,10 @@ public class MockResponder {
         Properties props = new Properties();
         props.put("url", request.url());
         return new HttpModifiedResponse(new HttpFileResponse(Configuration.getHtdocsRoot() + "spr/simpleMock.htm", props, false, false), request
-                    .isSSL(), request.fileExtension());
+                .isSSL(), request.fileExtension());
+    }
+
+    public HttpResponse fileUpload(HttpRequest request) {
+        return new RemoteRequestProcessor().processHttp(request);
     }
 }

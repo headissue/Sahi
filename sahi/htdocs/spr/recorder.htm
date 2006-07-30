@@ -97,41 +97,31 @@
     <tr>
         <td colspan="2">
             <table>
-                <tr><td>
-                    <form name="recordstartform" action="http://www.sahidomain.com/_s_/dyn/Recorder_start" target="channel" onsubmit="return onRecordStartFormSubmit(this)">
-                        <table>
-                            <tr>
-                                <td>Script Directory: </td>
-                                <td>
-                                    <select name="dir">
-                                        <option value="../scripts">../scripts</option>
-                                    </select>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Script Name:</td>
-                                <td>
-                                    <input type="text" name="file" value="">
-                                    <input type="submit" value="Record">
-                                </td>
-                            </tr>
-                        </table>
-                    </form>
-                </td><td>
-                </td><td valign="bottom">
-                    <form name="recordstopform" action="http://www.sahidomain.com/_s_/dyn/Recorder_stop" target="channel" onsubmit="stopRec()">
-                        <table>
-                            <tr>
-                                <td></td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <input type="submit" value="Stop">
-                                </td>
-                            </tr>
-                        </table>
-                    </form>
-                </td></tr>
+                <tr>
+                    <td>
+                        <form name="recordstartform" action="http://www.sahidomain.com/_s_/dyn/Recorder_start"
+                              target="channel" onsubmit="return onRecordStartFormSubmit(this)">
+                            <table>
+                                <tr>
+                                    <td>Script Directory: </td>
+                                    <td>
+                                        <select name="dir" style="width:200px">
+                                            <option value="../scripts">../scripts</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Script Name:</td>
+                                    <td>
+                                        <input type="text" name="file" value="">
+                                        <input type="submit" value="Record">
+                                        <input type="button" value="Stop" onclick="stopRec()">
+                                    </td>
+                                </tr>
+                            </table>
+                        </form>
+                    </td>
+                </tr>
             </table>
         </td>
         <td>

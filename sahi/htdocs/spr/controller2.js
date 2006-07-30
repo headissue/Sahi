@@ -165,8 +165,8 @@ function doOnPlaybackLoad() {
 function doOnTabsLoad() {
     try {
         var hilightedTab = sahiGetServerVar("controller_tab")
-        if (hilightedTab == null || hilightedTab == "") hilightedTab = "record";
-        eval("show" + hilightedTab + "()");
+        if (hilightedTab == null || hilightedTab == "") hilightedTab = "recorder";
+        showTab(hilightedTab);
         top.opener.top._isSahiWinOpen = true;
     } catch(ex) {
         sahiHandleException(ex);
@@ -288,16 +288,10 @@ try {
 } catch(ex) {
 }
 
-
-function showrecord() {
-    if (top.main.location.href.indexOf('recorder.htm') != -1) return;
-    hilightTab("record")
-    top.main.location.href = 'recorder.htm'
-}
-
 function hilightTab(n) {
     document.getElementById("playbackTab").className = "dimTab";
-    document.getElementById("recordTab").className = "dimTab";
+    document.getElementById("recorderTab").className = "dimTab";
+//    document.getElementById("settingsTab").className = "dimTab";
     document.getElementById(n + "Tab").className = "hiTab";
     sahiSetServerVar("controller_tab", n);
 }
@@ -312,10 +306,10 @@ function initRecorderTab() {
     document.currentForm.waitTime.value = getRecVar("controller_waitTime");
     document.currentForm.result.value = getRecVar("controller_result");
 }
-function showplayback() {
-    if (top.main.location.href.indexOf('playback.htm') != -1) return;
-    hilightTab("playback");
-    top.main.location.href = 'playback.htm'
+function showTab(s) {
+    if (top.main.location.href.indexOf(s+'.htm') != -1) return;
+    hilightTab(s);
+    top.main.location.href = s+'.htm'
 }
 
 function initPlaybackTab() {

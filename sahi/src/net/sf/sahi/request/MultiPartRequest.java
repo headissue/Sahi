@@ -2,9 +2,10 @@ package net.sf.sahi.request;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.io.ByteArrayOutputStream;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Iterator;
 
 /**
  * User: nraman
@@ -13,7 +14,8 @@ import java.util.Map;
  */
 public class MultiPartRequest {
     private final HttpRequest httpRequest;
-    List subRequests;
+    Map subRequests;
+    public String delimiter;
 
     public MultiPartRequest(HttpRequest httpRequest) throws IOException {
         this.httpRequest = httpRequest;
@@ -22,15 +24,15 @@ public class MultiPartRequest {
 
     private void populateSubParts() throws IOException {
         String dataStr = new String(httpRequest.data()).trim();
-        String delim = getDelimiter(dataStr);
-        int nextIx = -1;
-        int prevIx = delim.length();
-        subRequests = new ArrayList();
-        while (prevIx + 1 < dataStr.length() && (nextIx = dataStr.indexOf(delim, prevIx + 1)) != -1) {
-            String subReqStr = dataStr.substring(prevIx, nextIx);
+        delimiter = getDelimiter(dataStr);
+        int nextIx;
+        int prevIx = delimiter.length();
+        subRequests = new HashMap();
+        while (prevIx + 1 < dataStr.length() && (nextIx = dataStr.indexOf(delimiter, prevIx + 1)) != -1) {
+            String subReqStr = dataStr.substring(prevIx, nextIx).trim();
             MultiPartSubRequest multiPartSubRequest = new MultiPartSubRequest(new ByteArrayInputStream(subReqStr.getBytes()));
-            subRequests.add(multiPartSubRequest);
-            prevIx = nextIx + delim.length();
+            subRequests.put(multiPartSubRequest.name(), multiPartSubRequest);
+            prevIx = nextIx + delimiter.length();
         }
     }
 
@@ -43,7 +45,7 @@ public class MultiPartRequest {
         return httpRequest;
     }
 
-    public List getMultiPartSubRequests() {
+    public Map getMultiPartSubRequests() {
         return subRequests;
     }
 
@@ -89,5 +91,27 @@ public class MultiPartRequest {
 
     public String protocol() {
         return httpRequest.protocol();
+    }
+
+
+    public HttpRequest getRebuiltRequest() {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        byte[] delimBytes = (delimiter + "\r\n").getBytes();
+        try {
+            for (Iterator iterator = subRequests.values().iterator(); iterator.hasNext();) {
+                out.write(delimBytes);
+                MultiPartSubRequest part = (MultiPartSubRequest) iterator.next();
+                part.resetRawHeaders();
+                out.write(part.rawHeaders());
+                out.write(part.data());
+                out.write("\r\n".getBytes());
+            }
+            out.write(delimBytes);
+            out.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        httpRequest.setData(out.toByteArray());
+        return httpRequest;
     }
 }

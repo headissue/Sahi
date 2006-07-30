@@ -262,4 +262,9 @@ public class HttpRequest extends StreamHandler {
 	public String url() {
 		return (isSSL() ? "https" : "http") + "://" + hostWithPort + (uri == null ? "" : uri);
 	}
+
+    public boolean isMultipart() {
+        String contentType = getLastSetValueOfHeader("Content-Type");
+        return contentType != null && contentType.startsWith("multipart/form-data");
+    }
 }

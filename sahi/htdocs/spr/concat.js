@@ -392,8 +392,8 @@ function sahi_setValue(el, val) {
                     append = true;
                 }
                 if (append) {
-//                    if (!el.maxLength || el.value.length < el.maxLength)
-                        el.value += c;
+                    //                    if (!el.maxLength || el.value.length < el.maxLength)
+                    el.value += c;
                 }
                 sahiSimulateKeyEvent(c, el, "keyup");
             }
@@ -402,6 +402,11 @@ function sahi_setValue(el, val) {
     if (prevVal != val && el.onchange) {
         sahiSimulateEvent(el, "change");
     }
+}
+
+function sahi_setFile(el, v){
+    var url = isBlankOrNull(el.form.action) ? el.ownerDocument.defaultView.location.href : el.form.action;
+    sahi_callServer("FileUpload_setFile", "n="+el.name+"&v="+v+"&action="+url);
 }
 
 function sahiSimulateEvent(target, evType) {
@@ -647,7 +652,7 @@ function sahiGetColIndexWith(txt, tableEl) {
 }
 
 var _sahiLastAlert = "";
-function sahi_alert_mock(s) {
+function sahiAlertMock(s) {
     if (isSahiPlaying()) {
         _sahiLastAlert = s;
     } else {
@@ -676,31 +681,33 @@ function sahi_savedRandom(id, min, max) {
 function sahi_resetSavedRandom(id) {
     sahi_setGlobal("srandom" + id, "");
 }
+_sahiConfirmReturnValue = true;
+_sahiLastConfirmText = null;
 
-function sahiResetConfirm(){
-    _sahiConfirmReturnValue = true;
-    _sahiExpectedConfirmText = null;
-    _sahiExpectedConfirmMsg = null;
-}
-sahiResetConfirm();
-function sahi_expectConfirm(value, text, msg){
-    if (text) {
-        _sahiExpectedConfirmText = text;
-        _sahiExpectedConfirmMsg = msg;
-    }
+function sahi_expectConfirm(value) {
     _sahiConfirmReturnValue = value;
 }
 function sahConfirmMock(s) {
-    if (_sahiExpectedConfirmText){
-        if (s != _sahiExpectedConfirmText) throw new SahiAssertionException(7, _sahiExpectedConfirmMsg);
+    if (isSahiPlaying()) {
+        var retVal = _sahiConfirmReturnValue;
+        _sahiLastConfirmText = s;
+        _sahiConfirmReturnValue = true;
+        return retVal;
+    } else {
+        return sahi_real_confirm(s);
     }
-    var retVal = _sahiConfirmReturnValue;
-    sahiResetConfirm();
-    return retVal;
 }
-
+function sahi_lastConfirm() {
+    var v = _sahiLastConfirmText;
+    _sahiLastConfirmText = null;
+    return v;
+}
 function sahPromptMock(n) {
-    return sahi_real_prompt(n);
+    if (isSahiPlaying()) {
+        return sahi_real_prompt(n);
+    } else {
+        return sahi_real_prompt()
+    }
 }
 function sahi_cell(id, row, col) {
     if (row == null && col == null) {
@@ -2110,6 +2117,6 @@ window.sahi_real_alert = window.alert;
 window.sahi_real_confirm = window.confirm;
 window.sahi_real_prompt = window.prompt;
 
-window.alert = sahi_alert_mock;
+window.alert = sahiAlertMock;
 window.confirm = sahConfirmMock;
 window.prompt = sahPromptMock;

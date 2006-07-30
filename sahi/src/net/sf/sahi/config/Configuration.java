@@ -14,7 +14,7 @@ import java.util.logging.Logger;
  */
 public class Configuration {
     private static Properties properties;
-    private static final String LOG_PATTERN = "sahi%g.log";
+    private static final String LOG_PATTERN = "sahi.log";
     public static final String PLAYBACK_LOG_ROOT = "playback";
     private static final String HTDOCS_ROOT = "../htdocs/";
 

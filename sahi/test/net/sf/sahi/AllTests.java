@@ -14,15 +14,16 @@ import net.sf.sahi.response.HttpFileResponseTest;
 import net.sf.sahi.ssl.SSLHelperTest;
 import net.sf.sahi.util.URLParserTest;
 import net.sf.sahi.util.UtilsTest;
+import net.sf.sahi.request.MultiPartSubRequestTest;
 
 public class AllTests extends TestSuite {
-	public AllTests(String name) {
-		super(name);
-	}
+    public AllTests(String name) {
+        super(name);
+    }
 
-	public static Test suite() {
-		TestSuite suite = new TestSuite();
-		suite.addTestSuite(FileScriptTest.class);
+    public static Test suite() {
+        TestSuite suite = new TestSuite();
+        suite.addTestSuite(FileScriptTest.class);
         suite.addTestSuite(SahiScriptTest.class);
         suite.addTestSuite(ScriptHandlerTest.class);
         suite.addTestSuite(URLScriptTest.class);
@@ -33,10 +34,11 @@ public class AllTests extends TestSuite {
         suite.addTestSuite(URLParserTest.class);
         suite.addTestSuite(CommandExecuterTest.class);
         suite.addTestSuite(SSLHelperTest.class);
-		return suite;
-	}
+        suite.addTestSuite(MultiPartSubRequestTest.class);
+        return suite;
+    }
 
-	public static void main(String[] args) {
-		junit.textui.TestRunner.run(suite());
-	}
+    public static void main(String[] args) {
+        junit.textui.TestRunner.run(suite());
+    }
 }
