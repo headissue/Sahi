@@ -488,10 +488,14 @@ function sahi_check(el, val) {
 }
 
 function sahi_button(n) {
-    return sahiFindElement(n, "button", "input");
+    var el = sahiFindElement(n, "button", "input");
+    if (el == null) el = sahiFindElement(n, "button", "button");
+    return el;
 }
 function sahi_submit(n) {
-    return sahiFindElement(n, "submit", "input");
+    var el = sahiFindElement(n, "submit", "input");
+    if (el == null) el = sahiFindElement(n, "submit", "button");
+    return el;
 }
 
 function sahi_wait(i) {
