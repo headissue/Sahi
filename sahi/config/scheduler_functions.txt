@@ -30,3 +30,4 @@ _rightClick
 _addMock
 _removeMock
 _expectConfirm
+_setFile
