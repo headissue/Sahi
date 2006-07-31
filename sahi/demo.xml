@@ -185,4 +185,42 @@
     <target name="stopsahi" description="stop sahi server">
         <sahi stop="true" sahihost="localhost" sahiport="9999"/>
     </target>
+
+    <path id="ov.class.path">
+        <pathelement location="lib/"/>
+        <pathelement path="extlib/orangevolt-ant-tasks-1.3.5.jar"/>
+        <pathelement path="extlib/roxes-win32forjava-1.0.4.jar"/>
+    </path>
+
+    <taskdef classpath="extlib/orangevolt-ant-tasks-1.3.5.jar" classpathref="ov.class.path"
+             resource="com/orangevolt/tools/ant/taskdefs.properties"/>
+    <target name="proxyon">
+        <!--<win32.registry root="HKEY_CURRENT_USER" key="Software\Microsoft\Windows\CurrentVersion\">-->
+        <!--<import subKey="Internet Settings">-->
+        <!--<![CDATA[-->
+        <!--<registry key="Software\Microsoft\Windows\CurrentVersion\Internet Settings" root="HKEY_CURRENT_USER">-->
+        <!--<entry name="ProxyEnable" type="REG_DWORD" value="1"/>-->
+        <!--</registry>-->
+        <!--]]>-->
+        <!--</import>-->
+        <!--</win32.registry>-->
+        <win32.registry root="HKEY_CURRENT_USER" key="Software\Microsoft\Windows\CurrentVersion\Internet Settings">
+            <set entry="ProxyEnable" value="1"/>
+        </win32.registry>
+    </target>
+
+    <target name="proxyoff">
+        <!--<win32.registry root="HKEY_CURRENT_USER" key="Software\Microsoft\Windows\CurrentVersion\">-->
+        <!--<import subKey="Internet Settings">-->
+        <!--<![CDATA[-->
+        <!--<registry key="Software\Microsoft\Windows\CurrentVersion\Internet Settings" root="HKEY_CURRENT_USER">-->
+        <!--<entry name="ProxyEnable" type="REG_DWORD" value="0"/>-->
+        <!--</registry>-->
+        <!--]]>-->
+        <!--</import>-->
+        <!--</win32.registry>-->
+        <win32.registry root="HKEY_CURRENT_USER" key="Software\Microsoft\Windows\CurrentVersion">
+            <delete subkey="Internet Settings" entry="ProxyEnable"/>
+        </win32.registry>
+    </target>
 </project>
