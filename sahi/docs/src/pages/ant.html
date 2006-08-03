@@ -37,7 +37,7 @@ resolved</td>
 
 <tr>
 <td>sahihost</td>
-<td>ip or hostname of server where sahi is running</td>
+<td>IP or hostname of server where sahi is running</td>
 <td></td>
 </tr>
 
@@ -64,8 +64,14 @@ executing other tests if one test fails.</td>
 <tr>
 <td>threads</td>
 <td>Number of simultaneous browser instances where sahi tests will
-be run.</td>
-<td></td>
+be run. Do not use this property if using firefox.</td>
+<td>optional</td>
+</tr>
+
+<tr>
+<td>logdir</td>
+<td>Directory to output this suite's results. If absent, uses the default playback logs dir.</td>
+<td>optional</td>
 </tr>
 </table>
 
@@ -96,6 +102,10 @@ the sahi base folder.
 </pre>
 
 <pre style="font-weight:bold;border:0px solid lightgreen;">
+                &lt;antcall target="proxyon"/&gt;
+</pre>
+
+<pre style="font-weight:bold;border:0px solid lightgreen;">
                 &lt;sahi suite="../scripts/demo.suite"
                     browser="C:\\Program Files\\Internet Explorer\\iexplore.exe"
                     baseurl="http://localhost:10000/demo/"
@@ -104,7 +114,12 @@ the sahi base folder.
                     failureproperty="sahi.failed"
                     haltonfailure="false"
                     threads="2"
+                    logdir="D:\demo\logs"
                     /&gt;
+</pre>
+
+<pre style="font-weight:bold;border:0px solid lightgreen;">
+                &lt;antcall target="proxyoff"/&gt;
 </pre>
 
 <pre>
@@ -140,6 +155,19 @@ the sahi base folder.
             &lt;classpath location="lib/sahi.jar"/&gt;
         &lt;/java&gt;
     &lt;/target&gt;
+
+    &lt;target name="proxyon"&gt;
+        &lt;exec executable="tools/toggle_IE_proxy.exe"&gt;
+            &lt;arg value="enable"/&gt;
+        &lt;/exec&gt;
+    &lt;/target&gt;
+    
+    &lt;target name="proxyoff"&gt;
+        &lt;exec executable="tools/toggle_IE_proxy.exe"&gt;
+            &lt;arg value="disable"/&gt;
+        &lt;/exec&gt;
+    &lt;/target&gt;
+
 &lt;/project&gt;
 
 </pre>

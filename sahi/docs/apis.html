@@ -28,8 +28,7 @@ width="125" height="37" border="0" alt="SourceForge.net Logo"></a>
 <div class="menu">
 <ul>
 <li><a href="index.html">Introduction</a></li>
-
-<li><a href="index.html#features">Features</a></li>
+<!--<li><a href="index.html#features">Features</a></li>-->
 
 </ul>
 <ul>
@@ -118,18 +117,19 @@ using the Sahi controller and looking at the recorded code. <br>
 <a href="#include">File Inclusion</a><br>
 <a href="#utility">Utility Functions</a><br>
 <a href="#popup">Handling popup windows</a><br>
- (<a href="#top">Top</a>) <br>
+(<a href="#top">Top</a>) <br>
 <h4><a name="aform"></a>Accessor Functions : Form elements</h4>
 
 <b>_textbox(idStr)<br>
-_password(idStr)<br>
-_checkbox(idStr)<br>
-_textarea(idStr)<br>
-_select(idStr)<br>
-_radio(idStr)<br>
-_image(idStr)<br>
-_button(idStr)<br>
-_submit(idStr)<br>
+    _password(idStr)<br>
+    _checkbox(idStr)<br>
+    _textarea(idStr)<br>
+    _select(idStr)<br>
+    _option(selectElement, text)<br>
+    _radio(idStr)<br>
+    _image(idStr)<br>
+    _button(idStr)<br>
+    _submit(idStr)<br>
 </b> (<a href="#top">Top</a>) <br>
 <h4><a name="alink"></a>Accessor Functions : Link</h4>
 
@@ -138,12 +138,12 @@ _submit(idStr)<br>
 <h4><a name="atable"></a>Accessor Functions : Tables</h4>
 
 <b>_table(idStr)<br>
-_cell(tableEl, rowNo, colNo)<br>
-_cell(tableEl, someTextWhichIdentifiesRow,
-someTextWhichIdentifiesColumn)<br>
-_cell(cellIdStr)<br>
-_row(tableEl, rowNo)<br>
-_row(tableEl, someTextWhichIdentifiesRow)<br>
+    _cell(tableEl, rowNo, colNo)<br>
+    _cell(tableEl, someTextWhichIdentifiesRow,
+    someTextWhichIdentifiesColumn)<br>
+    _cell(cellIdStr)<br>
+    _row(tableEl, rowNo)<br>
+    _row(tableEl, someTextWhichIdentifiesRow)<br>
 </b> (<a href="#top">Top</a>) <br>
 <h4><a name="ageneric"></a>Accessor Functions : Generic</h4>
 
@@ -152,17 +152,17 @@ _row(tableEl, someTextWhichIdentifiesRow)<br>
 <h4><a name="scheduler"></a>Scheduler Functions</h4>
 
 <div class="explain">Scheduler Functions behave differently from
-normal functions.<br>
-They schedule the execution of the action for later execution in a
-different thread. They essentailly have the effect of converting
-the whole statement into a string and adding it to a global
-array.<br>
-Each statement from the array is then executed one at a time, with
-a delay, when its turn comes.<br>
-<br>
-Note: All these functions can also be made to execute instantly
-(and not delayed) by using __ (double underscores) instead of _
-(single underscore)<br>
+    normal functions.<br>
+    They schedule the execution of the action for later execution in a
+    different thread. They essentailly have the effect of converting
+    the whole statement into a string and adding it to a global
+    array.<br>
+    Each statement from the array is then executed one at a time, with
+    a delay, when its turn comes.<br>
+    <br>
+    Note: All these functions can also be made to execute instantly
+    (and not delayed) by using __ (double underscores) instead of _
+    (single underscore)<br>
 </div>
 
 (<a href="#top">Top</a>) <br>
@@ -171,47 +171,50 @@ Note: All these functions can also be made to execute instantly
 These are <a href="#scheduler">Scheduler Functions</a><br>
 <br>
 <b>_click(jsElement)<br>
-_clickImage(jsElement)<br>
- _dragDrop(draggableElement, dropDestinationElement);
-_setValue(jsElement, val)<br>
-_setSelected(jsElement, val)<br>
-_check(jsElement, val)<br>
- _simulateEvent(jsElement, ev)<br>
-_wait(millis)<br>
-_alert(str)<br>
-_setGlobal(name, value)<br>
-<a href="scripting.html#functions">_call(fn())</a><br>
-_log(message, type) where type can be "success", "failure",
-"error", "info"<br>
-_highlight(jsElement)<br>
-_navigateTo("URLString")<br>
-<a href="#callserver">_callServer("class_method", "querystring")</a><br>
-<a href="#mock">_addMock("pattern")</a><br>
-<a href="#mock">_addMock("pattern", "class_method")</a><br>
-<a href="#mock">_removeMock("pattern")</a><br>
+    _clickImage(jsElement)<br>
+    _dragDrop(draggableElement, dropDestinationElement);
+    _setValue(jsElement, val)<br>
+    _setSelected(jsElement, val)<br>
+    _check(jsElement, val)<br>
+    _simulateEvent(jsElement, ev)<br>
+    _wait(millis)<br>
+    _alert(str)<br>
+    _setGlobal(name, value)<br>
+    <a href="scripting.html#functions">_call(fn())</a><br>
+    _log(message, type) where type can be "success", "failure",
+    "error", "info"<br>
+    _highlight(jsElement)<br>
+    _navigateTo("URLString")<br>
+    <a href="#callserver">_callServer("class_method", "querystring")</a><br>
+    <a href="#mock">_addMock("pattern")</a><br>
+    <a href="#mock">_addMock("pattern", "class_method")</a><br>
+    <a href="#mock">_removeMock("pattern")</a><br>
+    <a href="#lastconfirm">_lastConfirm()</a><br>
+    <a href="#expectconfirm">_expectConfirm()</a><br>
+
 </b> <br>
- (<a href="#top">Top</a>) <br>
+(<a href="#top">Top</a>) <br>
 <h4><a name="assertion"></a>Assertion Scheduler Functions</h4>
 
 These are <a href="#scheduler">Scheduler Functions</a><br>
 <br>
 <b>_assertNotNull(jsElement, msg)<br>
-_assertNull(jsElement, msg)<br>
-_assertEqual(expected, actual, msg)<br>
-_assertNotEqual(expected, actual, msg)<br>
-_assertTrue(condition, msg)<br>
-_assertNotTrue(condition, msg)<br>
+    _assertNull(jsElement, msg)<br>
+    _assertEqual(expected, actual, msg)<br>
+    _assertNotEqual(expected, actual, msg)<br>
+    _assertTrue(condition, msg)<br>
+    _assertNotTrue(condition, msg)<br>
 </b> (<a href="#top">Top</a>) <br>
 <h4><a name="textaccess"></a>Text Access Functions</h4>
 
 <b>_getSelectedText(selectElement)<br>
- _getCellText(tableCellElement)<br>
+    _getCellText(tableCellElement)<br>
 </b> (<a href="#top">Top</a>) <br>
 <h4><a name="textverify"></a>Text Verification boolean
-Functions</h4>
+    Functions</h4>
 
 <b>_containsText(element, textToSearch)<br>
-_containsHTML(element, htmlToSearch)<br>
+    _containsHTML(element, htmlToSearch)<br>
 </b> (<a href="#top">Top</a>) <br>
 <br>
 <hr>
@@ -226,25 +229,25 @@ One sah file may include other sah files, thus allowing logical
 separation of code.<br>
 Syntax: _include(file2.sah) <br>
 <br>
- Example:<br>
+Example:<br>
 <br>
 <b style="background-color:lightgreen;padding:10px">File
-create_customer.sah</b><br>
+    create_customer.sah</b><br>
 <pre class="code">
-_include("create_customer_Functions.sah");
-createCustomer("Narayan", 1001, 27);
+    _include("create_customer_Functions.sah");
+    createCustomer("Narayan", 1001, 27);
 </pre>
 
 <br>
 <br>
 <b style="background-color:lightgreen;padding:10px">File
-create_customer_Functions.sah</b><br>
+    create_customer_Functions.sah</b><br>
 <pre class="code">
-function createCustomer($name, $id, $age){
-   _setValue(_textbox("name"), $name);
-   _setValue(_textbox("id"), $id);
-   _setValue(_textbox("age"), $age);
-}<br>
+    function createCustomer($name, $id, $age){
+    _setValue(_textbox("name"), $name);
+    _setValue(_textbox("id"), $id);
+    _setValue(_textbox("age"), $age);
+    }<br>
 </pre>
 
 (<a href="#top">Top</a>) <br>
@@ -253,31 +256,31 @@ function createCustomer($name, $id, $age){
 <h4><a name="utility"></a>Utility Functions</h4>
 
 <a href="#random">_savedRandom(id, minNo, maxNo)<br>
-<a href="#resetrandom">_resetSavedRandom(id)<br>
-<a href="#global">_setGlobal(name, value)</a><br>
-<a href="#global">_getGlobal(name)</a><br>
-<br>
- <b><a name="random">_savedRandom(id, min, max)</a></b><br>
-<br>
- If a script was recorded for say, creating a user, and if the user
-name is mandated to be unique in the application,<br>
- we need to add random numbers to the user name so that it remains
-unique.<br>
-<br>
- One can obtain a random number by using _savedRandom(id, min,
-max).<br>
-During the first call to it, it creates a random number between min
-and max, associates with the id and returns the number.<br>
- On subsequent accesses with that id, it returns the same random
-number which it had created in the first access.<br>
-<br>
- Example:<br>
-</a></a>
+    <a href="#resetrandom">_resetSavedRandom(id)<br>
+        <a href="#global">_setGlobal(name, value)</a><br>
+        <a href="#global">_getGlobal(name)</a><br>
+        <br>
+        <b><a name="random">_savedRandom(id, min, max)</a></b><br>
+        <br>
+        If a script was recorded for say, creating a user, and if the user
+        name is mandated to be unique in the application,<br>
+        we need to add random numbers to the user name so that it remains
+        unique.<br>
+        <br>
+        One can obtain a random number by using _savedRandom(id, min,
+        max).<br>
+        During the first call to it, it creates a random number between min
+        and max, associates with the id and returns the number.<br>
+        On subsequent accesses with that id, it returns the same random
+        number which it had created in the first access.<br>
+        <br>
+        Example:<br>
+    </a></a>
 <pre class="code">
-var $x = _savedRandom("login", 100, 200); //sets $x to say 145 (a random number between 100, 200).
-                                          //Defaults for min and max, if omitted, are 0 and 10000
-$y = _savedRandom("login", 100, 200);     //will set $y to 145 again.
-$y = _savedRandom("login");               //will also set $y to 145.
+    var $x = _savedRandom("login", 100, 200); //sets $x to say 145 (a random number between 100, 200).
+    //Defaults for min and max, if omitted, are 0 and 10000
+    $y = _savedRandom("login", 100, 200); //will set $y to 145 again.
+    $y = _savedRandom("login"); //will also set $y to 145.
 </pre>
 
 <br>
@@ -292,7 +295,7 @@ _resetSavedRandom(id) resets value of _savedRandom(id) to null;
 <hr>
 <br>
 <b><a name="global">_setGlobal(name, value) and
-_getGloblal(name)</a></b> <br>
+    _getGloblal(name)</a></b> <br>
 <br>
 Since a script may span across multiple web pages, variables from
 one page may need to be stored for later use.<br>
@@ -304,12 +307,13 @@ _getGloblal(name).<br>
 <br>
 Example:<br>
 <pre class="code">
-_setGlobal("customerId", _getCellText(_cell("custId"))); // sets the text in table cell with id "custId" into a global variable keyed by "customerId"
+    _setGlobal("customerId", _getCellText(_cell("custId"))); // sets the text in table cell with id "custId" into a
+    global variable keyed by "customerId"
 </pre>
 
 Then on a later page, one can retrieve the customerId through<br>
 <pre class="code">
-_setValue(_textbox("lookup"), _getGlobal("customerId")); // the second parameter retrieves the text stored.
+    _setValue(_textbox("lookup"), _getGlobal("customerId")); // the second parameter retrieves the text stored.
 </pre>
 
 These variables are stored on the server in a hashmap associated
@@ -318,30 +322,34 @@ with the session.<br>
 Note: that all values will be stored as strings only. <br>
 Note: _setGlobal is a <a href="#scheduler">Scheduler Function</a>.
 <br>
- (<a href="#top">Top</a>) <br>
+(<a href="#top">Top</a>) <br>
 
 <hr>
 <br>
 <h4><a name="popup">Handling popup windows</a></h4>
 
 <a href="#popup1">_popup(windowName)<br>
-<br>
- <b><a name="popup1">_popup(windowName)</a></b><br>
-<br>
- In order to execute sahi commands in a popup window, for example
-click a link,<br>
-use</a>
+    <br>
+    <b><a name="popup1">_popup(windowName)</a></b><br>
+    <br>
+    In order to execute sahi commands in a popup window, for example
+    click a link,<br>
+    use</a>
 <pre class="code">
-_popup("popupWinName")._click(_link("Click Me"));
+    _popup("popupWinName")._click(_link("Click Me"));
 </pre>
 
 <br>
 where popupWinName was defined like this:<br>
-window.open("http://popup.url", "popupWinName");<br>
+<pre class="code">
+    window.open("http://popup.url", "popupWinName");
+</pre>
 or<br>
-&lt;a href="http://popup.url" target="popupWinName"&gt;<br>
- Note that there may be problems in recording this. <br>
- <br>
+<pre class="code">
+    &lt;a href="http://popup.url" target="popupWinName"&gt;
+</pre>
+Note that there may be problems in recording this. <br>
+<br>
 
 <hr>
 <br>
@@ -350,42 +358,42 @@ or<br>
 _callServer allows Sahi to execute any server side code.
 
 
-Example:<br>
+        Example:<br>
 <pre class="code">
 
-<b>Create this Counter class. You will need sahi.jar in the compilation path.</b>
+    <b>Create this Counter class. You will need sahi.jar in the compilation path.</b>
 
-package sahi.ext;
+    package sahi.ext;
 
-import net.sf.sahi.request.HttpRequest;
-import net.sf.sahi.response.HttpResponse;
-import net.sf.sahi.response.SimpleHttpResponse;
-
-
-public class Counter {
-	static int counter = 0;
-
-	public void incrementCounter(HttpRequest request) {
-			counter++;
-	}
-
-	public HttpResponse getCounter(HttpRequest request) {
-		return new SimpleHttpResponse(""+counter);
-	}
-
-}
+    import net.sf.sahi.request.HttpRequest;
+    import net.sf.sahi.response.HttpResponse;
+    import net.sf.sahi.response.SimpleHttpResponse;
 
 
-<b>Add this class to Sahi's class path.</b>
-For example, if you are using sahi.bat, you could add it to the path like this:
-java -classpath ..\lib\sahi.jar;<b>C:\sahiext\classes;</b> net.sf.sahi.Proxy
+    public class Counter {
+    static int counter = 0;
 
-<b>Restart Sahi</b>
+    public void incrementCounter(HttpRequest request) {
+    counter++;
+    }
 
-<b>Now we can call the methods of Counter class from any Sahi script in this way:</b>
-var $currentCount = parseInt(<i>_callServer("sahi.ext.Counter_getCounter")</i>);
-<i>_callServer("sahi.ext.Counter_incrementCounter");</i>
-_assertEqual($currentCount + 1, <i>_callServer("sahi.ext.Counter_getCounter")</i>);
+    public HttpResponse getCounter(HttpRequest request) {
+    return new SimpleHttpResponse(""+counter);
+    }
+
+    }
+
+
+    <b>Add this class to Sahi's class path.</b>
+    For example, if you are using sahi.bat, you could add it to the path like this:
+    java -classpath ..\lib\sahi.jar;<b>C:\sahiext\classes;</b> net.sf.sahi.Proxy
+
+    <b>Restart Sahi</b>
+
+    <b>Now we can call the methods of Counter class from any Sahi script in this way:</b>
+    var $currentCount = parseInt(<i>_callServer("sahi.ext.Counter_getCounter")</i>);
+    <i>_callServer("sahi.ext.Counter_incrementCounter");</i>
+    _assertEqual($currentCount + 1, <i>_callServer("sahi.ext.Counter_getCounter")</i>);
 
 </pre>
 
@@ -398,39 +406,108 @@ For example:<br>
 A web page has embedded advertisements in an iframe<br>
 and we do not wish to test these advertisements everytime we test our web page.<br>
 So we can add a mock by specifying<br>
-_addMock("www[.]adserver[.]com", "sahi.ext.MyCustomMock_filterAds");<br>
+<pre class="code">_addMock("www[.]adserver[.]com", "sahi.ext.MyCustomMock_filterAds");<br></pre>
 to our script.<br>
 <br>
 Whenever Sahi encounters a URL request which matches www[.]adserver[.]com<br>
 It will delegate the response handling to sahi.ext.MyCustomMock's filterAds method.<br>
 One can call any class's any method, as long as the method has one of these two signatures.<br>
 <br>
-public net.sf.sahi.response.HttpResponse methodName(net.sf.sahi.request.HttpRequest request);<br>
-public void methodName(net.sf.sahi.request.HttpRequest request);<br>
+<pre class="code">
+    public net.sf.sahi.response.HttpResponse methodName(net.sf.sahi.request.HttpRequest request);<br>
+    public void methodName(net.sf.sahi.request.HttpRequest request);<br>
+</pre>
 <br>
 If _addMock("pattern") is called without a second parameter,<br>
-net.sf.sahi.command.MockResponder.simple(HttpRequest) is used to process the request.<br>
-The response uses the template at htdocs/spr/simpleMock.htm.<br>
+<b>net.sf.sahi.command.MockResponder.simple(HttpRequest)</b> is used to process the request.<br>
+The response uses the template at <b>htdocs/spr/simpleMock.htm</b>.<br>
 One can modify this to show a generic mock response.        <br>
 <br>
 This script may explain mocks better:<br>
 <br>
 <pre class="code">
-_navigateTo("http://localhost:10000/demo/index.htm");<br>
-_assertNotNull(_link("Link Test"));<br>
-_addMock(".*localhost.*");<br>
-_navigateTo("http://localhost:10000/demo/index.htm");<br>
-_assertNull(_link("Link Test"));<br>
-_containsText(document.body, "http://localhost:10000/demo/index.htm");<br>
-_removeMock(".*localhost.*");<br>
-_navigateTo("http://localhost:10000/demo/index.htm");<br>
-_assertNotNull(_link("Link Test"));<br>
-</pre>    
+    _navigateTo("http://localhost:10000/demo/index.htm");
+    _assert<b>NotNull</b>(_link("Link Test"));
+    <b>_addMock(".*localhost.*");</b>
+    _navigateTo("http://localhost:10000/demo/index.htm");
+    _assert<b>Null</b>(_link("Link Test"));
+    _containsText(document.body, "http://localhost:10000/demo/index.htm");
+    <b>_removeMock(".*localhost.*");</b>
+    _navigateTo("http://localhost:10000/demo/index.htm");
+    _assert<b>NotNull</b>(_link("Link Test"));
+</pre>
+
+<hr>
+<br>
+<h4><a name="lastconfirm">Confirm</a></h4>
+Javascript calls to confirm(msg) are mocked out by Sahi so that it does not stop the playback.<br>
+Sahi by default acts as if "OK" was clicked when a confirm dialog comes up.<br>
+It is possible to make the confirm return as if it was cancelled by setting<br>
+<pre class="code">
+    _expectConfirm(false);
+</pre>
+before the statement which triggers the confirm dialog.<br>
+It is also possible to get the text of the last occurred confirm dialog using<br>
+<pre class="code">
+    _lastConfirm()
+</pre>
+
+<h4>Example:</h4>
+
+<script type="text/javascript">
+    function showConfirm() {
+        var t1 = document.f1.t1;
+        if (confirm("Some question?")) {
+            t1.value = "oked";
+    }else{
+        t1.value = "canceled";
+    }
+}
+</script>
+<form name="f1">
+    <input type="button" name="b1" value="Click For Confirm" onclick="showConfirm()"><br><br>
+    <input type="text" name="t1">
+</form>
+
+<pre class="code">
+
+&lt;script type="text/javascript"&gt;
+function showConfirm(){
+    var t1 = document.f1.t1;
+    if (confirm("Some question?")){
+        t1.value = "oked";
+    }else{
+        t1.value = "canceled";
+    }
+}
+&lt;/script&gt;
+&lt;form name="f1"&gt;
+    &lt;input type="button" name="b1" value="Click For Confirm" onclick="showConfirm()"&gt;
+    &lt;input type="text" name="t1"&gt;
+&lt;/form&gt;
+
+<hr>
+_click(_button("Click For Confirm"));
+_assertNotNull(_textbox("t1"));
+_assertEqual("<b>oked</b>", _textbox("t1").value);
+_assertEqual(_lastConfirm(), "Some question?");
+_assertNull(_lastConfirm());
+
+<b>_expectConfirm(false);</b>
+_click(_button("Click For Confirm"));
+_assertNotNull(_textbox("t1"));
+_assertEqual("<b>canceled</b>", _textbox("t1").value);
+_assertEqual(_lastConfirm(), "Some question?");
+_assertNull(_lastConfirm());
+
+
+</pre>
+
 <br>
 
 
 <br>
- (<a href="#top">Top</a>) <br>
+(<a href="#top">Top</a>) <br>
 </div>
 </td>
 </tr>
