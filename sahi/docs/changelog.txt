@@ -1,16 +1,8 @@
-* Fixed bug fixes relating to logfile paths on Linux
-* Added _addMock("pattern") for mocking responses for urls matching given pattern
-* Fixed errors occuring due to incorrect uri and host header
-* Debug stepping corrected
-* Added multiple script folder support
-* Added automatic running of all scripts in a directory
-* Added error log redirection to specified folders through ant target
-* Added _option(selectedElement, text) for identifying options in a select box
-* Added support for single and multi select in multi-select boxes
-* Added _div("text"), _span("text") and _spandiv("text") for identification of spans and divs.
-* Rectified ssl certificate creation bug caused by invalid timeout value
-* Made script running parameters configureable through sahi.properties
-
+* Added functionality to mock file uploads. _setFile(_file("id"), filePath) added.
+* Added tool for toggling proxy on Internet Explorer through command line or ant.
+* _expectConfirm(boolean) and _lastConfirm() apis added.
+* Fixed bug fixes relating to logfile paths
+* Fixed bug fix with _setSelected()
 
 Known issues
 * Firefox has problems with multithreaded playback due to session sharing across windows. 

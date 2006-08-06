@@ -204,4 +204,23 @@
             <arg value="disable"/>
         </exec>
     </target>
+
+    <target name="testwithproxy" description="start the server and run sahi tests">
+        <parallel>
+            <antcall target="start"/>
+            <sequential>
+                <waitfor maxwait="3" maxwaitunit="minute" checkevery="100">
+                    <http url="http://localhost:10000/demo/index.htm"/>
+                </waitfor>
+                <antcall target="proxyon"/>
+                <antcall target="runietests"/>
+                <antcall target="stop-web"/>
+                <antcall target="failsahi"/>
+                <antcall target="proxyoff"/>
+                <antcall target="stopsahi"/>
+            </sequential>
+            <antcall target="start-web"/>
+        </parallel>
+    </target>
+
 </project>

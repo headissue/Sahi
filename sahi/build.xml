@@ -47,8 +47,8 @@
         <antcall target="jar"/>
         <antcall target="jar-ant"/>
         <antcall target="clean-deploy"/>
-        <antcall target="create-deploy"/>
-        <antcall target="deploy-src"/>
+        <antcall target="zip-sahi"/>
+        <antcall target="zip-src"/>
     </target>
 
     <target name="quick">
@@ -63,7 +63,7 @@
         </delete>
     </target>
 
-    <target name="deploy-common">
+    <target name="prepare-zip">
         <mkdir dir="deploy"/>
         <mkdir dir="temp/sahi"/>
         <mkdir dir="temp/sahi/logs"/>
@@ -120,16 +120,16 @@
     </target>
 
 
-    <target name="create-deploy" depends="clean-temp">
+    <target name="zip-sahi" depends="clean-temp">
         <tstamp/>
-        <antcall target="deploy-common"/>
+        <antcall target="prepare-zip"/>
         <zip file="deploy/sahi_${DSTAMP}.zip" basedir="temp"/>
         <antcall target="clean-temp"/>
     </target>
 
-    <target name="deploy-src" depends="clean-temp">
+    <target name="zip-src" depends="clean-temp">
         <tstamp/>
-        <antcall target="deploy-common"/>
+        <antcall target="prepare-zip"/>
 
         <copy file="build.xml" todir="temp/sahi/"/>
         <copy todir="temp/sahi/src">
@@ -205,9 +205,17 @@
     </target>
 
     <target name="deploy">
+        <tstamp/>
         <delete dir="D:/sahitest"/>
         <mkdir dir="D:/sahitest"/>
-        <unzip src="deploy/sahi_20060804.zip" dest="D:/sahitest"></unzip>
+        <unzip src="deploy/sahi_${DSTAMP}.zip" dest="D:/sahitest"></unzip>
+    </target>
+
+    <target name="deploy-src">
+        <tstamp/>
+        <delete dir="D:/sahitest"/>
+        <mkdir dir="D:/sahitest"/>
+        <unzip src="deploy/sahi-src_${DSTAMP}.zip" dest="D:/sahitest"></unzip>
     </target>
 
 </project>

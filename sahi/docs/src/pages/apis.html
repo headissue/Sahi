@@ -26,6 +26,7 @@ using the Sahi controller and looking at the recorded code. <br>
     _image(idStr)<br>
     _button(idStr)<br>
     _submit(idStr)<br>
+    _file(idStr)<br>
 </b> (<a href="#top">Top</a>) <br>
 <h4><a name="alink"></a>Accessor Functions : Link</h4>
 
@@ -85,8 +86,9 @@ These are <a href="#scheduler">Scheduler Functions</a><br>
     <a href="#mock">_addMock("pattern")</a><br>
     <a href="#mock">_addMock("pattern", "class_method")</a><br>
     <a href="#mock">_removeMock("pattern")</a><br>
-    <a href="#lastconfirm">_lastConfirm()</a><br>
-    <a href="#expectconfirm">_expectConfirm()</a><br>
+    <a href="#confirm">_lastConfirm()</a><br>
+    <a href="#confirm">_expectConfirm()</a><br>
+    <a href="#setfile">_setFile(_file("id"), filePath)</a><br>
 
 </b> <br>
 (<a href="#top">Top</a>) <br>
@@ -254,7 +256,7 @@ Note that there may be problems in recording this. <br>
 _callServer allows Sahi to execute any server side code.
 
 
-        Example:<br>
+Example:<br>
 <pre class="code">
 
     <b>Create this Counter class. You will need sahi.jar in the compilation path.</b>
@@ -335,7 +337,7 @@ This script may explain mocks better:<br>
 
 <hr>
 <br>
-<h4><a name="lastconfirm">Confirm</a></h4>
+<h4><a name="confirm">Confirm</a></h4>
 Javascript calls to confirm(msg) are mocked out by Sahi so that it does not stop the playback.<br>
 Sahi by default acts as if "OK" was clicked when a confirm dialog comes up.<br>
 It is possible to make the confirm return as if it was cancelled by setting<br>
@@ -355,10 +357,10 @@ It is also possible to get the text of the last occurred confirm dialog using<br
         var t1 = document.f1.t1;
         if (confirm("Some question?")) {
             t1.value = "oked";
-    }else{
-        t1.value = "canceled";
+        } else {
+            t1.value = "canceled";
+        }
     }
-}
 </script>
 <form name="f1">
     <input type="button" name="b1" value="Click For Confirm" onclick="showConfirm()"><br><br>
@@ -367,40 +369,53 @@ It is also possible to get the text of the last occurred confirm dialog using<br
 
 <pre class="code">
 
-&lt;script type="text/javascript"&gt;
-function showConfirm(){
+    &lt;script type="text/javascript"&gt;
+    function showConfirm(){
     var t1 = document.f1.t1;
     if (confirm("Some question?")){
-        t1.value = "oked";
+    t1.value = "oked";
     }else{
-        t1.value = "canceled";
+    t1.value = "canceled";
     }
-}
-&lt;/script&gt;
-&lt;form name="f1"&gt;
+    }
+    &lt;/script&gt;
+    &lt;form name="f1"&gt;
     &lt;input type="button" name="b1" value="Click For Confirm" onclick="showConfirm()"&gt;
     &lt;input type="text" name="t1"&gt;
-&lt;/form&gt;
+    &lt;/form&gt;
 
-<hr>
-_click(_button("Click For Confirm"));
-_assertNotNull(_textbox("t1"));
-_assertEqual("<b>oked</b>", _textbox("t1").value);
-_assertEqual(_lastConfirm(), "Some question?");
-_assertNull(_lastConfirm());
+    <hr>
+    _click(_button("Click For Confirm"));
+    _assertNotNull(_textbox("t1"));
+    _assertEqual("<b>oked</b>", _textbox("t1").value);
+    _assertEqual(_lastConfirm(), "Some question?");
+    _assertNull(_lastConfirm());
 
-<b>_expectConfirm(false);</b>
-_click(_button("Click For Confirm"));
-_assertNotNull(_textbox("t1"));
-_assertEqual("<b>canceled</b>", _textbox("t1").value);
-_assertEqual(_lastConfirm(), "Some question?");
-_assertNull(_lastConfirm());
+    <b>_expectConfirm(false);</b>
+    _click(_button("Click For Confirm"));
+    _assertNotNull(_textbox("t1"));
+    _assertEqual("<b>canceled</b>", _textbox("t1").value);
+    _assertEqual(_lastConfirm(), "Some question?");
+    _assertNull(_lastConfirm());
 
 
 </pre>
 
 <br>
 
+<hr>
+<br>
+<h4><a name="setfile">_setFile(_file("id"), filePath)</a></h4>
+Form elements of type "file" cannot be populated using javascript on the browser.<br>
+So Sahi has a workaround for handling file uploads.<br>
+Sahi intercepts the request in the proxy, reads the file off the file system and inserts it into the multipart request.<br>
+
+<pre class="code">
+    _setFile(_file("id"), "C:\\abc\\efg.jpg");
+</pre>
+<br>        
+The file has to be present on that path on the machine running the proxy.
+<br>
 
 <br>
 (<a href="#top">Top</a>) <br>
