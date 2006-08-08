@@ -1,270 +1,271 @@
 package net.sf.sahi.request;
 
+import net.sf.sahi.StreamHandler;
+import net.sf.sahi.config.Configuration;
+import net.sf.sahi.session.Session;
+import net.sf.sahi.test.SahiTestSuite;
+import net.sf.sahi.util.Utils;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.StringTokenizer;
+import java.util.*;
 import java.util.logging.Logger;
-
-import net.sf.sahi.StreamHandler;
-import net.sf.sahi.session.Session;
-import net.sf.sahi.test.SahiTestSuite;
-import net.sf.sahi.util.Utils;
-import net.sf.sahi.config.Configuration;
 
 /**
  * User: nraman Date: May 13, 2005 Time: 10:01:13 PM
  */
 public class HttpRequest extends StreamHandler {
-	private String host;
-	private int port;
-	private String uri;
-	private String queryString = "";
-	private Map params = new HashMap();
-	private Map cookies = null;
-	private static final Logger logger = Logger.getLogger("net.sf.sahi.request.HttpRequest");
-	private final boolean isSSLSocket;
-	private String fileExtension;
-	private String hostWithPort;
+    private String host;
+    private int port;
+    private String uri;
+    private String queryString = "";
+    private Map params = new HashMap();
+    private Map cookies = null;
+    private static final Logger logger = Logger.getLogger("net.sf.sahi.request.HttpRequest");
+    private boolean isSSLSocket;
+    private String fileExtension;
+    private String hostWithPort;
 
-	public HttpRequest(InputStream in) throws IOException {
-		this(in, false);
-	}
-	public HttpRequest(InputStream in, boolean isSSLSocket) throws IOException {
-		this.isSSLSocket = isSSLSocket;
-		populateHeaders(in, true);
-		if (isPost())
-			populateData(in);
-		if (isPost() || isGet() || isConnect()) {
-			setHostAndPort();
-			setUri();
-			setQueryString();
-		}
-		logger.fine("\nFirst line:" + firstLine());
-		logger.fine("isSSL=" + isSSL());
-	}
+    public HttpRequest(InputStream in) throws IOException {
+        this(in, false);
+    }
 
-	public String host() {
-		return host;
-	}
+    public HttpRequest(InputStream in, boolean isSSLSocket) throws IOException {
+        this.isSSLSocket = isSSLSocket;
+        populateHeaders(in, true);
+        if (isPost())
+            populateData(in);
+        if (isPost() || isGet() || isConnect()) {
+            setHostAndPort();
+            setUri();
+            setQueryString();
+        }
+        logger.fine("\nFirst line:" + firstLine());
+        logger.fine("isSSL=" + isSSL());
+    }
 
-	public int port() {
-		return port;
-	}
+    public String host() {
+        return host;
+    }
 
-	public void setHost(String host) {
-		this.host = host;
-	}
+    public int port() {
+        return port;
+    }
 
-	public boolean isPost() {
+    public void setHost(String host) {
+        this.host = host;
+    }
+
+    public boolean isPost() {
         return "post".equalsIgnoreCase(method());
-	}
+    }
 
-	public boolean isGet() {
+    public boolean isGet() {
         return "get".equalsIgnoreCase(method());
-	}
+    }
 
-	public boolean isConnect() {
+    public boolean isConnect() {
         return "connect".equalsIgnoreCase(method());
-	}
+    }
 
-	public boolean isSSL() {
-		return isSSLSocket || isConnect();
-	}
+    public boolean isSSL() {
+        return isSSLSocket || isConnect();
+    }
 
-	public String method() {
-		return firstLine().substring(0, firstLine().indexOf(" "));
-	}
+    public String method() {
+        return firstLine().substring(0, firstLine().indexOf(" "));
+    }
 
-	private void setUri() {
-		String withHost = firstLine().substring(firstLine().indexOf(" "),
-				firstLine().lastIndexOf(" ")).trim();
-		uri = withHost;
-		int indexOfHost = withHost.indexOf(host);
-		if (indexOfHost != -1) {
-			int indexOfSlash = withHost.indexOf("/", indexOfHost + 3);
-			if (indexOfSlash != -1) // will happen when the host is embedded in
-				// the querystring too.
-				uri = withHost.substring(indexOfSlash);
-		}
-	}
+    private void setUri() {
+        String withHost = firstLine().substring(firstLine().indexOf(" "),
+                firstLine().lastIndexOf(" ")).trim();
+        uri = withHost;
+        int indexOfHost = withHost.indexOf(host);
+        if (indexOfHost != -1) {
+            int indexOfSlash = withHost.indexOf("/", indexOfHost + 3);
+            if (indexOfSlash != -1) // will happen when the host is embedded in
+                // the querystring too.
+                uri = withHost.substring(indexOfSlash);
+        }
+    }
 
-	public String uri() {
-		return uri;
-	}
+    public String uri() {
+        return uri;
+    }
 
-	public String protocol() {
-		return firstLine().substring(firstLine().lastIndexOf(" "));
-	}
+    public String protocol() {
+        return firstLine().substring(firstLine().lastIndexOf(" "));
+    }
 
-	private void setHostAndPort() {
-		hostWithPort = getLastSetValueOfHeader("Host");
-		host = hostWithPort;
-		port = 80;
-		if (isSSL())
-			port = 443;
-		int indexOfColon = hostWithPort.indexOf(":");
-		if (indexOfColon != -1) {
-			host = hostWithPort.substring(0, indexOfColon);
-			try {
-				port = Integer.parseInt(hostWithPort.substring(indexOfColon + 1).trim());
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-		host = SahiTestSuite.stripSah(host);
-	}
+    private void setHostAndPort() {
+        hostWithPort = getLastSetValueOfHeader("Host");
+        host = hostWithPort;
+        port = 80;
+        if (isSSL())
+            port = 443;
+        int indexOfColon = hostWithPort.indexOf(":");
+        if (indexOfColon != -1) {
+            host = hostWithPort.substring(0, indexOfColon);
+            try {
+                port = Integer.parseInt(hostWithPort.substring(indexOfColon + 1).trim());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        host = SahiTestSuite.stripSah(host);
+    }
 
-	private void setQueryString() {
-		if (uri == null)
-			return;
+    private void setQueryString() {
+        if (uri == null)
+            return;
 
-		int qIx = uri.indexOf("?");
-		String uriWithoutQueryString = uri;
-		if (qIx != -1 && qIx + 1 < uri.length()) {
-			uriWithoutQueryString = uri.substring(0, qIx);
-			queryString = uri.substring(qIx + 1);
-		}
+        int qIx = uri.indexOf("?");
+        String uriWithoutQueryString = uri;
+        if (qIx != -1 && qIx + 1 < uri.length()) {
+            uriWithoutQueryString = uri.substring(0, qIx);
+            queryString = uri.substring(qIx + 1);
+        }
 
-		fileExtension = "";
-		int dotIx = uriWithoutQueryString.indexOf(".");
-		if (dotIx != -1) {
-			fileExtension = uriWithoutQueryString.substring(dotIx + 1);
-		}
-	}
+        fileExtension = "";
+        int dotIx = uriWithoutQueryString.indexOf(".");
+        if (dotIx != -1) {
+            fileExtension = uriWithoutQueryString.substring(dotIx + 1);
+        }
+    }
 
-	private void setGetParameters() {
-		StringTokenizer tokenizer = new StringTokenizer(queryString(), "&");
-		while (tokenizer.hasMoreTokens()) {
-			String keyVal = tokenizer.nextToken();
-			int eqIx = keyVal.indexOf('=');
-			if (eqIx != -1) {
-				String key = keyVal.substring(0, eqIx);
-				String value = "";
-				if (eqIx + 1 <= keyVal.length())
-					value = keyVal.substring(eqIx + 1);
-				try {
-					params.put(key, URLDecoder.decode(value, "UTF8"));
-				} catch (UnsupportedEncodingException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-	}
+    private void setGetParameters() {
+        StringTokenizer tokenizer = new StringTokenizer(queryString(), "&");
+        while (tokenizer.hasMoreTokens()) {
+            String keyVal = tokenizer.nextToken();
+            int eqIx = keyVal.indexOf('=');
+            if (eqIx != -1) {
+                String key = keyVal.substring(0, eqIx);
+                String value = "";
+                if (eqIx + 1 <= keyVal.length())
+                    value = keyVal.substring(eqIx + 1);
+                try {
+                    params.put(key, URLDecoder.decode(value, "UTF8"));
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
 
-	public String queryString() {
-		return queryString;
-	}
+    public String queryString() {
+        return queryString;
+    }
 
-	public String getParameter(String key) {
-		if (params.size() == 0) {
-			setGetParameters();
-		}
-		return (String) params.get(key);
-	}
+    public String getParameter(String key) {
+        if (params.size() == 0) {
+            setGetParameters();
+        }
+        return (String) params.get(key);
+    }
 
-	private void setCookies() {
-		cookies = new LinkedHashMap();
-		String cookieString = getLastSetValueOfHeader("Cookie");
-		if (cookieString == null)
-			return;
-		StringTokenizer tokenizer = new StringTokenizer(cookieString, ";");
-		while (tokenizer.hasMoreTokens()) {
-			String keyVal = tokenizer.nextToken();
-			int eqIx = keyVal.indexOf('=');
-			if (eqIx != -1) {
-				String key = keyVal.substring(0, eqIx).trim();
-				String value = "";
-				if (eqIx + 1 <= keyVal.length())
-					value = keyVal.substring(eqIx + 1).trim();
-				cookies.put(key, value);
-			}
-		}
-	}
+    private void setCookies() {
+        cookies = new LinkedHashMap();
+        String cookieString = getLastSetValueOfHeader("Cookie");
+        if (cookieString == null)
+            return;
+        StringTokenizer tokenizer = new StringTokenizer(cookieString, ";");
+        while (tokenizer.hasMoreTokens()) {
+            String keyVal = tokenizer.nextToken();
+            int eqIx = keyVal.indexOf('=');
+            if (eqIx != -1) {
+                String key = keyVal.substring(0, eqIx).trim();
+                String value = "";
+                if (eqIx + 1 <= keyVal.length())
+                    value = keyVal.substring(eqIx + 1).trim();
+                cookies.put(key, value);
+            }
+        }
+    }
 
-	public String getCookie(String key) {
-		if (cookies == null) {
-			setCookies();
-		}
-		return (String) cookies.get(key);
-	}
+    public String getCookie(String key) {
+        if (cookies == null) {
+            setCookies();
+        }
+        return (String) cookies.get(key);
+    }
 
-	String rebuildCookies() {
-		return rebuildCookies(cookies);
-	}
+    String rebuildCookies() {
+        return rebuildCookies(cookies);
+    }
 
-	static String rebuildCookies(Map cookies2) {
-		StringBuffer sb = new StringBuffer();
-		if (cookies2.size() == 0)
-			return "";
-		Iterator keys = cookies2.keySet().iterator();
-		while (keys.hasNext()) {
-			String key = (String) keys.next();
-			String value = (String) cookies2.get(key);
-			sb.append(" ").append(key).append("=").append(value).append(";");
-		}
-		String cookieStr = sb.toString().trim();
-		if (cookieStr.endsWith(";")) {
-			cookieStr = cookieStr.substring(0, cookieStr.length() - 1);
-		}
-		return cookieStr;
-	}
+    static String rebuildCookies(Map cookies2) {
+        StringBuffer sb = new StringBuffer();
+        if (cookies2.size() == 0)
+            return "";
+        Iterator keys = cookies2.keySet().iterator();
+        while (keys.hasNext()) {
+            String key = (String) keys.next();
+            String value = (String) cookies2.get(key);
+            sb.append(" ").append(key).append("=").append(value).append(";");
+        }
+        String cookieStr = sb.toString().trim();
+        if (cookieStr.endsWith(";")) {
+            cookieStr = cookieStr.substring(0, cookieStr.length() - 1);
+        }
+        return cookieStr;
+    }
 
-	public Map cookies() {
-		if (cookies == null) {
-			setCookies();
-		}
-		return cookies;
-	}
+    public Map cookies() {
+        if (cookies == null) {
+            setCookies();
+        }
+        return cookies;
+    }
 
-	public HttpRequest modifyForFetch() {
-		if (Configuration.isExternalProxyEnabled()) {
-			setFirstLine(firstLine().replaceAll("HTTP/1.1", "HTTP/1.0"));
-		} else {
-			setFirstLine(method() + " " + uri() + " HTTP/1.0");
-		}
-		removeHeader("Proxy-Connection");
-		removeHeader("Accept-Encoding");
-		removeHeader("Keep-Alive");
-		// removeHeader("ETag");
-		// removeHeader("If-Modified-Since");
-		// removeHeader("If-None-Match");
-		setHeader("Connection", "close");
-		cookies().remove("sahisid");
-		setHeader("Cookie", rebuildCookies());
+    public HttpRequest modifyForFetch() {
+        if (Configuration.isExternalProxyEnabled()) {
+            setFirstLine(firstLine().replaceAll("HTTP/1.1", "HTTP/1.0"));
+        } else {
+            setFirstLine(method() + " " + uri() + " HTTP/1.0");
+        }
+        removeHeader("Proxy-Connection");
+        removeHeader("Accept-Encoding");
+        removeHeader("Keep-Alive");
+        // removeHeader("ETag");
+        // removeHeader("If-Modified-Since");
+        // removeHeader("If-None-Match");
+        setHeader("Connection", "close");
+        cookies().remove("sahisid");
+        setHeader("Cookie", rebuildCookies());
         setRawHeaders(getRebuiltHeaderBytes());
-		logger.fine(firstLine());
-		logger.fine("\n------------\n\nRequest Headers:\n" + headers());
-		return this;
-	}
+        logger.fine(firstLine());
+        logger.fine("\n------------\n\nRequest Headers:\n" + headers());
+        return this;
+    }
 
-	public Session session() {
-		String sessionId;
-		sessionId = getParameter("sahisid");
-		// System.out.println("1:"+sessionId);
-		if (Utils.isBlankOrNull(sessionId))
-			sessionId = getCookie("sahisid");
-		if (Utils.isBlankOrNull(sessionId))
-			sessionId = "sahi_" + System.currentTimeMillis();
-		// System.out.println("2:"+sessionId);
-		return Session.getInstance(sessionId);
-	}
+    public Session session() {
+        String sessionId;
+        sessionId = getParameter("sahisid");
+        // System.out.println("1:"+sessionId);
+        if (Utils.isBlankOrNull(sessionId))
+            sessionId = getCookie("sahisid");
+        if (Utils.isBlankOrNull(sessionId))
+            sessionId = "sahi_" + System.currentTimeMillis();
+        // System.out.println("2:"+sessionId);
+        return Session.getInstance(sessionId);
+    }
 
-	public String fileExtension() {
-		return fileExtension;
-	}
+    public String fileExtension() {
+        return fileExtension;
+    }
 
-	public String url() {
-		return (isSSL() ? "https" : "http") + "://" + hostWithPort + (uri == null ? "" : uri);
-	}
+    public String url() {
+        return (isSSL() ? "https" : "http") + "://" + hostWithPort + (uri == null ? "" : uri);
+    }
 
     public boolean isMultipart() {
         String contentType = getLastSetValueOfHeader("Content-Type");
         return contentType != null && contentType.startsWith("multipart/form-data");
+    }
+
+    public void setSSL(boolean isSSL) {
+        this.isSSLSocket = isSSL;
     }
 }
