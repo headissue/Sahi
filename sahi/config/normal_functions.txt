@@ -30,3 +30,4 @@ _option
 _lastConfirm
 _reset
 _file
+_getDB

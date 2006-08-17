@@ -217,6 +217,30 @@ function sahi_rightClick(el) {
     sahiSimulateClick(el, true, false);
 }
 
+function sahi_getDB(driver, jdbcurl, username, password) {
+    return new sahiDB(driver, jdbcurl, username, password);
+}
+
+function sahi_forceAlert(s) {
+    return sahi_real_alert(s);
+}
+function sahiDB(driver, jdbcurl, username, password) {
+    this.driver = driver;
+    this.jdbcurl = jdbcurl;
+    this.username = username;
+    this.password = password;
+    function select1(sql) {
+        var qs = "driver=" + this.driver + "&jdbcurl=" + this.jdbcurl + "&username=" + this.username + "&password=" + this.password + "&sql=" + sql;
+        return eval(sahi_callServer("net.sf.sahi.plugin.DBClient_select", qs));
+    }
+    this.select = select1;
+    function update1(sql) {
+        var qs = "driver=" + this.driver + "&jdbcurl=" + this.jdbcurl + "&username=" + this.username + "&password=" + this.password + "&sql=" + sql;
+        return eval(sahi_callServer("net.sf.sahi.plugin.DBClient_execute", qs));
+    }
+    this.update = update1;
+}
+
 function sahiSimulateClick(el, isRight, isDouble) {
     var n = el;
 
@@ -404,9 +428,9 @@ function sahi_setValue(el, val) {
     }
 }
 
-function sahi_setFile(el, v){
+function sahi_setFile(el, v) {
     var url = isBlankOrNull(el.form.action) ? el.ownerDocument.defaultView.location.href : el.form.action;
-    sahi_callServer("FileUpload_setFile", "n="+el.name+"&v="+v+"&action="+url);
+    sahi_callServer("FileUpload_setFile", "n=" + el.name + "&v=" + v + "&action=" + url);
 }
 
 function sahiSimulateEvent(target, evType) {
@@ -473,7 +497,7 @@ function sahi_setSelected(el, val, isMultiple) {
     var done = false;
     for (var i = 0; i < l; i++) {
         if (!isMultiple) el.options[i].selected = false;
-        if (el.options[i].text.indexOf(sahiTrim(val)) != -1) {
+        if (el.options[i].text == sahiTrim(val)) {
             el.options[i].selected = true;
             done = true;
             sahiSimulateEvent(el, "change");
@@ -1355,7 +1379,7 @@ function sahiGetAccessorInfo(el) {
         return new AccessorInfo(accessor, shortHand, type, "setselected", sahiGetOptionText(el, el.value));
     } else if (el.tagName.toLowerCase() == "a") {
         return new AccessorInfo(accessor, shortHand, "link", "click");
-    } else if (type == "button" || type == "reset"  || type == "submit" || type == "image") {
+    } else if (type == "button" || type == "reset" || type == "submit" || type == "image") {
         return new AccessorInfo(accessor, shortHand, type, "click");
     } else if (type == "checkbox" || type == "radio") {
         return new AccessorInfo(accessor, shortHand, type, "click", el.checked);
@@ -2105,7 +2129,7 @@ function getScript(info) {
         cmd = "_wait(" + value + ");";
     } else if (ev == "mark") {
         cmd = "//MARK: " + value;
-    } else if (ev == "setFile"){
+    } else if (ev == "setFile") {
         cmd = "_setFile(" + accessor + ", " + sahiQuotedEscapeValue(value) + ");";
     }
     if (cmd != null && popup != null && popup != "") {
@@ -2133,6 +2157,10 @@ sahiActivateHotKey();
 window.sahi_real_alert = window.alert;
 window.sahi_real_confirm = window.confirm;
 window.sahi_real_prompt = window.prompt;
+
+window.sahiAlert = window.alert;
+window.sahiConfirm = window.confirm;
+window.sahiPrompt = window.prompt;
 
 window.alert = sahiAlertMock;
 window.confirm = sahConfirmMock;

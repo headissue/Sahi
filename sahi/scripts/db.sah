@@ -1,0 +1,4 @@
+var db = _getDB("oracle.jdbc.driver.OracleDriver", "jdbc:oracle:thin:@trebuchet:1521:dixons", "nraman", "nraman");
+var rs = db.select("select * from rule");
+var $val = rs[12]["ENTITY_TYPE"];
+_forceAlert($val);
