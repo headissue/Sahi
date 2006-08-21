@@ -49,6 +49,9 @@ public class SahiScriptTest extends TestCase {
 		assertEquals("sahiSchedule(\"sahi_call(fn1())\", \"scrName&n=1\")\r\n", testScript
 				.modify("_call(fn1())"));
 
+        assertEquals("sahiSchedule(\"sahi_click(\"+s_v($ar[$i[1][\"COL\"]])+\")\", \"scrName&n=1\")\r\n", testScript
+				.modify("_click($ar[$i[1][\"COL\"]])"));
+
 	}
 
 	public void testKeywordsAsASubstringFails() {

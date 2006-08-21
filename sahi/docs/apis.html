@@ -30,61 +30,61 @@
 
             <div class="menu">
                 <ul>
-                    <li><a href="/index.html">Introduction</a></li>
+                    <li><a href="index.html">Introduction</a></li>
                     <!--<li><a href="index.html#features">Features</a></li>-->
 
                 </ul>
                 <ul>
-                    <li><a href="/sahi_tutorial.html" target="_blank">Flash Tutorial</a></li>
-                    <li><a href="/screenshots.html">Screen Shots</a></li>
+                    <li><a href="sahi_tutorial.html" target="_blank">Flash Tutorial</a></li>
+                    <li><a href="screenshots.html">Screen Shots</a></li>
                 </ul>
 
                 <ul>
-                    <li><a href="/install.html">Downloading Sahi</a></li>
+                    <li><a href="install.html">Downloading Sahi</a></li>
 
-                    <li><a href="/install.html#prereq">Prerequisites</a></li>
+                    <li><a href="install.html#prereq">Prerequisites</a></li>
 
-                    <li><a href="/install.html#install">Installing Sahi</a></li>
+                    <li><a href="install.html#install">Installing Sahi</a></li>
                 </ul>
 
                 <ul>
-                    <li><a href="/using.html">Getting started</a></li>
+                    <li><a href="using.html">Getting started</a></li>
 
-                    <li><a href="/using.html#record">Recording through Sahi</a></li>
+                    <li><a href="using.html#record">Recording through Sahi</a></li>
 
-                    <li><a href="/using.html#playback">Playing back</a></li>
+                    <li><a href="using.html#playback">Playing back</a></li>
 
-                    <li><a href="/using.html#suites">Suites</a></li>
+                    <li><a href="using.html#suites">Suites</a></li>
 
-                    <li><a href="/using.html#logging">Logging</a></li>
+                    <li><a href="using.html#logging">Logging</a></li>
                 </ul>
 
                 <ul>
                     <li>Documentation:
 
                         <ul>
-                            <li><a href="/apis.html">APIs</a></li>
-                            <li><a href="/scripting.html">Scripting</a></li>
+                            <li><a href="apis.html">APIs</a></li>
+                            <li><a href="scripting.html">Scripting</a></li>
                         </ul>
                     </li>
                 </ul>
 
                 <ul>
-                    <li><a href="/ant.html">Ant Support<a></a></li>
+                    <li><a href="ant.html">Ant Support<a></a></li>
                 </ul>
 
                 <ul>
-                    <li><a href="/ide.html">Editor Support<a></a></li>
+                    <li><a href="ide.html">Editor Support<a></a></li>
                 </ul>
 
                 <ul>
-                    <li><a href="/devnotes.html">Sahi - Technical Aspects</a></li>
+                    <li><a href="devnotes.html">Sahi - Technical Aspects</a></li>
                 </ul>
 
                 <ul>
-                    <li><a href="/problems.html#problems">Problems</a></li>
+                    <li><a href="problems.html#problems">Problems</a></li>
 
-                    <li><a href="/problems.html#notyet">Not yet supported, but coming
+                    <li><a href="problems.html#notyet">Not yet supported, but coming
                         in</a></li>
                 </ul>
 
@@ -131,6 +131,7 @@ using the Sahi controller and looking at the recorded code. <br>
 <a href="#textverify">Text Verification boolean Functions</a><br>
 <a href="#include">File Inclusion</a><br>
 <a href="#utility">Utility Functions</a><br>
+<a href="#db">Database Functions</a><br>
 <a href="#popup">Handling popup windows</a><br>
 (<a href="#top">Top</a>) <br>
 <h4><a name="aform"></a>Accessor Functions : Form elements</h4>
@@ -538,7 +539,70 @@ The file has to be present on that path on the machine running the proxy.
 
 <br>
 (<a href="#top">Top</a>) <br>
-</div>
+
+<hr>
+<br>
+<h4><a name="db">_getDB("driver", "jdbcurl", "username", "password")</a></h4>
+_getDB returns a sahiDB object.<br>
+sahiDB has two methods.<br>
+select(sql); // select statements<br>
+update(sql); // update/delete/insert statements<br>
+<br>
+select returns a sequential array of associative arrays.<br>
+<br>
+Eg.<br>
+<br>
+For table "User"<br>
+<table>
+    <tr>
+        <td>ID</td>
+        <td>NAME</td>
+        <td>AGE</td>
+    </tr>
+    <tr>
+        <td>1</td>
+        <td>Kamlesh</td>
+        <td>28</td>
+    </tr>
+    <tr>
+        <td>2</td>
+        <td>Arun</td>
+        <td>30</td>
+    </tr>
+    <tr>
+        <td>3</td>
+        <td>Raja</td>
+        <td>35</td>
+    </tr>
+</table>
+<br>
+<pre class="code">
+
+var db = _getDB("oracle.jdbc.driver.OracleDriver", "jdbc:oracle:thin:@dbserver:1521:sid", "username", "password")
+var rs = db.select("select * from User");
+
+_assertEqual("1", rs[0]["ID"]);
+_assertEqual("Kamlesh", rs[0]["NAME"]);
+_assertEqual("28", rs[0]["AGE"]);
+
+_assertEqual("2", rs[1]["ID"]);
+_assertEqual("Arun", rs[1]["NAME"]);
+_assertEqual("30", rs[1]["AGE"]);
+
+_assertEqual("3", rs[2]["ID"]);
+_assertEqual("Raja", rs[2]["NAME"]);
+_assertEqual("35", rs[2]["AGE"]);
+
+</pre>
+<br>
+The driver has to be present in the classpath of Sahi.
+For example, if you are using sahi.bat, you could add it to the path like this:
+java -classpath ..\lib\sahi.jar;<b>C:\sahiext\driver.jar;</b> net.sf.sahi.Proxy
+
+<br>
+
+<br>
+(<a href="#top">Top</a>) <br></div>
         </td>
     </tr>
 </table>

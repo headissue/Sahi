@@ -31,3 +31,4 @@ _lastConfirm
 _reset
 _file
 _getDB
+_readFile

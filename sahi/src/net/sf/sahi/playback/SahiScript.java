@@ -8,7 +8,10 @@ package net.sf.sahi.playback;
 import net.sf.sahi.config.Configuration;
 import net.sf.sahi.util.Utils;
 
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Properties;
@@ -63,8 +66,7 @@ public abstract class SahiScript {
                 sb.append(processInclude(line));
             } else if (line.startsWith("_") && lineStartsWithActionKeyword(line)) {
                 sb.append(PREFIX);
-                sb.append(modifyFunctionNames(separateVariables(Utils
-                        .escapeDoubleQuotesAndBackSlashes(line))));
+                sb.append(modifyFunctionNames(separateVariables(line)));
                 sb.append(CONJUNCTION);
                 sb.append(Utils.escapeDoubleQuotesAndBackSlashes(filePath));
                 sb.append("&n=");
@@ -202,16 +204,54 @@ public abstract class SahiScript {
         char prev = ' ';
         boolean isVar = false;
         int len = s.length();
+        int bracket = 0;
+        int square = 0;
+        int doubleQuote = 0;
+        int quote = 0;
+
         for (int i = 0; i < len; i++) {
             c = s.charAt(i);
-            if (c == '$' && prev != '\\' && i + 1 < len
+            if (!isVar && c == '$' && prev != '\\' && i + 1 < len
                     && Character.isJavaIdentifierStart(s.charAt(i + 1))) {
                 isVar = true;
+                bracket = 0;
+                square = 0;
+                doubleQuote = 0;
+                quote = 0;
                 sb.append("\"+s_v(");
             }
             if (isVar && !(Character.isJavaIdentifierPart(c) || c == '.')) {
-                sb.append(")+\"");
-                isVar = false;
+                boolean append = false;
+                if (c == '(') {
+                    bracket++;
+                } else if (c == ')') {
+                    bracket--;
+                    if (bracket < 0) append = true;
+                } else if (c == '[') {
+                    square++;
+                } else if (c == ']') {
+                    square--;
+                    if (square < 0) append = true;
+                } else if (c == '"') {
+                    doubleQuote++;
+                } else if (c == '"') {
+                    doubleQuote--;
+                    if (doubleQuote < 0) append = true;
+                } else if (c == '\'') {
+                    quote++;
+                } else if (c == '\'') {
+                    quote--;
+                    if (quote < 0) append = true;
+                } else {
+                    append = true;
+                }
+                if (append) {
+                    sb.append(")+\"");
+                    isVar = false;
+                }
+            }
+            if (!isVar && (c == '\\' || c == '"')) {
+                sb.append('\\');
             }
             sb.append(c);
             prev = c;

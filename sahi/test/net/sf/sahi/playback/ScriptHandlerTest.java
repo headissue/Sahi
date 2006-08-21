@@ -20,13 +20,18 @@ public class ScriptHandlerTest extends TestCase {
         assertEquals("sahiSchedule(\"sahi_setValue ( elements['username'] , 'test'+\"+s_v($ix)+\" )\", \"fileName&n=1\")\r\n", script.modify("_setValue ( elements['username'] , 'test'+$ix )"));
     }
 
-    public void testSeparateVariables() {
+    public void testSeparateVariables(){
+        assertEquals("_click(\"+s_v($ix)+\")", script.separateVariables("_click($ix)"));
         assertEquals("aaa \"+s_v($ix)+\" bbb", script.separateVariables("aaa $ix bbb"));
-    }
-
-    public void testObject(){
         assertEquals("aaa \"+s_v($i.x)+\" bbb", script.separateVariables("aaa $i.x bbb"));
-//        assertEquals("aaa \"+s_v($i.fn())+\" bbb", scriptHandler.separateVariables("aaa $i.fn() bbb"));
+        assertEquals("aaa \"+s_v($i.fn())+\" bbb", script.separateVariables("aaa $i.fn() bbb"));
+        assertEquals("aaa \"+s_v($i[1])+\" bbb", script.separateVariables("aaa $i[1] bbb"));
+        assertEquals("aaa \"+s_v($i[1].a())+\" bbb", script.separateVariables("aaa $i[1].a() bbb"));
+        assertEquals("aaa \"+s_v($i[1][\"COL\"])+\" bbb", script.separateVariables("aaa $i[1][\"COL\"] bbb"));
+        assertEquals("aaa \"+s_v($i[1]['COL'])+\" bbb", script.separateVariables("aaa $i[1]['COL'] bbb"));
+        assertEquals("_click(_img(\"+s_v($i[1]['COL'])+\")", script.separateVariables("_click(_img($i[1]['COL'])"));
+        assertEquals("_click(\"+s_v($ar[$ix])+\")", script.separateVariables("_click($ar[$ix])"));
+        assertEquals("_click(\"+s_v($ar[$i[1]['COL']])+\")", script.separateVariables("_click($ar[$i[1]['COL']])"));
     }
 
     public void testEscape(){

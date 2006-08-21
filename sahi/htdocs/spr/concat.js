@@ -216,13 +216,12 @@ function sahi_doubleClick(el) {
 function sahi_rightClick(el) {
     sahiSimulateClick(el, true, false);
 }
-
+function sahi_readFile(fileName){
+    var qs = "fileName=" + fileName;
+    return sahi_callServer("net.sf.sahi.plugin.FileReader_contents", qs)
+}
 function sahi_getDB(driver, jdbcurl, username, password) {
     return new sahiDB(driver, jdbcurl, username, password);
-}
-
-function sahi_forceAlert(s) {
-    return sahi_real_alert(s);
 }
 function sahiDB(driver, jdbcurl, username, password) {
     this.driver = driver;
@@ -685,7 +684,9 @@ function sahiGetColIndexWith(txt, tableEl) {
     }
     return -1;
 }
-
+function sahi_alert(s){
+   return sahi_real_alert(s);
+}
 var _sahiLastAlert = "";
 function sahiAlertMock(s) {
     if (isSahiPlaying()) {
