@@ -19,16 +19,21 @@ public class TestRunner {
 	public static void main(String[] args) {
 		try {
 			if (args.length == 0) {
-				System.out.println("Usage: java TestRunner <test_script> <start_url> <browser executable path> <sahi_host> <sahi_port>");
+				System.out.println("Usage: java TestRunner <suite_name> <start_url> <browser_executable> <log_dir> <sahi_host> <sahi_port> <number_of_threads>");
+				System.out.println("Set log_dir to \"default\" if you want to log to the default log dir");
+				System.out.println("Set number_of_threads to a number less than 5 for Internet Explorer");
+				System.out.println("Set number_of_threads to 1 for FireFox");
 				System.exit(-1);
 			}
 			String suiteName = args[0];
 			String base = getBase(args);
 			String browser = getBrowser(args);
-			String sahiHost = args[3];
-			String port = args[4];
-			String threads = args[5];
-			TestRunner testRunner = new TestRunner(suiteName, base, browser, sahiHost, port, threads, threads);
+			String logDir = args[3];
+            if ("default".equalsIgnoreCase(logDir)) logDir = "";
+            String sahiHost = args[4];
+			String port = args[5];
+			String threads = args[6];
+			TestRunner testRunner = new TestRunner(suiteName, browser, base, logDir, sahiHost, port, threads);
 			String status = testRunner.execute();
 			System.out.println("Status:" + status);
 		} catch (Exception e) {

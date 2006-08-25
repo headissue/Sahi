@@ -1768,6 +1768,14 @@ function sahiEx(isStep) {
                     var debugInfo = "" + _sahiCmdDebugInfo[i];
                     var level = (_sahiCmds[i].indexOf("sahi_assert") == 0)?"success":"info";
                     try {
+                        if (_sahiCmds[i].indexOf("sahi_popup") != -1){
+                            eval(_sahiCmds[i].substring(0, _sahiCmds[i].indexOf(")")+1));
+                        }else {
+                            var popup = getPopupName();
+                            if (popup != null && popup != ""){
+                                throw new SahiNotMyWindowException();
+                            }
+                        }
                         sahiSetCurrentIndex(i + 1);
                         eval(_sahiCmds[i]);
                     } catch(e) {

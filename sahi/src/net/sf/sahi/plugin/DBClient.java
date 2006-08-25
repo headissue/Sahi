@@ -31,6 +31,7 @@ public class DBClient {
         try {
             init(request);
             String s = getJSObject(getResult(driverName, jdbcurl, username, password));
+//            System.out.println(s.replaceAll("\\},\\{", "},\n{"));
             return new SimpleHttpResponse(s);
         } catch (Exception e) {
             e.printStackTrace();
@@ -58,8 +59,8 @@ public class DBClient {
                 String columnName = (String) iterator.next();
                 String value = rs.getString(columnName);
                 map.put(columnName, value);
-                list.add(map);
             }
+            list.add(map);
         }
         return list;
     }
