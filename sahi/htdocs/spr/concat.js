@@ -216,7 +216,7 @@ function sahi_doubleClick(el) {
 function sahi_rightClick(el) {
     sahiSimulateClick(el, true, false);
 }
-function sahi_readFile(fileName){
+function sahi_readFile(fileName) {
     var qs = "fileName=" + fileName;
     return sahi_callServer("net.sf.sahi.plugin.FileReader_contents", qs)
 }
@@ -684,8 +684,8 @@ function sahiGetColIndexWith(txt, tableEl) {
     }
     return -1;
 }
-function sahi_alert(s){
-   return sahi_real_alert(s);
+function sahi_alert(s) {
+    return sahi_real_alert(s);
 }
 var _sahiLastAlert = "";
 function sahiAlertMock(s) {
@@ -717,20 +717,23 @@ function sahi_savedRandom(id, min, max) {
 function sahi_resetSavedRandom(id) {
     sahi_setGlobal("srandom" + id, "");
 }
-_sahiConfirmReturnValue = true;
+_sahiConfirmReturnValue = new Array();
 _sahiLastConfirmText = null;
 
-function sahi_expectConfirm(value) {
-    _sahiConfirmReturnValue = value;
+function sahi_expectConfirm(label, value) {
+    _sahiConfirmReturnValue[label] = value;
 }
 function sahConfirmMock(s) {
     if (isSahiPlaying()) {
-        var retVal = _sahiConfirmReturnValue;
+        var retVal = _sahiConfirmReturnValue[s];
+        if (retVal == null) retVal = true;
         _sahiLastConfirmText = s;
-        _sahiConfirmReturnValue = true;
+        _sahiConfirmReturnValue[s] = null;
         return retVal;
     } else {
-        return sahi_real_confirm(s);
+        var retVal = sahi_real_confirm(s);
+        sahiSendToServer('/_s_/dyn/Recorder_record?cmd=' + escape("_expectConfirm(\"" + s + "\", " + retVal + ")"));
+        return retVal;
     }
 }
 function sahi_lastConfirm() {
@@ -738,13 +741,34 @@ function sahi_lastConfirm() {
     _sahiLastConfirmText = null;
     return v;
 }
-function sahPromptMock(n) {
+_sahiPromptReturnValue = new Array();
+_sahiLastPromptText = null;
+function sahPromptMock(s) {
     if (isSahiPlaying()) {
-        return sahi_real_prompt(n);
+        var retVal = _sahiPromptReturnValue[s];
+        if (retVal == null) retVal = "";
+        _sahiLastPromptText = s;
+        _sahiPromptReturnValue[s] = null;
+        return retVal;
     } else {
-        return sahi_real_prompt()
+        var retVal = sahi_real_prompt(s);
+        sahiSendToServer('/_s_/dyn/Recorder_record?cmd=' + escape("_expectPrompt(\"" + s + "\", \"" + retVal + "\")"));
+        return retVal;
     }
 }
+function sahi_lastPrompt() {
+    var v = _sahiLastPromptText;
+    _sahiLastPromptText = null;
+    return v;
+}
+
+function sahi_expectPrompt(label, value) {
+    _sahiPromptReturnValue[label] = value;
+}
+function sahi_prompt(s) {
+    return sahi_real_prompt(s);
+}
+
 function sahi_cell(id, row, col) {
     if (row == null && col == null) {
         return sahiFindCell(id);
@@ -1768,22 +1792,30 @@ function sahiEx(isStep) {
                     var debugInfo = "" + _sahiCmdDebugInfo[i];
                     var level = (_sahiCmds[i].indexOf("sahi_assert") == 0)?"success":"info";
                     try {
-                        if (_sahiCmds[i].indexOf("sahi_popup") != -1){
-                            eval(_sahiCmds[i].substring(0, _sahiCmds[i].indexOf(")")+1));
-                        }else {
+                        if (_sahiCmds[i].indexOf("sahi_popup") != -1) {
+                            // needed popup so see if I am the needed popup
+                            eval(_sahiCmds[i].substring(0, _sahiCmds[i].indexOf(")") + 1));
+                        } else {
+                            // don't need popup, so if I am popup, throw error.
                             var popup = getPopupName();
-                            if (popup != null && popup != ""){
+                            if (popup != null && popup != "") {
                                 throw new SahiNotMyWindowException();
                             }
                         }
                         sahiSetCurrentIndex(i + 1);
-                        eval(_sahiCmds[i]);
+                        if (_sahiCmds[i].indexOf("sahi_call") != -1 && _sahiCmds[i].indexOf("sahi_callServer") == -1){
+                            var bkup = sahiSchedule;
+                            sahiSchedule = eval;
+                            eval(_sahiCmds[i]);
+                            sahiSchedule = bkup;
+                        } else {
+                            eval(_sahiCmds[i]);
+                        }
                     } catch(e) {
                         sahiSetCurrentIndex(i);
                         throw e;
                     }
                     sahiReportSuccess(_sahiCmds[i], level, debugInfo);
-                    //	                sahiSetRetries(0); // _sahi_attempts = 0;
                 } catch (ex1) {
                     if (ex1 instanceof SahiAssertionException) {
                         var retries = sahiGetRetries();

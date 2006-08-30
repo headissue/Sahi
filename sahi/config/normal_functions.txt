@@ -32,3 +32,4 @@ _reset
 _file
 _getDB
 _readFile
+_lastPrompt

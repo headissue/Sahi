@@ -31,5 +31,5 @@ _addMock
 _removeMock
 _expectConfirm
 _setFile
-
+_expectPrompt
 
