@@ -1735,7 +1735,20 @@ function sahiSchedule(cmd, debugInfo) {
     _sahiCmds[i] = cmd;
     _sahiCmdDebugInfo[i] = debugInfo;
 }
-
+function sahiInstant(cmd, debugInfo){
+    try{
+        eval(cmd);
+        sahiReportSuccess(cmd, debugInfo);
+    } catch(ex1) {
+        if (ex1 instanceof SahiAssertionException) {
+            var msg = " Assertion Failed. " + (ex1.messageText ? ex1.messageText : "");
+            sahiLogPlayBack(cmd + msg, "failure", debugInfo);
+        } else {
+            sahiLogPlayBack(cmd, "error", debugInfo);
+            sahiStopPlaying();
+        }
+    }
+}
 function sahiPlay() {
     window.setTimeout("try{sahiEx();}catch(ex){}", INTERVAL);
 }
@@ -1790,7 +1803,6 @@ function sahiEx(isStep) {
                     sahiWaitForLoad = SAHI_MAX_WAIT_FOR_LOAD;
                     updateControlWinDisplay(_sahiCmds[i]);
                     var debugInfo = "" + _sahiCmdDebugInfo[i];
-                    var level = (_sahiCmds[i].indexOf("sahi_assert") == 0)?"success":"info";
                     try {
                         if (_sahiCmds[i].indexOf("sahi_popup") != -1) {
                             // needed popup so see if I am the needed popup
@@ -1805,17 +1817,17 @@ function sahiEx(isStep) {
                         sahiSetCurrentIndex(i + 1);
                         if (_sahiCmds[i].indexOf("sahi_call") != -1 && _sahiCmds[i].indexOf("sahi_callServer") == -1){
                             var bkup = sahiSchedule;
-                            sahiSchedule = eval;
+                            sahiSchedule = sahiInstant;
                             eval(_sahiCmds[i]);
                             sahiSchedule = bkup;
                         } else {
                             eval(_sahiCmds[i]);
+                            sahiReportSuccess(_sahiCmds[i], debugInfo);
                         }
                     } catch(e) {
                         sahiSetCurrentIndex(i);
                         throw e;
                     }
-                    sahiReportSuccess(_sahiCmds[i], level, debugInfo);
                 } catch (ex1) {
                     if (ex1 instanceof SahiAssertionException) {
                         var retries = sahiGetRetries();
@@ -1936,7 +1948,8 @@ function sahiStopRecording() {
     sahiSendToServer("/_s_/dyn/Recorder_stop");
     sahiSetServerVar("sahi_record", 0);
 }
-function sahiReportSuccess(msg, type, debugInfo) {
+function sahiReportSuccess(msg, debugInfo) {
+    var type = (msg.indexOf("sahi_assert") == 0)?"success":"info";
     sahiSendToServer("/_s_/dyn/Player_success?msg=" + escape(msg) + "&type=" + type + "&debugInfo=" + (debugInfo?escape(debugInfo):""));
 }
 function sahiLogPlayBack(msg, type, debugInfo) {
