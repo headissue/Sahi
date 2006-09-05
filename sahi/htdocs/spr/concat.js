@@ -1832,7 +1832,6 @@ function sahiEx(isStep) {
                         }
                     } catch(e) {
                         sahiSetCurrentIndex(i);
-                        //TODO
                         throw e;
                     }
                 } catch (ex1) {
@@ -1849,7 +1848,6 @@ function sahiEx(isStep) {
                             sahiLogPlayBack(cmds[i] + msg, "failure", debugInfo);
                             sahiSetRetries(0);
                             sahiSetCurrentIndex(i + 1);
-                            //TODO
                         }
                     } else if (ex1 instanceof SahiNotMyWindowException) {
                         throw ex1;
