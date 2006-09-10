@@ -2,25 +2,39 @@
 	margin:0px 50px 50px 10px;
 	padding:10px;
 	padding-left:15px;
-	border-top:1px solid orange;
-	border-left:1px solid orange;
 }
-
 .menu {
 	padding:10px;
 	line-height:17px;
-	width:180px;
-	background-color:#eeeee0;
+	width:140px;
 }
 ul{
 	margin-left:10px;
 	padding-left:10px;
 }
-
-
-body{
+*{
 	font-family:arial;
 	font-size:12px;
+}
+a.top_menu, a.top_menu:hover{
+    padding:2px;
+    padding-left:20px;
+    padding-right:20px;
+    background-color:#223366;
+    /*border:2px groove black;*/
+    color:white;
+    text-decoration:none;
+    font-weight:bold;
+    font-size:11px;
+    font-family:verdana;
+}
+a.top_menu:hover{
+    background-color:lightblue;
+    color:black;
+}
+body{
+    background-image:url("fade2.png");
+    background-repeat:repeat-y;
 }
 h2.pageTitle{
 	font-family:arial;

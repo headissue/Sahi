@@ -13,6 +13,7 @@ using the Sahi controller and looking at the recorded code. <br>
 <a href="#include">File Inclusion</a><br>
 <a href="#utility">Utility Functions</a><br>
 <a href="#db">Database Functions</a><br>
+<a href="#readFile">File Read Functions</a><br>
 <a href="#popup">Handling popup windows</a><br>
 (<a href="#top">Top</a>) <br>
 <h4><a name="aform"></a>Accessor Functions : Form elements</h4>
@@ -28,6 +29,7 @@ using the Sahi controller and looking at the recorded code. <br>
     _button(idStr)<br>
     _submit(idStr)<br>
     <a href="#confirm">_lastConfirm()</a><br>
+    <a href="#prompt">_lastPrompt()</a><br>
     _file(idStr)<br>
 </b> (<a href="#top">Top</a>) <br>
 <h4><a name="alink"></a>Accessor Functions : Link</h4>
@@ -89,6 +91,7 @@ These are <a href="#scheduler">Scheduler Functions</a><br>
     <a href="#mock">_addMock("pattern", "class_method")</a><br>
     <a href="#mock">_removeMock("pattern")</a><br>
     <a href="#confirm">_expectConfirm()</a><br>
+    <a href="#prompt">_expectPrompt()</a><br>
     <a href="#setfile">_setFile(_file("id"), filePath)</a><br>
 
 </b> <br>
@@ -250,6 +253,7 @@ or<br>
 Note that there may be problems in recording this. <br>
 <br>
 
+(<a href="#top">Top</a>) <br>
 <hr>
 <br>
 <h4><a name="callserver">_callServer("class_method", "querystring")</a></h4>
@@ -336,6 +340,7 @@ This script may explain mocks better:<br>
     _assert<b>NotNull</b>(_link("Link Test"));
 </pre>
 
+(<a href="#top">Top</a>) <br>
 <hr>
 <br>
 <h4><a name="confirm">Confirm</a></h4>
@@ -343,12 +348,13 @@ Javascript calls to confirm(msg) are mocked out by Sahi so that it does not stop
 Sahi by default acts as if "OK" was clicked when a confirm dialog comes up.<br>
 It is possible to make the confirm return as if it was cancelled by setting<br>
 <pre class="code">
-    _expectConfirm(false);
+    _expectConfirm(label, false);
 </pre>
 before the statement which triggers the confirm dialog.<br>
+If there was no expectation set, Sahi will return true.<br>
 It is also possible to get the text of the last occurred confirm dialog using<br>
 <pre class="code">
-    _lastConfirm()
+    _lastConfirm();
 </pre>
 
 <h4>Example:</h4>
@@ -392,11 +398,11 @@ It is also possible to get the text of the last occurred confirm dialog using<br
     _assertEqual(_lastConfirm(), "Some question?");
     _assertNull(_lastConfirm());
 
-    <b>_expectConfirm(false);</b>
+    <b>_expectConfirm("Some question?", false);</b>
     _click(_button("Click For Confirm"));
     _assertNotNull(_textbox("t1"));
     _assertEqual("<b>canceled</b>", _textbox("t1").value);
-    _assertEqual(_lastConfirm(), "Some question?");
+    _assertEqual(_lastConfirm(), "Some question?"); //Kind of redundant here.
     _assertNull(_lastConfirm());
 
 
@@ -404,8 +410,66 @@ It is also possible to get the text of the last occurred confirm dialog using<br
 
 <br>
 
+(<a href="#top">Top</a>) <br>
 <hr>
 <br>
+
+<br>
+<h4><a name="prompt">Prompt</a></h4>
+Javascript calls to prompt(msg) are mocked out by Sahi so that it does not stop the playback.<br>
+Sahi by default returns "" if a prompt dialog comes up.<br>
+It is possible to make the prompt return the value one wants, by specifying<br>
+<pre class="code">
+    _expectPrompt(label, value);
+</pre>
+before the statement which triggers the prompt dialog.<br>
+If there was no expectation set, Sahi will return "".<br>
+It is also possible to get the text of the last occurred prompt dialog using<br>
+<pre class="code">
+    _lastPrompt();
+</pre>
+
+<h4>Example:</h4>
+
+<script type="text/javascript">
+function showPrompt(){
+    var t2 = document.f2.t2;
+    t2.value = prompt("Some prompt?");
+}
+</script>
+<form name="f2">
+    <input type="button" name="b1" value="Click For Prompt" onclick="showPrompt()"><br><br>
+    <input type="text" name="t2">
+</form>
+
+<pre class="code">
+
+    &lt;script type="text/javascript"&gt;
+    function showPrompt(){
+        var t2 = document.f2.t2;
+        t2.value = prompt("Some prompt?");
+    }
+    &lt;/script&gt;
+    &lt;form name="f2"&gt;
+        &lt;input type="button" name="b1" value="Click For Prompt" onclick="showPrompt()"&gt;&lt;br&gt;&lt;br&gt;
+        &lt;input type="text" name="t2"&gt;
+    &lt;/form&gt;
+
+    <hr>
+    _expectPrompt("Some prompt?", "abc")
+    _click(_button("Click For Prompt"));
+    _assertNotNull(_textbox("t2"));
+    _assertEqual("abc", _textbox("t2").value);
+    _assertEqual(_lastPrompt(), "Some prompt?");
+
+</pre>
+
+<br>
+
+(<a href="#top">Top</a>) <br>
+<hr>
+<br>
+
 <h4><a name="setfile">_setFile(_file("id"), filePath)</a></h4>
 Form elements of type "file" cannot be populated using javascript on the browser.<br>
 So Sahi has a workaround for handling file uploads.<br>
@@ -460,27 +524,49 @@ For table "User"<br>
 <pre class="code">
 
 var db = _getDB("oracle.jdbc.driver.OracleDriver", "jdbc:oracle:thin:@dbserver:1521:sid", "username", "password")
-var rs = db.select("select * from User");
+var $rs = db.select("select * from User");
 
-_assertEqual("1", rs[0]["ID"]);
-_assertEqual("Kamlesh", rs[0]["NAME"]);
-_assertEqual("28", rs[0]["AGE"]);
+_assertEqual("1", $rs[0]["ID"]);
+_assertEqual("Kamlesh", $rs[0]["NAME"]);
+_assertEqual("28", $rs[0]["AGE"]);
 
-_assertEqual("2", rs[1]["ID"]);
-_assertEqual("Arun", rs[1]["NAME"]);
-_assertEqual("30", rs[1]["AGE"]);
+_assertEqual("2", $rs[1]["ID"]);
+_assertEqual("Arun", $rs[1]["NAME"]);
+_assertEqual("30", $rs[1]["AGE"]);
 
-_assertEqual("3", rs[2]["ID"]);
-_assertEqual("Raja", rs[2]["NAME"]);
-_assertEqual("35", rs[2]["AGE"]);
+_assertEqual("3", $rs[2]["ID"]);
+_assertEqual("Raja", $rs[2]["NAME"]);
+_assertEqual("36", $rs[2]["AGE"]);
 
 </pre>
 <br>
-    The driver has to be present in the classpath of Sahi.
-    For example, if you are using sahi.bat, you could add it to the path like this:
-    java -classpath ..\lib\sahi.jar;<b>C:\sahiext\driver.jar;</b> net.sf.sahi.Proxy
+    The driver has to be present in the classpath of Sahi.<br>
+    For example, if you are using sahi.bat, you could add it to the path like this:<br>
+    java -classpath ..\lib\sahi.jar;<b>C:\sahiext\driver.jar;</b> net.sf.sahi.Proxy<br>
 
 <br>
 
 <br>
 (<a href="#top">Top</a>) <br>
+
+<hr>
+<h4><a name="readFile">_readFile(fullFilePath)</a></h4>
+_readFile(fullFilePath) returns the contents of a text file as a string.<br>
+<br>
+<pre class="code">
+    _readFile("C:\\abc\\data.txt");
+</pre>
+<br>
+The file has to be present on that path on the machine running the proxy.<br>
+One could then use the JS String's <a href="http://www.w3schools.com/jsref/jsref_split.asp">split</a> method to get an array of lines.<br>
+<br>
+eg.<br>
+<pre class="code">
+        var $content = _readFile("C:\\abc\\data.txt");
+        var $lines = $content.split("\n");
+</pre>
+<br>
+
+<br>
+(<a href="#top">Top</a>) <br>
+

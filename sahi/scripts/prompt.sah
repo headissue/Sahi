@@ -1,19 +1,6 @@
+_expectPrompt("Some prompt?", "abc")
 _click(_button("Click For Prompt"));
 _assertNotNull(_textbox("t1"));
-_assertEqual("oked", _textbox("t1").value);
-_assertEqual(_lastConfirm(), "Some question?");
-_assertNull(_lastConfirm());
-
-_expectConfirm(false);
-_click(_button("Click For Confirm"));
-_assertNotNull(_textbox("t1"));
-_assertEqual("canceled", _textbox("t1").value);
-_assertEqual(_lastConfirm(), "Some question?");
-_assertNull(_lastConfirm());
-
-_click(_button("Click For Confirm"));
-_assertNotNull(_textbox("t1"));
-_assertEqual("oked", _textbox("t1").value);
-_assertEqual(_lastConfirm(), "Some question?");
-_assertNull(_lastConfirm());
-
+_assertEqual("abc", _textbox("t1").value);
+_assertEqual(_lastPrompt(), "Some prompt?");
+_assertNull(_lastPrompt());

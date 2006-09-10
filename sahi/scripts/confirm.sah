@@ -1,19 +1,20 @@
+//_expectConfirm("Some question?", true)
 _click(_button("Click For Confirm"));
 _assertNotNull(_textbox("t1"));
 _assertEqual("oked", _textbox("t1").value);
 _assertEqual(_lastConfirm(), "Some question?");
 _assertNull(_lastConfirm());
 
-_expectConfirm(false);
+_expectConfirm("Some question?", false)
 _click(_button("Click For Confirm"));
 _assertNotNull(_textbox("t1"));
 _assertEqual("canceled", _textbox("t1").value);
 _assertEqual(_lastConfirm(), "Some question?");
 _assertNull(_lastConfirm());
 
+_expectConfirm("Some question?", true)
 _click(_button("Click For Confirm"));
 _assertNotNull(_textbox("t1"));
 _assertEqual("oked", _textbox("t1").value);
 _assertEqual(_lastConfirm(), "Some question?");
 _assertNull(_lastConfirm());
-

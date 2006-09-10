@@ -90,7 +90,9 @@
                 <include name="sahi_demo_include.sah"/>
                 <include name="onchange.sah"/>
                 <include name="confirm.sah"/>
+                <include name="prompt.sah"/>
                 <include name="reset.sah"/>
+                <include name="local_stack.sah"/>
             </fileset>
         </copy>
         <copy todir="temp/sahi/extlib">
