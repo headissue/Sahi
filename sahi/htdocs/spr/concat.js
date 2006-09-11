@@ -1781,19 +1781,19 @@ function areWindowsLoaded(win) {
         //for diff domains.
     }
 }
+_isLocal = false;
 function sahiEx(isStep) {
     var cmds = _sahiCmds;
     var debugs = _sahiCmdDebugInfo;
-    if (_sahiCmdsLocal.length > 0) {
-        cmds = _sahiCmdsLocal;
-        debugs = _sahiCmdDebugInfoLocal;
-    }
-
     try {
         try {
             if (isPaused() && !isStep) return;
             var i = sahiGetCurrentIndex();
-            if (isSahiPlaying() && _sahiCmds.length == i) {
+            if (_isLocal) {
+                cmds = _sahiCmdsLocal;
+                debugs = _sahiCmdDebugInfoLocal;
+            }
+            if (isSahiPlaying() && cmds.length == i) {
                 sahiStopPlaying();
                 return;
             }
@@ -1824,6 +1824,7 @@ function sahiEx(isStep) {
                             sahiSchedule = sahiInstant;
                             eval(cmds[i]);
                             sahiSchedule = bkup;
+                            _isLocal = (_sahiCmdsLocal.length > 0);
                             //sahi_alert("Calling");
                             sahiEx(isStep);
                         } else {
@@ -1923,10 +1924,10 @@ function updateControlWinDisplay(s) {
     }
 }
 function sahiSetCurrentIndex(i) {
-    if (_sahiCmdsLocal.length > 0) {
+    if (_isLocal) {
         sahiSetServerVar("sahiLocalIx", i);
     }
-    sahiSetServerVar("sahiIx", i);
+    else sahiSetServerVar("sahiIx", i);
 }
 function sahiGetCurrentIndex() {
     if (_sahiCmdsLocal.length > 0) {
@@ -1934,6 +1935,8 @@ function sahiGetCurrentIndex() {
         var localIx = ("" + i != "NaN") ? i : 0;
         if (_sahiCmdsLocal.length == localIx) {
             _sahiCmdsLocal = new Array();
+            sahiSetServerVar("sahiLocalIx", 0);
+            _isLocal = false;
         } else {
             return localIx;
         }

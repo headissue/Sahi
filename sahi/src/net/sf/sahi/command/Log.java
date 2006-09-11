@@ -66,7 +66,7 @@ public class Log {
         if (endIx==-1) endIx = len;
         sb.append(s.substring(0, startIx));
         sb.append("<b>");
-        sb.append(s.substring(startIx, endIx));
+        sb.append(s.substring(startIx, endIx).replace('\r', ' '));
         sb.append("</b>");
         sb.append(s.substring(endIx, len));
         return sb.toString();

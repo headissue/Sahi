@@ -41,6 +41,7 @@ function stopPlay() {
 function resetStep() {
     document.playform.step.value = 0;
     sahiSetServerVar("sahiIx", 0);
+    sahiSetServerVar("sahiLocalIx", 0);
 }
 function clearLogs() {
     document.logForm.logs.value = "";
