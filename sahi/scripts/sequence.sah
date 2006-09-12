@@ -2,7 +2,7 @@ _click(_link("Window Open Test"));
 _debug("0 base");
 _popup("popWin")._click(_link("Form Test"));
 _debug("1 base");
-_popup("popWin")._click(_link("Form1 Test"));
+_popup("popWin")._click(_link("Form Test"));
 _debug("2 base");
 _popup("popWin")._debug("3 popup");
 _debug("4 base");
