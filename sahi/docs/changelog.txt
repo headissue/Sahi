@@ -1,8 +1,19 @@
-* Added functionality to mock file uploads. _setFile(_file("id"), filePath) added.
-* Added tool for toggling proxy on Internet Explorer through command line or ant.
-* _expectConfirm(boolean) and _lastConfirm() apis added.
-* Fixed bug fixes relating to logfile paths
-* Fixed bug fix with _setSelected()
+* APIS added
+    _expectPrompt(label, txt)
+    _lastPrompt()
+    _debug(s)
+    _debugToErr(s)
+    _debugToFile(s, file)
+    _getDB(driver, jdbcurl, username, password)
+    _readFile(file)
+
+* _expectConfirm(boolean) has been changed to _expectConfirm(label, boolean);
+* Fixed bug relating to invalid logs being created when there are popups
+* _getDB API added for database access
+* _readFile(file) added for file reading
+* debug apis added for writing to a log file
+* Fixed bug regarding dollar array variables. Arrays can also be used as dollar variables now
+* scheduler functions work from inside _call also, without messing the execution stack
 
 Known issues
 * Firefox has problems with multithreaded playback due to session sharing across windows. 

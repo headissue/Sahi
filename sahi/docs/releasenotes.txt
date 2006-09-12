@@ -1,4 +1,4 @@
-Sahi Nightly Release 2006-08-06
+Sahi Nightly Release 2006-09-12
 
 Requirements
 ------------
@@ -6,19 +6,13 @@ Requirements
 * JRE 1.4 or above
 * ant, log4j.jar and junit.jar if the module is to be rebuilt.
 
+License
+-------
+Apache 2 License
+
 Changes
 --------------------
-
-    * Added functionality to mock file uploads. _setFile(_file("id"), filePath) added.
-    * Added tool for toggling proxy on Internet Explorer through command line or ant.
-    * _expectConfirm(boolean) and _lastConfirm() apis added.
-    * Fixed bug fixes relating to logfile paths
-    * Fixed bug fix with _setSelected()
-
-  Known issues
-    * Firefox has problems with multithreaded playback due to session sharing across windows.
-    (Workaround: Do not add the 'threads=n' clause to sahi target)
-    * Form elements with $ in them are not recorded correctly. You have to explicity replace $ with \$ in script.
+See changelog.txt
 
 Installation guide
 ------------------                                              

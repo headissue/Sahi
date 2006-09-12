@@ -828,11 +828,12 @@ function sahi_addMock(pattern, clazz) {
 function sahi_debug(s){
     return sahi_callServer("Debug_toOut", "msg=" + s);
 }
-function sahi_debugToErr(){
+function sahi_debugToErr(s){
     return sahi_callServer("Debug_toErr", "msg=" + s);
 }
-function sahi_debugToFile(){
-    return sahi_callServer("Debug_toFile", "msg=" + s);
+function sahi_debugToFile(s, file){
+    if (file == null) return;
+    return sahi_callServer("Debug_toFile", "msg=" + s+ "&file="+file);
 }
 
 
