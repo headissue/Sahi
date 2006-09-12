@@ -161,6 +161,9 @@ Example:<br>
     <a href="#resetrandom">_resetSavedRandom(id)<br>
         <a href="#global">_setGlobal(name, value)</a><br>
         <a href="#global">_getGlobal(name)</a><br>
+        <a href="#debug">_debug(msg)</a><br>
+        <a href="#debug">_debugToErr(msg)</a><br>
+        <a href="#debug">_debugToFile(msg, filePath)</a><br>
         <br>
         <b><a name="random">_savedRandom(id, min, max)</a></b><br>
         <br>
@@ -224,6 +227,27 @@ with the session.<br>
 Note: that all values will be stored as strings only. <br>
 Note: _setGlobal is a <a href="#scheduler">Scheduler Function</a>.
 <br>
+
+<hr>
+<br>
+<b><a name="debug">_debug(msg)</a></b>
+<br>
+Writes the message to the standard output stream. The messages will be visible on the window where the proxy is running unless redirected.
+<br>
+
+<br>
+<b>_debugToErr(msg)</b>
+<br>
+Writes the message to the standard error stream. The messages will be visible on the window where the proxy is running unless redirected.
+<br>
+
+<br>
+<b>_debugToFile(msg, filePath)</b>
+<br>
+Writes the message to the file specified.
+<br>
+
+
 (<a href="#top">Top</a>) <br>
 
 <hr>

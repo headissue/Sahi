@@ -12,7 +12,7 @@
     <!--<tr>-->
         <!--<td><br>-->
 <!---->
-            <!--<h2>Sahi - Web Automation and Test Tool</h2>-->
+        <!--<h2>Sahi - Web Automation and Test Tool</h2>-->
         <!--</td>-->
         <!--<td align="right"><a href="http://sourceforge.net"><img src=-->
                 <!--"http://sourceforge.net/sflogo.php?group_id=151639&amp;type=3"-->
@@ -32,6 +32,7 @@
     <br/>
     <br/>
     <br/>
+
     <div class="menu">
         <ul>
             <li><a href="index.html">Introduction</a></li>
@@ -94,14 +95,14 @@
 
         <hr>
 
-        <form action="/cgi-sys/entropysearch.cgi">
-            Search Query <input type="text" name="query" value="">
-            <input type="hidden" name="user" value="sahicoin">
-            <input type="hidden" name="basehref" value="http://sahi.co.in">
-            <input type="hidden" name="template" value="default">
-            <input type="submit" value="Search">
-        </form>
-        <hr>
+        <!--<form action="/cgi-sys/entropysearch.cgi">-->
+        <!--Search Query <input type="text" name="query" value="">-->
+        <!--<input type="hidden" name="user" value="sahicoin">-->
+        <!--<input type="hidden" name="basehref" value="http://sahi.co.in">-->
+        <!--<input type="hidden" name="template" value="default">-->
+        <!--<input type="submit" value="Search">-->
+        <!--</form>-->
+        <!--<hr>-->
 
         <ul>
             <li><a href="http://sourceforge.net/projects/sahi" target="_blank">On Sourceforge</a></li>
@@ -119,21 +120,32 @@
 </td>
 <td valign="top">
     <div class="content">
-        <h2> Sahi - Web Automation and Test Tool</h2>
-        <br>
+        <div style="float:right;" width="100%" border="0">
+                <a href="http://sourceforge.net"><img src=
+                        "http://sourceforge.net/sflogo.php?group_id=151639&amp;type=3"
+                                                                        width="125" height="37" border="0"
+                                                                        alt="SourceForge.net Logo"></a>
+                    <br>
+                    <a href="http://www.thoughtworks.co.in" target=
+                            "_blank">ThoughtWorks, India</a>&nbsp;&nbsp;
+            </div>
+        <h2>Sahi - Web Automation and Test Tool</h2><br/>
+        <!--<h2> Sahi - Web Automation and Test Tool</h2>-->
+        <!--<br>-->
         <!--<table width="100%">-->
-            <!--<tr>-->
-                <!--<td valign="top" align="left">-->
-                    <!--<a class="top_menu" href="docs">Home</a>-->
-                    <!--<a class="top_menu" href="docs">Why Sahi</a>-->
-                    <!--<a class="top_menu" href="docs">Docs</a>-->
-                    <!--<a class="top_menu" href="docs">Support</a>-->
-                    <!--<a class="top_menu" href="docs">License</a>-->
-                <!--</td>-->
-            <!--</tr>-->
+        <!--<tr>-->
+        <!--<td valign="top" align="left">-->
+        <!--<a class="top_menu" href="docs">Home</a>-->
+        <!--<a class="top_menu" href="docs">Why Sahi</a>-->
+        <!--<a class="top_menu" href="docs">Docs</a>-->
+        <!--<a class="top_menu" href="docs">Support</a>-->
+        <!--<a class="top_menu" href="docs">License</a>-->
+        <!--</td>-->
+        <!--</tr>-->
         <!--</table>-->
         <hr/>
         <br/>
+
         <h2 class="pageTitle">APIs</h2>
         <!--APIs-->
 The best way to learn how these APIs work is by recording actions
@@ -298,6 +310,9 @@ Example:<br>
     <a href="#resetrandom">_resetSavedRandom(id)<br>
         <a href="#global">_setGlobal(name, value)</a><br>
         <a href="#global">_getGlobal(name)</a><br>
+        <a href="#debug">_debug(msg)</a><br>
+        <a href="#debug">_debugToErr(msg)</a><br>
+        <a href="#debug">_debugToFile(msg, filePath)</a><br>
         <br>
         <b><a name="random">_savedRandom(id, min, max)</a></b><br>
         <br>
@@ -361,6 +376,27 @@ with the session.<br>
 Note: that all values will be stored as strings only. <br>
 Note: _setGlobal is a <a href="#scheduler">Scheduler Function</a>.
 <br>
+
+<hr>
+<br>
+<b><a name="debug">_debug(msg)</a></b>
+<br>
+Writes the message to the standard output stream. The messages will be visible on the window where the proxy is running unless redirected.
+<br>
+
+<br>
+<b>_debugToErr(msg)</b>
+<br>
+Writes the message to the standard error stream. The messages will be visible on the window where the proxy is running unless redirected.
+<br>
+
+<br>
+<b>_debugToFile(msg, filePath)</b>
+<br>
+Writes the message to the file specified.
+<br>
+
+
 (<a href="#top">Top</a>) <br>
 
 <hr>
@@ -712,7 +748,6 @@ eg.<br>
 </td>
 </tr>
 </table>
-<br>
 Please send your feedback to <a href=
         "http://sourceforge.net/users/narayanraman/">V Narayan Raman</a>.
 <!--<br>-->
@@ -722,13 +757,13 @@ Please send your feedback to <a href=
 <script src="http://www.treepie.org/counter.js"></script>
 -->
 <!--RiteCounter-->
-<!--<script type="text/javascript" src=-->
-<!--"http://www.ritecounter.com/scripts/counters.php?id=6641">-->
-<!--</script>-->
-<!---->
-<!--<noscript><a href="http://www.ritecounter.com"><img src=-->
-<!--"http://www.ritecounter.com/scripts/htmlc.php?id=6641" alt=-->
-<!--"Free Hit Counter Code" border="0"></a></noscript>-->
+<script type="text/javascript" src=
+        "http://www.ritecounter.com/scripts/counters.php?id=6641">
+</script>
+
+<noscript><a href="http://www.ritecounter.com"><img src=
+        "http://www.ritecounter.com/scripts/htmlc.php?id=6641" alt=
+        "Free Hit Counter Code" border="0"></a></noscript>
 <!--END RiteCounter-->
 </body>
 </html>
