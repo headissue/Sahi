@@ -32,4 +32,6 @@ _removeMock
 _expectConfirm
 _setFile
 _expectPrompt
-
+_debug
+_debugToErr
+_debugToFile

@@ -825,6 +825,18 @@ function sahi_addMock(pattern, clazz) {
     if (clazz == null) clazz = "MockResponder_simple";
     return sahi_callServer("MockResponder_add", "pattern=" + pattern + "&class=" + clazz);
 }
+function sahi_debug(s){
+    return sahi_callServer("Debug_toOut", "msg=" + s);
+}
+function sahi_debugToErr(){
+    return sahi_callServer("Debug_toErr", "msg=" + s);
+}
+function sahi_debugToFile(){
+    return sahi_callServer("Debug_toFile", "msg=" + s);
+}
+
+
+
 // finds document of any element
 function sahiGetWin(el) {
     if (el == null) return self;
@@ -1789,6 +1801,7 @@ function sahiEx(isStep) {
         try {
             if (isPaused() && !isStep) return;
             var i = sahiGetCurrentIndex();
+//            sahi_debug(i+" "+getPopupName());
             if (_isLocal) {
                 cmds = _sahiCmdsLocal;
                 debugs = _sahiCmdDebugInfoLocal;
@@ -1805,7 +1818,6 @@ function sahiEx(isStep) {
                 }
                 try {
                     sahiWaitForLoad = SAHI_MAX_WAIT_FOR_LOAD;
-                    updateControlWinDisplay(cmds[i]);
                     var debugInfo = "" + debugs[i];
                     try {
                         if (cmds[i].indexOf("sahi_popup") != -1) {
@@ -1818,6 +1830,7 @@ function sahiEx(isStep) {
                                 throw new SahiNotMyWindowException();
                             }
                         }
+                        updateControlWinDisplay(cmds[i]);
                         sahiSetCurrentIndex(i + 1);
                         if (cmds[i].indexOf("sahi_call") != -1 && cmds[i].indexOf("sahi_callServer") == -1) {
                             var bkup = sahiSchedule;
@@ -1870,7 +1883,9 @@ function sahiEx(isStep) {
             }
             else {
                 var debugInfo = "" + debugs[i];
-                sahiLogPlayBack(cmds[i], "error", debugInfo);
+                if (sahiGetServerVar("sahi_play") == "1") {
+                    sahiLogPlayBack(cmds[i], "error", debugInfo);
+                }
                 sahiStopPlaying();
             }
         }

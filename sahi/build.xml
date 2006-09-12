@@ -206,6 +206,14 @@
               if="junit.failed"/>
     </target>
 
+
+    <!--<target name="link-js">-->
+        <!--<tstamp/>-->
+        <!--<delete dir="D:/sahitest"/>-->
+        <!--<mkdir dir="D:/sahitest"/>-->
+        <!--<unzip src="deploy/sahi_${DSTAMP}.zip" dest="D:/sahitest"></unzip>-->
+    <!--</target>-->
+
     <target name="deploy">
         <tstamp/>
         <delete dir="D:/sahitest"/>
