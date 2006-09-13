@@ -1,0 +1,19 @@
+var $linkText = "Link Test";
+_click(_link($linkText));
+
+_include("includes/sahi_demo_include.sah");
+_click(_link("Form Test"));
+
+function testAccessors(){
+	_assertNotNull(_textbox("t1"));
+	_assertEqual('', _textbox("t1").value);
+	_assertNotNull(_textbox(1));
+    if (x=y){}
+    _assertEqual('', _textbox(1).value);
+	_assertNotNull(_textarea("ta1"));
+	_assertEqual('', _textarea("ta1").value);
+	_assertNotNull(_textarea(1));
+	_assertEqual('', _textarea(1).value);
+	_assertNotNull(_checkbox("c1"));
+}
+_call(testAccessors());

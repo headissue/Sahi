@@ -207,6 +207,8 @@ function linkClick(e) {
 }
 
 function sahi_dragDrop(draggable, droppable) {
+    sahiCheckNull(draggable);
+    sahiCheckNull(droppable);
     sahiSimulateMouseEvent(draggable, "mousedown");
     draggable.style.left = findPosX(droppable) - findPosX(draggable) + 2;
     draggable.style.top = findPosY(droppable) - findPosY(draggable) + 2;
@@ -219,16 +221,23 @@ function sahi_dragDrop(draggable, droppable) {
     sahiSimulateMouseEvent(draggable, "mouseup");
     sahiSimulateMouseEvent(droppable, "mouseup");
 }
-
+function sahiCheckNull(el){
+     if (el == null) {
+        el.forceNullPointerException();
+    }
+}
 function sahi_click(el) {
+    sahiCheckNull(el);
     sahiSimulateClick(el, false, false);
 }
 
 function sahi_doubleClick(el) {
+    sahiCheckNull(el);
     sahiSimulateClick(el, false, true);
 }
 
 function sahi_rightClick(el) {
+    sahiCheckNull(el);
     sahiSimulateClick(el, true, false);
 }
 function sahi_readFile(fileName) {
@@ -668,16 +677,20 @@ function sahi_option(el, text) {
     return null;
 }
 function sahi_getCellText(el) {
+    sahiCheckNull(el);
     return sahiTrim(sahiIsIE() ? el.innerText : el.textContent);
 }
 function sahi_getText(el) {
+    sahiCheckNull(el);
     return sahiTrim(sahiIsIE() ? el.innerText : el.textContent);
 }
 function sahiGetRowIndexWith(txt, tableEl) {
+    sahiCheckNull(tableEl);
     var r = sahiGetRowWith(txt, tableEl);
     return (r == null) ? -1 : r.rowIndex;
 }
 function sahiGetRowWith(txt, tableEl) {
+    sahiCheckNull(tableEl);
     for (var i = 0; i < tableEl.rows.length; i++) {
         var r = tableEl.rows[i];
         for (var j = 0; j < r.cells.length; j++) {
@@ -689,6 +702,7 @@ function sahiGetRowWith(txt, tableEl) {
     return null;
 }
 function sahiGetColIndexWith(txt, tableEl) {
+    sahiCheckNull(tableEl);
     for (var i = 0; i < tableEl.rows.length; i++) {
         var r = tableEl.rows[i];
         for (var j = 0; j < r.cells.length; j++) {
@@ -785,6 +799,9 @@ function sahi_prompt(s) {
 }
 
 function sahi_cell(id, row, col) {
+    sahiCheckNull(id);
+    sahiCheckNull(row);
+    sahiCheckNull(col);
     if (row == null && col == null) {
         return sahiFindCell(id);
     }
@@ -804,6 +821,7 @@ function sahi_table(n) {
     return sahiFindTable(n);
 }
 function sahi_row(tableEl, rowIx) {
+    sahiCheckNull(tableEl);
     if (typeof rowIx == "string") {
         return sahiGetRowWith(rowIx, tableEl);
     }
@@ -813,9 +831,11 @@ function sahi_row(tableEl, rowIx) {
     return null;
 }
 function sahi_containsHTML(el, htm) {
+    sahiCheckNull(el);
     return el && el.innerHTML && el.innerHTML.indexOf(htm) != -1;
 }
 function sahi_containsText(el, txt) {
+    sahiCheckNull(el);
     return el && sahiGetText(el).indexOf(txt) != -1;
 }
 function sahi_popup(n) {
@@ -1638,9 +1658,17 @@ function sahiGetRetries() {
     var i = parseInt(sahiGetServerVar("sahi_retries"));
     return ("" + i != "NaN") ? i : 0;
 }
+function sahiGetExceptionString(e)
+{
+    var stack = e.stack ? e.stack : "No trace available";
+    return e.name + ": " + e.message+"<br>"+stack.replace(/\n/g, "<br>");
+}
+
 function sahiOnError(msg, url, lno) {
     try {
         var debugInfo = "Javascript error on page";
+        if (!url) url = "";
+        if (!lno) lno = "";
         if (msg && msg.indexOf("Access to XPConnect service denied") != -1) { //FF hack
             sahiLogPlayBack("msg: " + msg + "\nurl: " + url + "\nLine no: " + lno, "info", debugInfo);
         }
@@ -1809,7 +1837,7 @@ function areWindowsLoaded(win) {
         //for diff domains.
     }
 }
-_isLocal = false;
+var _isLocal = false;
 function sahiEx(isStep) {
     var cmds = _sahiCmds;
     var debugs = _sahiCmdDebugInfo;
@@ -1850,9 +1878,20 @@ function sahiEx(isStep) {
                         sahiSetCurrentIndex(i + 1);
                         if (cmds[i].indexOf("sahi_call") != -1 && cmds[i].indexOf("sahi_callServer") == -1) {
                             var bkup = sahiSchedule;
+                            var exc = null;
                             sahiSchedule = sahiInstant;
-                            eval(cmds[i]);
+                            try{
+                                eval(cmds[i]);
+                            }catch(e){
+                                exc = e;
+                            }
                             sahiSchedule = bkup;
+                            if (exc){
+                                _isLocal = false;
+                                _sahiCmdsLocal = new Array();
+                                sahiSetRetries(MAX_RETRIES);
+                                throw exc;
+                            }
                             _isLocal = (_sahiCmdsLocal.length > 0);
                             //sahi_alert("Calling");
                             sahiEx(isStep);
@@ -1900,7 +1939,7 @@ function sahiEx(isStep) {
             else {
                 var debugInfo = "" + debugs[i];
                 if (sahiGetServerVar("sahi_play") == "1") {
-                    sahiLogPlayBack(cmds[i], "error", debugInfo);
+                    sahiLogPlayBack(cmds[i]+"<br>"+sahiGetExceptionString(ex), "error", debugInfo);
                 }
                 sahiStopPlaying();
             }
