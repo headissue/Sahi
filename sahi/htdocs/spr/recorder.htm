@@ -99,7 +99,7 @@ limitations under the License.
     </style>
 </head>
 
-<body onload="doOnRecLoad()" onbeforeunload="doOnRecUnLoad()">
+<body onload="doOnRecLoad();resizeTA2(document.getElementById('ta'), 40, 350)" onbeforeunload="doOnRecUnLoad()" onresize="resizeTA2(document.getElementById('ta'), 40, 350)">
 <div id="rec" class="recPane">
 <table bgcolor="">
     <tr>
@@ -211,13 +211,12 @@ limitations under the License.
                 <hr>
                 Evaluate expression: <a href="javascript:showHistory()">History</a><br/>
                 <input type="hidden" name="history">
-                <textarea name="debug" rows="10" cols="50"
-                          style="white-space:normal"></textarea> <input type="button"
-                                                                        onclick="evaluateExpr(true)"
-                                                                        value="Test --&gt; "><input type=
-                    "text" size="24" name="result" value="">
-                &nbsp;&nbsp;&nbsp;&nbsp;<input type="button" onclick="append()"
-                                               value="Append to Script"></form>
+                <textarea name="debug" rows="10" cols="50" id="ta" style="white-space:normal"></textarea><br/>
+                <input type="button" onclick="evaluateExpr(true)" value="Test --&gt; ">
+                <input type="text" size="24" name="result" value="">
+                &nbsp;&nbsp;&nbsp;&nbsp;
+                <input type="button" onclick="append()" value="Append to Script">
+            </form>
         </td>
     </tr>
 </table>

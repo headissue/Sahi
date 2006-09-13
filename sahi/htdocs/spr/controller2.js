@@ -147,8 +147,48 @@ function doOnRecLoad() {
     initRecorderTab();
 }
 
+// Returns the number of caracters of the longest element in a list
+function getLongestListElementSize(p_list) {
+    var longestSize = 0;
+    for (var i = 0; i < p_list.length; ++i) {
+        if (p_list[i].length > longestSize) {
+            longestSize = p_list[i].length;
+        }
+    }
+    return longestSize;
+}
+
+// Changes the width of an element. If more than 1 element has the same name, we resize
+//  the first one.
+function resizeElementWidth(p_elementName, p_size) {
+    var el = document.getElementById(p_elementName);
+    if (!el) {
+        el = document.getElementsByName(p_elementName)[0];
+    }
+    if (parseInt(el.style.width) < p_size) el.style.width = p_size;
+}
+
+// Resize a dropdown list so we can see its enrite content.
+function resizeDropdown(p_dropdownContent, p_dropdownName, p_prefix)  {
+    var longest = getLongestListElementSize(p_dropdownContent);
+    // A caracter is about 7 pixel long
+    var newDropdownSize = (longest - p_prefix) * 7 + 20;
+    resizeElementWidth(p_dropdownName, newDropdownSize);
+}
+
+// Resize the "Script dir" dowpdown list
+function resizeScriptDirDropdown() {
+    resizeDropdown(_scriptDirList, "dir", 0);
+}
+
+// Resize the "File" dropdown list
+function resizeScriptFileDropdown() {
+    resizeDropdown(_scriptList, "file", document.scriptfileform.dir.value.length);
+}
+
 function populateScripts() {
     populateOptions(document.scriptfileform.file, _scriptList, _selectedScript, "-- Choose Script --", document.scriptfileform.dir.value);
+    resizeScriptFileDropdown();
 }
 
 function populateOptions(el, opts, selectedOpt, defaultOpt, prefix) {
@@ -173,6 +213,10 @@ function populateOptions(el, opts, selectedOpt, defaultOpt, prefix) {
 function doOnPlaybackLoad() {
     populateOptions(document.scriptfileform.dir, _scriptDirList, _selectedScriptDir);
     populateOptions(document.scriptfileform.file, _scriptList, _selectedScript, "-- Choose Script --", document.scriptfileform.dir.value);
+
+    resizeScriptFileDropdown();
+    resizeScriptDirDropdown();
+
     if (sahiGetCurrentIndex() != null) {
         displayStepNum();
     }
@@ -208,7 +252,7 @@ function displayQuery(s) {
     //    document.currentForm.query.value = forceWrap(s);
 }
 function displayLogs(s) {
-    document.logForm.logs.value += forceWrap(s) + "\n";
+    document.logForm.logs.value += s + "\n";
     document.logForm.logs.scrollTop = document.logForm.logs.scrollHeight;
 }
 
@@ -462,4 +506,18 @@ function getSel()
 }
 function showHistory() {
     var histWin = window.open("history.htm", "sahi_history", "height=500px,width=450px");
+}
+function resizeTA2(el, minusRight, minusTop){
+    if (parseInt(navigator.appVersion) > 3) {
+        if (navigator.appName == "Netscape") {
+            winW = window.innerWidth;
+            winH = window.innerHeight;
+        }
+        if (navigator.appName.indexOf("Microsoft") != -1) {
+            winW = document.body.offsetWidth;
+            winH = document.body.offsetHeight;
+        }
+    }
+    el.style.width = winW - minusRight;
+    el.style.height = winH - minusTop;
 }

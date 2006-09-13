@@ -53,8 +53,7 @@ limitations under the License.
             border-right: solid gray 1px;
             border-top: solid white 1px;
             border-bottom: solid white 1px;
-            color: white;
-            size: 11pt;
+            color: white; /*size: 11pt;*/
             cursor: pointer;
         }
 
@@ -104,8 +103,7 @@ limitations under the License.
     </style>
 </head>
 
-<body onload="doOnPlaybackLoad()" onbeforeunload=
-        "doOnPlaybackUnLoad()">
+<body onload="doOnPlaybackLoad();resizeTA2(document.getElementById('ta'), 40, 310)" onbeforeunload="doOnPlaybackUnLoad()" onresize="resizeTA2(document.getElementById('ta'), 40, 310)">
 <div id="playback" class="playbackPane">
 <table>
     <tr>
@@ -228,7 +226,7 @@ limitations under the License.
     <tr>
         <td bgcolor="">
             <form name="logForm">Statements:<br>
-                <textarea name="logs" cols="50" rows="10"></textarea></form>
+                <textarea id="ta" name="logs" cols="50" rows="10"></textarea></form>
         </td>
     </tr>
 </table>
