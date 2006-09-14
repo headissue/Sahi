@@ -189,17 +189,18 @@
     </target>
 
     <target name="test" depends="compile, compile-test">
-        <junit dir="bin" printsummary="false" fork="true" maxMemory="128M" failureProperty="junit.failed">
-            <!--
-               <jvmarg line="-Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5050"/>
-               -->
+        <junit dir="bin" printsummary="false" fork="true" maxMemory="128M">
             <classpath>
                 <path path="classes"/>
                 <pathelement location="extlib/junit.jar"/>
                 <pathelement location="extlib/log4j.jar"/>
             </classpath>
-            <formatter type="brief" usefile="false"/>
-            <test todir="logs/junit" name="net.sf.sahi.AllTests" failureProperty="junit.failed"/>
+            <formatter type="brief" usefile="file"/>
+            <batchtest fork="yes" failureProperty="junit.failed">
+                <fileset dir="test">
+                    <include name="net/**/*Test.java"/>
+                </fileset>
+            </batchtest>
         </junit>
         <delete file="bin/junittestrun.out" failonerror="false"/>
         <fail message="JUnit tests failed. MAKE SURE THAT junit.jar AND log4j.jar ARE PRESENT IN {sahi}/extlib/ FOLDER"

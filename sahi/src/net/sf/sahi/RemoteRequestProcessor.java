@@ -1,5 +1,5 @@
 /**
- * Copyright V Narayan Raman
+ * Copyright  2006  V Narayan Raman
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@ import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.util.Properties;
+import java.util.Iterator;
 import java.util.logging.Logger;
 
 public class RemoteRequestProcessor {
@@ -91,7 +92,7 @@ public class RemoteRequestProcessor {
             outputStreamToHost.write(request.data());
         outputStreamToHost.flush();
         HttpResponse response;
-        if (modify) {
+        if (modify && !excluded(request)) {
             response = new HttpModifiedResponse(new HttpResponse(inputStreamFromHost), request
                     .isSSL(), request.fileExtension());
         } else {
@@ -99,6 +100,18 @@ public class RemoteRequestProcessor {
         }
         logger.finest(new String(response.rawHeaders()));
         return response;
+    }
+
+    private boolean excluded(HttpRequest request) {
+        String url = request.url();
+        String[] exclusionList = Configuration.getExclusionList();
+        for (int i = 0; i < exclusionList.length; i++) {
+            String pattern = exclusionList[i];
+            if (url.matches(pattern.trim())){
+                 return true;
+            }
+        }
+        return false;
     }
 
     private Socket getSocketToHost(HttpRequest request) throws IOException {

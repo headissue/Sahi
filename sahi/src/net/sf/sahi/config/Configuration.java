@@ -1,5 +1,5 @@
 /**
- * Copyright V Narayan Raman
+ * Copyright  2006  V Narayan Raman
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -227,5 +227,10 @@ public class Configuration {
         } catch (Exception e) {
             return 10;
         }
+    }
+
+    public static String[] getExclusionList() {
+        String s = new String(Utils.readFile("../config/exclude_inject.txt")).trim();
+        return s.split("\n");
     }
 }

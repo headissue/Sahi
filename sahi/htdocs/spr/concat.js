@@ -1,5 +1,5 @@
 /**
- * Copyright V Narayan Raman
+ * Copyright  2006  V Narayan Raman
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -681,16 +681,13 @@ function sahi_getCellText(el) {
     return sahiTrim(sahiIsIE() ? el.innerText : el.textContent);
 }
 function sahi_getText(el) {
-    sahiCheckNull(el);
     return sahiTrim(sahiIsIE() ? el.innerText : el.textContent);
 }
 function sahiGetRowIndexWith(txt, tableEl) {
-    sahiCheckNull(tableEl);
     var r = sahiGetRowWith(txt, tableEl);
     return (r == null) ? -1 : r.rowIndex;
 }
 function sahiGetRowWith(txt, tableEl) {
-    sahiCheckNull(tableEl);
     for (var i = 0; i < tableEl.rows.length; i++) {
         var r = tableEl.rows[i];
         for (var j = 0; j < r.cells.length; j++) {
@@ -702,7 +699,6 @@ function sahiGetRowWith(txt, tableEl) {
     return null;
 }
 function sahiGetColIndexWith(txt, tableEl) {
-    sahiCheckNull(tableEl);
     for (var i = 0; i < tableEl.rows.length; i++) {
         var r = tableEl.rows[i];
         for (var j = 0; j < r.cells.length; j++) {
@@ -799,9 +795,6 @@ function sahi_prompt(s) {
 }
 
 function sahi_cell(id, row, col) {
-    sahiCheckNull(id);
-    sahiCheckNull(row);
-    sahiCheckNull(col);
     if (row == null && col == null) {
         return sahiFindCell(id);
     }
@@ -821,7 +814,6 @@ function sahi_table(n) {
     return sahiFindTable(n);
 }
 function sahi_row(tableEl, rowIx) {
-    sahiCheckNull(tableEl);
     if (typeof rowIx == "string") {
         return sahiGetRowWith(rowIx, tableEl);
     }
@@ -831,11 +823,9 @@ function sahi_row(tableEl, rowIx) {
     return null;
 }
 function sahi_containsHTML(el, htm) {
-    sahiCheckNull(el);
     return el && el.innerHTML && el.innerHTML.indexOf(htm) != -1;
 }
 function sahi_containsText(el, txt) {
-    sahiCheckNull(el);
     return el && sahiGetText(el).indexOf(txt) != -1;
 }
 function sahi_popup(n) {
