@@ -35,3 +35,4 @@ _expectPrompt
 _debug
 _debugToErr
 _debugToFile
+_mouseOver

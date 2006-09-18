@@ -119,13 +119,15 @@
 
     <target name="runfftests">
         <sahi suite="../scripts/demo.suite"
-              browser="C:\\Program Files\\Firefox15\\firefox.exe"
+              browser="C:\\Program Files\\Mozilla Firefox\\firefox.exe"
               baseurl="http://localhost:10000/demo/"
               sahihost="localhost"
               sahiport="9999"
               failureproperty="sahi.failed"
               haltonfailure="false"
                 />
+        <antcall target="failsahi"/>
+        <!--logdir="yy"-->
     </target>
 
     <target name="rundir">
@@ -150,14 +152,15 @@
               sahiport="9999"
               failureproperty="sahi.failed"
               haltonfailure="false"
-              logdir="xx"
               threads="3"
                 />
+        <antcall target="failsahi"/>
         <!--logdir="D:\xx\logs"-->
         <!--threads="3"-->
     </target>
 
     <target name="failsahi" if="sahi.failed">
+        <antcall target="proxyoff"/>
         <fail message="Sahi tests failed!"/>
     </target>
 
@@ -217,6 +220,24 @@
                 <antcall target="stop-web"/>
                 <antcall target="failsahi"/>
                 <antcall target="proxyoff"/>
+                <sleep milliseconds="200"/>
+                <antcall target="stopsahi"/>
+            </sequential>
+            <antcall target="start-web"/>
+        </parallel>
+    </target>
+
+    <target name="testwithproxyff" description="start the server and run sahi tests">
+        <parallel>
+            <antcall target="start"/>
+            <sequential>
+                <waitfor maxwait="3" maxwaitunit="minute" checkevery="100">
+                    <http url="http://localhost:10000/demo/index.htm"/>
+                </waitfor>
+                <antcall target="runfftests"/>
+                <antcall target="stop-web"/>
+                <antcall target="failsahi"/>
+                <sleep milliseconds="200"/>
                 <antcall target="stopsahi"/>
             </sequential>
             <antcall target="start-web"/>

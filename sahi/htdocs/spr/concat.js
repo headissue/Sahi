@@ -240,6 +240,13 @@ function sahi_rightClick(el) {
     sahiCheckNull(el);
     sahiSimulateClick(el, true, false);
 }
+
+function sahi_mouseOver(el){
+    sahiCheckNull(el);
+    sahiSimulateMouseEvent(el, "mousemove");
+    sahiSimulateMouseEvent(el, "mouseover");
+}
+
 function sahi_readFile(fileName) {
     var qs = "fileName=" + fileName;
     return sahi_callServer("net.sf.sahi.plugin.FileReader_contents", qs)

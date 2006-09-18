@@ -2,13 +2,9 @@ var $linkText = "Link Test";
 _click(_link($linkText));
 
 _include("includes/sahi_demo_include.sah");
-//_include("http://localhost:9999/_s_/scripts/sahi_demo_include.sah");
 _click(_link("Form Test"));
 
 function testAccessors(){
-	// These execute without any delay between asserts.
-	// Note that all steps start with __ (double underscores)
-	// Refer http://sahi.sourceforge.net/apis.html#scheduler for more information
 	_assertNotNull(_textbox("t1"));
 	_assertEqual('', _textbox("t1").value);
 	_assertNotNull(_textbox(1));
@@ -58,9 +54,6 @@ function f2(){
 }
 
 function testClicks(){
-	// These execute with a delay between statements.
-	// Note that all steps start with _ (single underscore)
-	// Refer http://sahi.sourceforge.net/apis.html#scheduler for more information
 	_click(_checkbox("c1"));
 	_assertNotNull(_checkbox("c1"));
 	_assertTrue(_checkbox("c1").checked);
@@ -75,13 +68,7 @@ function testClicks(){
 	_assertNotTrue(_radio("r1").checked);
 }
 
-// Note that testAccessors() cannot have any calls to other Scheduler Action Functions
-// when invoked using _call
-// Refer http://sahi.sourceforge.net/scripting.html#functions for more information
 _call(testAccessors());
 
-// Note that testClicks() can have calls to other Scheduler Action Functions
-// as it is not invoked using _call
-// Refer http://sahi.sourceforge.net/scripting.html#functions for more information
 _call(testClicks());
 _click(_link("Back"));

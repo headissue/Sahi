@@ -27,4 +27,8 @@ public class UtilsTest extends TestCase {
 		s = "\n";
 		assertEquals(1, Utils.getTokens(s).size());
 	}
+
+    public void testConvertStringToASCII(){
+        assertEquals("Elephant", Utils.convertStringToASCII("Éléphant"));
+    }
 }

@@ -521,3 +521,16 @@ function resizeTA2(el, minusRight, minusTop){
     el.style.width = winW - minusRight;
     el.style.height = winH - minusTop;
 }
+function showStack(){
+    var curIx = document.playform.step.value;
+    var win = window.open("blank.htm");
+    var cmds = top.opener.top._sahiCmds;
+    var s = "";
+    for (var i=0; i<cmds.length; i++){
+        var sel = (i == curIx-1);
+        s += "queue["+i+"] = " + (sel?"<b>":"") + cmds[i] + (sel?"</b>":"") + "<br>";
+    }
+    s += "<br>Size: "+cmds.length;
+    win.document.write(s);
+    win.document.close();
+}
