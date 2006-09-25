@@ -1,0 +1,38 @@
+_debug("-----------------------------------------");
+_click(_link("Link Test"));
+_click(_link("Back"));
+_click(_link("Form Test"));
+_assertNotNull(_textbox("t1"));
+
+insideIf();
+_click(_link("Form Test"));
+_setValue(_textbox("t1"), "not blank anymore");
+insideIf();
+_click(_link("Form Test"));
+_setValue(_textbox("t1"), "");
+insideIf();
+
+
+
+function _condition($n, $b) {
+    __setGlobal("condn"+$n, $b);
+    __debug("Evaling");
+    _sahiCmds = new Array();
+    _sahiCmdDebugInfo = new Array();
+    _eval(_sahiExecSteps);
+}
+
+function insideIf() {
+    _call(_condition(sahiGetCurrentIndex(), '' == _textbox("t1").value));
+    if ("true" == _getGlobal("condn" +(_sahiCmds.length))) {
+        _setValue(_textbox("t1"), "Here");
+        _setValue(_textbox(1), "There");
+        _setValue(_textbox("name"), "EveryWhere");
+        _click(_link("Back"));
+        _click(_link("Table Test"));
+        _assertEqual("4", _getCellText(_cell(_table("t2"), "Soap", "Number")));
+        _click(_link("Back"));
+    } else {
+        _click(_link("Back"));
+    }
+}
