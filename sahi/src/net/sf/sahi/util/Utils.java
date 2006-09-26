@@ -174,4 +174,10 @@ public class Utils {
         }
         return content;
     }
+
+    public static String makeString(String s) {
+        if (s == null) return null;
+        return escapeDoubleQuotesAndBackSlashes(s).replaceAll("\n", "\\\\n").replaceAll("\r", "");
+
+    }
 }

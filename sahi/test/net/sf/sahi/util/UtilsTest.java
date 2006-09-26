@@ -31,4 +31,8 @@ public class UtilsTest extends TestCase {
     public void testConvertStringToASCII(){
         assertEquals("Elephant", Utils.convertStringToASCII("Éléphant"));
     }
+
+    public void testMakeString(){
+        assertEquals("a\\nb", Utils.makeString("a\nb"));
+    }
 }

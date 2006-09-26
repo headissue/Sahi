@@ -638,10 +638,13 @@ function sahi_simulateEvent(el, ev) {
     }
 }
 function sahi_setGlobal(name, value) {
+    sahi_debug("*** name="+name+" value="+value);
     sahiSetServerVar(name, value);
 }
 function sahi_getGlobal(name) {
-    return sahiGetServerVar(name);
+    var value = sahiGetServerVar(name);
+    sahi_debug("GET name="+name+" value="+value);
+    return value;
 }
 
 function sahi_assertNotNull(n, s) {
@@ -2286,9 +2289,16 @@ function sahiQuotedEscapeValue(s) {
 
 function sahiEscapeValue(s) {
     if (s == null) return s;
-    return sahiConvertUnicode(s).replace(/\r/g, "").replace(/\\/g, "\\\\").replace(/\n/g, "\\n");
+    return sahiConvertUnicode(s.replace(/\r/g, "").replace(/\\/g, "\\\\").replace(/\n/g, "\\n"));
 }
 
+function sahi_condition($b) {
+    sahi_setGlobal("condn"+sahiGetCurrentIndex(), $b);
+    sahi_debug("Evaling");
+    _sahiCmds = new Array();
+    _sahiCmdDebugInfo = new Array();
+    eval(_sahiExecSteps);
+}
 
 function sahiQuoteIfString(shortHand) {
     if (("" + shortHand).match(/^[0-9]+$/)) return shortHand;

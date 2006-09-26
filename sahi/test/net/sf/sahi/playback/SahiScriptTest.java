@@ -2,6 +2,10 @@ package net.sf.sahi.playback;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
 import junit.framework.TestCase;
 
@@ -213,4 +217,16 @@ public class SahiScriptTest extends TestCase {
 		assertTrue(keywords.contains("_log"));
 		assertTrue(keywords.contains("_navigateTo"));
 	}
+
+    public void testUnicode() throws IOException {
+//        assertEquals("??", "\u4E2D\u6587");
+//        File file = new File("C:\\unicode.txt");
+//        FileOutputStream out = new FileOutputStream(file);
+        String s = "\u4E2D\u6587";
+        assertEquals(2, s.getBytes().length);
+        assertEquals("\u4E2D\u6587", "\u4e2d\u6587");
+//        out.write(s.getBytes("UTF-16"));
+//        out.close();
+//        System.out.print("\u4E2D\u6587");
+    }
 }

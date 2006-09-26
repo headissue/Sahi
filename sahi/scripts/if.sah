@@ -14,17 +14,10 @@ insideIf();
 
 
 
-function _condition($n, $b) {
-    __setGlobal("condn"+$n, $b);
-    __debug("Evaling");
-    _sahiCmds = new Array();
-    _sahiCmdDebugInfo = new Array();
-    _eval(_sahiExecSteps);
-}
-
 function insideIf() {
-    _call(_condition(sahiGetCurrentIndex(), '' == _textbox("t1").value));
+    _condition('' == _textbox("t1").value);
     if ("true" == _getGlobal("condn" +(_sahiCmds.length))) {
+        _log("TRUE", "info")
         _setValue(_textbox("t1"), "Here");
         _setValue(_textbox(1), "There");
         _setValue(_textbox("name"), "EveryWhere");
@@ -33,6 +26,7 @@ function insideIf() {
         _assertEqual("4", _getCellText(_cell(_table("t2"), "Soap", "Number")));
         _click(_link("Back"));
     } else {
+        _log("FALSE", "info")
         _click(_link("Back"));
     }
 }

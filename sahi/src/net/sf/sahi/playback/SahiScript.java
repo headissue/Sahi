@@ -62,7 +62,15 @@ public abstract class SahiScript {
 
     protected void setScript(String s) {
         original = s;
-        script = modify(s);
+        script = makeString(modify(s));
+    }
+
+    static String makeString(String s) {
+        StringBuffer sb = new StringBuffer();
+        sb.append("var _sahiExecSteps = \"");
+        sb.append(Utils.makeString(s));
+        sb.append("\";\neval(_sahiExecSteps);");
+        return sb.toString();
     }
 
     public String modifiedScript() {

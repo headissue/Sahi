@@ -39,6 +39,15 @@
         </java>
     </target>
 
+    <target name="manual" description="Create manual">
+        <java classname="net.sf.sahi.util.HTMLDecorator" fork="true" dir="bin">
+            <classpath path="classes"/>
+            <arg value="../docs/src/manual_layout.htm"/>
+            <arg value="../docs/src/manual"/>
+            <arg value="../docs/manual"/>
+        </java>
+    </target>
+
     <target name="all">
         <antcall target="clean"/>
         <antcall target="test"/>
