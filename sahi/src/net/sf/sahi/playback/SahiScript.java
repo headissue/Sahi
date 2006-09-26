@@ -230,8 +230,6 @@ public abstract class SahiScript {
         int len = s.length();
         int bracket = 0;
         int square = 0;
-        int doubleQuote = 0;
-        int quote = 0;
 
         for (int i = 0; i < len; i++) {
             c = s.charAt(i);
@@ -240,8 +238,6 @@ public abstract class SahiScript {
                 isVar = true;
                 bracket = 0;
                 square = 0;
-                doubleQuote = 0;
-                quote = 0;
                 sb.append("\"+s_v(");
             }
             if (isVar && !(Character.isJavaIdentifierPart(c) || c == '.')) {
@@ -256,16 +252,7 @@ public abstract class SahiScript {
                 } else if (c == ']') {
                     square--;
                     if (square < 0) append = true;
-                } else if (c == '"') {
-                    doubleQuote++;
-                } else if (c == '"') {
-                    doubleQuote--;
-                    if (doubleQuote < 0) append = true;
-                } else if (c == '\'') {
-                    quote++;
-                } else if (c == '\'') {
-                    quote--;
-                    if (quote < 0) append = true;
+                } else if (c == '"' || c == '\'') {
                 } else {
                     append = true;
                 }
