@@ -2292,7 +2292,7 @@ function sahiEscapeValue(s) {
     return sahiConvertUnicode(s.replace(/\r/g, "").replace(/\\/g, "\\\\").replace(/\n/g, "\\n"));
 }
 
-function sahi_condition($b) {
+function sahiSaveCondition($b) {
     sahi_setGlobal("condn"+sahiGetCurrentIndex(), $b);
     sahi_debug("Evaling");
     _sahiCmds = new Array();

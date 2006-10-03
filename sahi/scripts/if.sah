@@ -15,8 +15,7 @@ insideIf();
 
 
 function insideIf() {
-    _condition('' == _textbox("t1").value);
-    if ("true" == _getGlobal("condn" +(_sahiCmds.length))) {
+    if (_condition('' == _textbox("t1").value)) {
         _log("TRUE", "info")
         _setValue(_textbox("t1"), "Here");
         _setValue(_textbox(1), "There");

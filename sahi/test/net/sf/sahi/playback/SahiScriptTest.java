@@ -2,9 +2,6 @@ package net.sf.sahi.playback;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import junit.framework.TestCase;
@@ -228,5 +225,21 @@ public class SahiScriptTest extends TestCase {
 //        out.write(s.getBytes("UTF-16"));
 //        out.close();
 //        System.out.print("\u4E2D\u6587");
+    }
+
+    public void testFindCondition(){
+        assertEquals("'' == _textbox(\"t1\").value", testScript.findCondition("_condition('' == _textbox(\"t1\").value)"));
+    }
+
+    public void testWhile(){
+        assertEquals("while (true) {\r\n" +
+                "sahiSchedule(\"sahiSaveCondition(parseInt(sahi_getGlobal(\\\"ix\\\")) < 2);\", \"scrName&n=10\")\r\n" +
+                "if (\"true\" != sahi_getGlobal(\"condn\" + (_sahiCmds.length))) break;//)",
+                testScript.modifyWhile("while (_condition(parseInt(_getGlobal(\"ix\")) < 2))", 10));
+    }
+
+    public void testIf(){
+        assertEquals("sahiSchedule(\"sahiSaveCondition('' == sahi_textbox(\\\"t1\\\").value);\", \"scrName&n=10\")\r\nif (\"true\" == sahi_getGlobal(\"condn\" +(_sahiCmds.length))) {",
+                testScript.modifyIf("if (_condition('' == _textbox(\"t1\").value)) {", 10));
     }
 }

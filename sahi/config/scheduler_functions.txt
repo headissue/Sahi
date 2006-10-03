@@ -36,4 +36,3 @@ _debug
 _debugToErr
 _debugToFile
 _mouseOver
-_condition

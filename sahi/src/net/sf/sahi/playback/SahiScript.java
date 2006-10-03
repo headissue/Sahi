@@ -88,23 +88,39 @@ public abstract class SahiScript {
                 continue;
             if (line.startsWith("_include")) {
                 sb.append(processInclude(line));
+            } else if (line.startsWith("while")) {
+                sb.append(modifyWhile(line, lineNumber));
+            } else if (line.startsWith("if")) {
+                sb.append(modifyIf(line, lineNumber));
             } else if (line.startsWith("_") && lineStartsWithActionKeyword(line)) {
-                sb.append(PREFIX);
-                sb.append(modifyFunctionNames(separateVariables(line)));
-                sb.append(CONJUNCTION);
-                sb.append(Utils.escapeDoubleQuotesAndBackSlashes(filePath));
-                sb.append("&n=");
-                sb.append(lineNumber);
-                sb.append(SUFFIX);
-                sb.append("\r\n");
+                sb.append(scheduleLine(line, lineNumber));
             } else {
-                sb.append(modifyFunctionNames(line));
-                sb.append("\r\n");
+                sb.append(modifyLine(line));
             }
         }
         String toString = sb.toString();
         logger.fine(toString);
         return toString;
+    }
+
+    private String modifyLine(String line) {
+        StringBuffer sb = new StringBuffer();
+        sb.append(modifyFunctionNames(line));
+        sb.append("\r\n");
+        return sb.toString();
+    }
+
+    private String scheduleLine(String line, int lineNumber) {
+        StringBuffer sb = new StringBuffer();
+        sb.append(PREFIX);
+        sb.append(modifyFunctionNames(separateVariables(line)));
+        sb.append(CONJUNCTION);
+        sb.append(Utils.escapeDoubleQuotesAndBackSlashes(filePath));
+        sb.append("&n=");
+        sb.append(lineNumber);
+        sb.append(SUFFIX);
+        sb.append("\r\n");
+        return sb.toString();
     }
 
     static boolean lineStartsWithActionKeyword(String line) {
@@ -225,36 +241,49 @@ public abstract class SahiScript {
     String separateVariables(String s) {
         StringBuffer sb = new StringBuffer();
         char c = ' ';
-        char prev = ' ';
         boolean isVar = false;
+        boolean escaped = false;
+        boolean doubleQuoted = false;
+        boolean quoted = false;
         int len = s.length();
         int bracket = 0;
         int square = 0;
 
         for (int i = 0; i < len; i++) {
             c = s.charAt(i);
-            if (!isVar && c == '$' && prev != '\\' && i + 1 < len
+            if (c == '\\') {
+                escaped = !escaped;
+            }
+            if (!isVar && c == '$' && !escaped && i + 1 < len
                     && Character.isJavaIdentifierStart(s.charAt(i + 1))) {
                 isVar = true;
                 bracket = 0;
                 square = 0;
                 sb.append("\"+s_v(");
             }
-            if (isVar && !(Character.isJavaIdentifierPart(c) || c == '.')) {
+            if (isVar && !escaped && !(Character.isJavaIdentifierPart(c) || c == '.')) {
                 boolean append = false;
-                if (c == '(') {
-                    bracket++;
-                } else if (c == ')') {
-                    bracket--;
-                    if (bracket < 0) append = true;
-                } else if (c == '[') {
-                    square++;
-                } else if (c == ']') {
-                    square--;
-                    if (square < 0) append = true;
-                } else if (c == '"' || c == '\'') {
-                } else {
-                    append = true;
+
+                if (c == '"') {
+                    if (!(escaped || quoted))
+                        doubleQuoted = !doubleQuoted;
+                } else if (c == '\'') {
+                    if (!(escaped || doubleQuoted))
+                        quoted = !quoted;
+                } else if (!escaped && !quoted && !doubleQuoted) {
+                    if (c == '(') {
+                        bracket++;
+                    } else if (c == ')') {
+                        bracket--;
+                        if (bracket < 0) append = true;
+                    } else if (c == '[') {
+                        square++;
+                    } else if (c == ']') {
+                        square--;
+                        if (square < 0) append = true;
+                    } else {
+                        append = true;
+                    }
                 }
                 if (append) {
                     sb.append(")+\"");
@@ -265,8 +294,83 @@ public abstract class SahiScript {
                 sb.append('\\');
             }
             sb.append(c);
-            prev = c;
+            if (c != '\\') {
+                escaped = false;
+            }
         }
+        return sb.toString();
+    }
+
+
+    String findCondition(String s) {
+        char c = ' ';
+        boolean escaped = false;
+        boolean doubleQuoted = false;
+        boolean quoted = false;
+        int len = s.length();
+        int bracket = 0;
+
+        int i = 0;
+        i = s.indexOf("_condition");
+        i = s.indexOf("(", i) + 1;
+        if (i == 0) return null;
+        int start = i;
+        int end = -1;
+
+        for (; i < len; i++) {
+            c = s.charAt(i);
+            if (c == '\\') {
+                escaped = !escaped;
+            }
+            if (!escaped && !(Character.isJavaIdentifierPart(c) || c == '.')) {
+                if (c == '"') {
+                    if (!(escaped || quoted))
+                        doubleQuoted = !doubleQuoted;
+                } else if (c == '\'') {
+                    if (!(escaped || doubleQuoted))
+                        quoted = !quoted;
+                } else if (!escaped && !quoted && !doubleQuoted) {
+                    if (c == '(') {
+                        bracket++;
+                    } else if (c == ')') {
+                        bracket--;
+                        if (bracket < 0) {
+                            end = i;
+                            break;
+                        }
+                    }
+                }
+            }
+            if (c != '\\') {
+                escaped = false;
+            }
+        }
+        if (end == -1) return null;
+        return s.substring(start, end);
+    }
+
+    public String modifyWhile(String s, int lineNumber) {
+        if (s.indexOf("_condition") == -1) return modifyLine(s);
+        String condition = findCondition(s);
+        if (condition == null) return modifyLine(s);
+        StringBuffer sb = new StringBuffer();
+        sb.append("while (true) {\r\n");
+        sb.append(scheduleLine("sahiSaveCondition("+condition+");", lineNumber));
+        sb.append("if (\"true\" != sahi_getGlobal(\"condn\" + (_sahiCmds.length))) break;//");
+        int end = s.indexOf(condition) + condition.length() + 1;
+        sb.append(s.substring(end));
+        return sb.toString();
+    }
+
+    public String modifyIf(String s, int lineNumber) {
+        if (s.indexOf("_condition") == -1) return modifyLine(s);
+        String condition = findCondition(s);
+        if (condition == null) return modifyLine(s);
+        StringBuffer sb = new StringBuffer();
+        sb.append(scheduleLine("sahiSaveCondition("+condition+");", lineNumber));
+        sb.append("if (\"true\" == sahi_getGlobal(\"condn\" +(_sahiCmds.length))");
+        int end = s.indexOf(condition) + condition.length() + 1;
+        sb.append(s.substring(end));
         return sb.toString();
     }
 

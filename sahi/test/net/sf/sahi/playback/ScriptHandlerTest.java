@@ -32,6 +32,10 @@ public class ScriptHandlerTest extends TestCase {
         assertEquals("_click(_img(\"+s_v($i[1]['COL'])+\")", script.separateVariables("_click(_img($i[1]['COL'])"));
         assertEquals("_click(\"+s_v($ar[$ix])+\")", script.separateVariables("_click($ar[$ix])"));
         assertEquals("_click(\"+s_v($ar[$i[1]['COL']])+\")", script.separateVariables("_click($ar[$i[1]['COL']])"));
+        assertEquals("_click(\"+s_v($ar[$i[1]['C(OL']])+\")", script.separateVariables("_click($ar[$i[1]['C(OL']])"));
+        assertEquals("_click(\"+s_v($ar[$i[1]['C)OL']])+\")", script.separateVariables("_click($ar[$i[1]['C)OL']])"));
+        assertEquals("_click(\"+s_v($ar[$i[1]['C\\'OL']])+\")", script.separateVariables("_click($ar[$i[1]['C\\'OL']])"));
+        assertEquals("_click(\"+s_v($ar[$i[1]['C\\\"OL']])+\")", script.separateVariables("_click($ar[$i[1]['C\\\"OL']])"));
     }
 
     public void testEscape(){
