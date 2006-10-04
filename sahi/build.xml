@@ -106,6 +106,8 @@
                 <include name="prompt.sah"/>
                 <include name="reset.sah"/>
                 <include name="local_stack.sah"/>
+                <include name="if.sah"/>
+                <include name="while.sah"/>
             </fileset>
         </copy>
         <copy todir="temp/sahi/extlib">
