@@ -638,12 +638,12 @@ function sahi_simulateEvent(el, ev) {
     }
 }
 function sahi_setGlobal(name, value) {
-    sahi_debug("*** name="+name+" value="+value);
+//    sahi_debug("*** name="+name+" value="+value);
     sahiSetServerVar(name, value);
 }
 function sahi_getGlobal(name) {
     var value = sahiGetServerVar(name);
-    sahi_debug("GET name="+name+" value="+value);
+//    sahi_debug("GET name="+name+" value="+value);
     return value;
 }
 
@@ -1705,7 +1705,7 @@ function getWinParams(e) {
         if (sahiIsIE()) positionParams = ",screenX=" + x + ",screenY=" + y;
         else positionParams = ",screenX=" + x + ",screenY=" + y;
     }
-    return "height=550px,width=460px,resizable=yes, toolbars=no" + positionParams;
+    return "height=550px,width=460px,resizable=yes,toolbar=no,status=no" + positionParams;
 }
 function getSahiWinHandle() {
     if (top._sahiControl && !top._sahiControl.isClosed) return top._sahiControl;
@@ -2294,7 +2294,7 @@ function sahiEscapeValue(s) {
 
 function sahiSaveCondition($b) {
     sahi_setGlobal("condn"+sahiGetCurrentIndex(), $b);
-    sahi_debug("Evaling");
+//    sahi_debug("Evaling");
     _sahiCmds = new Array();
     _sahiCmdDebugInfo = new Array();
     eval(_sahiExecSteps);

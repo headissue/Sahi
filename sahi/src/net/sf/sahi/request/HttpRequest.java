@@ -162,7 +162,7 @@ public class HttpRequest extends StreamHandler {
                 if (eqIx + 1 <= keyVal.length())
                     value = keyVal.substring(eqIx + 1);
                 try {
-                    params.put(key, URLDecoder.decode(value, "UTF8"));
+                    params.put(key, URLDecoder.decode(value, "UTF-8"));
                 } catch (UnsupportedEncodingException e) {
                     e.printStackTrace();
                 }
