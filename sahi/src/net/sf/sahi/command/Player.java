@@ -63,6 +63,7 @@ public class Player {
             session.startPlayBack();
         session.setVariable("sahi_play", "1");
         session.setVariable("sahi_paused", "1");
+        session.removeVariables("condn.*");
     }
 
     public HttpResponse currentScript(HttpRequest request) {
@@ -84,8 +85,7 @@ public class Player {
         HttpResponse httpResponse;
         if (session.getScript() != null) {
             httpResponse = new SimpleHttpResponse("<pre>"
-                    + SahiScriptHTMLAdapter.createHTML(session
-                    .getScript().modifiedScript()) + "</pre>");
+                    + session.getScript().modifiedScript().replaceAll("\\\\r", "").replaceAll("\\\\n", "<br>") + "</pre>");
         } else {
             httpResponse = new SimpleHttpResponse(
                     "No Script has been set for playback.");

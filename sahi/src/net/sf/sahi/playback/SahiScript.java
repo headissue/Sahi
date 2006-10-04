@@ -350,25 +350,21 @@ public abstract class SahiScript {
     }
 
     public String modifyWhile(String s, int lineNumber) {
-        if (s.indexOf("_condition") == -1) return modifyLine(s);
-        String condition = findCondition(s);
-        if (condition == null) return modifyLine(s);
-        StringBuffer sb = new StringBuffer();
-        sb.append("while (true) {\r\n");
-        sb.append(scheduleLine("sahiSaveCondition("+condition+");", lineNumber));
-        sb.append("if (\"true\" != sahi_getGlobal(\"condn\" + (_sahiCmds.length))) break;//");
-        int end = s.indexOf(condition) + condition.length() + 1;
-        sb.append(s.substring(end));
-        return sb.toString();
+        return modifyIfWhile(s, lineNumber, "while (true) {\r\n", "if (\"true\" != sahi_getGlobal(\"condn\" + (_sahiCmds.length))) break;//");
     }
 
     public String modifyIf(String s, int lineNumber) {
+        return modifyIfWhile(s, lineNumber, "", "if (\"true\" == sahi_getGlobal(\"condn\" +(_sahiCmds.length))");
+    }
+
+    public String modifyIfWhile(String s, int lineNumber, String prefix, String suffix) {
         if (s.indexOf("_condition") == -1) return modifyLine(s);
         String condition = findCondition(s);
         if (condition == null) return modifyLine(s);
         StringBuffer sb = new StringBuffer();
+        sb.append(prefix);
         sb.append(scheduleLine("sahiSaveCondition("+condition+");", lineNumber));
-        sb.append("if (\"true\" == sahi_getGlobal(\"condn\" +(_sahiCmds.length))");
+        sb.append(suffix);
         int end = s.indexOf(condition) + condition.length() + 1;
         sb.append(s.substring(end));
         return sb.toString();

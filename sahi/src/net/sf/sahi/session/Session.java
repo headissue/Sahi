@@ -25,6 +25,7 @@ import net.sf.sahi.test.SahiTestSuite;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Iterator;
 
 /**
  * User: nraman Date: Jun 21, 2005 Time: 8:03:28 PM
@@ -80,6 +81,15 @@ public class Session {
 
     public String getVariable(String name) {
         return (String) (variables.get(name));
+    }
+
+    public void removeVariables(String pattern) {
+        for (Iterator iterator = variables.keySet().iterator(); iterator.hasNext();) {
+            String s = (String) iterator.next();
+            if (s.matches(pattern)){
+                iterator.remove();
+            }
+        }
     }
 
     public void setVariable(String name, String value) {
