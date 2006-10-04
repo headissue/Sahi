@@ -152,7 +152,8 @@ public class HttpRequest extends StreamHandler {
     }
 
     private void setGetParameters() {
-        StringTokenizer tokenizer = new StringTokenizer(queryString(), "&");
+        String str = isGet() ? queryString() : new String(data());
+        StringTokenizer tokenizer = new StringTokenizer(str, "&");
         while (tokenizer.hasMoreTokens()) {
             String keyVal = tokenizer.nextToken();
             int eqIx = keyVal.indexOf('=');

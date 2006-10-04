@@ -8,6 +8,10 @@
     <property name="compiler.max.memory" value="128m"/>
     <patternset id="compiler.excluded"/>
 
+    <tstamp>
+        <format property="TODAY_IN" pattern="yyyy-MM-dd" locale="en"/>
+    </tstamp>
+
     <target name="compile" description="compile module sahi">
         <mkdir dir="${sahi.output.dir}"/>
         <javac destdir="${sahi.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}"
@@ -128,18 +132,18 @@
             </fileset>
         </copy>
         <mkdir dir="deploy"/>
+        <replace file="temp/sahi/htdocs/spr/tabs.htm" token="@build@" value="${TODAY_IN}"/>
+        <replace file="temp/sahi/docs/changelog.txt" token="@build@" value="${TODAY_IN}"/>
+        <replace file="temp/sahi/docs/releasenotes.txt" token="@build@" value="${TODAY_IN}"/>
     </target>
 
-
     <target name="zip-sahi" depends="clean-temp">
-        <tstamp/>
         <antcall target="prepare-zip"/>
         <zip file="deploy/sahi_${DSTAMP}.zip" basedir="temp"/>
         <antcall target="clean-temp"/>
     </target>
 
     <target name="zip-src" depends="clean-temp">
-        <tstamp/>
         <antcall target="prepare-zip"/>
 
         <copy file="build.xml" todir="temp/sahi/"/>
@@ -225,14 +229,12 @@
     <!--</target>-->
 
     <target name="deploy">
-        <tstamp/>
         <delete dir="D:/sahitest"/>
         <mkdir dir="D:/sahitest"/>
         <unzip src="deploy/sahi_${DSTAMP}.zip" dest="D:/sahitest"></unzip>
     </target>
 
     <target name="deploy-src">
-        <tstamp/>
         <delete dir="D:/sahitest"/>
         <mkdir dir="D:/sahitest"/>
         <unzip src="deploy/sahi-src_${DSTAMP}.zip" dest="D:/sahitest"></unzip>

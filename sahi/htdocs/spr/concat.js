@@ -767,7 +767,7 @@ function sahConfirmMock(s) {
         return retVal;
     } else {
         var retVal = sahi_real_confirm(s);
-        sahiSendToServer('/_s_/dyn/Recorder_record?cmd=' + escape("_expectConfirm(\"" + s + "\", " + retVal + ")"));
+        sahiSendToServer('/_s_/dyn/Recorder_record?cmd=' + sahiEscape("_expectConfirm(\"" + s + "\", " + retVal + ")"));
         return retVal;
     }
 }
@@ -787,7 +787,7 @@ function sahPromptMock(s) {
         return retVal;
     } else {
         var retVal = sahi_real_prompt(s);
-        sahiSendToServer('/_s_/dyn/Recorder_record?cmd=' + escape("_expectPrompt(\"" + s + "\", \"" + retVal + "\")"));
+        sahiSendToServer('/_s_/dyn/Recorder_record?cmd=' + sahiEscape("_expectPrompt(\"" + s + "\", \"" + retVal + "\")"));
         return retVal;
     }
 }
@@ -805,6 +805,7 @@ function sahi_prompt(s) {
 }
 
 function sahi_cell(id, row, col) {
+    if (id == null) return null;
     if (row == null && col == null) {
         return sahiFindCell(id);
     }
@@ -818,6 +819,7 @@ function sahi_cell(id, row, col) {
         colIx = sahiGetColIndexWith(col, id);
         if (colIx == -1) return null;
     }
+    if (id.rows[rowIx] == null) return null;
     return id.rows[rowIx].cells[colIx];
 }
 function sahi_table(n) {
@@ -1374,7 +1376,7 @@ function sahiOnEv(e) {
     var cmd = getScript(info);
     if (cmd == null) return true;
     if (sahiHasEventBeenRecorded(cmd)) return true; //IE
-    sahiSendToServer('/_s_/dyn/Recorder_record?cmd=' + escape(cmd));
+    sahiSendToServer('/_s_/dyn/Recorder_record?cmd=' + sahiEscape(cmd));
     e.handled = true;
     //FF
     showInController(info);
@@ -1556,11 +1558,11 @@ function AccessorInfo(accessor, shortHand, type, event, value) {
 function sahiGetAccessorInfoQS(ai, isAssert) {
     if (ai == null || ai.event == null) return;
     var s = "event=" + (isAssert? "assert" : ai.event);
-    s += "&accessor=" + escape(sahiConvertUnicode(ai.accessor));
-    s += "&shorthand=" + escape(sahiConvertUnicode(ai.shortHand));
+    s += "&accessor=" + sahiEscape(sahiConvertUnicode(ai.accessor));
+    s += "&shorthand=" + sahiEscape(sahiConvertUnicode(ai.shortHand));
     s += "&type=" + ai.type;
     if (ai.value) {
-        s += "&value=" + escape(sahiConvertUnicode(ai.value));
+        s += "&value=" + sahiEscape(sahiConvertUnicode(ai.value));
     }
     return s;
 }
@@ -2041,10 +2043,10 @@ function sahiStopRecording() {
 }
 function sahiReportSuccess(msg, debugInfo) {
     var type = (msg.indexOf("sahi_assert") == 0)?"success":"info";
-    sahiSendToServer("/_s_/dyn/Player_success?msg=" + escape(msg) + "&type=" + type + "&debugInfo=" + (debugInfo?escape(debugInfo):""));
+    sahiSendToServer("/_s_/dyn/Player_success?msg=" + sahiEscape(msg) + "&type=" + type + "&debugInfo=" + (debugInfo?sahiEscape(debugInfo):""));
 }
 function sahiLogPlayBack(msg, type, debugInfo) {
-    sahiSendToServer("/_s_/dyn/Log?msg=" + escape(msg) + "&type=" + type + "&debugInfo=" + (debugInfo?escape(debugInfo):""));
+    sahiSendToServer("/_s_/dyn/Log?msg=" + sahiEscape(msg) + "&type=" + type + "&debugInfo=" + (debugInfo?sahiEscape(debugInfo):""));
 }
 function sahiTrim(s) {
     if (s == null) return s;
@@ -2106,16 +2108,16 @@ function sahiCreateRequestObject() {
     return obj;
 }
 function sahiGetServerVar(name) {
-    var v = sahiSendToServer("/_s_/dyn/SessionState_getVar?name=" + escape(name));
+    var v = sahiSendToServer("/_s_/dyn/SessionState_getVar?name=" + sahiEscape(name));
     if (v == "null") return null;
     return v;
 }
 function sahiSetServerVar(name, value) {
-    sahiSendToServer("/_s_/dyn/SessionState_setVar?name=" + escape(name) + "&value=" + escape(value));
+    sahiSendToServer("/_s_/dyn/SessionState_setVar?name=" + sahiEscape(name) + "&value=" + sahiEscape(value));
 }
 function sahiLogErr(msg) {
     //    return;
-    sahiSendToServer("/_s_/dyn/Log?msg=" + escape(msg) + "&type=err");
+    sahiSendToServer("/_s_/dyn/Log?msg=" + sahiEscape(msg) + "&type=err");
 }
 
 function sahiGetParentNode(el, tagName) {
@@ -2131,8 +2133,10 @@ function sahiSendToServer(url) {
         var rand = (new Date()).getTime() + Math.floor(Math.random() * (10000));
         var http = sahiCreateRequestObject();
         url = url + (url.indexOf("?") == -1 ? "?" : "&") + "t=" + rand;
-        http.open("GET", url, false);
-        http.send(null);
+        var post = url.substring(url.indexOf("?")+1);
+        url = url.substring(0, url.indexOf("?"));
+        http.open("POST", url, false);
+        http.send(post);
         return http.responseText;
     } catch(ex) {
         sahiHandleException(ex)
@@ -2290,6 +2294,11 @@ function sahiQuotedEscapeValue(s) {
 function sahiEscapeValue(s) {
     if (s == null) return s;
     return sahiConvertUnicode(s.replace(/\r/g, "").replace(/\\/g, "\\\\").replace(/\n/g, "\\n"));
+}
+
+function sahiEscape(s){
+    if (s == null) return s;
+    return escape(s).replace(/[+]/g, "%2B");
 }
 
 function sahiSaveCondition($b) {
