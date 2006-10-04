@@ -2,6 +2,8 @@ package net.sf.sahi.request;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.net.URLDecoder;
+import java.io.UnsupportedEncodingException;
 
 import junit.framework.TestCase;
 
@@ -16,4 +18,9 @@ public class HttpRequestTest extends TestCase {
 		cookies.put("cookieName3", "cookieVal3");
 		assertEquals("_session_id=cookieVal; sahisid=cookieVal2; cookieName3=cookieVal3", HttpRequest.rebuildCookies(cookies));
 	}
+
+
+    public void testUnicode() throws UnsupportedEncodingException {
+        String s = URLDecoder.decode("abc", "sadalkdjlaksjdfl");
+    }
 }

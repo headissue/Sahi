@@ -50,8 +50,8 @@ public class ScriptHandlerTest extends TestCase {
     }
 
     public void testModifyFunctionNames(){
-//        assertEquals("sahi_setValue ( sahi_textbox('username') , 'test'+$ix )", script.modifyFunctionNames("_setValue ( _textbox('username') , 'test'+$ix )"));
-//        assertEquals("sahi_setValue(sahi_textbox('username') , 'test'+$ix )", script.modifyFunctionNames("_setValue(_textbox('username') , 'test'+$ix )"));
+        assertEquals("sahi_setValue ( sahi_textbox('username') , 'test'+$ix )", script.modifyFunctionNames("_setValue ( _textbox('username') , 'test'+$ix )"));
+        assertEquals("sahi_setValue(sahi_textbox('username') , 'test'+$ix )", script.modifyFunctionNames("_setValue(_textbox('username') , 'test'+$ix )"));
         assertEquals("sahi_click(sahi_image(\"Link Quote Application \" + sahi_getCellText(sahi_accessor(\"top.content.creditFrameContent.document.getElementById('tblRecentlyAccessedQuotes').rows[3].cells[1]\"))));", script.modifyFunctionNames("_click(_image(\"Link Quote Application \" + _getCellText(_accessor(\"top.content.creditFrameContent.document.getElementById('tblRecentlyAccessedQuotes').rows[3].cells[1]\"))));"));
     }
 
@@ -59,7 +59,8 @@ public class ScriptHandlerTest extends TestCase {
         assertEquals("_setValue ( _textbox('username') , 'test'+$ix )", script.stripSahiFromFunctionNames( "sahi_setValue ( sahi_textbox('username') , 'test'+$ix )"  ));
         assertEquals("_setValue(_textbox('username') , 'test'+$ix )", script.stripSahiFromFunctionNames( "sahi_setValue(sahi_textbox('username') , 'test'+$ix )"));
     }
-	private class MockFileScript extends FileScript{
+
+    private class MockFileScript extends FileScript{
 		public MockFileScript(String fileName) {
 			super(fileName);
 		}
