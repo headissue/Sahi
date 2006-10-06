@@ -2301,8 +2301,8 @@ function sahiEscape(s){
     return escape(s).replace(/[+]/g, "%2B");
 }
 
-function sahiSaveCondition($b) {
-    sahi_setGlobal("condn"+sahiGetCurrentIndex(), $b);
+function sahiSaveCondition(a) {
+    sahi_setGlobal("condn"+sahiGetCurrentIndex(), a);
 //    sahi_debug("Evaling");
     _sahiCmds = new Array();
     _sahiCmdDebugInfo = new Array();

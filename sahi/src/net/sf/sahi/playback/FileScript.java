@@ -18,8 +18,8 @@ package net.sf.sahi.playback;
 
 import net.sf.sahi.util.Utils;
 
-import java.util.ArrayList;
 import java.io.File;
+import java.util.ArrayList;
 
 public class FileScript extends SahiScript {
     public FileScript(String fileName) {
@@ -31,11 +31,15 @@ public class FileScript extends SahiScript {
     }
 
     protected void loadScript(String fileName) {
-        setScript(new String(Utils.readFile(fileName)));
+        try {
+            setScript(new String(Utils.readFile(fileName)));
+        } catch (Exception e) {
+            setScript("_log(\"Script: " + Utils.escapeDoubleQuotesAndBackSlashes(fileName) + " does not exist.\", \"failure\");\n");
+        }
     }
 
     String getFQN(String scriptName) {
-        if (scriptName.indexOf("http") == 0){
+        if (scriptName.indexOf("http") == 0) {
             return scriptName;
         }
         return Utils.getRelativeFile(new File(path), scriptName).getAbsolutePath();

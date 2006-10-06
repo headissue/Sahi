@@ -3,16 +3,12 @@
     <taskdef name="sahi" classname="net.sf.sahi.ant.RunSahiTask" classpath="lib/ant-sahi.jar"/>
     <target name="sahitests" description="start the server and run sahi tests">
         <parallel>
+            <antcall target="start"/>
             <sequential>
                 <waitfor maxwait="3" maxwaitunit="minute" checkevery="100">
                     <http url="http://localhost:10000/demo/index.htm"/>
                 </waitfor>
-                <antcall target="proxyon"/>
                 <antcall target="runietests"/>
-                <antcall target="stop-web"/>
-                <antcall target="failsahi"/>
-                <!--antcall target="stopsahi"/-->
-                <antcall target="proxyoff"/>
             </sequential>
             <antcall target="start-web"/>
         </parallel>
@@ -20,63 +16,65 @@
 
     <target name="stressie" description="start the server and run sahi tests">
         <parallel>
+            <antcall target="start"/>
             <sequential>
                 <waitfor maxwait="3" maxwaitunit="minute" checkevery="100">
                     <http url="http://localhost:10000/demo/index.htm"/>
                 </waitfor>
-                <antcall target="runietests"/>
-                <antcall target="runietests"/>
-                <antcall target="runietests"/>
-                <antcall target="runietests"/>
-                <antcall target="runietests"/>
-                <antcall target="runietests"/>
-                <antcall target="runietests"/>
-                <antcall target="runietests"/>
-                <antcall target="runietests"/>
-                <antcall target="runietests"/>
-                <antcall target="runietests"/>
-                <antcall target="runietests"/>
-                <antcall target="runietests"/>
-                <antcall target="runietests"/>
-                <antcall target="runietests"/>
-                <antcall target="runietests"/>
-                <antcall target="runietests"/>
-                <antcall target="runietests"/>
-                <antcall target="runietests"/>
-                <antcall target="runietests"/>
-                <antcall target="runietests"/>
-                <antcall target="runietests"/>
-                <antcall target="runietests"/>
-                <antcall target="runietests"/>
-                <antcall target="runietests"/>
-                <antcall target="runietests"/>
-                <antcall target="runietests"/>
-                <antcall target="runietests"/>
-                <antcall target="runietests"/>
-                <antcall target="runietests"/>
-                <antcall target="runietests"/>
-                <antcall target="runietests"/>
-                <antcall target="runietests"/>
-                <antcall target="runietests"/>
-                <antcall target="runietests"/>
-                <antcall target="runietests"/>
-                <antcall target="runietests"/>
-                <antcall target="runietests"/>
-                <antcall target="runietests"/>
-                <antcall target="runietests"/>
-                <antcall target="runietests"/>
-                <antcall target="runietests"/>
-                <antcall target="runietests"/>
-                <antcall target="runietests"/>
-                <antcall target="runietests"/>
-                <antcall target="runietests"/>
-                <antcall target="runietests"/>
-                <antcall target="runietests"/>
-                <antcall target="runietests"/>
-                <antcall target="runietests"/>
+                <antcall target="proxyon"/>
+                <antcall target="justie"/>
+                <antcall target="justie"/>
+                <antcall target="justie"/>
+                <antcall target="justie"/>
+                <antcall target="justie"/>
+                <antcall target="justie"/>
+                <antcall target="justie"/>
+                <antcall target="justie"/>
+                <antcall target="justie"/>
+                <antcall target="justie"/>
+                <antcall target="justie"/>
+                <antcall target="justie"/>
+                <antcall target="justie"/>
+                <antcall target="justie"/>
+                <antcall target="justie"/>
+                <antcall target="justie"/>
+                <antcall target="justie"/>
+                <antcall target="justie"/>
+                <antcall target="justie"/>
+                <antcall target="justie"/>
+                <antcall target="justie"/>
+                <antcall target="justie"/>
+                <antcall target="justie"/>
+                <antcall target="justie"/>
+                <antcall target="justie"/>
+                <antcall target="justie"/>
+                <antcall target="justie"/>
+                <antcall target="justie"/>
+                <antcall target="justie"/>
+                <antcall target="justie"/>
+                <antcall target="justie"/>
+                <antcall target="justie"/>
+                <antcall target="justie"/>
+                <antcall target="justie"/>
+                <antcall target="justie"/>
+                <antcall target="justie"/>
+                <antcall target="justie"/>
+                <antcall target="justie"/>
+                <antcall target="justie"/>
+                <antcall target="justie"/>
+                <antcall target="justie"/>
+                <antcall target="justie"/>
+                <antcall target="justie"/>
+                <antcall target="justie"/>
+                <antcall target="justie"/>
+                <antcall target="justie"/>
+                <antcall target="justie"/>
+                <antcall target="justie"/>
+                <antcall target="justie"/>
+                <antcall target="justie"/>
                 <antcall target="stop-web"/>
-                <antcall target="failsahi"/>
-                <!--antcall target="stopsahi"/-->
+                <antcall target="proxyoff"/>
+                <antcall target="stopsahi"/>
             </sequential>
             <antcall target="start-web"/>
         </parallel>
@@ -90,9 +88,7 @@
                     <http url="http://localhost:10000/demo/index.htm"/>
                 </waitfor>
                 <antcall target="runfftests"/>
-                <antcall target="stop-web"/>
                 <antcall target="failsahi"/>
-                <!--antcall target="stopsahi"/-->
             </sequential>
             <antcall target="start-web"/>
         </parallel>
@@ -104,14 +100,14 @@
                 <waitfor maxwait="3" maxwaitunit="minute" checkevery="100">
                     <http url="http://localhost:10000/demo/index.htm"/>
                 </waitfor>
-                <antcall target="runfftests"/>
-                <antcall target="runfftests"/>
-                <antcall target="runfftests"/>
-                <antcall target="runfftests"/>
-                <antcall target="runfftests"/>
+                <antcall target="justff"/>
+                <antcall target="justff"/>
+                <antcall target="justff"/>
+                <antcall target="justff"/>
+                <antcall target="justff"/>
                 <antcall target="stop-web"/>
                 <antcall target="failsahi"/>
-                <!--antcall target="stopsahi"/-->
+                <antcall target="stopsahi"/>
             </sequential>
             <antcall target="start-web"/>
         </parallel>
@@ -144,7 +140,7 @@
         <!--threads="3"-->
     </target>
 
-    <target name="runietests">
+    <target name="justie">
         <sahi suite="../scripts/demo.suite"
               browser="C:\\Program Files\\Internet Explorer\\iexplore.exe"
               baseurl="http://localhost:10000/demo/"
@@ -154,13 +150,47 @@
               haltonfailure="false"
               threads="3"
                 />
-        <antcall target="failsahi"/>
+    </target>
+
+    <target name="justff">
+        <sahi suite="../scripts/demo.suite"
+              browser="C:\\Program Files\\Mozilla Firefox\\firefox.exe"
+              baseurl="http://localhost:10000/demo/"
+              sahihost="localhost"
+              sahiport="9999"
+              failureproperty="sahi.failed"
+              haltonfailure="false"
+                />
+    </target>
+
+
+    <target name="runietests">
+        <antcall target="proxyon"/>
+        <sahi suite="../scripts/demo.suite"
+              browser="C:\\Program Files\\Internet Explorer\\iexplore.exe"
+              baseurl="http://localhost:10000/demo/"
+              sahihost="localhost"
+              sahiport="9999"
+              failureproperty="sahi.failed"
+              haltonfailure="false"
+              threads="3"
+                />
         <!--logdir="D:\xx\logs"-->
         <!--threads="3"-->
+        <antcall target="failsahi"/>
+        <antcall target="passsahi"/>
+    </target>
+
+    <target name="passsahi" unless="sahi.failed">
+        <antcall target="proxyoff"/>
+        <antcall target="stop-web"/>
+        <antcall target="stopsahi"/>
     </target>
 
     <target name="failsahi" if="sahi.failed">
         <antcall target="proxyoff"/>
+        <antcall target="stop-web"/>
+        <antcall target="stopsahi"/>
         <fail message="Sahi tests failed!"/>
     </target>
 
@@ -191,12 +221,6 @@
         <sahi stop="true" sahihost="localhost" sahiport="9999"/>
     </target>
 
-    <path id="ov.class.path">
-        <pathelement location="lib/"/>
-        <pathelement path="extlib/orangevolt-ant-tasks-1.3.5.jar"/>
-        <pathelement path="extlib/roxes-win32forjava-1.0.4.jar"/>
-    </path>
-
     <target name="proxyon">
         <exec executable="tools/toggle_IE_proxy.exe">
             <arg value="enable"/>
@@ -216,12 +240,7 @@
                     <http url="http://localhost:10000/demo/index.htm"/>
                 </waitfor>
                 <antcall target="proxyon"/>
-                <antcall target="runietests"/>
-                <antcall target="stop-web"/>
-                <antcall target="failsahi"/>
-                <antcall target="proxyoff"/>
-                <sleep milliseconds="200"/>
-                <antcall target="stopsahi"/>
+                <antcall target="justie"/>
             </sequential>
             <antcall target="start-web"/>
         </parallel>
@@ -235,10 +254,6 @@
                     <http url="http://localhost:10000/demo/index.htm"/>
                 </waitfor>
                 <antcall target="runfftests"/>
-                <antcall target="stop-web"/>
-                <antcall target="failsahi"/>
-                <sleep milliseconds="200"/>
-                <antcall target="stopsahi"/>
             </sequential>
             <antcall target="start-web"/>
         </parallel>
