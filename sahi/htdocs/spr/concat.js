@@ -1734,7 +1734,7 @@ function sahiMouseOver(e) {
             controlWin.main.displayStepNum();
             var acc = sahiGetAccessorInfo(sahiGetKnownTags(getTarget(e)));
             try {
-                if (acc) controlWin.main.displayInfo(acc, getAccessor1(acc), sahiEscapeValue(acc.value));
+                if (acc) controlWin.main.displayInfo(acc, escapeDollar(getAccessor1(acc)), sahiEscapeValue(acc.value));
             } catch(ex2) {
             }
             top._lastAccessedInfo = acc ? acc : top._lastAccessedInfo;
@@ -1743,7 +1743,9 @@ function sahiMouseOver(e) {
         //        throw ex
     }
 }
-
+function escapeDollar(s){
+    return s.replace(/[$]/g, "\\$");
+}
 function getAccessor1(info) {
     if ("" == info.shortHand || info.shortHand == null) {
         return info.accessor;
@@ -2248,7 +2250,7 @@ function sahiIsFirstExecutableFrame() {
     return false;
 }
 function getScript(info) {
-    var accessor = getAccessor1(info);
+    var accessor = escapeDollar(getAccessor1(info));
     if (accessor == null) return null;
     var ev = info.event;
     var value = info.value;
