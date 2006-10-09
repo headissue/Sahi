@@ -21,6 +21,7 @@ import net.sf.sahi.request.HttpRequest;
 import net.sf.sahi.request.MultiPartRequest;
 import net.sf.sahi.request.MultiPartSubRequest;
 import net.sf.sahi.response.HttpResponse;
+import net.sf.sahi.response.MimeType;
 import net.sf.sahi.session.Session;
 import net.sf.sahi.util.Utils;
 
@@ -50,6 +51,7 @@ public class FileUpload {
                 MultiPartSubRequest part = (MultiPartSubRequest) iterator.next();
                 String fileName = session.getVariable("file:" + part.name());
                 if (Utils.isBlankOrNull(fileName)) continue;
+                part.addHeader("Content-Type", MimeType.getMimeTypeOfFile(fileName, "application/octet-stream"));
                 byte[] fileContent = Utils.readFile(fileName);
                 part.setData(fileContent);
                 part.setFileName(new File(fileName).getName());

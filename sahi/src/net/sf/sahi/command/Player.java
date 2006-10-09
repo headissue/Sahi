@@ -33,8 +33,12 @@ import java.io.IOException;
 import java.util.Properties;
 
 public class Player {
+    public void stepWisePlay(HttpRequest request) {
+        startPlayback(request.session(), false);
+    }
+
     public void start(HttpRequest request) {
-        startPlayback(request, request.session());
+        startPlayback(request.session(), true);
     }
 
     public void stop(HttpRequest request) {
@@ -48,22 +52,23 @@ public class Player {
         session.setScript(new ScriptFactory().getScript(fileName));
 //		session.setScript(new ScriptFactory().getScript(
 //				Configuration.getScriptFileWithPath(fileName)));
-        startPlayback(request, session);
+        startPlayback(session, true);
     }
 
     public void setScriptUrl(HttpRequest request) {
         Session session = request.session();
         String url = request.getParameter("url");
         session.setScript(new ScriptFactory().getScript(url));
-        startPlayback(request, session);
+        startPlayback(session, true);
     }
 
-    private void startPlayback(HttpRequest request, Session session) {
+    private void startPlayback(Session session, boolean resetConditions) {
         if (session.getScript() != null)
             session.startPlayBack();
         session.setVariable("sahi_play", "1");
         session.setVariable("sahi_paused", "1");
-        session.removeVariables("condn.*");
+        if (resetConditions)
+            session.removeVariables("condn.*");
     }
 
     public HttpResponse currentScript(HttpRequest request) {

@@ -2026,6 +2026,9 @@ function sahiStartPlaying() {
     sahiSetServerVar("sahi_play", 1);
     //	top._isSahiPlaying = true;
 }
+function sahiStepWisePlay() {
+    sahiSendToServer("/_s_/dyn/Player_stepWisePlay");
+}
 function sahiStopPlaying() {
     sahiSendToServer("/_s_/dyn/Player_stop");
     sahiSetServerVar("sahi_play", 0);

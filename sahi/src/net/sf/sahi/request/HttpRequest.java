@@ -260,12 +260,12 @@ public class HttpRequest extends StreamHandler {
     public Session session() {
         String sessionId;
         sessionId = getParameter("sahisid");
-        // System.out.println("1:"+sessionId);
+//        System.out.println("1:" + sessionId);
         if (Utils.isBlankOrNull(sessionId))
             sessionId = getCookie("sahisid");
         if (Utils.isBlankOrNull(sessionId))
             sessionId = "sahi_" + System.currentTimeMillis();
-        // System.out.println("2:"+sessionId);
+//        System.out.println("2:" + sessionId);
         return Session.getInstance(sessionId);
     }
 

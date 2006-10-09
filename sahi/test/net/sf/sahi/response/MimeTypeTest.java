@@ -11,8 +11,8 @@ public class MimeTypeTest extends TestCase {
 	}
 
 	public void testMimeTypeMapping() {
-		assertEquals("application/x-javascript", MimeType.get(".JS"));
-		assertEquals("text/html", MimeType.get(".htm"));
+		assertEquals("application/x-javascript", MimeType.get(".JS", "text/plain"));
+		assertEquals("text/html", MimeType.get(".htm", "text/plain"));
 	}
 	
 	public void testGetMimeTypeOfFile() {

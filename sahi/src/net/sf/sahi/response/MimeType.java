@@ -21,30 +21,34 @@ import java.io.IOException;
 import java.util.Properties;
 
 public class MimeType {
-	private static Properties properties;
-	static {
-		properties = new Properties();
-		try {
-			properties.load(new FileInputStream("../config/mime-types.mapping"));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	public static String get(String fileExtension) {
-		fileExtension = fileExtension == null ? "" : fileExtension.toLowerCase();
-		return properties.getProperty(fileExtension, "text/plain");
-	}
+    private static Properties properties;
 
-	
-	public static String getMimeTypeOfFile(String fileName) {
-		return get(getExtension(fileName));
-	}
+    static {
+        properties = new Properties();
+        try {
+            properties.load(new FileInputStream("../config/mime-types.mapping"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static String get(String fileExtension, String defaultValue) {
+        fileExtension = fileExtension == null ? "" : fileExtension.toLowerCase();
+        return properties.getProperty(fileExtension, defaultValue);
+    }
+
+    public static String getMimeTypeOfFile(String fileName) {
+        return getMimeTypeOfFile(fileName, "text/plain");
+    }
+
+    public static String getMimeTypeOfFile(String fileName, String defaultValue) {
+        return get(getExtension(fileName), defaultValue);
+    }
 
 
-	static String getExtension(String fileName) {
-		int ix = fileName.lastIndexOf('.');
-		if (ix == -1) return "";
-		return fileName.substring(ix);
-	}
+    static String getExtension(String fileName) {
+        int ix = fileName.lastIndexOf('.');
+        if (ix == -1) return "";
+        return fileName.substring(ix);
+    }
 }

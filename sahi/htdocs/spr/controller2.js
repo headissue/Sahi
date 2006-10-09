@@ -44,8 +44,11 @@ function play() {
 function stepWisePlay() {
     var i = parseInt(document.playform.step.value);
     top.opener.top.sahiSetCurrentIndex(i);
-    top.opener.sahiStartPlaying();
+    top.opener.sahiStepWisePlay();
     top.opener.top.eval("sahiEx(true)");
+}
+function a(){
+    sahiSetServerVar("sahi_play", 1);
 }
 function pause() {
     top.opener.top.pause();
