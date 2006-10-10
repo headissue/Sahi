@@ -1,0 +1,10 @@
+
+function testWith($s){
+    _setValue(_textbox("t1"), "Message "+$s);
+    _click(_button("Click For Alert"));
+    _assertEqual("Message "+$s, _lastAlert());
+}
+
+testWith("One");
+testWith("Two");
+testWith("Three");

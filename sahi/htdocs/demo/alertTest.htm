@@ -1,21 +1,23 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<!DOCTYPE html PUBLIC "-//IETF//DTD HTML 2.0//EN">
 <html>
 <head>
 <meta name="generator" content="HTML Tidy, see www.w3.org">
-<title>Alert Test</title>
+<title></title>
 </head>
 <body>
 <h2>Alert Test</h2>
+
 <script type="text/javascript">
-
-function x(s){
-	document.write(s);
+function showAlert(){
+    alert(document.f1.t1.value);
 }
-
-window.prompt = x;
-
-prompt("Prompt");
 </script>
+<form name="f1">
+    <input type="text" name="t1" value="Alert Message"><br><br>
+    <input type="button" name="b1" value="Click For Alert" onclick="showAlert()"><br>
+</form>
+<br>
+<a href="index.htm">Back</a>
 </body>
 </html>
 

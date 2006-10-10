@@ -730,6 +730,11 @@ function sahiAlertMock(s) {
         return sahi_real_alert(s);
     }
 }
+function sahi_lastAlert() {
+    var v = _sahiLastAlert;
+    _sahiLastAlert = null;
+    return v;
+}
 function sahi_eval(s) {
     return eval(s);
 }
