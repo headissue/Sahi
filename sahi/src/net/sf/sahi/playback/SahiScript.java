@@ -203,7 +203,7 @@ public abstract class SahiScript {
         return sb.toString();
     }
 
-    static ArrayList getActionKeyWords() {
+    public static ArrayList getActionKeyWords() {
         if (actionKeywords == null) actionKeywords = loadActionKeyWords();
         return actionKeywords;
     }

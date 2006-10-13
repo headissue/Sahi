@@ -646,7 +646,14 @@ function sahi_getGlobal(name) {
 //    sahi_debug("GET name="+name+" value="+value);
     return value;
 }
-
+var sahiLocals = new Array();
+function sahi_set(name, value) {
+    sahiLocals[name] = value;
+}
+function sahi_get(name) {
+    var value = sahiLocals[name];
+    return value;
+}
 function sahi_assertNotNull(n, s) {
     if (n == null) throw new SahiAssertionException(1, s);
     return true;

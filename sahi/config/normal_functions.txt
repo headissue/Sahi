@@ -34,3 +34,4 @@ _getDB
 _readFile
 _lastPrompt
 _lastAlert
+_get
