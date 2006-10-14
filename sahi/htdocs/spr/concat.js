@@ -698,6 +698,7 @@ function sahi_getCellText(el) {
     return sahiTrim(sahiIsIE() ? el.innerText : el.textContent);
 }
 function sahi_getText(el) {
+    sahiCheckNull(el);
     return sahiTrim(sahiIsIE() ? el.innerText : el.textContent);
 }
 function sahiGetRowIndexWith(txt, tableEl) {
@@ -739,7 +740,7 @@ function sahiAlertMock(s) {
 }
 function sahi_lastAlert() {
     var v = _sahiLastAlert;
-    _sahiLastAlert = null;
+//    _sahiLastAlert = null;
     return v;
 }
 function sahi_eval(s) {
@@ -785,7 +786,7 @@ function sahConfirmMock(s) {
 }
 function sahi_lastConfirm() {
     var v = _sahiLastConfirmText;
-    _sahiLastConfirmText = null;
+//    _sahiLastConfirmText = null;
     return v;
 }
 _sahiPromptReturnValue = new Array();
@@ -805,7 +806,7 @@ function sahPromptMock(s) {
 }
 function sahi_lastPrompt() {
     var v = _sahiLastPromptText;
-    _sahiLastPromptText = null;
+//    _sahiLastPromptText = null;
     return v;
 }
 
