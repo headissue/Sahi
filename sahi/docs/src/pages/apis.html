@@ -401,18 +401,18 @@ It is also possible to get the text of the last occurred confirm dialog using<br
 <pre class="code">
 
     &lt;script type="text/javascript"&gt;
-    function showConfirm(){
-    var t1 = document.f1.t1;
-    if (confirm("Some question?")){
-    t1.value = "oked";
-    }else{
-    t1.value = "canceled";
-    }
-    }
+        function showConfirm(){
+            var t1 = document.f1.t1;
+            if (confirm("Some question?")){
+                t1.value = "oked";
+            }else{
+                t1.value = "canceled";
+            }
+        }
     &lt;/script&gt;
     &lt;form name="f1"&gt;
-    &lt;input type="button" name="b1" value="Click For Confirm" onclick="showConfirm()"&gt;
-    &lt;input type="text" name="t1"&gt;
+        &lt;input type="button" name="b1" value="Click For Confirm" onclick="showConfirm()"&gt;
+        &lt;input type="text" name="t1"&gt;
     &lt;/form&gt;
 
     <hr>
@@ -420,15 +420,12 @@ It is also possible to get the text of the last occurred confirm dialog using<br
     _assertNotNull(_textbox("t1"));
     _assertEqual("<b>oked</b>", _textbox("t1").value);
     _assertEqual(_lastConfirm(), "Some question?");
-    _assertNull(_lastConfirm());
 
     <b>_expectConfirm("Some question?", false);</b>
     _click(_button("Click For Confirm"));
     _assertNotNull(_textbox("t1"));
     _assertEqual("<b>canceled</b>", _textbox("t1").value);
     _assertEqual(_lastConfirm(), "Some question?"); //Kind of redundant here.
-    _assertNull(_lastConfirm());
-
 
 </pre>
 
