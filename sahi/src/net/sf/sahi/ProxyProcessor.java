@@ -21,6 +21,7 @@ import net.sf.sahi.config.Configuration;
 import net.sf.sahi.request.HttpRequest;
 import net.sf.sahi.response.HttpFileResponse;
 import net.sf.sahi.response.HttpResponse;
+import net.sf.sahi.response.SimpleHttpResponse;
 import net.sf.sahi.ssl.SSLHelper;
 
 import javax.net.ssl.SSLSocket;
@@ -95,7 +96,15 @@ public class ProxyProcessor implements Runnable {
             processConnect(requestFromBrowser);
         } else {
             if (handleDifferently(requestFromBrowser)) return;
-            sendResponseToBrowser(remoteRequestProcessor.processHttp(requestFromBrowser), true);
+            HttpResponse responseFromHost = null;
+            try {
+                responseFromHost = remoteRequestProcessor.processHttp(requestFromBrowser);
+            } catch (Exception e) {
+                e.printStackTrace();
+                responseFromHost = new SimpleHttpResponse("");
+            }
+            if (responseFromHost == null) responseFromHost = new SimpleHttpResponse("");
+            sendResponseToBrowser(responseFromHost, true);
         }
     }
 

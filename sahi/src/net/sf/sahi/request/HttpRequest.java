@@ -1,4 +1,4 @@
-/**
+    /**
  * Copyright  2006  V Narayan Raman
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -91,6 +91,7 @@ public class HttpRequest extends StreamHandler {
     }
 
     public String method() {
+        if (firstLine() == null) return null;
         return firstLine().substring(0, firstLine().indexOf(" "));
     }
 

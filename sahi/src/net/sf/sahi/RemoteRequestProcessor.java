@@ -30,7 +30,6 @@ import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.util.Properties;
-import java.util.Iterator;
 import java.util.logging.Logger;
 
 public class RemoteRequestProcessor {
@@ -107,8 +106,8 @@ public class RemoteRequestProcessor {
         String[] exclusionList = Configuration.getExclusionList();
         for (int i = 0; i < exclusionList.length; i++) {
             String pattern = exclusionList[i];
-            if (url.matches(pattern.trim())){
-                 return true;
+            if (url.matches(pattern.trim())) {
+                return true;
             }
         }
         return false;
@@ -116,18 +115,66 @@ public class RemoteRequestProcessor {
 
     private Socket getSocketToHost(HttpRequest request) throws IOException {
         if (request.isSSL()) {
-            return new SSLHelper().getSocket(request, InetAddress.getByName(request.host()));
+            return getSSLSocketToHost(request);
         } else {
-            if (externalProxyEnabled) {
-                Socket socket = socketPool.get(externalProxyHost, externalProxyPort);
-                socket.setReuseAddress(true);
-                return socket;
-            } else {
-                Socket socket = socketPool.get(request.host(), request.port());
-                socket.setReuseAddress(true);
-                return socket;
+            return getNormalSocket(request);
+        }
+    }
+
+    private Socket getSSLSocketToHost(HttpRequest request) throws IOException {
+        if (externalProxyEnabled) {
+            return getTunnelledSecureSocket(request);
+        } else {
+            return new SSLHelper().getSocket(request, InetAddress.getByName(request.host()), request.port());
+        }
+    }
+
+    private Socket getNormalSocket(HttpRequest request) throws IOException {
+        if (externalProxyEnabled) {
+            return getReusableSocket(externalProxyHost, externalProxyPort, true);
+        } else {
+            return getReusableSocket(request.host(), request.port(), true);
+        }
+    }
+
+    private Socket getReusableSocket(String externalProxyHost, int externalProxyPort, boolean reuse) throws IOException {
+        Socket socket = socketPool.get(externalProxyHost, externalProxyPort);
+        socket.setReuseAddress(reuse);
+        return socket;
+    }
+
+    private Socket getTunnelledSecureSocket(HttpRequest request) throws IOException {
+        Socket tunnel = new Socket(externalProxyHost, externalProxyPort);
+        handShakeExternalProxy(tunnel, request);
+        return new SSLHelper().convertToSecureSocket(tunnel, externalProxyHost);
+    }
+
+    private void handShakeExternalProxy(Socket tunnel, HttpRequest request) throws IOException {
+        tunnel.getOutputStream().write(createConnectRequest(request));
+        InputStream inputStream = tunnel.getInputStream();
+        char c;
+        boolean EOF = true;
+        StringBuffer sb = new StringBuffer();
+        while ((c = (char) inputStream.read()) != -1) {
+            sb.append(c);
+            if (c == '\n') {
+                if (EOF) break;
+                EOF = true;
+            } else if (c != '\r') {
+                EOF = false;
             }
         }
+        if (sb.toString().indexOf("200 Connection established") == -1) {
+            System.out.println(sb.toString());
+        }
+    }
+
+    private byte[] createConnectRequest(HttpRequest request) {
+        String s = "CONNECT " + request.host() + ":" + request.port() + " HTTP/1.0\r\n";
+        s += "User-agent: Mozilla/1.1N\r\n";
+        s += "\r\n";
+//        System.out.println(s);
+        return s.getBytes();
     }
 
 

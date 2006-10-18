@@ -125,15 +125,15 @@ public class SSLHelper {
 		return trustAllCerts;
 	}
 
-	public Socket getSocket(HttpRequest request, InetAddress addr) throws IOException {
+	public Socket getSocket(HttpRequest request, InetAddress addr, int port) throws IOException {
 		SSLSocketFactory sslFact = getSSLClientSocketFactory(addr.getHostName());
-		SSLSocket socket = (SSLSocket) sslFact.createSocket(addr, request.port());
+		SSLSocket socket = (SSLSocket) sslFact.createSocket(addr, port);
 		socket.setUseClientMode(true);
 		socket.setEnabledCipherSuites(socket.getSupportedCipherSuites());
 		return socket;
 	}
 
-	private SSLSocket convertToSecureSocket(Socket plainSocket, String domain) {
+	public SSLSocket convertToSecureSocket(Socket plainSocket, String domain) {
 		try {
 			return (SSLSocket) getSSLClientSocketFactory(domain).createSocket(plainSocket,
 					plainSocket.getInetAddress().getHostName(), plainSocket.getPort(), true);
