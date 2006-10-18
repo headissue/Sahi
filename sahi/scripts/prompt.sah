@@ -3,4 +3,3 @@ _click(_button("Click For Prompt"));
 _assertNotNull(_textbox("t1"));
 _assertEqual("abc", _textbox("t1").value);
 _assertEqual(_lastPrompt(), "Some prompt?");
-_assertNull(_lastPrompt());

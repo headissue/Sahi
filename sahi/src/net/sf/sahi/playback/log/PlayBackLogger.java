@@ -62,7 +62,10 @@ public class PlayBackLogger {
     public void log(String msg, String type, String debugInfo) {
         try {
             if (debugInfo != null) {
+                msg = msg.replaceAll("<", "&lt;");
+                msg = msg.replaceAll(">", "&gt;");
                 msg = msg + "\t\t[" + debugInfo + "]";
+
             }
             if ("error".equals(type)) {
                 logger.log(PlayBackLogLevel.ERROR, msg);

@@ -221,8 +221,8 @@ function sahi_dragDrop(draggable, droppable) {
     sahiSimulateMouseEvent(draggable, "mouseup");
     sahiSimulateMouseEvent(droppable, "mouseup");
 }
-function sahiCheckNull(el){
-     if (el == null) {
+function sahiCheckNull(el) {
+    if (el == null) {
         el.forceNullPointerException();
     }
 }
@@ -241,7 +241,7 @@ function sahi_rightClick(el) {
     sahiSimulateClick(el, true, false);
 }
 
-function sahi_mouseOver(el){
+function sahi_mouseOver(el) {
     sahiCheckNull(el);
     sahiSimulateMouseEvent(el, "mousemove");
     sahiSimulateMouseEvent(el, "mouseover");
@@ -638,12 +638,12 @@ function sahi_simulateEvent(el, ev) {
     }
 }
 function sahi_setGlobal(name, value) {
-//    sahi_debug("*** name="+name+" value="+value);
+    //    sahi_debug("*** name="+name+" value="+value);
     sahiSetServerVar(name, value);
 }
 function sahi_getGlobal(name) {
     var value = sahiGetServerVar(name);
-//    sahi_debug("GET name="+name+" value="+value);
+    //    sahi_debug("GET name="+name+" value="+value);
     return value;
 }
 var sahiLocals = new Array();
@@ -740,7 +740,7 @@ function sahiAlertMock(s) {
 }
 function sahi_lastAlert() {
     var v = _sahiLastAlert;
-//    _sahiLastAlert = null;
+    //    _sahiLastAlert = null;
     return v;
 }
 function sahi_eval(s) {
@@ -786,7 +786,7 @@ function sahConfirmMock(s) {
 }
 function sahi_lastConfirm() {
     var v = _sahiLastConfirmText;
-//    _sahiLastConfirmText = null;
+    //    _sahiLastConfirmText = null;
     return v;
 }
 _sahiPromptReturnValue = new Array();
@@ -806,7 +806,7 @@ function sahPromptMock(s) {
 }
 function sahi_lastPrompt() {
     var v = _sahiLastPromptText;
-//    _sahiLastPromptText = null;
+    //    _sahiLastPromptText = null;
     return v;
 }
 
@@ -875,15 +875,15 @@ function sahi_addMock(pattern, clazz) {
     if (clazz == null) clazz = "MockResponder_simple";
     return sahi_callServer("MockResponder_add", "pattern=" + pattern + "&class=" + clazz);
 }
-function sahi_debug(s){
+function sahi_debug(s) {
     return sahi_callServer("Debug_toOut", "msg=" + s);
 }
-function sahi_debugToErr(s){
+function sahi_debugToErr(s) {
     return sahi_callServer("Debug_toErr", "msg=" + s);
 }
-function sahi_debugToFile(s, file){
+function sahi_debugToFile(s, file) {
     if (file == null) return;
-    return sahi_callServer("Debug_toFile", "msg=" + s+ "&file="+file);
+    return sahi_callServer("Debug_toFile", "msg=" + s + "&file=" + file);
 }
 
 
@@ -1676,7 +1676,7 @@ function sahiGetRetries() {
 function sahiGetExceptionString(e)
 {
     var stack = e.stack ? e.stack : "No trace available";
-    return e.name + ": " + e.message+"<br>"+stack.replace(/\n/g, "<br>");
+    return e.name + ": " + e.message + "<br>" + stack.replace(/\n/g, "<br>");
 }
 
 function sahiOnError(msg, url, lno) {
@@ -1756,7 +1756,7 @@ function sahiMouseOver(e) {
         //        throw ex
     }
 }
-function escapeDollar(s){
+function escapeDollar(s) {
     return s.replace(/[$]/g, "\\$");
 }
 function getAccessor1(info) {
@@ -1855,6 +1855,14 @@ function areWindowsLoaded(win) {
     }
 }
 var _isLocal = false;
+var _sahiTimer = null
+
+function sahiExecNextStep(isStep, interval) {
+    if (isStep) return;
+    if (_sahiTimer) window.clearTimeout(_sahiTimer);
+    _sahiTimer = window.setTimeout("try{sahiEx();}catch(ex){}", interval);
+}
+
 function sahiEx(isStep) {
     var cmds = _sahiCmds;
     var debugs = _sahiCmdDebugInfo;
@@ -1862,7 +1870,7 @@ function sahiEx(isStep) {
         try {
             if (isPaused() && !isStep) return;
             var i = sahiGetCurrentIndex();
-//            sahi_debug(i+" "+getPopupName());
+            //            sahi_debug(i+" "+getPopupName());
             if (_isLocal) {
                 cmds = _sahiCmdsLocal;
                 debugs = _sahiCmdDebugInfoLocal;
@@ -1874,7 +1882,8 @@ function sahiEx(isStep) {
             if ((isStep || isSahiPlaying()) && cmds[i] != null) {
                 if (!areWindowsLoaded(top) && sahiWaitForLoad > 0) {
                     sahiWaitForLoad--;
-                    if (!isStep) window.setTimeout("try{sahiEx();}catch(ex){}", interval);
+                    sahiExecNextStep(isStep, interval);
+                    //                    if (!isStep) window.setTimeout("try{sahiEx();}catch(ex){}", interval);
                     return;
                 }
                 try {
@@ -1897,13 +1906,13 @@ function sahiEx(isStep) {
                             var bkup = sahiSchedule;
                             var exc = null;
                             sahiSchedule = sahiInstant;
-                            try{
+                            try {
                                 eval(cmds[i]);
-                            }catch(e){
+                            } catch(e) {
                                 exc = e;
                             }
                             sahiSchedule = bkup;
-                            if (exc){
+                            if (exc) {
                                 _isLocal = false;
                                 _sahiCmdsLocal = new Array();
                                 sahiSetRetries(MAX_RETRIES);
@@ -1926,7 +1935,8 @@ function sahiEx(isStep) {
                         if (retries < MAX_RETRIES / 2) {
                             sahiSetRetries(retries + 1);
                             interval = ONERROR_INTERVAL;
-                            if (!isStep) window.setTimeout("try{sahiEx();}catch(ex){}", interval);
+                            sahiExecNextStep(isStep, interval);
+                            //                            if (!isStep) window.setTimeout("try{sahiEx();}catch(ex){}", interval);
                             return;
                         } else {
                             debugInfo = "" + debugs[i];
@@ -1941,7 +1951,7 @@ function sahiEx(isStep) {
                         throw ex1;
                     }
                 }
-                interval = _sahi_wait > 0 ? _sahi_wait : INTERVAL;
+                interval     = _sahi_wait > 0 ? _sahi_wait : INTERVAL;
                 _sahi_wait = -1;
             }
             else {
@@ -1956,15 +1966,17 @@ function sahiEx(isStep) {
             else {
                 var debugInfo = "" + debugs[i];
                 if (sahiGetServerVar("sahi_play") == "1") {
-                    sahiLogPlayBack(cmds[i]+"<br>"+sahiGetExceptionString(ex), "error", debugInfo);
+                    sahiLogPlayBack(cmds[i] + "<br>" + sahiGetExceptionString(ex), "error", debugInfo);
                 }
                 sahiStopPlaying();
             }
         }
-        if (!isStep) window.setTimeout("try{sahiEx();}catch(ex){}", interval);
+        sahiExecNextStep(isStep, interval);
+        //        if (!isStep) window.setTimeout("try{sahiEx();}catch(ex){}", interval);
     } catch(ex2) {
         if (isSahiPlaying()) {
-            if (!isStep) window.setTimeout("try{sahiEx();}catch(ex){sahi_real_alert(ex)}", 1000);
+            sahiExecNextStep(isStep, interval);
+            //            if (!isStep) window.setTimeout("try{sahiEx();}catch(ex){sahi_real_alert(ex)}", 1000);
         }
     }
 }
@@ -2151,7 +2163,7 @@ function sahiSendToServer(url) {
         var rand = (new Date()).getTime() + Math.floor(Math.random() * (10000));
         var http = sahiCreateRequestObject();
         url = url + (url.indexOf("?") == -1 ? "?" : "&") + "t=" + rand;
-        var post = url.substring(url.indexOf("?")+1);
+        var post = url.substring(url.indexOf("?") + 1);
         url = url.substring(0, url.indexOf("?"));
         http.open("POST", url, false);
         http.send(post);
@@ -2314,14 +2326,14 @@ function sahiEscapeValue(s) {
     return sahiConvertUnicode(s.replace(/\r/g, "").replace(/\\/g, "\\\\").replace(/\n/g, "\\n"));
 }
 
-function sahiEscape(s){
+function sahiEscape(s) {
     if (s == null) return s;
     return escape(s).replace(/[+]/g, "%2B");
 }
 
 function sahiSaveCondition(a) {
-    sahi_setGlobal("condn"+sahiGetCurrentIndex(), a);
-//    sahi_debug("Evaling");
+    sahi_setGlobal("condn" + sahiGetCurrentIndex(), a);
+    //    sahi_debug("Evaling");
     _sahiCmds = new Array();
     _sahiCmdDebugInfo = new Array();
     eval(_sahiExecSteps);

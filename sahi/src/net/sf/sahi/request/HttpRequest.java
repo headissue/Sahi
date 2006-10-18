@@ -286,4 +286,9 @@ public class HttpRequest extends StreamHandler {
     public void setSSL(boolean isSSL) {
         this.isSSLSocket = isSSL;
     }
+
+    public boolean isIE(){
+        String agent = getLastSetValueOfHeader("User-Agent");
+        return (agent == null || agent.indexOf("MSIE") != -1);
+    }
 }

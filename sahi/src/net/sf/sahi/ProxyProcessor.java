@@ -69,9 +69,8 @@ public class ProxyProcessor implements Runnable {
                     }
                 }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            logger.warning(e.getMessage());
+        } catch (IOException e) {
+            logger.fine(e.getMessage());
         } finally {
             try {
                 client.close();
@@ -104,7 +103,7 @@ public class ProxyProcessor implements Runnable {
                 responseFromHost = new SimpleHttpResponse("");
             }
             if (responseFromHost == null) responseFromHost = new SimpleHttpResponse("");
-            sendResponseToBrowser(responseFromHost, true);
+            sendResponseToBrowser(responseFromHost, requestFromBrowser.isIE());
         }
     }
 
