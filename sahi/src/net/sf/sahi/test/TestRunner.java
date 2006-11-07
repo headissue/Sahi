@@ -34,16 +34,16 @@ public class TestRunner {
 
 	public static void main(String[] args) {
 		try {
-			if (args.length == 0) {
-				System.out.println("Usage: java TestRunner <suite_name> <start_url> <browser_executable> <log_dir> <sahi_host> <sahi_port> <number_of_threads>");
+			if (args.length != 7) {
+				System.out.println("Usage: java TestRunner <suite_name> <browser_executable> <start_url> <log_dir> <sahi_host> <sahi_port> <number_of_threads>");
 				System.out.println("Set log_dir to \"default\" if you want to log to the default log dir");
 				System.out.println("Set number_of_threads to a number less than 5 for Internet Explorer");
 				System.out.println("Set number_of_threads to 1 for FireFox");
 				System.exit(-1);
 			}
 			String suiteName = args[0];
-			String base = getBase(args);
-			String browser = getBrowser(args);
+            String browser = getBrowser(args);
+            String base = getBase(args);
 			String logDir = args[3];
             if ("default".equalsIgnoreCase(logDir)) logDir = "";
             String sahiHost = args[4];
@@ -69,9 +69,9 @@ public class TestRunner {
 
 	public String execute() throws UnsupportedEncodingException, MalformedURLException, IOException, InterruptedException {
 		String sessionId = "sahi_" + System.currentTimeMillis();
-		String urlStr = "http://" + sahiHost + ":" + port + "/_s_/dyn/Suite_start?suite=" + encode(suiteName) + "&base=" + encode(base) + "&browser="
-				+ encode(base) + "&logDir=" + encode(logDir)+ "&browser=" + encode(browser) + "&threads=" + encode(threads) + "&sahisid=" + encode(sessionId);
-		// System.out.println("urlStr=" + urlStr);
+		String urlStr = "http://" + sahiHost + ":" + port + "/_s_/dyn/Suite_start?suite=" + encode(suiteName) + "&base=" + encode(base) +
+                "&logDir=" + encode(logDir)+ "&browser=" + encode(browser) + "&threads=" + encode(threads) + "&sahisid=" + encode(sessionId);
+		System.out.println("urlStr=" + urlStr);
 		URL url = new URL(urlStr);
 		InputStream in = url.openStream();
 		in.close();
