@@ -92,6 +92,8 @@ public abstract class SahiScript {
                 sb.append(modifyWhile(line, lineNumber));
             } else if (line.startsWith("if")) {
                 sb.append(modifyIf(line, lineNumber));
+            } else if (line.startsWith("_wait")) {
+                sb.append(modifyWait(line, lineNumber));
             } else if (line.startsWith("_") && lineStartsWithActionKeyword(line)) {
                 sb.append(scheduleLine(line, lineNumber));
             } else {
@@ -101,6 +103,20 @@ public abstract class SahiScript {
         String toString = sb.toString();
         logger.fine(toString);
         return toString;
+    }
+
+    String modifyWait(String line, int lineNumber) {
+        int comma = line.indexOf(",");
+        if (comma == -1) return scheduleLine(line, lineNumber);
+        StringBuffer sb = new StringBuffer();
+        sb.append(line.substring(0, comma));
+        sb.append(", ");
+        int close = line.lastIndexOf(")");
+        if (close == -1) close = line.length();
+        sb.append("\"");
+        sb.append(Utils.escapeDoubleQuotesAndBackSlashes(line.substring(comma+1, close)));
+        sb.append("\");");
+        return scheduleLine(sb.toString(), lineNumber);
     }
 
     private String modifyLine(String line) {

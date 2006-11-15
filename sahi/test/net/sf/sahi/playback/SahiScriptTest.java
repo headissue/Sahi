@@ -242,4 +242,8 @@ public class SahiScriptTest extends TestCase {
         assertEquals("sahiSchedule(\"sahiSaveCondition('' == sahi_textbox(\\\"t1\\\").value);\", \"scrName&n=10\")\r\nif (\"true\" == sahi_getGlobal(\"condn\" +(_sahiCmds.length))) {",
                 testScript.modifyIf("if (_condition('' == _textbox(\"t1\").value)) {", 10));
     }
+
+    public void testWait(){
+        assertEquals("sahiSchedule(\"sahi_wait(1000, \\\" sahi_byId(\\\\\\\"abc\\\\\\\")\\\");\", \"scrName&n=12\")\r\n", testScript.modifyWait("_wait(1000, _byId(\"abc\"))", 12));
+    }
 }

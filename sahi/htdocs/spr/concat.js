@@ -561,9 +561,13 @@ function sahi_submit(n) {
     if (el == null) el = sahiFindElement(n, "submit", "button");
     return el;
 }
-
-function sahi_wait(i) {
-    _sahi_wait = i;
+_sahiWaitCondition = null;
+function sahi_wait(i, condn) {
+    if (condn){
+        _sahiWaitCondition = condn;
+        setTimeout("_sahiWaitCondition=null", i);
+    }
+    else _sahi_wait = i;
 }
 
 function sahi_file(n) {
@@ -1892,6 +1896,19 @@ function sahiEx(isStep) {
                 return;
             }
             if ((isStep || isSahiPlaying()) && cmds[i] != null) {
+                if (_sahiWaitCondition) {
+                    var again = true;
+                    try {
+                        if (eval(_sahiWaitCondition)) {
+                            again = false;
+                            _sahiWaitCondition = false;
+                        }
+                    } catch(e1) {}
+                    if (again) {
+                        sahiExecNextStep(isStep, interval);
+                        return;
+                    }
+                }
                 if (!areWindowsLoaded(sahiTop()) && sahiWaitForLoad > 0) {
                     sahiWaitForLoad--;
                     sahiExecNextStep(isStep, interval);
