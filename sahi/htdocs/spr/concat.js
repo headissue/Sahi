@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 var tried = false;
+var _sahi_top = top;
 function sahiTop(){
-  return window.top.top;
+  return _sahi_top; //Hack for frames named "top"
 }
 function sahiGetAccessor(src) {
     var fr = sahiGetFrame(sahiTop(), "top");
@@ -1402,8 +1403,8 @@ function showInController(info) {
     try {
         var c = getSahiWinHandle();
         if (c) {
-            var d = c.sahiTop().main.document.currentForm.debug;
-            c.sahiTop().main.document.currentForm.history.value += "\n" + d.value;
+            var d = c.top.main.document.currentForm.debug;
+            c.top.main.document.currentForm.history.value += "\n" + d.value;
             d.value = getScript(info);
             //			d.value+="\n"+getScript(info);
             //			d.scrollTop = d.scrollHeight;
