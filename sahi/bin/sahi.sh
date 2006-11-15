@@ -1,1 +1,1 @@
-${JAVA_HOME}/bin/java -classpath ${PWD}../lib/sahi.jar net.sf.sahi.Proxy
+java -jar ../lib/sahi.jar

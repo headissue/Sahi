@@ -19,8 +19,8 @@ sahiAddEvent(window, "load", sahiInit);
 sahiAddEvent(window, "beforeunload", sahiOnBeforeUnLoad);
 try{
 if (!tried){
-	if (top._isSahiWinOpen){
-		top.sahiOpenWin();
+	if (sahiTop()._isSahiWinOpen){
+		sahiTop().sahiOpenWin();
 	}
 	tried = true;
 }

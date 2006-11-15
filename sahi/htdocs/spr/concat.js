@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 var tried = false;
+function sahiTop(){
+  return window.top.top;
+}
 function sahiGetAccessor(src) {
-    var fr = sahiGetFrame(top, "top");
+    var fr = sahiGetFrame(sahiTop(), "top");
     var a = sahiGetPartialAccessor(src);
     if (a == "" || a == null) return a;
     var elStr = fr + ".document." + a;
@@ -344,7 +347,7 @@ function sahiSimulateMouseEvent(el, type, isRight, isDouble) {
 }
 var sahiPointTimer;
 function sahi_highlight(el) {
-    var d = sahiFindElementById(top, "sahi_pointer_div");
+    var d = sahiFindElementById(sahiTop(), "sahi_pointer_div");
     d.innerHTML = "<span style='color:red;font-family:verdana;font-size:20px;'>&raquo;</span>";
     d.style.position = "absolute";
     var x = findPosX(el) - 10;
@@ -358,7 +361,7 @@ function sahi_highlight(el) {
 }
 function sahiFade() {
     window.clearTimeout(sahiPointTimer);
-    var d = sahiFindElementById(top, "sahi_pointer_div");
+    var d = sahiFindElementById(sahiTop(), "sahi_pointer_div");
     d.style.position = "absolute";
     d.style.left = "0px";
     d.style.top = "0px";
@@ -580,7 +583,7 @@ function sahi_accessor(n) {
     return eval(n);
 }
 function sahi_byId(id) {
-    return sahiFindElementById(top, id);
+    return sahiFindElementById(sahiTop(), id);
 }
 function sahi_select(n) {
     var el = sahiFindElement(n, "select", "select");
@@ -591,14 +594,14 @@ function sahi_radio(n) {
     return sahiFindElement(n, "radio", "input");
 }
 function sahi_div(id) {
-    return sahiDivSpanByText(top, id, "div");
+    return sahiDivSpanByText(sahiTop(), id, "div");
 }
 function sahi_span(id) {
-    return sahiDivSpanByText(top, id, "span");
+    return sahiDivSpanByText(sahiTop(), id, "span");
 }
 function sahi_spandiv(id) {
-    var el = sahiDivSpanByText(top, id, "span");
-    if (el == null) el = sahiDivSpanByText(top, id, "div");
+    var el = sahiDivSpanByText(sahiTop(), id, "span");
+    if (el == null) el = sahiDivSpanByText(sahiTop(), id, "div");
     return el;
 }
 function sahiDivSpanByText(win, id, tagName) {
@@ -619,13 +622,13 @@ function sahiDivSpanByText(win, id, tagName) {
     return res;
 }
 function sahi_image(n) {
-    return sahiFindImage(n, top, "img");
+    return sahiFindImage(n, sahiTop(), "img");
 }
 function sahi_imageSubmitButton(n) {
     return sahiFindElement(n, "image", "input");
 }
 function sahi_link(n) {
-    return sahiFindLink(n, top);
+    return sahiFindLink(n, sahiTop());
 }
 function sahi_simulateEvent(el, ev) {
     if (sahiIsIE()) {
@@ -854,8 +857,8 @@ function sahi_containsText(el, txt) {
     return el && sahiGetText(el).indexOf(txt) != -1;
 }
 function sahi_popup(n) {
-    if (top.name == n) {
-        return top;
+    if (sahiTop().name == n) {
+        return sahiTop();
     }
     throw new SahiNotMyWindowException();
 }
@@ -863,7 +866,7 @@ function sahi_log(s, type) {
     sahiLogPlayBack(s, type);
 }
 function sahi_navigateTo(url) {
-    top.location.href = url;
+    sahiTop().location.href = url;
 }
 function sahi_callServer(cmd, qs) {
     return sahiSendToServer("/_s_/dyn/" + cmd + (qs == null ? "" :  ("?" + qs)));
@@ -876,14 +879,14 @@ function sahi_addMock(pattern, clazz) {
     return sahi_callServer("MockResponder_add", "pattern=" + pattern + "&class=" + clazz);
 }
 function sahi_debug(s) {
-    return sahi_callServer("Debug_toOut", "msg=" + s);
+    return sahi_callServer("Debug_toOut", "msg=" + sahiEscape(s));
 }
 function sahi_debugToErr(s) {
-    return sahi_callServer("Debug_toErr", "msg=" + s);
+    return sahi_callServer("Debug_toErr", "msg=" + sahiEscape(s));
 }
 function sahi_debugToFile(s, file) {
     if (file == null) return;
-    return sahi_callServer("Debug_toFile", "msg=" + s + "&file=" + file);
+    return sahi_callServer("Debug_toFile", "msg=" + sahiEscape(s) + "&file=" + sahiEscape(file));
 }
 
 
@@ -891,7 +894,7 @@ function sahi_debugToFile(s, file) {
 // finds document of any element
 function sahiGetWin(el) {
     if (el == null) return self;
-    if (el.nodeName.indexOf("document") != -1) return sahiGetFrame1(top, el);
+    if (el.nodeName.indexOf("document") != -1) return sahiGetFrame1(sahiTop(), el);
     return sahiGetWin(el.parentNode);
 }
 // finds window to which a document belongs
@@ -930,26 +933,26 @@ function sahiAreEqual(el, param, value) {
 }
 function sahiFindLink(id) {
     var res = getBlankResult();
-    var retVal = sahiFindImageHelper(id, top, res, "linkText", false).element;
+    var retVal = sahiFindImageHelper(id, sahiTop(), res, "linkText", false).element;
     if (retVal != null) return retVal;
 
     res = getBlankResult();
-    return sahiFindImageHelper(id, top, res, "id", false).element;
+    return sahiFindImageHelper(id, sahiTop(), res, "id", false).element;
 }
 function sahiFindImage(id) {
     var res = getBlankResult();
-    var retVal = sahiFindImageHelper(id, top, res, "alt", true).element;
+    var retVal = sahiFindImageHelper(id, sahiTop(), res, "alt", true).element;
     if (retVal != null) return retVal;
 
     res = getBlankResult();
-    return sahiFindImageHelper(id, top, res, "id", true).element;
+    return sahiFindImageHelper(id, sahiTop(), res, "id", true).element;
 }
 function sahiFindImageHelper(id, win, res, param, isImg) {
     var imgs = isImg ? win.document.images : win.document.links;
 
     if ((typeof id) == "number") {
         res.cnt = 0;
-        res = sahiFindImageByIx(id, top, res, isImg);
+        res = sahiFindImageByIx(id, sahiTop(), res, isImg);
         return res;
     } else {
         var o = getArrayNameAndIndex(id);
@@ -998,30 +1001,30 @@ function sahiFindImageByIx(ix, win, res, isImg) {
 function sahiFindLinkIx(id, toMatch) {
     var res = getBlankResult();
     if (id == null || id == "") {
-        retVal = sahiFindImageIxHelper(id, toMatch, top, res, null, false).cnt;
+        retVal = sahiFindImageIxHelper(id, toMatch, sahiTop(), res, null, false).cnt;
         if (retVal != -1) return retVal;
     }
 
     res = getBlankResult();
-    var retVal = sahiFindImageIxHelper(id, toMatch, top, res, "linkText", false).cnt;
+    var retVal = sahiFindImageIxHelper(id, toMatch, sahiTop(), res, "linkText", false).cnt;
     if (retVal != -1) return retVal;
 
     res = getBlankResult();
-    return sahiFindImageIxHelper(id, toMatch, top, res, "id", false).cnt;
+    return sahiFindImageIxHelper(id, toMatch, sahiTop(), res, "id", false).cnt;
 }
 function sahiFindImageIx(id, toMatch) {
     var res = getBlankResult();
     if (id == null || id == "") {
-        retVal = sahiFindImageIxHelper(id, toMatch, top, res, null, true).cnt;
+        retVal = sahiFindImageIxHelper(id, toMatch, sahiTop(), res, null, true).cnt;
         if (retVal != -1) return retVal;
     }
 
     res = getBlankResult();
-    var retVal = sahiFindImageIxHelper(id, toMatch, top, res, "alt", true).cnt;
+    var retVal = sahiFindImageIxHelper(id, toMatch, sahiTop(), res, "alt", true).cnt;
     if (retVal != -1) return retVal;
 
     res = getBlankResult();
-    return sahiFindImageIxHelper(id, toMatch, top, res, "id", true).cnt;
+    return sahiFindImageIxHelper(id, toMatch, sahiTop(), res, "id", true).cnt;
 }
 function sahiFindImageIxHelper(id, toMatch, win, res, param, isImg) {
     if (res && res.found) return res;
@@ -1063,20 +1066,20 @@ function sahiFindElement(id, type, tagName) {
     var res = getBlankResult();
     var retVal = null;
     if (type == "button" || type == "reset" || type == "submit") {
-        retVal = sahiFindElementHelper(id, top, type, res, "value", tagName).element;
+        retVal = sahiFindElementHelper(id, sahiTop(), type, res, "value", tagName).element;
         if (retVal != null) return retVal;
     }
     else if (type == "image") {
-        retVal = sahiFindElementHelper(id, top, type, res, "alt", tagName).element;
+        retVal = sahiFindElementHelper(id, sahiTop(), type, res, "alt", tagName).element;
         if (retVal != null) return retVal;
     }
 
     res = getBlankResult();
-    retVal = sahiFindElementHelper(id, top, type, res, "name", tagName).element;
+    retVal = sahiFindElementHelper(id, sahiTop(), type, res, "name", tagName).element;
     if (retVal != null) return retVal;
 
     res = getBlankResult();
-    return sahiFindElementHelper(id, top, type, res, "id", tagName).element;
+    return sahiFindElementHelper(id, sahiTop(), type, res, "id", tagName).element;
 }
 
 function sahiFindFormElementByIndex(ix, win, type, res, tagName) {
@@ -1138,24 +1141,24 @@ function sahiFindElementIx(id, toMatch, type, tagName) {
     var retVal = -1;
 
     if (id == null || id == "") {
-        retVal = sahiFindElementIxHelper(id, type, toMatch, top, res, null, tagName).cnt;
+        retVal = sahiFindElementIxHelper(id, type, toMatch, sahiTop(), res, null, tagName).cnt;
         if (retVal != -1) return retVal;
     }
 
     if (type == "button" || type == "reset" || type == "submit") {
-        retVal = sahiFindElementIxHelper(id, type, toMatch, top, res, "value", tagName).cnt;
+        retVal = sahiFindElementIxHelper(id, type, toMatch, sahiTop(), res, "value", tagName).cnt;
         if (retVal != -1) return retVal;
     }
     else if (type == "image") {
-        retVal = sahiFindElementIxHelper(id, type, toMatch, top, res, "alt", tagName).cnt;
+        retVal = sahiFindElementIxHelper(id, type, toMatch, sahiTop(), res, "alt", tagName).cnt;
         if (retVal != -1) return retVal;
     }
     res = getBlankResult();
-    retVal = sahiFindElementIxHelper(id, type, toMatch, top, res, "name", tagName).cnt;
+    retVal = sahiFindElementIxHelper(id, type, toMatch, sahiTop(), res, "name", tagName).cnt;
     if (retVal != -1) return retVal;
 
     res = getBlankResult();
-    retVal = sahiFindElementIxHelper(id, type, toMatch, top, res, "id", tagName).cnt;
+    retVal = sahiFindElementIxHelper(id, type, toMatch, sahiTop(), res, "id", tagName).cnt;
     return retVal;
 
 }
@@ -1186,12 +1189,12 @@ function sahiAreEqualTypes(type1, type2) {
 }
 function sahiFindCell(id) {
     var res = getBlankResult();
-    return sahiFindTagHelper(id, top, "td", res, "id").element;
+    return sahiFindTagHelper(id, sahiTop(), "td", res, "id").element;
 }
 
 function sahiFindCellIx(id, toMatch) {
     var res = getBlankResult();
-    var retVal = sahiFindTagIxHelper(id, toMatch, top, "td", res, "id").cnt;
+    var retVal = sahiFindTagIxHelper(id, toMatch, sahiTop(), "td", res, "id").cnt;
     if (retVal != -1) return retVal;
 }
 function getBlankResult() {
@@ -1239,13 +1242,13 @@ function findInForm(name, fm, type) {
 
 function sahiFindTableIx(id, toMatch) {
     var res = getBlankResult();
-    var retVal = sahiFindTagIxHelper(id, toMatch, top, "table", res, (id?"id":null)).cnt;
+    var retVal = sahiFindTagIxHelper(id, toMatch, sahiTop(), "table", res, (id?"id":null)).cnt;
     if (retVal != -1) return retVal;
 }
 
 function sahiFindTable(id) {
     var res = getBlankResult();
-    return sahiFindTagHelper(id, top, "table", res, "id").element;
+    return sahiFindTagHelper(id, sahiTop(), "table", res, "id").element;
 }
 
 function sahiFindResByIndexInList(ix, win, type, res) {
@@ -1329,9 +1332,9 @@ function sahiCanSimulateClick(el) {
 }
 
 function sahiIsRecording() {
-    if (top._isSahiRecording == null)
-        top._isSahiRecording = sahiGetServerVar("sahi_record") == "1";
-    return top._isSahiRecording;
+    if (sahiTop()._isSahiRecording == null)
+        sahiTop()._isSahiRecording = sahiGetServerVar("sahi_record") == "1";
+    return sahiTop()._isSahiRecording;
 }
 function sahiCreateCookie(name, value, days)
 {
@@ -1399,8 +1402,8 @@ function showInController(info) {
     try {
         var c = getSahiWinHandle();
         if (c) {
-            var d = c.top.main.document.currentForm.debug;
-            c.top.main.document.currentForm.history.value += "\n" + d.value;
+            var d = c.sahiTop().main.document.currentForm.debug;
+            c.sahiTop().main.document.currentForm.history.value += "\n" + d.value;
             d.value = getScript(info);
             //			d.value+="\n"+getScript(info);
             //			d.scrollTop = d.scrollHeight;
@@ -1417,8 +1420,8 @@ function sahiHasEventBeenRecorded(qs) {
     return false;
 }
 function getPopupName() {
-    if (window.top.opener != null && window.top.opener != window.top) {
-        return top.name;
+    if (window.sahiTop().opener != null && window.sahiTop().opener != window.sahiTop()) {
+        return sahiTop().name;
     }
     return "";
 }
@@ -1433,10 +1436,10 @@ function mark(s) {
 }
 function doAssert(e) {
     try {
-        if (!top._lastAccessedInfo) return;
-        top._lastAccessedInfo.event = "assert";
-        showInController(top._lastAccessedInfo);
-        //      sahiSendToServer('/_s_/dyn/Recorder_record?'+getSahiPopUpQS()+sahiGetAccessorInfoQS(top._lastAccessedInfo, true));
+        if (!sahiTop()._lastAccessedInfo) return;
+        sahiTop()._lastAccessedInfo.event = "assert";
+        showInController(sahiTop()._lastAccessedInfo);
+        //      sahiSendToServer('/_s_/dyn/Recorder_record?'+getSahiPopUpQS()+sahiGetAccessorInfoQS(sahiTop()._lastAccessedInfo, true));
     } catch(ex) {
         sahiHandleException(ex);
     }
@@ -1696,18 +1699,18 @@ var _sahiControl;
 function sahiOpenWin(e) {
     try {
         if (!e) e = window.event;
-        top._sahiControl = window.open("", "_sahiControl", getWinParams(e));
+        sahiTop()._sahiControl = window.open("", "_sahiControl", getWinParams(e));
         var diffDom = false;
         try {
-            var checkDiffDomain = top._sahiControl.document.domain;
+            var checkDiffDomain = sahiTop()._sahiControl.document.domain;
         } catch(domainInaccessible) {
             diffDom = true;
         }
-        if (diffDom || !top._sahiControl.isOpen) {
-            top._sahiControl = window.open("/_s_/spr/controller2.htm", "_sahiControl", getWinParams(e));
+        if (diffDom || !sahiTop()._sahiControl.isOpen) {
+            sahiTop()._sahiControl = window.open("/_s_/spr/controller2.htm", "_sahiControl", getWinParams(e));
         }
-        if (top._sahiControl) top._sahiControl.opener = this;
-        if (e) top._sahiControl.focus();
+        if (sahiTop()._sahiControl) sahiTop()._sahiControl.opener = this;
+        if (e) sahiTop()._sahiControl.focus();
     } catch(ex) {
         sahiHandleException(ex);
     }
@@ -1723,7 +1726,7 @@ function getWinParams(e) {
     return "height=550px,width=460px,resizable=yes,toolbar=no,status=no" + positionParams;
 }
 function getSahiWinHandle() {
-    if (top._sahiControl && !top._sahiControl.isClosed) return top._sahiControl;
+    if (sahiTop()._sahiControl && !sahiTop()._sahiControl.isClosed) return sahiTop()._sahiControl;
 }
 function sahiOpenControllerWindow(e) {
     if (!e) e = window.event;
@@ -1750,7 +1753,7 @@ function sahiMouseOver(e) {
                 if (acc) controlWin.main.displayInfo(acc, escapeDollar(getAccessor1(acc)), sahiEscapeValue(acc.value));
             } catch(ex2) {
             }
-            top._lastAccessedInfo = acc ? acc : top._lastAccessedInfo;
+            sahiTop()._lastAccessedInfo = acc ? acc : sahiTop()._lastAccessedInfo;
         }
     } catch(ex) {
         //        throw ex
@@ -1880,7 +1883,7 @@ function sahiEx(isStep) {
                 return;
             }
             if ((isStep || isSahiPlaying()) && cmds[i] != null) {
-                if (!areWindowsLoaded(top) && sahiWaitForLoad > 0) {
+                if (!areWindowsLoaded(sahiTop()) && sahiWaitForLoad > 0) {
                     sahiWaitForLoad--;
                     sahiExecNextStep(isStep, interval);
                     //                    if (!isStep) window.setTimeout("try{sahiEx();}catch(ex){}", interval);
@@ -1981,31 +1984,31 @@ function sahiEx(isStep) {
     }
 }
 function canEvalInBase(cmd) {
-    return  (top.opener == null && !isForPopup(cmd)) || (top.opener && top.opener.top == top);
+    return  (sahiTop().opener == null && !isForPopup(cmd)) || (sahiTop().opener && sahiTop().opener.sahiTop() == sahiTop());
 }
 function isForPopup(cmd) {
     return cmd.indexOf("sahi_popup") == 0;
 }
 function canEval(cmd) {
-    return (top.opener == null && !isForPopup(cmd)) // for base window
-            || (top.opener && top.opener.top == top) // for links in firefox
-            || (top.opener != null && isForPopup(cmd));
+    return (sahiTop().opener == null && !isForPopup(cmd)) // for base window
+            || (sahiTop().opener && sahiTop().opener.sahiTop() == sahiTop()) // for links in firefox
+            || (sahiTop().opener != null && isForPopup(cmd));
     // for popups
 }
 function pause() {
-    top._isSahiPaused = true;
+    sahiTop()._isSahiPaused = true;
     sahiSetServerVar("sahi_paused", 1);
 }
 function unpause() {
-    top._isSahiPaused = false;
+    sahiTop()._isSahiPaused = false;
     sahiSetServerVar("sahi_paused", 0);
     sahiSetServerVar("sahi_play", 1);
-    top._isSahiPlaying = true;
+    sahiTop()._isSahiPlaying = true;
 }
 function isPaused() {
-    if (top._isSahiPaused == null)
-        top._isSahiPaused = sahiGetServerVar("sahi_paused") == "1";
-    return top._isSahiPaused;
+    if (sahiTop()._isSahiPaused == null)
+        sahiTop()._isSahiPaused = sahiGetServerVar("sahi_paused") == "1";
+    return sahiTop()._isSahiPaused;
 }
 function updateControlWinDisplay(s) {
     try {
@@ -2044,14 +2047,14 @@ function sahiGetCurrentIndex() {
     return ("" + i != "NaN") ? i : 0;
 }
 function isSahiPlaying() {
-    if (top._isSahiPlaying == null)
-        top._isSahiPlaying = sahiGetServerVar("sahi_play") == "1";
-    return top._isSahiPlaying;
+    if (sahiTop()._isSahiPlaying == null)
+        sahiTop()._isSahiPlaying = sahiGetServerVar("sahi_play") == "1";
+    return sahiTop()._isSahiPlaying;
 }
 function sahiStartPlaying() {
     sahiSendToServer("/_s_/dyn/Player_start");
     sahiSetServerVar("sahi_play", 1);
-    //	top._isSahiPlaying = true;
+    //	sahiTop()._isSahiPlaying = true;
 }
 function sahiStepWisePlay() {
     sahiSendToServer("/_s_/dyn/Player_stepWisePlay");
@@ -2060,14 +2063,14 @@ function sahiStopPlaying() {
     sahiSendToServer("/_s_/dyn/Player_stop");
     sahiSetServerVar("sahi_play", 0);
     updateControlWinDisplay("--Stopped Playback--");
-    top._isSahiPlaying = false;
+    sahiTop()._isSahiPlaying = false;
 }
 function sahiStartRecording() {
-    top._isSahiRecording = true;
-    sahiAddHandlersToAllFrames(top);
+    sahiTop()._isSahiRecording = true;
+    sahiAddHandlersToAllFrames(sahiTop());
 }
 function sahiStopRecording() {
-    top._isSahiRecording = false;
+    sahiTop()._isSahiRecording = false;
     sahiSendToServer("/_s_/dyn/Recorder_stop");
     sahiSetServerVar("sahi_record", 0);
 }
@@ -2233,7 +2236,7 @@ function sahiOnBeforeUnLoad() {
 /*
 function trap1(e){
 	if (!e) e = window.event;
-	if (top._sahiControl) debug(sahiList(e));
+	if (sahiTop()._sahiControl) debug(sahiList(e));
 	if (prevDown) prevDown(e);
 }
 var prevDown = null;
@@ -2247,7 +2250,7 @@ function sahiInit(e) {
     }
 
     try {
-        if (self == top) {
+        if (self == sahiTop()) {
             sahiPlay();
         }
         if (sahiIsRecording()) sahiAddHandlers();
@@ -2265,10 +2268,10 @@ function sahiActivateHotKey() {
     }
 }
 function sahiIsFirstExecutableFrame() {
-    var fs = top.frames;
+    var fs = sahiTop().frames;
     for (var i = 0; i < fs.length; i++) {
-        if (self == top.frames[i]) return true;
-        if ("" + (typeof top.frames[i].location) != "undefined") { // = undefined when previous frames are not accessible due to some reason (may be from diff domain)
+        if (self == sahiTop().frames[i]) return true;
+        if ("" + (typeof sahiTop().frames[i].location) != "undefined") { // = undefined when previous frames are not accessible due to some reason (may be from diff domain)
             return false;
         }
     }

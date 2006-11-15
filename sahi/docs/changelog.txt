@@ -1,21 +1,22 @@
 * APIS added
-    _expectPrompt(label, txt)
-    _lastPrompt()
-    _debug(s)
-    _debugToErr(s)
-    _debugToFile(s, file)
-    _getDB(driver, jdbcurl, username, password)
-    _readFile(file)
+    _lastAlert
+    _set
+    _get
+    _condition
+* Fixed bugs relating to:
+    Escaping variables having $ in the id
+    escaping + and html tags so that they are visible in logs
+    escaping non ascii characters
+    
+* Made changes to show build number on Controller
+* Textarea and dropdowns resize when controller is resized
+* if and while condition use _condition to handle page dependent conditions
+* Mime type added to FileUpload
+* Handling ssl tunneling through external proxy.
+* _wait rectified when called from withing _call method.
+* Moved to post for local communication between browser and proxy.
 
-* _expectConfirm(boolean) has been changed to _expectConfirm(label, boolean);
-* Fixed bug relating to invalid logs being created when there are popups
-* _getDB API added for database access
-* _readFile(file) added for file reading
-* debug apis added for writing to a log file
-* Fixed bug regarding dollar array variables. Arrays can also be used as dollar variables now
-* scheduler functions work from inside _call also, without messing the execution stack
 
 Known issues
 * Firefox has problems with multithreaded playback due to session sharing across windows. 
 (Workaround: Do not add the 'threads=n' clause to sahi target)
-* Form elements with $ in them are not recorded correctly. You have to explicity replace $ with \$ in script.

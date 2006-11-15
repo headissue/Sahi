@@ -20,6 +20,9 @@ function checkOpener() {
     catch (e) {
     }
 }
+function sahiOpener() {
+    return top.opener.sahiTop();
+}
 window.onerror = checkOpener;
 function trim(s) {
     return s.replace(/[ \t]/, "", "g");
@@ -32,9 +35,9 @@ function checkURL(url) {
 }
 function play() {
     try {
-        top.opener.top.sahiSetCurrentIndex(parseInt(document.playform.step.value));
-        top.opener.top.unpause();
-        top.opener.top.sahiEx();
+        sahiOpener().sahiSetCurrentIndex(parseInt(document.playform.step.value));
+        sahiOpener().unpause();
+        sahiOpener().sahiEx();
     } catch (e) {
         //		alert("Please open the Controller again. \n(Press ALT-DblClick on the main window.)");
         //		top.close();
@@ -43,18 +46,18 @@ function play() {
 }
 function stepWisePlay() {
     var i = parseInt(document.playform.step.value);
-    top.opener.top.sahiSetCurrentIndex(i);
-    top.opener.sahiStepWisePlay();
-    top.opener.top.eval("sahiEx(true)");
+    sahiOpener().sahiSetCurrentIndex(i);
+    sahiOpener().sahiStepWisePlay();
+    sahiOpener().eval("sahiEx(true)");
 }
-function a(){
+function a() {
     sahiSetServerVar("sahi_play", 1);
 }
 function pause() {
-    top.opener.top.pause();
+    sahiOpener().pause();
 }
 function stopPlay() {
-    top.opener.sahiStopPlaying();
+    sahiOpener().sahiStopPlaying();
 }
 function resetStep() {
     document.playform.step.value = 0;
@@ -66,7 +69,7 @@ function clearLogs() {
 }
 function stopRec() {
     try {
-        top.opener.sahiStopRecording();
+        sahiOpener().sahiStopRecording();
     } catch(ex) {
         alert(ex);
     }
@@ -74,7 +77,7 @@ function stopRec() {
 function doOnTabsUnLoad(s) {
     sahiSendToServer('/_s_/dyn/ControllerUI_closed');
     try {
-        top.opener.top._isSahiWinOpen = false;
+        sahiOpener()._isSahiWinOpen = false;
     } catch(ex) {
         sahiHandleException(ex);
     }
@@ -172,7 +175,7 @@ function resizeElementWidth(p_elementName, p_size) {
 }
 
 // Resize a dropdown list so we can see its enrite content.
-function resizeDropdown(p_dropdownContent, p_dropdownName, p_prefix)  {
+function resizeDropdown(p_dropdownContent, p_dropdownName, p_prefix) {
     var longest = getLongestListElementSize(p_dropdownContent);
     // A caracter is about 7 pixel long
     var newDropdownSize = (longest - p_prefix) * 7 + 20;
@@ -202,7 +205,7 @@ function populateOptions(el, opts, selectedOpt, defaultOpt, prefix) {
     for (var i = 0; i < opts.length; i++) {
         var ix = el.options.length;
         if (prefix) {
-            if (opts[i].indexOf(prefix) == 0){
+            if (opts[i].indexOf(prefix) == 0) {
                 el.options[ix] = new Option(opts[i].substring(prefix.length), opts[i]);
                 if (opts[i] == selectedOpt) el.options[ix].selected = true;
             }
@@ -230,7 +233,7 @@ function doOnTabsLoad() {
         var hilightedTab = sahiGetServerVar("controller_tab")
         if (hilightedTab == null || hilightedTab == "") hilightedTab = "recorder";
         showTab(hilightedTab);
-        top.opener.top._isSahiWinOpen = true;
+        sahiOpener()._isSahiWinOpen = true;
     } catch(ex) {
         sahiHandleException(ex);
     }
@@ -306,8 +309,8 @@ function onRecordStartFormSubmit(f) {
         document.recordstartform.file.focus();
         return false;
     }
-    if (top.opener) {
-        top.opener.sahiStartRecording(recordAll);
+    if (sahiOpener()) {
+        sahiOpener().sahiStartRecording(recordAll);
         //    	window.setTimeout("top.location.reload();", 1000);
     }
     return true;
@@ -323,24 +326,24 @@ var KEY_Q = 81;
 var KEY_K = 75;
 
 try {
-    top.opener.top._isControlKeyPressed = false;
-    top.opener.top._isQKeyPressed = false;
-    top.opener.top._isAltKeyPressed = false;
+    sahiOpener()._isControlKeyPressed = false;
+    sahiOpener()._isQKeyPressed = false;
+    sahiOpener()._isAltKeyPressed = false;
 } catch(ex) {
 }
 function sahiKeyUp(e) {
     try {
         if (!e) e = window.event;
-        if (e.keyCode == KEY_CONTROL) top.opener.top._isControlKeyPressed = false;
-        if (e.keyCode == KEY_ALT) top.opener.top._isAltKeyPressed = false;
+        if (e.keyCode == KEY_CONTROL) sahiOpener()._isControlKeyPressed = false;
+        if (e.keyCode == KEY_ALT) sahiOpener()._isAltKeyPressed = false;
     } catch(ex) {
     }
 }
 function sahiKeyDown(e) {
     try {
         if (!e) e = window.event;
-        if (e.keyCode == KEY_CONTROL) top.opener.top._isControlKeyPressed = true;
-        else if (e.keyCode == KEY_ALT) top.opener.top._isAltKeyPressed = true;
+        if (e.keyCode == KEY_CONTROL) sahiOpener()._isControlKeyPressed = true;
+        else if (e.keyCode == KEY_ALT) sahiOpener()._isAltKeyPressed = true;
     } catch(e) {
     }
 }
@@ -354,7 +357,7 @@ try {
 function hilightTab(n) {
     document.getElementById("playbackTab").className = "dimTab";
     document.getElementById("recorderTab").className = "dimTab";
-//    document.getElementById("settingsTab").className = "dimTab";
+    //    document.getElementById("settingsTab").className = "dimTab";
     document.getElementById(n + "Tab").className = "hiTab";
     sahiSetServerVar("controller_tab", n);
 }
@@ -370,9 +373,9 @@ function initRecorderTab() {
     document.currentForm.result.value = getRecVar("controller_result");
 }
 function showTab(s) {
-    if (top.main.location.href.indexOf(s+'.htm') != -1) return;
+    if (top.main.location.href.indexOf(s + '.htm') != -1) return;
     hilightTab(s);
-    top.main.location.href = s+'.htm'
+    top.main.location.href = s + '.htm'
 }
 
 function initPlaybackTab() {
@@ -394,7 +397,7 @@ function displayInfo(info, escapedAccessor, escapedValue) {
 
 function addWait() {
     try {
-        top.opener.addWait(document.currentForm.waitTime.value);
+        sahiOpener().addWait(document.currentForm.waitTime.value);
     } catch(ex) {
         alert("Please enter the number of milliseconds to wait (should be >= 200)");
         document.currentForm.waitTime.value = 3000;
@@ -402,7 +405,7 @@ function addWait() {
 }
 
 function mark() {
-    top.opener.mark(document.currentForm.comment.value);
+    sahiOpener().mark(document.currentForm.comment.value);
     //   sahiSendToServer('/_s_/dyn/Recorder_record?event=mark&value='+escape(document.currentForm.comment.value));
 }
 
@@ -411,7 +414,7 @@ function evaluateExpr(showErr) {
     sahiSetServerVar("sahiEvaluateExpr", "true");
     var res = "";
     try {
-        res = top.opener.sahi_eval(addSahi(document.currentForm.debug.value));
+        res = sahiOpener().sahi_eval(addSahi(document.currentForm.debug.value));
     } catch(e) {
         if (e.exceptionType && e.exceptionType == "SahiAssertionException") {
             res = "[Assertion Failed]" + (e.messageText?e.messageText:"");
@@ -452,7 +455,7 @@ function append() {
 }
 
 function addSahi(s) {
-    return sahiSendToServer("/_s_/dyn/ControllerUI_getSahiScript?code=" + escape(s));
+    return sahiSendToServer("/_s_/dyn/ControllerUI_getSahiScript?code=" + sahiOpener().sahiEscape(s));
 }
 
 function blankIfNull(s) {
@@ -476,7 +479,7 @@ function checkScript(f) {
 }
 function onScriptFormSubmit(f) {
     if (!checkScript(f)) return false;
-    if (f.starturl.value == "") f.starturl.value = top.opener.top.location.href;
+    if (f.starturl.value == "") f.starturl.value = sahiOpener().location.href;
     var url = checkURL(f.starturl.value);
     resetStep();
     clearLogs();
@@ -484,9 +487,9 @@ function onScriptFormSubmit(f) {
 }
 function reloadPage(u) {
     if (u == "") {
-        top.opener.top.location.reload(true);
+        sahiOpener().location.reload(true);
     } else {
-        top.opener.top.location.href = u;
+        sahiOpener().location.href = u;
     }
     //	top.location.reload();
 }
@@ -510,7 +513,7 @@ function getSel()
 function showHistory() {
     var histWin = window.open("history.htm", "sahi_history", "height=500px,width=450px");
 }
-function resizeTA2(el, minusRight, minusTop){
+function resizeTA2(el, minusRight, minusTop) {
     if (parseInt(navigator.appVersion) > 3) {
         if (navigator.appName == "Netscape") {
             winW = window.innerWidth;
@@ -524,16 +527,16 @@ function resizeTA2(el, minusRight, minusTop){
     el.style.width = winW - minusRight;
     el.style.height = winH - minusTop;
 }
-function showStack(){
+function showStack() {
     var curIx = document.playform.step.value;
     var win = window.open("blank.htm");
-    var cmds = top.opener.top._sahiCmds;
+    var cmds = sahiOpener()._sahiCmds;
     var s = "";
-    for (var i=0; i<cmds.length; i++){
-        var sel = (i == curIx-1);
-        s += "queue["+i+"] = " + (sel?"<b>":"") + cmds[i] + (sel?"</b>":"") + "<br>";
+    for (var i = 0; i < cmds.length; i++) {
+        var sel = (i == curIx - 1);
+        s += "queue[" + i + "] = " + (sel?"<b>":"") + cmds[i] + (sel?"</b>":"") + "<br>";
     }
-    s += "<br>Size: "+cmds.length;
+    s += "<br>Size: " + cmds.length;
     win.document.write(s);
     win.document.close();
 }

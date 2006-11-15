@@ -1,1 +1,1 @@
-java -classpath ..\lib\sahi.jar net.sf.sahi.Proxy
+java -jar ../lib/sahi.jar
