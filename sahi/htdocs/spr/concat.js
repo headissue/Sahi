@@ -15,8 +15,9 @@
  */
 var tried = false;
 var _sahi_top = top;
-function sahiTop(){
-  return _sahi_top; //Hack for frames named "top"
+function sahiTop() {
+    return _sahi_top;
+    //Hack for frames named "top"
 }
 function sahiGetAccessor(src) {
     var fr = sahiGetFrame(sahiTop(), "top");
@@ -34,9 +35,9 @@ function sahiGetKnownTags(src) {
         if (!el.tagName || el.tagName.toLowerCase() == "html" || el.tagName.toLowerCase() == "body") return null;
         var tag = el.tagName.toLowerCase();
         if (tag == "a" || tag == "select" || tag == "img" || tag == "form"
-                || tag == "input" || tag == "button" || tag == "textarea"
-                || tag == "textarea" || tag == "td" || tag == "table"
-                || ((tag == "div" || tag == "span") && (el.id && el.id != ""))) return el;
+            || tag == "input" || tag == "button" || tag == "textarea"
+            || tag == "textarea" || tag == "td" || tag == "table"
+            || ((tag == "div" || tag == "span") && (el.id && el.id != ""))) return el;
         el = el.parentNode;
     }
 }
@@ -321,21 +322,21 @@ function sahiSimulateMouseEvent(el, type, isRight, isDouble) {
         // FF
         var evt = el.ownerDocument.createEvent("MouseEvents");
         evt.initMouseEvent(
-                (isDouble ? "dbl" : "") + type,
-                true, //can bubble
-                true,
-                el.ownerDocument.defaultView,
-                (isDouble ? 2 : 1),
-                x, //screen x
-                y, //screen y
-                x, //client x
-                y, //client y
-                false,
-                false,
-                false,
-                false,
-                isRight ? 2 : 0,
-                null);
+            (isDouble ? "dbl" : "") + type,
+            true, //can bubble
+            true,
+            el.ownerDocument.defaultView,
+            (isDouble ? 2 : 1),
+            x, //screen x
+            y, //screen y
+            x, //client x
+            y, //client y
+            false,
+            false,
+            false,
+            false,
+            isRight ? 2 : 0,
+            null);
         el.dispatchEvent(evt);
     } else {
         // IE
@@ -505,7 +506,7 @@ function sahiSimulateKeyEvent(c, target, evType) {
         if (!target) return;
         var event = target.ownerDocument.createEvent("KeyEvents");
         event.initKeyEvent(evt.type, evt.bubbles, evt.cancelable, target.ownerDocument.defaultView,
-                evt.ctrlKey, evt.altKey, evt.shiftKey, evt.metaKey, evt.keyCode, evt.charCode);
+            evt.ctrlKey, evt.altKey, evt.shiftKey, evt.metaKey, evt.keyCode, evt.charCode);
         target.dispatchEvent(event);
     } else {
         var evt = target.ownerDocument.createEventObject();
@@ -858,7 +859,7 @@ function sahi_containsText(el, txt) {
     return el && sahiGetText(el).indexOf(txt) != -1;
 }
 function sahi_popup(n) {
-    if (sahiTop().name == n) {
+    if (sahiTop().name == n || sahiTop().document.title == n) {
         return sahiTop();
     }
     throw new SahiNotMyWindowException();
@@ -889,7 +890,6 @@ function sahi_debugToFile(s, file) {
     if (file == null) return;
     return sahi_callServer("Debug_toFile", "msg=" + sahiEscape(s) + "&file=" + sahiEscape(file));
 }
-
 
 
 // finds document of any element
@@ -1375,6 +1375,8 @@ function SahiAssertionException(msgNum, msgText) {
     this.exceptionType = "SahiAssertionException";
 }
 function SahiNotMyWindowException() {
+    this.name = "SahiNotMyWindowException";
+    this.message = "SahiNotMyWindowException";
 }
 var lastQs = "";
 var lastTime = 0;
@@ -1386,7 +1388,7 @@ function sahiOnEv(e) {
         if (targ.form && targ.type) {
             var type = targ.type;
             if (type == "text" || type == "textarea" || type == "password"
-                    || type == "select-one" || type == "select-multiple") return true;
+                || type == "select-one" || type == "select-multiple") return true;
         }
     }
     var info = sahiGetAccessorInfo(targ);
@@ -1421,10 +1423,17 @@ function sahiHasEventBeenRecorded(qs) {
     return false;
 }
 function getPopupName() {
-    if (window.sahiTop().opener != null && window.sahiTop().opener != window.sahiTop()) {
-        return sahiTop().name;
+    var n = null;
+    if (sahiIsPopup()) {
+        n = sahiTop().name;
+        if (!n || n == "") {
+            n = sahiTop().document.title;
+        }
     }
-    return "";
+    return n ? n : "";
+}
+function sahiIsPopup() {
+    return window.sahiTop().opener != null && window.sahiTop().opener != window.sahiTop()
 }
 function addWait(time) {
     var val = parseInt(time);
@@ -1737,9 +1746,9 @@ function sahiOpenControllerWindow(e) {
 }
 function sahiIsHotKeyPressed(e) {
     return ((sahiHotKey == "SHIFT" && e.shiftKey)
-            || (sahiHotKey == "CTRL" && e.ctrlKey)
-            || (sahiHotKey == "ALT" && e.altKey)
-            || (sahiHotKey == "META" && e.metaKey));
+        || (sahiHotKey == "CTRL" && e.ctrlKey)
+        || (sahiHotKey == "ALT" && e.altKey)
+        || (sahiHotKey == "META" && e.metaKey));
 }
 var _lastAccessedInfo;
 function sahiMouseOver(e) {
@@ -1874,7 +1883,6 @@ function sahiEx(isStep) {
         try {
             if (isPaused() && !isStep) return;
             var i = sahiGetCurrentIndex();
-            //            sahi_debug(i+" "+getPopupName());
             if (_isLocal) {
                 cmds = _sahiCmdsLocal;
                 debugs = _sahiCmdDebugInfoLocal;
@@ -1955,7 +1963,7 @@ function sahiEx(isStep) {
                         throw ex1;
                     }
                 }
-                interval     = _sahi_wait > 0 ? _sahi_wait : INTERVAL;
+                interval = _sahi_wait > 0 ? _sahi_wait : INTERVAL;
                 _sahi_wait = -1;
             }
             else {
@@ -1992,8 +2000,8 @@ function isForPopup(cmd) {
 }
 function canEval(cmd) {
     return (sahiTop().opener == null && !isForPopup(cmd)) // for base window
-            || (sahiTop().opener && sahiTop().opener.sahiTop() == sahiTop()) // for links in firefox
-            || (sahiTop().opener != null && isForPopup(cmd));
+        || (sahiTop().opener && sahiTop().opener.sahiTop() == sahiTop()) // for links in firefox
+        || (sahiTop().opener != null && isForPopup(cmd));
     // for popups
 }
 function pause() {
@@ -2337,7 +2345,6 @@ function sahiEscape(s) {
 
 function sahiSaveCondition(a) {
     sahi_setGlobal("condn" + sahiGetCurrentIndex(), a);
-    //    sahi_debug("Evaling");
     _sahiCmds = new Array();
     _sahiCmdDebugInfo = new Array();
     eval(_sahiExecSteps);
