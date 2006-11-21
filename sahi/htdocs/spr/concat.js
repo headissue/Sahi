@@ -252,6 +252,19 @@ function sahi_mouseOver(el) {
     sahiSimulateMouseEvent(el, "mouseover");
 }
 
+function sahi_keyPress(el, c, combo){
+    var prev = el.value ? el.value : null; 
+    sahiSimulateMouseEvent(el, "focus");
+    sahiSimulateKeyEvent(c, el, "keydown", combo);
+    sahiSimulateKeyEvent(c, el, "keypress", combo);
+    if (prev && (prev+c != el.value)) {
+        //                    if (!el.maxLength || el.value.length < el.maxLength)
+        el.value += c;
+    }
+    sahiSimulateKeyEvent(c, el, "keyup", combo);
+}
+
+
 function sahi_readFile(fileName) {
     var qs = "fileName=" + fileName;
     return sahi_callServer("net.sf.sahi.plugin.FileReader_contents", qs)
@@ -488,7 +501,7 @@ function sahiSimulateEvent(target, evType) {
     }
 }
 
-function sahiSimulateKeyEvent(c, target, evType) {
+function sahiSimulateKeyEvent(c, target, evType, combo) {
     var x = findPosX(target);
     var y = findPosY(target);
 
@@ -497,11 +510,11 @@ function sahiSimulateKeyEvent(c, target, evType) {
         evt.type = evType;
         evt.bubbles = true;
         evt.cancelable = true;
-        evt.ctrlKey = false;
-        evt.altKey = false;
-        evt.metaKey = false;
+        evt.ctrlKey = combo == "CTRL";
+        evt.altKey = combo == "ALT";
+        evt.metaKey = combo == "META";
         evt.charCode = c.charCodeAt(0);
-        evt.shiftKey = c.toUpperCase().charCodeAt(0) == evt.charCode;
+        evt.shiftKey = combo == "SHIFT" || c.toUpperCase().charCodeAt(0) == evt.charCode;
 
         if (!target) return;
         var event = target.ownerDocument.createEvent("KeyEvents");
@@ -515,13 +528,13 @@ function sahiSimulateKeyEvent(c, target, evType) {
         evt.cancelable = true;
         evt.clientX = x;
         evt.clientY = y;
-        evt.ctrlKey = false;
-        evt.altKey = false;
-        evt.metaKey = false;
+        evt.ctrlKey = combo == "CTRL";
+        evt.altKey = combo == "ALT";
+        evt.metaKey = combo == "META";
         evt.keyCode = c.charCodeAt(0);
         evt.charCode = c.charCodeAt(0);
         evt.shiftKey = c.toUpperCase().charCodeAt(0) == evt.charCode;
-        evt.shiftLeft = c.toUpperCase().charCodeAt(0) == evt.charCode;
+        evt.shiftLeft = combo == "SHIFT" || c.toUpperCase().charCodeAt(0) == evt.charCode;
         evt.cancelBubble = true;
         target.fireEvent("on" + evType, evt);
     }
@@ -532,7 +545,7 @@ function sahi_setSelected(el, val, isMultiple) {
     var done = false;
     for (var i = 0; i < l; i++) {
         if (!isMultiple) el.options[i].selected = false;
-        if (el.options[i].text == sahiTrim(val)) {
+        if (sahiTrim(el.options[i].text) == sahiTrim(val)) {
             el.options[i].selected = true;
             done = true;
             sahiSimulateEvent(el, "change");
@@ -2351,7 +2364,7 @@ function sahiQuotedEscapeValue(s) {
 }
 
 function sahiEscapeValue(s) {
-    if (s == null) return s;
+    if (s == null || typeof s != "string") return s;
     return sahiConvertUnicode(s.replace(/\r/g, "").replace(/\\/g, "\\\\").replace(/\n/g, "\\n"));
 }
 
@@ -2373,7 +2386,7 @@ function sahiQuoteIfString(shortHand) {
 }
 sahiActivateHotKey();
 
-window.sahi_real_alert = window.alert;
+window.sahi_real_alert = window.alert;                                                                                              
 window.sahi_real_confirm = window.confirm;
 window.sahi_real_prompt = window.prompt;
 

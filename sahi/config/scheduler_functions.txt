@@ -37,3 +37,4 @@ _debugToErr
 _debugToFile
 _mouseOver
 _set
+_keyPress

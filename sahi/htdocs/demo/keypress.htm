@@ -1,0 +1,33 @@
+<html>
+<head>
+<title>
+
+</title>
+    <script type="text/javascript">
+        function f(e){
+            document.f1.t1.value = 'key pressed '+e.charCode+" "+combo(e);
+        }
+
+        function combo(e){
+            if (e.ctrlKey) return "CTRL";
+            if (e.altKey) return "ALT";
+            if (e.shiftKey) return "SHIFT";
+            if (e.metaKey) return "META";
+            return "NONE"
+        }
+
+    </script>
+
+</head>
+
+<body onkeypress="f(event)">
+
+<form name="f1">
+
+<input type="text" name="t1" size="70">
+
+</form>
+
+</body>
+
+</html>

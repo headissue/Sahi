@@ -77,3 +77,4 @@ var _setFile = sahi_setFile;
 var _debug = sahi_debug;
 var _debugToErr = sahi_debugToErr;
 var _debugToFile = sahi_debugToFile;
+var _keyPress = sahi_keyPress;

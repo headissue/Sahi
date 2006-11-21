@@ -1,0 +1,13 @@
+_click(_link("Key Press"));
+
+_keyPress(document.body, 'a')
+_assertEqual("key pressed 97 NONE", _textbox("t1").value);
+
+_keyPress(document.body, 'A', "SHIFT")
+_assertEqual("key pressed 65 SHIFT", _textbox("t1").value);
+
+_keyPress(document.body, 'a', "ALT")
+_assertEqual("key pressed 97 ALT", _textbox("t1").value);
+
+_keyPress(document.body, 'a', "CTRL")
+_assertEqual("key pressed 97 CTRL", _textbox("t1").value);
