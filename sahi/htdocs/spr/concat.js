@@ -264,6 +264,18 @@ function sahi_keyPress(el, c, combo){
     sahiSimulateKeyEvent(c, el, "keyup", combo);
 }
 
+function sahi_focus(el){
+    sahiSimulateMouseEvent(el, "focus");
+}
+
+function sahi_keyDown(el, c, combo){
+    sahiSimulateKeyEvent(c, el, "keydown", combo);
+}
+
+function sahi_keyUp(el, c, combo){
+    sahiSimulateKeyEvent(c, el, "keyup", combo);
+}
+
 
 function sahi_readFile(fileName) {
     var qs = "fileName=" + fileName;
@@ -422,7 +434,7 @@ function sahiNavigateLink(ln) {
     if (!win) win = ln.ownerDocument.parentWindow; //IE
     if (ln.href.indexOf("javascript:") == 0) {
         var s = ln.href.substring(11);
-        win.eval(s);
+        win.eval(unescape(s));
     } else {
         var target = ln.target;
         if (ln.target == null || ln.target == "") target = "_self";

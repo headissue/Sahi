@@ -38,3 +38,7 @@ _debugToFile
 _mouseOver
 _set
 _keyPress
+_focus
+_keyDown
+_keyUp
+

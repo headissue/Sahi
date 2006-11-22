@@ -78,3 +78,6 @@ var _debug = sahi_debug;
 var _debugToErr = sahi_debugToErr;
 var _debugToFile = sahi_debugToFile;
 var _keyPress = sahi_keyPress;
+var _focus = sahi_focus;
+var _keyDown = sahi_keyDown;
+var _keyUp = sahi_keyUp;
