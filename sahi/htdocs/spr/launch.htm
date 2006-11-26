@@ -1,0 +1,32 @@
+<html>
+<head>
+<title>
+    Sahi Launcher
+</title>
+</head>
+
+<body>
+<script type="text/javascript" src="/_s_/spr/concat.js"></script>
+<script type="text/javascript">
+    if (location.href.indexOf("_s_") == -1){
+         location.href = "/_s_/spr/launch.htm";
+    }
+        
+    function launch(e){
+        sahiOpenWin(e);
+        location.href=document.f1.t1.value;
+        return false
+    }
+</script>
+
+<form name="f1" onsubmit="return launch(event)">
+
+Start URL: <input type="text" name="t1" size="100">
+
+<input type="submit" value="Go">
+
+</form>
+
+</body>
+
+</html>

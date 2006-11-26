@@ -28,6 +28,7 @@ import net.sf.sahi.response.HttpResponse;
 import net.sf.sahi.response.NoCacheHttpResponse;
 import net.sf.sahi.response.SimpleHttpResponse;
 import net.sf.sahi.util.URLParser;
+import net.sf.sahi.config.Configuration;
 
 public class LocalRequestProcessor {
 	public HttpResponse getLocalResponse(String uri, HttpRequest requestFromBrowser) throws UnsupportedEncodingException, IOException {
@@ -52,8 +53,7 @@ public class LocalRequestProcessor {
 //			httpResponse = new HttpFileResponse(fileName, null, false, false);
 			httpResponse = new HttpFileResponse(fileName, null, true, true);
 		} else {
-			httpResponse = new SimpleHttpResponse(
-					"<html><h2>You have reached the Sahi proxy.</h2></html>");
+			httpResponse = new HttpFileResponse(Configuration.getHtdocsRoot()+"/spr/launch.htm");
 		}
 		return httpResponse;
 	}
