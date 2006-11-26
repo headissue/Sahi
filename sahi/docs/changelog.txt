@@ -1,22 +1,14 @@
 * APIS added
-    _lastAlert
-    _set
-    _get
-    _condition
+    _keyPress(el, char)
+    _focus(el)
+    _keyDown(el, char)
+    _keyUp(el, char)
+    _wait(max_time, condition) added for AJAX applications
+
 * Fixed bugs relating to:
-    Escaping variables having $ in the id
-    escaping + and html tags so that they are visible in logs
-    escaping non ascii characters
+    framesets having a frame named "top"
+    Support for popup windows without names
     
-* Made changes to show build number on Controller
-* Textarea and dropdowns resize when controller is resized
-* if and while condition use _condition to handle page dependent conditions
-* Mime type added to FileUpload
-* Handling ssl tunneling through external proxy.
-* _wait rectified when called from withing _call method.
-* Moved to post for local communication between browser and proxy.
-
-
 Known issues
 * Firefox has problems with multithreaded playback due to session sharing across windows. 
 (Workaround: Do not add the 'threads=n' clause to sahi target)
