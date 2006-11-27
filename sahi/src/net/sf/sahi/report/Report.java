@@ -13,7 +13,7 @@ import net.sf.sahi.util.Utils;
 
 /**
  * @author dlewis
- *
+ * 
  */
 public class Report {
 	protected List listResult = new ArrayList();
@@ -38,7 +38,8 @@ public class Report {
 		this.listResult.addAll(listResult);
 	}
 
-	public void addResult(String message, String type, String debugInfo, String failureMsg) {
+	public void addResult(String message, String type, String debugInfo,
+			String failureMsg) {
 		listResult.add(new TestResult(message, ResultType.getType(type),
 				debugInfo, failureMsg));
 	}
