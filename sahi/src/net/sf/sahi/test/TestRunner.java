@@ -25,31 +25,44 @@ import java.net.URLEncoder;
 
 public class TestRunner {
 	private final String suiteName;
+
 	private final String browser;
+
 	private final String base;
-    private String logDir;
-    private final String sahiHost;
+
+	private String logDir;
+
+	private final String junitReport;
+
+	private final String sahiHost;
+
 	private final String port;
+
 	private final String threads;
 
 	public static void main(String[] args) {
 		try {
-			if (args.length != 7) {
-				System.out.println("Usage: java TestRunner <suite_name> <browser_executable> <start_url> <log_dir> <sahi_host> <sahi_port> <number_of_threads>");
-				System.out.println("Set log_dir to \"default\" if you want to log to the default log dir");
-				System.out.println("Set number_of_threads to a number less than 5 for Internet Explorer");
+			if (args.length == 0) {
+				System.out
+						.println("Usage: java TestRunner <suite_name> <start_url> <browser_executable> <log_dir> <sahi_host> <sahi_port> <number_of_threads>");
+				System.out
+						.println("Set log_dir to \"default\" if you want to log to the default log dir");
+				System.out
+						.println("Set number_of_threads to a number less than 5 for Internet Explorer");
 				System.out.println("Set number_of_threads to 1 for FireFox");
 				System.exit(-1);
 			}
 			String suiteName = args[0];
-            String browser = getBrowser(args);
-            String base = getBase(args);
+			String base = getBase(args);
+			String browser = getBrowser(args);
 			String logDir = args[3];
-            if ("default".equalsIgnoreCase(logDir)) logDir = "";
-            String sahiHost = args[4];
+			if ("default".equalsIgnoreCase(logDir))
+				logDir = "";
+			String sahiHost = args[4];
 			String port = args[5];
 			String threads = args[6];
-			TestRunner testRunner = new TestRunner(suiteName, browser, base, logDir, sahiHost, port, threads);
+			TestRunner testRunner = new TestRunner(suiteName, browser, base,
+					logDir, "true", sahiHost, port, threads);
 			String status = testRunner.execute();
 			System.out.println("Status:" + status);
 		} catch (Exception e) {
@@ -57,37 +70,48 @@ public class TestRunner {
 		}
 	}
 
-	public TestRunner(String suiteName, String browser, String base, String logDir, String sahiHost, String port, String threads) {
+	public TestRunner(String suiteName, String browser, String base,
+			String logDir, String junitReport, String sahiHost, String port,
+			String threads) {
 		this.suiteName = suiteName;
 		this.browser = browser;
 		this.base = base;
-        this.logDir = logDir;
-        this.sahiHost = sahiHost;
+		this.logDir = logDir;
+		this.junitReport = junitReport;
+		this.sahiHost = sahiHost;
 		this.port = port;
 		this.threads = threads;
 	}
 
-	public String execute() throws UnsupportedEncodingException, MalformedURLException, IOException, InterruptedException {
+	public String execute() throws UnsupportedEncodingException,
+			MalformedURLException, IOException, InterruptedException {
 		String sessionId = "sahi_" + System.currentTimeMillis();
-		String urlStr = "http://" + sahiHost + ":" + port + "/_s_/dyn/Suite_start?suite=" + encode(suiteName) + "&base=" + encode(base) +
-                "&logDir=" + encode(logDir)+ "&browser=" + encode(browser) + "&threads=" + encode(threads) + "&sahisid=" + encode(sessionId);
-		System.out.println("urlStr=" + urlStr);
+		String urlStr = new StringBuffer(200).append("http://")
+				.append(sahiHost).append(":").append(port).append(
+						"/_s_/dyn/Suite_start?suite=")
+				.append(encode(suiteName)).append("&base=")
+				.append(encode(base)).append("&browser=").append(encode(base))
+				.append("&logDir=").append(encode(logDir)).append(
+						"&junitReport=").append(junitReport)
+				.append("&browser=").append(encode(browser))
+				.append("&threads=").append(encode(threads))
+				.append("&sahisid=").append(encode(sessionId)).toString();
 		URL url = new URL(urlStr);
 		InputStream in = url.openStream();
 		in.close();
 		String status = "NONE";
-        int retries = 0;
-        while (true) {
+		int retries = 0;
+		while (true) {
 			Thread.sleep(2000);
 			status = getSuiteStatus(sessionId);
 			if ("SUCCESS".equals(status) || "FAILURE".equals(status)) {
 				break;
-			}else if ("RETRY".equals(status)){
-                if (retries++ == 10) {
-                    status = "FAILURE";
-                    break;
-                }
-            }
+			} else if ("RETRY".equals(status)) {
+				if (retries++ == 10) {
+					status = "FAILURE";
+					break;
+				}
+			}
 		}
 		return status;
 	}
@@ -96,7 +120,9 @@ public class TestRunner {
 		String status = "NONE";
 		String urlStr = "";
 		try {
-			urlStr = "http://" + sahiHost + ":" + port + "/_s_/dyn/Suite_status?s" + "&sahisid=" + encode(sessionId);
+			urlStr = "http://" + sahiHost + ":" + port
+					+ "/_s_/dyn/Suite_status?s" + "&sahisid="
+					+ encode(sessionId);
 			URL url = new URL(urlStr);
 			InputStream in = url.openStream();
 			StringBuffer sb = new StringBuffer();
@@ -107,8 +133,9 @@ public class TestRunner {
 			status = sb.toString();
 			in.close();
 		} catch (Exception e) {
-            System.out.println("Exception while connecting to Sahi proxy to check status. Retrying ...");
-            status = "RETRY";
+			System.out
+					.println("Exception while connecting to Sahi proxy to check status. Retrying ...");
+			status = "RETRY";
 		}
 		return status;
 	}
