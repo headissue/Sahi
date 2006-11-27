@@ -13,7 +13,7 @@ import net.sf.sahi.util.Utils;
 
 /**
  * @author dlewis
- * 
+ *
  */
 public class Report {
 	protected List listResult = new ArrayList();
@@ -59,14 +59,13 @@ public class Report {
 			writer.write(formatter.getStopScript());
 			writer.write(formatter.getFooter());
 			writer.flush();
-			writer.close();			
+			writer.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 
 	public String getLogDir() {
-		StringBuffer sb = new StringBuffer();
 		String dir = null;
 		if (!Utils.isBlankOrNull(logDir)) {
 			dir = logDir;
