@@ -44,7 +44,8 @@ public class HtmlFormatter implements Formatter {
 			sb.append("\" href=\"/_s_/dyn/Log_highlight?href=").append(
 					result.debugInfo);
 		}
-		sb.append("\">").append(result.message).append("</a></div>");
+		sb.append("\">").append(result.message).append(result.failureMsg!=null?" "+result.failureMsg:"")
+				.append("</a></div>");
 
 		return sb.toString();
 	}

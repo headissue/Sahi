@@ -9,16 +9,15 @@ public class TestResult {
 
 	String debugInfo = null;
 
+	String failureMsg = null;
+
 	ResultType type = null;
 
-	public TestResult(String message, ResultType type, String debugInfo) {
+	public TestResult(String message, ResultType type, String debugInfo,
+			String failureMsg) {
 		this.message = message;
 		this.type = type;
 		this.debugInfo = debugInfo;
-	}
-
-	public String toString() {
-		return "Msg:" + message + " | " + "Type:" + type + " | " + "DebugInfo:"
-				+ debugInfo;
+		this.failureMsg = failureMsg;
 	}
 }

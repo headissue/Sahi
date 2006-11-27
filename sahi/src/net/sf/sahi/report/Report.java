@@ -38,20 +38,16 @@ public class Report {
 		this.listResult.addAll(listResult);
 	}
 
-	public void addResult(String message, String type, String debugInfo) {
+	public void addResult(String message, String type, String debugInfo, String failureMsg) {
 		listResult.add(new TestResult(message, ResultType.getType(type),
-				debugInfo));
+				debugInfo, failureMsg));
 	}
 
 	public void generateReport() {
 		File dir = new File(getLogDir());
 		Configuration.createLogFolders(dir);
-		System.out.println("Log Dir: "+dir.getAbsolutePath());
-
 		File logFile = new File(dir, formatter.getFileName(Utils
 				.createLogFileName(scriptName)));
-		System.out.println("Log File: "+logFile.getAbsolutePath());
-		
 
 		BufferedWriter writer = null;
 		try {
@@ -63,8 +59,7 @@ public class Report {
 			writer.write(formatter.getStopScript());
 			writer.write(formatter.getFooter());
 			writer.flush();
-			writer.close();
-			System.out.println("Hopefully wrote something");
+			writer.close();			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

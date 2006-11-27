@@ -57,8 +57,13 @@ public class JUnitFormatter implements Formatter {
 		StringBuffer sb = new StringBuffer();
 		sb.append("<testcase name=\"").append(
 				Utils.escapeQuotes(result.message)).append("\">");
-		if (ResultType.FAILURE.equals(result.type)) {
-			sb.append("\n<failure message=\"Assertion Failed\"></failure>\n");
+		if (ResultType.FAILURE.equals(result.type)
+				|| ResultType.ERROR.equals(result.type)) {
+			sb.append("\n<failure message=\"Assertion Failed\">");
+			if (!Utils.isBlankOrNull(result.failureMsg)) {
+				sb.append("<![CDATA[").append(result.failureMsg).append("]]>");
+			}
+			sb.append("</failure>\n");
 		}
 		sb.append("</testcase>");
 		return sb.toString();
