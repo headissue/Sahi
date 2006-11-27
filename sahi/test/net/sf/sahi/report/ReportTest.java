@@ -20,7 +20,7 @@ public class ReportTest extends TestCase {
 	}
 
 	public void testAddResult() {
-		report.addResult("a", "success", "");
+		report.addResult("a", "success", "", null);
 		assertEquals(1, report.getListResult().size());
 	}
 

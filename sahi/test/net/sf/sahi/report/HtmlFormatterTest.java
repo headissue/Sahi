@@ -47,7 +47,7 @@ public class HtmlFormatterTest extends TestCase {
 	public void testGetStringResultForFailureResult() {
 		String expected = "<div class=\"FAILURE\"><a class=\"FAILURE\">_call(testAccessors()); Assertion Failed.</a></div>";
 		assertEquals(expected, formatter.getStringResult(ReportUtil
-				.getFailureResult()));
+				.getFailureResultWithoutDebugInfo()));
 	}
 
 	public void testGetStringResultForInfoResult() {
@@ -65,7 +65,7 @@ public class HtmlFormatterTest extends TestCase {
 				.getInfoResult())).append("\n").append(
 				formatter.getStringResult(ReportUtil.getSuccessResult()))
 				.append("\n").append(
-						formatter.getStringResult(ReportUtil.getFailureResult()))
+						formatter.getStringResult(ReportUtil.getFailureResultWithoutDebugInfo()))
 				.append("\n").toString();
 
 		assertEquals(expected, formatter.getResultData(ReportUtil

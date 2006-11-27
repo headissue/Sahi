@@ -37,7 +37,7 @@ public class JUnitFormatterTest extends TestCase {
 				.getInfoResult())).append("\n").append(
 				formatter.getStringResult(ReportUtil.getSuccessResult()))
 				.append("\n").append(
-						formatter.getStringResult(ReportUtil.getFailureResult()))
+						formatter.getStringResult(ReportUtil.getFailureResultWithoutDebugInfo()))
 				.append("\n").toString();
 
 		assertEquals(expected, formatter.getResultData(ReportUtil
@@ -63,9 +63,15 @@ public class JUnitFormatterTest extends TestCase {
 				.getSuccessResult()));
 	}
 
-	public void testGetStringResultForFailureResult() {
-		String expected = "<testcase name=\"_call(testAccessors()); Assertion Failed.\">\n<failure message=\"Assertion Failed\"></failure>\n</testcase>";
+	public void testGetStringResultForFailureResultWithoutDebugInfo() {
+		String expected = "<testcase name=\"_call(testAccessors());\">\n<failure message=\"Assertion Failed\"><![CDATA[Assertion Failed.]]></failure>\n</testcase>";
 		assertEquals(expected, formatter.getStringResult(ReportUtil
-				.getFailureResult()));
+				.getFailureResultWithoutDebugInfo()));
+	}
+	
+	public void testGetStringResultForFailureResultWithDebugInfo() {
+		String expected = "<testcase name=\"_call(testAccessors());\">\n<failure message=\"Assertion Failed\"><![CDATA[Assertion Failed. Expected:[2] Actual:[1]]]></failure>\n</testcase>";
+		assertEquals(expected, formatter.getStringResult(ReportUtil
+				.getFailureResultWithDebugInfo()));
 	}
 }
