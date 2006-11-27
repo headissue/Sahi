@@ -16,142 +16,168 @@
 
 package net.sf.sahi.session;
 
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
 import net.sf.sahi.command.MockResponder;
 import net.sf.sahi.playback.SahiScript;
 import net.sf.sahi.playback.log.LogFileConsolidator;
 import net.sf.sahi.playback.log.PlayBackLogger;
 import net.sf.sahi.record.Recorder;
+import net.sf.sahi.report.Report;
 import net.sf.sahi.test.SahiTestSuite;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Iterator;
 
 /**
  * User: nraman Date: Jun 21, 2005 Time: 8:03:28 PM
  */
 public class Session {
-    public static final String STATE_RUNNING = "RUNNING";
-    private static Map sessions = new HashMap();
-    private String sessionId;
-    private boolean isWindowOpen = false;
-    private Recorder recorder;
-    private SahiScript script;
-    private Map variables;
-    private PlayBackLogger playBackLogger;
-    private String scriptLogFile;
-    private MockResponder mockResponder = new MockResponder();
+	public static final String STATE_RUNNING = "RUNNING";
 
-    public static Session getInstance(String sessionId) {
-        if (!sessions.containsKey(sessionId)) {
-            sessions.put(sessionId, new Session(sessionId));
-        }
-        return (Session) sessions.get(sessionId);
-    }
+	private static Map sessions = new HashMap();
 
-    public Session(String sessionId) {
-        this.sessionId = sessionId;
-        this.variables = new HashMap();
-    }
+	private String sessionId;
 
-    public String id() {
-        return sessionId;
-    }
+	private boolean isWindowOpen = false;
 
-    public void setIsWindowOpen(boolean isWindowOpen) {
-        this.isWindowOpen = isWindowOpen;
-    }
+	private Recorder recorder;
 
-    public boolean isWindowOpen() {
-        return isWindowOpen;
-    }
+	private SahiScript script;
 
-    public Recorder getRecorder() {
-        if (this.recorder == null) this.recorder = new Recorder();
-        return recorder;
-    }
+	private Map variables;
 
-    public boolean isRecording() {
-        return getRecorder().isRecording();
-    }
+	private PlayBackLogger playBackLogger;
 
-    public void setScript(SahiScript script) {
-        this.script = script;
-    }
+	private String scriptLogFile;
 
-    public String getVariable(String name) {
-        return (String) (variables.get(name));
-    }
+	private MockResponder mockResponder = new MockResponder();
 
-    public void removeVariables(String pattern) {
-        for (Iterator iterator = variables.keySet().iterator(); iterator.hasNext();) {
-            String s = (String) iterator.next();
-            if (s.matches(pattern)){
-                iterator.remove();
-            }
-        }
-    }
+	private Report report;
 
-    public void setVariable(String name, String value) {
-        variables.put(name, value);
-    }
+	public static Session getInstance(String sessionId) {
+		if (!sessions.containsKey(sessionId)) {
+			sessions.put(sessionId, new Session(sessionId));
+		}
+		return (Session) sessions.get(sessionId);
+	}
 
-    public SahiScript getScript() {
-        return script;
-    }
+	public Session(String sessionId) {
+		this.sessionId = sessionId;
+		this.variables = new HashMap();
+	}
 
-    public SahiTestSuite getSuite() {
-        return SahiTestSuite.getSuite(this.id());
-    }
+	public String id() {
+		return sessionId;
+	}
 
-    public void logPlayBack(String msg, String type, String debugInfo) {
-        if (playBackLogger == null) {
-            createPlayBackLogger();
-        }
-        playBackLogger.log(SahiScript.stripSahiFromFunctionNames(msg), type, debugInfo);
-    }
+	public void setIsWindowOpen(boolean isWindowOpen) {
+		this.isWindowOpen = isWindowOpen;
+	}
 
-    public void stopPlayBack() {
-        if (playBackLogger == null) return;
-        playBackLogger.log("Stopping script", "stop", script.getScriptName());
-        playBackLogger.stop();
-        playBackLogger = null;
-    }
+	public boolean isWindowOpen() {
+		return isWindowOpen;
+	}
 
-    public void startPlayBack() {
-        if (playBackLogger == null) {
-            createPlayBackLogger();
-            playBackLogger.log("Starting script", "start", script.getScriptName());
-        }
-    }
+	public Recorder getRecorder() {
+		if (this.recorder == null)
+			this.recorder = new Recorder();
+		return recorder;
+	}
 
-    private void createPlayBackLogger() {
-        playBackLogger = new PlayBackLogger(script.getScriptName(), getSuiteLogDir());
-        scriptLogFile = playBackLogger.getScriptLogFile();
-    }
+	public boolean isRecording() {
+		return getRecorder().isRecording();
+	}
 
-    public String getSuiteLogDir() {
-        if (getSuite() == null) return null;
-        return getSuite().getSuiteLogDir();
-    }
+	public void setScript(SahiScript script) {
+		this.script = script;
+	}
 
-    public String getPlayBackStatus() {
-        if (getSuite().isRunning()) {
-            return STATE_RUNNING;
-        }
-        return new LogFileConsolidator(getSuiteLogDir()).getStatus();
-    }
+	public String getVariable(String name) {
+		return (String) (variables.get(name));
+	}
 
-    public String getScriptLogFile() {
-        return scriptLogFile;
-    }
+	public void removeVariables(String pattern) {
+		for (Iterator iterator = variables.keySet().iterator(); iterator
+				.hasNext();) {
+			String s = (String) iterator.next();
+			if (s.matches(pattern)) {
+				iterator.remove();
+			}
+		}
+	}
 
-    public boolean isPlayingBack() {
-        return playBackLogger != null;
-    }
+	public void setVariable(String name, String value) {
+		variables.put(name, value);
+	}
 
-    public MockResponder mockResponder() {
-        return mockResponder;
-    }
+	public SahiScript getScript() {
+		return script;
+	}
 
+	public SahiTestSuite getSuite() {		
+		return SahiTestSuite.getSuite(this.id());
+	}
+
+	public void logPlayBack(String msg, String type, String debugInfo) {
+		if (playBackLogger == null) {
+			createPlayBackLogger();
+		}
+//		playBackLogger.log(SahiScript.stripSahiFromFunctionNames(msg), type,
+//				debugInfo);
+	}
+
+	public void stopPlayBack() {
+		if (playBackLogger == null)
+			return;
+		//playBackLogger.log("Stopping script", "stop", script.getScriptName());
+		playBackLogger.stop();
+		playBackLogger = null;
+	}
+
+	public void startPlayBack() {
+		if (playBackLogger == null) {
+			createPlayBackLogger();
+//			playBackLogger.log("Starting script", "start", script
+//					.getScriptName());
+		}
+	}
+
+	private void createPlayBackLogger() {
+		playBackLogger = new PlayBackLogger(script.getScriptName(),
+				getSuiteLogDir());
+		scriptLogFile = playBackLogger.getScriptLogFile();
+	}
+
+	public String getSuiteLogDir() {
+		if (getSuite() == null)
+			return null;
+		return getSuite().getSuiteLogDir();
+	}
+
+	public String getPlayBackStatus() {
+		if (getSuite().isRunning()) {
+			return STATE_RUNNING;
+		}
+		return new LogFileConsolidator(getSuiteLogDir()).getStatus();
+	}
+
+	public String getScriptLogFile() {
+		return scriptLogFile;
+	}
+
+	public boolean isPlayingBack() {
+		return playBackLogger != null;
+	}
+
+	public MockResponder mockResponder() {
+		return mockResponder;
+	}
+
+	public Report getReport() {
+		return report;
+	}
+
+	public void setReport(Report report) {
+		this.report = report;
+	}
 }
