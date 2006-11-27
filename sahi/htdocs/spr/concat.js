@@ -1994,8 +1994,8 @@ function sahiEx(isStep) {
                             return;
                         } else {
                             debugInfo = "" + debugs[i];
-                            var msg = " Assertion Failed. " + (ex1.messageText ? ex1.messageText : "");
-                            sahiLogPlayBack(cmds[i] + msg, "failure", debugInfo);
+                            var failureMsg = "Assertion Failed. " + (ex1.messageText ? ex1.messageText : "");
+                            sahiLogPlayBack(cmds[i], "failure", debugInfo, failureMsg);
                             sahiSetRetries(0);
                             sahiSetCurrentIndex(i + 1);
                         }
@@ -2020,7 +2020,7 @@ function sahiEx(isStep) {
             else {
                 var debugInfo = "" + debugs[i];
                 if (sahiGetServerVar("sahi_play") == "1") {
-                    sahiLogPlayBack(cmds[i] + "<br>" + sahiGetExceptionString(ex), "error", debugInfo);
+                    sahiLogPlayBack(cmds[i], "error", debugInfo, sahiGetExceptionString(ex));
                 }
                 sahiStopPlaying();
             }
@@ -2127,10 +2127,13 @@ function sahiStopRecording() {
 }
 function sahiReportSuccess(msg, debugInfo) {
     var type = (msg.indexOf("sahi_assert") == 0)?"success":"info";
-    sahiSendToServer("/_s_/dyn/Player_success?msg=" + sahiEscape(msg) + "&type=" + type + "&debugInfo=" + (debugInfo?sahiEscape(debugInfo):""));
+    //sahiSendToServer("/_s_/dyn/Player_success?msg=" + sahiEscape(msg) + "&type=" + type + "&debugInfo=" + (debugInfo?sahiEscape(debugInfo):""));
+    sahiLogPlayBack(msg, type, debugInfo);
 }
-function sahiLogPlayBack(msg, type, debugInfo) {
-    sahiSendToServer("/_s_/dyn/Log?msg=" + sahiEscape(msg) + "&type=" + type + "&debugInfo=" + (debugInfo?sahiEscape(debugInfo):""));
+function sahiLogPlayBack(msg, type, debugInfo, failureMsg) {	
+    //sahiSendToServer("/_s_/dyn/Log?msg=" + sahiEscape(msg) + "&type=" + type + "&debugInfo=" + (debugInfo?sahiEscape(debugInfo):""));
+    sahiSendToServer("/_s_/dyn/TestReporter_logTestResult?msg=" + sahiEscape(msg) + "&type=" + type 
+    	+ "&debugInfo=" + (debugInfo?sahiEscape(debugInfo):"")+(failureMsg?"&failureMsg="+sahiEscape(failureMsg):""));
 }
 function sahiTrim(s) {
     if (s == null) return s;
