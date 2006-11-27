@@ -48,6 +48,7 @@ public class Player {
 
 	public void stop(HttpRequest request) {
 		request.session().getRecorder().stop();
+		request.session().getReport().generateReport();
 		new PlayerStopThread(request.session()).start();
 	}
 
