@@ -40,17 +40,20 @@ public class TestRunner {
 
 	private final String threads;
 
-	public static void main(String[] args) {
+    private String browserOption;
+
+    public static void main(String[] args) {
 		try {
 			if (args.length == 0) {
 				System.out
-						.println("Usage: java TestRunner <suite_name> <start_url> <browser_executable> <log_dir> <sahi_host> <sahi_port> <number_of_threads>");
+						.println("Usage: java TestRunner <suite_name> <start_url> <browser_executable> <log_dir> <sahi_host> <sahi_port> <number_of_threads>  optional<browser_option>");
 				System.out
 						.println("Set log_dir to \"default\" if you want to log to the default log dir");
 				System.out
 						.println("Set number_of_threads to a number less than 5 for Internet Explorer");
 				System.out.println("Set number_of_threads to 1 for FireFox");
-				System.exit(-1);
+                System.out.println("Set browser_option to the profile dir to open FireFox in that profile ");
+                System.exit(-1);
 			}
 			String suiteName = args[0];
 			String base = getBase(args);
@@ -61,8 +64,11 @@ public class TestRunner {
 			String sahiHost = args[4];
 			String port = args[5];
 			String threads = args[6];
-			TestRunner testRunner = new TestRunner(suiteName, browser, base,
-					logDir, "true", sahiHost, port, threads);
+            String browserOption="";
+            if( args.length==9)
+				 browserOption=args[8];
+            TestRunner testRunner = new TestRunner(suiteName, browser, base,
+					logDir, "true", sahiHost, port, threads,browserOption);
 			String status = testRunner.execute();
 			System.out.println("Status:" + status);
 		} catch (Exception e) {
@@ -72,7 +78,7 @@ public class TestRunner {
 
 	public TestRunner(String suiteName, String browser, String base,
 			String logDir, String junitReport, String sahiHost, String port,
-			String threads) {
+			String threads,String browserOption) {
 		this.suiteName = suiteName;
 		this.browser = browser;
 		this.base = base;
@@ -81,7 +87,8 @@ public class TestRunner {
 		this.sahiHost = sahiHost;
 		this.port = port;
 		this.threads = threads;
-	}
+        this.browserOption=browserOption;
+    }
 
 	public String execute() throws UnsupportedEncodingException,
 			MalformedURLException, IOException, InterruptedException {
@@ -96,6 +103,9 @@ public class TestRunner {
 				.append("&browser=").append(encode(browser))
 				.append("&threads=").append(encode(threads))
 				.append("&sahisid=").append(encode(sessionId)).toString();
+             if (browserOption!=null)
+			urlStr+="&browserOption="+encode(browserOption);
+                
 		URL url = new URL(urlStr);
 		InputStream in = url.openStream();
 		in.close();

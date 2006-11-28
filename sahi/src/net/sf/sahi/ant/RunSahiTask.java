@@ -51,7 +51,19 @@ public class RunSahiTask extends Task {
 
 	private String threads = "1";
 
-	public String getBaseURL() {
+    private String browserOption;
+
+    public String getBrowserOption() {
+        return browserOption;
+    }
+
+    public void setBrowserOption(String browserOption) {
+        this.browserOption = browserOption;
+    }
+
+
+
+    public String getBaseURL() {
 		return baseURL;
 	}
 
@@ -116,7 +128,7 @@ public class RunSahiTask extends Task {
 		String status = "FAILURE";
 		try {
 			TestRunner testRunner = new TestRunner(suite, browser, baseURL,
-					logDir, junitReport, sahiHost, sahiPort, threads);
+					logDir, junitReport, sahiHost, sahiPort, threads,browserOption);
 			status = testRunner.execute();
 			if (!"SUCCESS".equals(status)) {
 				isFailure = true;

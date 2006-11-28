@@ -35,13 +35,15 @@ class TestLauncher {
 	Process process;
 	private final String browser;
 	private static Logger logger = Configuration.getLogger("net.sf.sahi.test.TestLauncher");
+    private String browserOption;
 
-	TestLauncher(String scriptName, String startURL, String browser, String sessionId) {
+    TestLauncher(String scriptName, String startURL, String browser, String sessionId, String browserOption) {
 		this.scriptName = scriptName;
 		this.startURL = startURL;
 		this.browser = browser;
 		this.sessionId = sessionId;
-	}
+        this.browserOption=browserOption;
+    }
 
 	public void execute() {
 		randomInt = getRandomInt();
@@ -83,11 +85,26 @@ class TestLauncher {
 	}
 
 	private String escapeCommandStringForPlatform(String url) {
-		if (isWindows())
-			return "\"" + browser + "\" \"" + url + "\"";
-		else
-			return browser.replaceAll("[ ]+", "\\ ") + " " + url.replaceAll("&", "\\&");
-	}
+		String result=null;
+        if (isWindows())
+        {
+            result = "\"" + browser  + "\" ";
+			if(!browserOption.equals(""))
+				result += browserOption;
+			result+=" \"" + url + "\"";
+             System.out.println(result);
+			return result;
+
+        }
+        else
+        {
+            result= browser.replaceAll("[ ]+", "\\ ");
+             if(!browserOption.equals(""))
+                result+=browserOption.replaceAll("[ ]+", "\\ ");
+          result+=  " " + url.replaceAll("&", "\\&");
+            return result;
+        }   
+    }
 
 	private boolean isWindows() {
 		return System.getProperty("os.name").toLowerCase().startsWith("windows");

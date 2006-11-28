@@ -55,17 +55,21 @@ public class SahiTestSuite {
 
 	private boolean junitReport;
 
-	private static HashMap suites = new HashMap();
+    private String browserOption;
 
-	private SahiTestSuite(String suitePath, String base, String browser,
-			String logDir, String junitReport, String sessionId) {
+    private static HashMap suites = new HashMap();
+
+
+    private SahiTestSuite(String suitePath, String base, String browser,
+                          String logDir, String junitReport, String sessionId, String browseroption) {
 		this.suitePath = suitePath;
 		this.base = base;
 		this.browser = browser;
 		this.suiteLogDir = logDir;
 		this.junitReport = "true".equalsIgnoreCase(junitReport) ? true : false;
 		this.sessionId = stripSah(sessionId);
-		setSuiteName(suitePath);
+        this.browserOption=browseroption;
+        setSuiteName(suitePath);
 		init();
 
 		System.out.println("Session Id while creating: " + this.sessionId);
@@ -156,7 +160,7 @@ public class SahiTestSuite {
 
 	private void addTest(String testName, String startURL) {
 		TestLauncher sahiTest = new TestLauncher(testName, startURL, browser,
-				sessionId);
+				sessionId,browserOption);
 		tests.add(sahiTest);
 		testsMap.put(new File(testName).getName(), sahiTest);
 	}
@@ -229,15 +233,16 @@ public class SahiTestSuite {
 		String threadsStr = request.getParameter("threads");
 		String logDir = request.getParameter("logDir");
 		String junitReport = request.getParameter("junitReport");
+        String browseroption= request.getParameter("browserOption");
 
-		int threads = 1;
+        int threads = 1;
 		try {
 			threads = Integer.parseInt(threadsStr);
 		} catch (Exception e) {
 		}
 		logDir = "".equals(logDir) ? null : logDir;
 		SahiTestSuite suite = new SahiTestSuite(suitePath, base, browser,
-				logDir, junitReport, session.id());
+				logDir, junitReport, session.id(),browseroption);
 		for (int i = 0; i < threads; i++) {
 			suite.executeNext();
 			try {
