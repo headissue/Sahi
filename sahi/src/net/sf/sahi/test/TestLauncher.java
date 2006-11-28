@@ -36,6 +36,7 @@ class TestLauncher {
 	private final String browser;
 	private static Logger logger = Configuration.getLogger("net.sf.sahi.test.TestLauncher");
     private String browserOption;
+    
 
     TestLauncher(String scriptName, String startURL, String browser, String sessionId, String browserOption) {
 		this.scriptName = scriptName;

@@ -53,6 +53,7 @@ public class RunSahiTask extends Task {
 
     private String browserOption;
 
+
     public String getBrowserOption() {
         return browserOption;
     }
@@ -61,9 +62,7 @@ public class RunSahiTask extends Task {
         this.browserOption = browserOption;
     }
 
-
-
-    public String getBaseURL() {
+     public String getBaseURL() {
 		return baseURL;
 	}
 

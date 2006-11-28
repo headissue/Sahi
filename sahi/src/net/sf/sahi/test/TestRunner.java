@@ -52,7 +52,7 @@ public class TestRunner {
 				System.out
 						.println("Set number_of_threads to a number less than 5 for Internet Explorer");
 				System.out.println("Set number_of_threads to 1 for FireFox");
-                System.out.println("Set browser_option to the profile dir to open FireFox in that profile ");
+                System.out.println("Set browser_option to the profile dir to open FireFox with the given profile ");
                 System.exit(-1);
 			}
 			String suiteName = args[0];
