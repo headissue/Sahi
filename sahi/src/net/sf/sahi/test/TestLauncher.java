@@ -22,10 +22,11 @@ import java.net.URLEncoder;
 import java.util.logging.Logger;
 
 import net.sf.sahi.config.Configuration;
+import net.sf.sahi.util.Utils;
 
 /**
  * @author nraman
- * Launches browser with test and kills it on completion 
+ * Launches browser with test and kills it on completion
  */
 public class TestLauncher {
 	private final String scriptName;
@@ -37,7 +38,7 @@ public class TestLauncher {
 	private final String browser;
 	private static Logger logger = Configuration.getLogger("net.sf.sahi.test.TestLauncher");
     private String browserOption;
-    
+
 
     TestLauncher(String scriptName, String startURL, String browser, String sessionId, String browserOption) {
 		this.scriptName = scriptName;
@@ -96,7 +97,7 @@ public class TestLauncher {
         if (isWindows())
         {
             result = "\"" + browser  + "\" ";
-			if(!browserOption.equals(""))
+			if(!Utils.isBlankOrNull(browserOption))
 				result += browserOption;
 			result+=" \"" + url + "\"";
              System.out.println(result);
@@ -110,7 +111,7 @@ public class TestLauncher {
                 result+=browserOption.replaceAll("[ ]+", "\\ ");
           result+=  " " + url.replaceAll("&", "\\&");
             return result;
-        }   
+        }
     }
 
 	private boolean isWindows() {
