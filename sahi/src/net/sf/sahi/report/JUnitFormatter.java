@@ -69,4 +69,12 @@ public class JUnitFormatter implements Formatter {
 		return sb.toString();
 	}
 
+	public String getSummaryFooter() {
+		return "";
+	}
+
+	public String getSummaryHeader() {
+		return "";
+	}
+
 }
