@@ -24,6 +24,8 @@ public class Report {
 
 	protected String logDir = null;
 
+	protected TestSummary testSummary = null;
+
 	public Report(String scriptName, String logDir, Formatter formatter) {
 		this.scriptName = scriptName;
 		this.formatter = formatter;
@@ -54,7 +56,10 @@ public class Report {
 		try {
 			writer = new BufferedWriter(new FileWriter(logFile));
 			writer.write(formatter.getHeader());
-			writer.write(formatter.getSummaryData(summarizeResults()));
+			this.setTestSummary(summarizeResults());
+			writer.write(formatter.getSummaryHeader());
+			writer.write(formatter.getSummaryData(this.getTestSummary()));
+			writer.write(formatter.getSummaryFooter());
 			writer.write(formatter.getStartScript());
 			writer.write(formatter.getResultData(listResult));
 			writer.write(formatter.getStopScript());
@@ -103,5 +108,13 @@ public class Report {
 
 	public void setFormatter(Formatter formatter) {
 		this.formatter = formatter;
+	}
+
+	public TestSummary getTestSummary() {
+		return testSummary;
+	}
+
+	public void setTestSummary(TestSummary summary) {
+		this.testSummary = summary;
 	}
 }
