@@ -39,6 +39,8 @@ public class TestRunner {
 	private final String port;
 
 	private final String threads;
+	
+	private String sessionId = null;
 
     private String browserOption;
 
@@ -68,7 +70,7 @@ public class TestRunner {
             if( args.length==9)
 				 browserOption=args[8];
             TestRunner testRunner = new TestRunner(suiteName, browser, base,
-					logDir, "true", sahiHost, port, threads,browserOption);
+					logDir, "false", sahiHost, port, threads,browserOption);
 			String status = testRunner.execute();
 			System.out.println("Status:" + status);
 		} catch (Exception e) {
@@ -92,7 +94,7 @@ public class TestRunner {
 
 	public String execute() throws UnsupportedEncodingException,
 			MalformedURLException, IOException, InterruptedException {
-		String sessionId = "sahi_" + System.currentTimeMillis();
+		this.sessionId = "sahi_" + System.currentTimeMillis();
 		String urlStr = new StringBuffer(200).append("http://")
 				.append(sahiHost).append(":").append(port).append(
 						"/_s_/dyn/Suite_start?suite=")
@@ -102,7 +104,7 @@ public class TestRunner {
 						"&junitReport=").append(junitReport)
 				.append("&browser=").append(encode(browser))
 				.append("&threads=").append(encode(threads))
-				.append("&sahisid=").append(encode(sessionId)).toString();
+				.append("&sahisid=").append(encode(this.sessionId)).toString();
              if (browserOption!=null)
 			urlStr+="&browserOption="+encode(browserOption);
                 

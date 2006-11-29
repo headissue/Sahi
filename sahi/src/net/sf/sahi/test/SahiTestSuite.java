@@ -70,9 +70,7 @@ public class SahiTestSuite {
 		this.sessionId = stripSah(sessionId);
         this.browserOption=browseroption;
         setSuiteName(suitePath);
-		init();
-
-		System.out.println("Session Id while creating: " + this.sessionId);
+		init();		
 		suites.put(this.sessionId, this);
 	}
     
@@ -251,6 +249,21 @@ public class SahiTestSuite {
 				Thread.sleep(1000);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
+			}
+		}
+
+		if (!suite.isJunitReport()) {
+			suite.generateSuiteReport(request);
+		}
+	}
+
+	private void generateSuiteReport(HttpRequest request) {
+		while (true) {
+			Session session = request.session();
+			String status = session.getPlayBackStatus();
+			if ("SUCCESS".equals(status) || "FAILURE".equals(status)) {
+				new SuiteReport().generateReport(suiteLogDir, tests);
+				break;
 			}
 		}
 	}

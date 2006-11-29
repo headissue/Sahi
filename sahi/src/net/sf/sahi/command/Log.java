@@ -50,11 +50,11 @@ public class Log {
 
     public void execute(HttpRequest request) {
         Session session = request.session();
-        if (session.getScript() != null) {
-            session.logPlayBack(request.getParameter("msg"),
-                    request.getParameter("type"),
-                    request.getParameter("debugInfo"));
-        }
+//        if (session.getScript() != null) {
+//            session.logPlayBack(request.getParameter("msg"),
+//                    request.getParameter("type"),
+//                    request.getParameter("debugInfo"));
+//        }
     }
 
     private int getLineNumber(HttpRequest req) {

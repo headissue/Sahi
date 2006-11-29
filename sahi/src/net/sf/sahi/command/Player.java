@@ -127,11 +127,14 @@ public class Player {
 		String startUrl = request.getParameter("startUrl");
 		session.setIsWindowOpen(false);
 
-		Formatter formatter = (session.getSuite().isJunitReport()) ? new JUnitFormatter()
-				: new HtmlFormatter();
+		Formatter formatter = null;
+		if (session.getSuite().isJunitReport()) {
+			formatter = new JUnitFormatter();
+		} else {
+			formatter = new HtmlFormatter();
+		}
 		session.setReport(new Report(session.getScript().getScriptName(),
 				session.getSuiteLogDir(), formatter));
-
 		session.startPlayBack();
 		return proxyAutoResponse(startUrl, session.id());
 	}
@@ -168,10 +171,10 @@ public class Player {
 			if (suite != null) {
 				suite.stop(session.getScript().getScriptName());
 				waitSomeTime();
-				if (!suite.executeNext())
-					consolidateLogs(session.getSuiteLogDir());
+//				if (!suite.executeNext())
+//					consolidateLogs(session.getSuiteLogDir());
 			} else {
-				consolidateLogs(session.getScriptLogFile());
+				//consolidateLogs(session.getScriptLogFile());
 			}
 		}
 

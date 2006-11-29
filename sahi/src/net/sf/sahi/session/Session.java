@@ -137,8 +137,8 @@ public class Session {
 	public void startPlayBack() {
 		if (playBackLogger == null) {
 			createPlayBackLogger();
-//			playBackLogger.log("Starting script", "start", script
-//					.getScriptName());
+			playBackLogger.log("Starting script", "start", script
+					.getScriptName());
 		}
 	}
 

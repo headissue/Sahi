@@ -30,8 +30,9 @@ import net.sf.sahi.config.Configuration;
 class TestLauncher {
 	private final String scriptName;
 	private final String startURL;
-	private int randomInt;
+	private final int randomInt;
 	private final String sessionId;
+	private final String childSessionId;
 	Process process;
 	private final String browser;
 	private static Logger logger = Configuration.getLogger("net.sf.sahi.test.TestLauncher");
@@ -43,11 +44,16 @@ class TestLauncher {
 		this.startURL = startURL;
 		this.browser = browser;
 		this.sessionId = sessionId;
+		this.randomInt = getRandomInt();
+		this.childSessionId = createChildSessionId();
         this.browserOption=browserOption;
     }
 
-	public void execute() {
-		randomInt = getRandomInt();
+	private String createChildSessionId() {		
+		return sessionId + "sahix" + randomInt + "x";
+	}
+
+	public void execute() {		
 		String url = addSessionId(getURL());
 		process = openURL(url);
 	}
@@ -70,7 +76,7 @@ class TestLauncher {
 	}
 
 	private String addSessionId(String url) {
-		return url + "&sahisid=" + sessionId + "sahix" + randomInt + "x";
+		return url + "&sahisid=" + childSessionId;
 	}
 
 	private Process openURL(String url) {
@@ -78,7 +84,7 @@ class TestLauncher {
 		logger.fine("cmd=" + cmd);
 		Process process = null;
 		try {
-			process = Runtime.getRuntime().exec(cmd);
+			process = Runtime.getRuntime().exec(cmd.replaceAll("%20", " "));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -125,7 +131,15 @@ class TestLauncher {
 		}
 	}
 
+	public String getSessionId() {
+		return sessionId;
+	}
+
+	public String getChildSessionId() {
+		return childSessionId;
+	}
+
 //	private boolean isFirefox() {
-//		return browser.toLowerCase().indexOf("firefox") != -1;
-//	}
+	// return browser.toLowerCase().indexOf("firefox") != -1;
+	//	}
 }
