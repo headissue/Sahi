@@ -112,6 +112,8 @@
                 <include name="popup_title.sah"/>
                 <include name="popup_title_name_mix.sah"/>
                 <include name="wait_for.sah"/>
+                <include name="keypress.sah"/>
+                <include name="mouseover.sah"/>
             </fileset>
         </copy>
         <copy todir="temp/sahi/extlib">
