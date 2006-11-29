@@ -27,7 +27,7 @@ import net.sf.sahi.config.Configuration;
  * @author nraman
  * Launches browser with test and kills it on completion 
  */
-class TestLauncher {
+public class TestLauncher {
 	private final String scriptName;
 	private final String startURL;
 	private final int randomInt;
