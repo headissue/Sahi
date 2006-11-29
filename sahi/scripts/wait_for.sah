@@ -2,7 +2,8 @@ _click(_link("Wait For Condition"));
 
 _click(_button("Click me"));
 _assertNotNull(_textbox("t1"));
-_wait(7000,  _byId("id2"));
+var $a = "id2";
+_wait(7000,  _byId($a));
 _assertEqual("populated", _textbox("t1").value);
 
 _navigateTo("waitFor.htm")
@@ -19,4 +20,3 @@ _click(_button("Click me"));
 _assertNotNull(_textbox("t1"));
 _wait(15000, _textbox("t1").value == "populated");
 _assertEqual("populated", _textbox("t1").value);
-

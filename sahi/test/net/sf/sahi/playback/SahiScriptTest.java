@@ -244,6 +244,7 @@ public class SahiScriptTest extends TestCase {
     }
 
     public void testWait(){
-        assertEquals("sahiSchedule(\"sahi_wait(1000, \\\" sahi_byId(\\\\\\\"abc\\\\\\\")\\\");\", \"scrName&n=12\")\r\n", testScript.modifyWait("_wait(1000, _byId(\"abc\"))", 12));
+        assertEquals("sahiSchedule(\"sahi_wait(1000, \\\"sahi_byId(\\\\\\\"abc\\\\\\\")\\\");\", \"scrName&n=12\")\r\n", testScript.modifyWait("_wait(1000, _byId(\"abc\"))", 12));
+        assertEquals("sahiSchedule(\"sahi_wait(1000, \\\"sahi_byId(\\\"+s_v(\"+s_v($abc)+\")+\\\")\\\");\", \"scrName&n=12\")\r\n", testScript.modifyWait("_wait(1000, _byId($abc))", 12));
     }
 }

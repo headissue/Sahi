@@ -114,7 +114,7 @@ public abstract class SahiScript {
         int close = line.lastIndexOf(")");
         if (close == -1) close = line.length();
         sb.append("\"");
-        sb.append(Utils.escapeDoubleQuotesAndBackSlashes(line.substring(comma+1, close)));
+        sb.append(separateVariables(line.substring(comma+1, close).trim()));
         sb.append("\");");
         return scheduleLine(sb.toString(), lineNumber);
     }
