@@ -767,13 +767,13 @@ function sahi_alert(s) {
 var _sahiLastAlert = "";
 function sahiAlertMock(s) {
     if (isSahiPlaying()) {
-        _sahiLastAlert = s;
+        sahiTop()._sahiLastAlert = s;
     } else {
         return sahi_real_alert(s);
     }
 }
 function sahi_lastAlert() {
-    var v = _sahiLastAlert;
+    var v = sahiTop()._sahiLastAlert;
     //    _sahiLastAlert = null;
     return v;
 }
