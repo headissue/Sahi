@@ -11,19 +11,12 @@ import net.sf.sahi.util.Utils;
 public class HtmlFormatterTest extends TestCase {
 	private HtmlFormatter formatter = null;
 
-	private String expectedSummaryForEmptyList = new StringBuffer().append(
-			"<table><tr><td>Test</td>").append("<td>Total Steps</td>").append(
-			"<td>Failures</td><td>Errors</td>").append(
-			"<td>Success Rate</td></tr>").append(
+	private String expectedSummaryForEmptyList = new StringBuffer(
 			"<tr class=\"SUCCESS\"><td><a>test</a></td><td>0</td>").append(
-			"<td>0</td><td>0</td><td>100%</td></tr></table>").toString();
+			"<td>0</td><td>0</td><td>100%</td></tr>").toString();
 
-	private String expectedSummaryForAllTypes = new StringBuffer().append(
-			"<table><tr><td>Test</td>").append("<td>Total Steps</td>").append(
-			"<td>Failures</td><td>Errors</td>").append(
-			"<td>Success Rate</td></tr>").append(
-			"<tr class=\"FAILURE\"><td><a>test</a></td><td>3</td>").append(
-			"<td>1</td><td>0</td><td>66%</td></tr></table>").toString();
+	private String expectedSummaryForAllTypes = new StringBuffer("<tr class=\"FAILURE\"><td><a>test</a></td><td>3</td>").append(
+			"<td>1</td><td>0</td><td>66%</td></tr>").toString();
 
 	protected void setUp() throws Exception {
 		super.setUp();
@@ -80,6 +73,16 @@ public class HtmlFormatterTest extends TestCase {
 						.getConsolidatedLogCSSFileName(true)))).append(
 				"</style>\n").toString();
 		assertEquals(expected, formatter.getHeader());
+	}
+	
+	public void testGetSummaryHeader()	{
+		String expected = "<table><tr><td>Test</td><td>Total Steps</td><td>Failures</td><td>Errors</td><td>Success Rate</td></tr>";
+		assertEquals(expected, formatter.getSummaryHeader());		
+	}
+	
+	public void testGetSummaryFooter()	{
+		String expected = "</table>";
+		assertEquals(expected, formatter.getSummaryFooter());		
 	}
 
 	public void testGetSummaryDataForEmptyList() {
