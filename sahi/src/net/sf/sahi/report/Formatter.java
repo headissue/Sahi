@@ -13,7 +13,11 @@ public interface Formatter {
 
 	String getResultData(List listResult);
 
+	String getSummaryHeader();
+
 	String getSummaryData(TestSummary summary);
+
+	String getSummaryFooter();
 
 	String getStartScript();
 
