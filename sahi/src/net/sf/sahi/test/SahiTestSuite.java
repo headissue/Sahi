@@ -75,8 +75,9 @@ public class SahiTestSuite {
 		System.out.println("Session Id while creating: " + this.sessionId);
 		suites.put(this.sessionId, this);
 	}
+    
 
-	public static SahiTestSuite getSuite(String sessionId) {
+    public static SahiTestSuite getSuite(String sessionId) {
 		return (SahiTestSuite) suites.get(stripSah(sessionId));
 	}
 
