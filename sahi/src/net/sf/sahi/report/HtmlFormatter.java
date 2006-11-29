@@ -49,7 +49,10 @@ public class HtmlFormatter implements Formatter {
 
 		return sb.toString();
 	}
-
+		
+	public String getSummaryHeader() {
+		return "<table><tr><td>Test</td><td>Total Steps</td><td>Failures</td><td>Errors</td><td>Success Rate</td></tr>";
+	}
 	public String getSummaryData(TestSummary summary) {
 		StringBuffer sb = new StringBuffer();
 		boolean fail = summary.getErrors() > 0 || summary.getFailures() > 0;
@@ -57,9 +60,6 @@ public class HtmlFormatter implements Formatter {
 				.getFailures() + summary.getErrors())) * 100)
 				/ summary.getSteps()
 				: 100;
-
-		sb.append("<table><tr><td>Test</td><td>Total Steps</td>");
-		sb.append("<td>Failures</td><td>Errors</td><td>Success Rate</td></tr>");
 		sb.append("<tr class=\"");
 		sb.append(fail ? ResultType.FAILURE.getName() : ResultType.SUCCESS
 				.getName());
@@ -67,8 +67,12 @@ public class HtmlFormatter implements Formatter {
 				"</a></td><td>").append(summary.getSteps()).append("</td><td>")
 				.append(summary.getFailures()).append("</td><td>").append(
 						summary.getErrors()).append("</td><td>").append(
-						successRate).append("%</td></tr></table>");
+						successRate).append("%</td></tr>");
 		return sb.toString();
+	}
+
+	public String getSummaryFooter() {		
+		return "</table>";
 	}
 
 	public String getFooter() {
