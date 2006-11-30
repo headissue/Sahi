@@ -2,46 +2,65 @@ package net.sf.sahi.report;
 
 /**
  * @author dlewis
- * 
  */
 public class TestSummary {
-	String scriptName = null;
+    private String scriptName = null;
 
-	int steps;
+    private String logFile = null;
 
-	int failures;
+    private boolean addLink = false;
 
-	int errors;
+    private int steps;
 
-	public int getErrors() {
-		return errors;
-	}
+    private int failures;
 
-	public void setErrors(int errors) {
-		this.errors = errors;
-	}
+    private int errors;
 
-	public int getFailures() {
-		return failures;
-	}
+    public boolean addLink() {
+        return addLink;
+    }
 
-	public void setFailures(int failures) {
-		this.failures = failures;
-	}
+    public void setAddLink(boolean addLink) {
+        this.addLink = addLink;
+    }
 
-	public String getScriptName() {
-		return scriptName;
-	}
+    public String getLogFile() {
+        return logFile;
+    }
 
-	public void setScriptName(String scriptName) {
-		this.scriptName = scriptName;
-	}
+    public void setLogFile(String logFile) {
+        this.logFile = logFile;
+    }
 
-	public int getSteps() {
-		return steps;
-	}
+    public int getErrors() {
+        return errors;
+    }
 
-	public void setSteps(int steps) {
-		this.steps = steps;
-	}
+    public void setErrors(int errors) {
+        this.errors = errors;
+    }
+
+    public int getFailures() {
+        return failures;
+    }
+
+    public void setFailures(int failures) {
+        this.failures = failures;
+    }
+
+    public String getScriptName() {
+        return scriptName;
+    }
+
+    public void setScriptName(String scriptName) {
+        this.scriptName = scriptName;
+    }
+
+    public int getSteps() {
+        return steps;
+    }
+
+    public void setSteps(int steps) {
+        this.steps = steps;
+    }
 }

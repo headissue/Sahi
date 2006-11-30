@@ -46,8 +46,10 @@ public class SuiteReport {
 			TestLauncher test = (TestLauncher) iter.next();
 			Session session = Session.getInstance(test.getChildSessionId());
 			Report report = session.getReport();
-			writer.write(report.getFormatter().getSummaryData(
-					report.getTestSummary()));
+            TestSummary summary =   report.getTestSummary();
+            summary.setAddLink(true);
+            writer.write(report.getFormatter().getSummaryData(
+					summary));
 		}
 	}
 
