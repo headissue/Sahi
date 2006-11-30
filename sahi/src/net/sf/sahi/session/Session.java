@@ -16,17 +16,16 @@
 
 package net.sf.sahi.session;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-
 import net.sf.sahi.command.MockResponder;
 import net.sf.sahi.playback.SahiScript;
 import net.sf.sahi.playback.log.LogFileConsolidator;
-import net.sf.sahi.playback.log.PlayBackLogger;
 import net.sf.sahi.record.Recorder;
 import net.sf.sahi.report.Report;
 import net.sf.sahi.test.SahiTestSuite;
+
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * User: nraman Date: Jun 21, 2005 Time: 8:03:28 PM
@@ -45,8 +44,6 @@ public class Session {
 	private SahiScript script;
 
 	private Map variables;
-
-	private PlayBackLogger playBackLogger;
 
 	private String scriptLogFile;
 
@@ -118,36 +115,6 @@ public class Session {
 		return SahiTestSuite.getSuite(this.id());
 	}
 
-	public void logPlayBack(String msg, String type, String debugInfo) {
-		if (playBackLogger == null) {
-			createPlayBackLogger();
-		}
-//		playBackLogger.log(SahiScript.stripSahiFromFunctionNames(msg), type,
-//				debugInfo);
-	}
-
-	public void stopPlayBack() {
-		if (playBackLogger == null)
-			return;
-		//playBackLogger.log("Stopping script", "stop", script.getScriptName());
-		playBackLogger.stop();
-		playBackLogger = null;
-	}
-
-	public void startPlayBack() {
-		if (playBackLogger == null) {
-			createPlayBackLogger();
-			playBackLogger.log("Starting script", "start", script
-					.getScriptName());
-		}
-	}
-
-	private void createPlayBackLogger() {
-		playBackLogger = new PlayBackLogger(script.getScriptName(),
-				getSuiteLogDir());
-		scriptLogFile = playBackLogger.getScriptLogFile();
-	}
-
 	public String getSuiteLogDir() {
 		if (getSuite() == null)
 			return null;
@@ -165,10 +132,6 @@ public class Session {
 		return scriptLogFile;
 	}
 
-	public boolean isPlayingBack() {
-		return playBackLogger != null;
-	}
-
 	public MockResponder mockResponder() {
 		return mockResponder;
 	}
@@ -180,4 +143,8 @@ public class Session {
 	public void setReport(Report report) {
 		this.report = report;
 	}
+
+    public boolean isPlayingBack() {
+        return STATE_RUNNING.equals(getPlayBackStatus());  
+    }
 }
