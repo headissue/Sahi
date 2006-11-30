@@ -5,3 +5,4 @@ a.START,a.STOP{color:black;font-weight:bold;}
 div.INFO{background-color:white}
 div.SUCCESS{background-color:green;color:white}
 div.FAILURE,div.ERROR{background-color:red;color:white}
+a.SCRIPT{text-decoration:underline;}
