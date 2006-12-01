@@ -63,4 +63,12 @@ public class TestSummary {
     public void setSteps(int steps) {
         this.steps = steps;
     }
+
+    public void incrementFailures() {
+        this.failures++;
+    }
+
+    public void incrementErrors() {
+        this.errors++;
+    }
 }

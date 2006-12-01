@@ -1,52 +1,34 @@
 package net.sf.sahi.report;
 
-import net.sf.sahi.util.Utils;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author dlewis
- * 
  */
 public class ResultType {
-	private String name = null;
+    private String name = null;
 
-	public String getName() {
-		return name;
-	}
+    private static final Map mapType = new HashMap();
 
-	private ResultType() {
-	}
+    public String getName() {
+        return name;
+    }
 
-	private ResultType(String name) {
-		this.name = name;
-	}
+    private ResultType(String name) {
+        this.name = name;
+        mapType.put(name, this);
+    }
 
-	private boolean equals(String name) {
-		if (!Utils.isBlankOrNull(name)) {
-			return this.name.equalsIgnoreCase(name);
-		}
-		return false;
-	}
+    public static ResultType getType(String name) {
+        return (ResultType) mapType.get(name.toUpperCase());
+    }
 
-	public static ResultType FAILURE = new ResultType("FAILURE");
+    public static final ResultType FAILURE = new ResultType("FAILURE");
 
-	public static ResultType ERROR = new ResultType("ERROR");
+    public static final ResultType ERROR = new ResultType("ERROR");
 
-	public static ResultType INFO = new ResultType("INFO");
+    public static final ResultType INFO = new ResultType("INFO");
 
-	public static ResultType SUCCESS = new ResultType("SUCCESS");
-
-	public static ResultType getType(String name) {
-		ResultType returnType = null;
-		if (FAILURE.equals(name)) {
-			returnType = FAILURE;
-		} else if (ERROR.equals(name)) {
-			returnType = ERROR;
-		} else if (INFO.equals(name)) {
-			returnType = INFO;
-		} else if (SUCCESS.equals(name)) {
-			returnType = SUCCESS;
-		}
-		return returnType;
-	}
-
+    public static final ResultType SUCCESS = new ResultType("SUCCESS");
 }

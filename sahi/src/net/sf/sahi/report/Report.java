@@ -95,9 +95,9 @@ public class Report {
         for (Iterator iter = listResult.iterator(); iter.hasNext();) {
             TestResult result = (TestResult) iter.next();
             if (ResultType.FAILURE.equals(result.type)) {
-                summary.setFailures(summary.getFailures() + 1);
+                summary.incrementFailures();
             } else if (ResultType.ERROR.equals(result.type)) {
-                summary.setErrors(summary.getErrors() + 1);
+                summary.incrementErrors();
             }
         }
         return summary;

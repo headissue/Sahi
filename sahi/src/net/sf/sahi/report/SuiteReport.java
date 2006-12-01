@@ -47,10 +47,12 @@ public class SuiteReport {
 			Session session = Session.getInstance(test.getChildSessionId());
 			Report report = session.getReport();
             TestSummary summary =   report.getTestSummary();
+            if(summary != null) {
             summary.setAddLink(true);
             writer.write(report.getFormatter().getSummaryData(
 					summary));
-		}
+            }
+        }
 	}
 
 	private void createWriter(String suiteLogDir, Formatter formatter)
