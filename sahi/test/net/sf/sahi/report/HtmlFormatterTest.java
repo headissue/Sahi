@@ -97,7 +97,7 @@ public class HtmlFormatterTest extends TestCase {
     }
 
     public void testGetSummaryDataForAllTypesWithLink() {
-        String expected = expectedSummaryForAllTypes.replaceFirst("test", "<a href=\"test.htm\">test</a>");
+        String expected = expectedSummaryForAllTypes.replaceFirst("test", "<a class=\"SCRIPT\" href=\"test.htm\">test</a>");
         TestSummary summary =  ReportUtil.getTestSummary();
         summary.setLogFile("test.htm");
         summary.setAddLink(true);
