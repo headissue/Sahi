@@ -21,6 +21,8 @@ public class Report {
 
     protected String scriptName = null;
 
+    protected boolean failure = false;
+
     protected String logDir = null;
 
     protected TestSummary testSummary = null;
@@ -35,7 +37,7 @@ public class Report {
         return listResult;
     }
 
-    public void addResult(List listResult) {
+    void addResult(List listResult) {
         this.listResult.addAll(listResult);
     }
 
@@ -90,16 +92,20 @@ public class Report {
 
     public TestSummary summarizeResults() {
         TestSummary summary = new TestSummary();
+        boolean fail = false;
         summary.setScriptName(scriptName);
         summary.setSteps(listResult.size());
         for (Iterator iter = listResult.iterator(); iter.hasNext();) {
             TestResult result = (TestResult) iter.next();
             if (ResultType.FAILURE.equals(result.type)) {
                 summary.incrementFailures();
+                fail = true;
             } else if (ResultType.ERROR.equals(result.type)) {
                 summary.incrementErrors();
+                fail = true;
             }
         }
+        summary.setFail(fail);
         return summary;
     }
 

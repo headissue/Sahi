@@ -15,6 +15,8 @@ public class TestSummary {
     private int failures;
 
     private int errors;
+    
+    private boolean fail;
 
     public boolean addLink() {
         return addLink;
@@ -68,7 +70,15 @@ public class TestSummary {
         this.failures++;
     }
 
+    public boolean hasFailed() {
+        return fail;
+    }
+
     public void incrementErrors() {
         this.errors++;
+    }
+
+    public void setFail(boolean fail) {
+        this.fail = fail;
     }
 }

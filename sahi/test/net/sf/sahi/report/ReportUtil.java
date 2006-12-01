@@ -43,7 +43,8 @@ public class ReportUtil {
 		summary.setFailures(1);
 		summary.setErrors(0);
 		summary.setSteps(3);
-		return summary;
+        summary.setFail(true);
+        return summary;
 	}
 
 }

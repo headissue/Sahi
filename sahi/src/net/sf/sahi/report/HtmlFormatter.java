@@ -55,13 +55,12 @@ public class HtmlFormatter implements Formatter {
 
     public String getSummaryData(TestSummary summary) {
         StringBuffer sb = new StringBuffer();
-        boolean fail = summary.getErrors() > 0 || summary.getFailures() > 0;
         int successRate = summary.getSteps() != 0 ? ((summary.getSteps() - (summary
                 .getFailures() + summary.getErrors())) * 100)
                 / summary.getSteps()
                 : 100;
         sb.append("<tr class=\"");
-        sb.append(fail ? ResultType.FAILURE.getName() : ResultType.SUCCESS
+        sb.append(summary.hasFailed() ? ResultType.FAILURE.getName() : ResultType.SUCCESS
                 .getName());
         sb.append("\"><td>");
         if (summary.addLink()) {
