@@ -31,120 +31,124 @@ import java.util.Map;
  * User: nraman Date: Jun 21, 2005 Time: 8:03:28 PM
  */
 public class Session {
-	public static final String STATE_RUNNING = "RUNNING";
+    private Status status;
 
-	private static Map sessions = new HashMap();
+    private static Map sessions = new HashMap();
 
-	private String sessionId;
+    private String sessionId;
 
-	private boolean isWindowOpen = false;
+    private boolean isWindowOpen = false;
 
-	private Recorder recorder;
+    private Recorder recorder;
 
-	private SahiScript script;
+    private SahiScript script;
 
-	private Map variables;
+    private Map variables;
 
-	private String scriptLogFile;
+    private MockResponder mockResponder = new MockResponder();
 
-	private MockResponder mockResponder = new MockResponder();
+    private Report report;
 
-	private Report report;
+    public static Session getInstance(String sessionId) {
+        if (!sessions.containsKey(sessionId)) {
+            sessions.put(sessionId, new Session(sessionId));
+        }
+        return (Session) sessions.get(sessionId);
+    }
 
-	public static Session getInstance(String sessionId) {
-		if (!sessions.containsKey(sessionId)) {
-			sessions.put(sessionId, new Session(sessionId));
-		}
-		return (Session) sessions.get(sessionId);
-	}
+    public Session(String sessionId) {
+        this.sessionId = sessionId;
+        this.variables = new HashMap();
+        this.status = Status.INITIAL;
+    }
 
-	public Session(String sessionId) {
-		this.sessionId = sessionId;
-		this.variables = new HashMap();
-	}
+    public String id() {
+        return sessionId;
+    }
 
-	public String id() {
-		return sessionId;
-	}
+    public void setIsWindowOpen(boolean isWindowOpen) {
+        this.isWindowOpen = isWindowOpen;
+    }
 
-	public void setIsWindowOpen(boolean isWindowOpen) {
-		this.isWindowOpen = isWindowOpen;
-	}
+    public boolean isWindowOpen() {
+        return isWindowOpen;
+    }
 
-	public boolean isWindowOpen() {
-		return isWindowOpen;
-	}
+    public Recorder getRecorder() {
+        if (this.recorder == null)
+            this.recorder = new Recorder();
+        return recorder;
+    }
 
-	public Recorder getRecorder() {
-		if (this.recorder == null)
-			this.recorder = new Recorder();
-		return recorder;
-	}
+    public boolean isRecording() {
+        return getRecorder().isRecording();
+    }
 
-	public boolean isRecording() {
-		return getRecorder().isRecording();
-	}
+    public void setScript(SahiScript script) {
+        this.script = script;
+    }
 
-	public void setScript(SahiScript script) {
-		this.script = script;
-	}
+    public String getVariable(String name) {
+        return (String) (variables.get(name));
+    }
 
-	public String getVariable(String name) {
-		return (String) (variables.get(name));
-	}
+    public void removeVariables(String pattern) {
+        for (Iterator iterator = variables.keySet().iterator(); iterator
+                .hasNext();) {
+            String s = (String) iterator.next();
+            if (s.matches(pattern)) {
+                iterator.remove();
+            }
+        }
+    }
 
-	public void removeVariables(String pattern) {
-		for (Iterator iterator = variables.keySet().iterator(); iterator
-				.hasNext();) {
-			String s = (String) iterator.next();
-			if (s.matches(pattern)) {
-				iterator.remove();
-			}
-		}
-	}
+    public void setVariable(String name, String value) {
+        variables.put(name, value);
+    }
 
-	public void setVariable(String name, String value) {
-		variables.put(name, value);
-	}
+    public SahiScript getScript() {
+        return script;
+    }
 
-	public SahiScript getScript() {
-		return script;
-	}
+    public SahiTestSuite getSuite() {
+        return SahiTestSuite.getSuite(this.id());
+    }
 
-	public SahiTestSuite getSuite() {		
-		return SahiTestSuite.getSuite(this.id());
-	}
+    public String getSuiteLogDir() {
+        if (getSuite() == null)
+            return null;
+        return getSuite().getSuiteLogDir();
+    }
 
-	public String getSuiteLogDir() {
-		if (getSuite() == null)
-			return null;
-		return getSuite().getSuiteLogDir();
-	}
+//    public String getPlayBackStatus() {
+//        if (getSuite().isRunning()) {
+//            return STATE_RUNNING;
+//        }
+//        return new LogFileConsolidator(getSuiteLogDir()).getStatus();
+//    }
 
-	public String getPlayBackStatus() {
-		if (getSuite().isRunning()) {
-			return STATE_RUNNING;
-		}
-		return new LogFileConsolidator(getSuiteLogDir()).getStatus();
-	}
+    public MockResponder mockResponder() {
+        return mockResponder;
+    }
 
-	public String getScriptLogFile() {
-		return scriptLogFile;
-	}
+    public Report getReport() {
+        return report;
+    }
 
-	public MockResponder mockResponder() {
-		return mockResponder;
-	}
-
-	public Report getReport() {
-		return report;
-	}
-
-	public void setReport(Report report) {
-		this.report = report;
-	}
+    public void setReport(Report report) {
+        this.report = report;
+    }
 
     public boolean isPlayingBack() {
-        return STATE_RUNNING.equals(getPlayBackStatus());  
+        return "1".equals(getVariable("sahi_play"));
+        //return Status.RUNNING.equals(status);
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
     }
 }
