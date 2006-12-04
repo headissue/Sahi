@@ -16,22 +16,17 @@
 
 package net.sf.sahi.test;
 
+import net.sf.sahi.config.Configuration;
+import net.sf.sahi.report.SuiteReport;
+import net.sf.sahi.request.HttpRequest;
+import net.sf.sahi.session.Session;
+import net.sf.sahi.session.Status;
+import net.sf.sahi.util.Utils;
+
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.StringTokenizer;
-
-import net.sf.sahi.config.Configuration;
-import net.sf.sahi.request.HttpRequest;
-import net.sf.sahi.session.Session;
-import net.sf.sahi.util.Utils;
-import net.sf.sahi.report.SuiteReport;
+import java.util.*;
 
 public class SahiTestSuite {
     private final String suitePath;
@@ -58,6 +53,8 @@ public class SahiTestSuite {
 
     private String browserOption;
 
+    private int availableThreads = 0;
+
     private static HashMap suites = new HashMap();
 
 
@@ -67,7 +64,7 @@ public class SahiTestSuite {
         this.base = base;
         this.browser = browser;
         this.suiteLogDir = logDir;
-        this.junitReport = "true".equalsIgnoreCase(junitReport) ? true : false;
+        this.junitReport = "true".equalsIgnoreCase(junitReport);
         this.sessionId = stripSah(sessionId);
         this.browserOption = browseroption;
         setSuiteName(suitePath);
@@ -165,23 +162,21 @@ public class SahiTestSuite {
         testsMap.put(new File(testName).getName(), sahiTest);
     }
 
-    public synchronized boolean executeNext() {
-        boolean hasMoreTests = currentTestIndex < tests.size();
-        if (hasMoreTests) {
-            TestLauncher test = (TestLauncher) tests.get(currentTestIndex);
-            currentTestIndex++;
-            test.execute();
-        }
-        return hasMoreTests;
+    public void executeTest() {
+        TestLauncher test = (TestLauncher) tests.get(currentTestIndex);
+        test.execute();
+        currentTestIndex++;
     }
 
     public synchronized boolean isRunning() {
         return (finishedTests < tests.size());
     }
 
-    public synchronized void stop(String scriptName) {
+    public synchronized void notifyComplete(String scriptName) {
         ((TestLauncher) (testsMap.get(scriptName))).stop();
         finishedTests++;
+        availableThreads++;
+        this.notify();
     }
 
     public String getSuiteName() {
@@ -244,29 +239,54 @@ public class SahiTestSuite {
         logDir = "".equals(logDir) ? null : logDir;
         SahiTestSuite suite = new SahiTestSuite(suitePath, base, browser,
                 logDir, junitReport, session.id(), browseroption);
-        for (int i = 0; i < threads; i++) {
-            suite.executeNext();
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
+        suite.availableThreads = threads;
+        session.setStatus(Status.RUNNING);
+        suite.execute();
+        suite.markSuiteStatus();
 
         if (!suite.isJunitReport()) {
             suite.generateSuiteReport(request);
         }
     }
 
-    private void generateSuiteReport(HttpRequest request) {
-        while (true) {
-            Session session = request.session();
-            String status = session.getPlayBackStatus();
-            if ("SUCCESS".equals(status) || "FAILURE".equals(status)) {
-                new SuiteReport().generateReport(suiteLogDir, tests);
-                break;
+    private void markSuiteStatus() {
+        Status status = Status.SUCCESS;
+        Session session;
+        for (Iterator iterator = tests.iterator(); iterator.hasNext();) {
+            TestLauncher testLauncher = (TestLauncher) iterator.next();
+            session = Session.getInstance(testLauncher.getChildSessionId());
+            if(Status.FAILURE.equals(session.getStatus()))  {
+                status =Status.FAILURE;
             }
         }
+        session = Session.getInstance(this.sessionId);
+        session.setStatus(status);
+    }
+
+    public synchronized void execute() {
+        while (currentTestIndex < tests.size()) {
+            for (; availableThreads > 0 && currentTestIndex < tests.size(); availableThreads--) {
+                this.executeTest();
+            }
+            try {
+                this.wait();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void generateSuiteReport(HttpRequest request) {
+        while (isRunning()) {
+            synchronized (this) {
+                try {
+                    this.wait();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        new SuiteReport().generateReport(suiteLogDir, tests);
     }
 
     public TestLauncher getCurrentTest() {
