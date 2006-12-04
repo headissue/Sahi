@@ -40,14 +40,14 @@ public class TestLauncher {
     private String browserOption;
 
 
-    TestLauncher(String scriptName, String startURL, String browser, String sessionId, String browserOption) {
+    public TestLauncher(String scriptName, String startURL, String browser, String sessionId, String browserOption) {
 		this.scriptName = scriptName;
 		this.startURL = startURL;
 		this.browser = browser;
 		this.sessionId = sessionId;
 		this.randomInt = getRandomInt();
 		this.childSessionId = createChildSessionId();
-        this.browserOption=browserOption;
+        this.browserOption=browserOption;         
     }
 
 	private String createChildSessionId() {		
@@ -99,8 +99,7 @@ public class TestLauncher {
             result = "\"" + browser  + "\" ";
 			if(!Utils.isBlankOrNull(browserOption))
 				result += browserOption;
-			result+=" \"" + url + "\"";
-             System.out.println(result);
+			result+=" \"" + url + "\"";                 
 			return result;
 
         }
