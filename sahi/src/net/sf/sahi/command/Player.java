@@ -16,15 +16,11 @@
 
 package net.sf.sahi.command;
 
-import java.io.IOException;
-import java.util.Properties;
-
 import net.sf.sahi.config.Configuration;
 import net.sf.sahi.playback.FileScript;
 import net.sf.sahi.playback.SahiScript;
 import net.sf.sahi.playback.SahiScriptHTMLAdapter;
 import net.sf.sahi.playback.ScriptFactory;
-import net.sf.sahi.playback.log.LogFileConsolidator;
 import net.sf.sahi.report.Formatter;
 import net.sf.sahi.report.HtmlFormatter;
 import net.sf.sahi.report.JUnitFormatter;
@@ -35,7 +31,10 @@ import net.sf.sahi.response.HttpResponse;
 import net.sf.sahi.response.NoCacheHttpResponse;
 import net.sf.sahi.response.SimpleHttpResponse;
 import net.sf.sahi.session.Session;
+import net.sf.sahi.session.Status;
 import net.sf.sahi.test.SahiTestSuite;
+
+import java.util.Properties;
 
 public class Player {
     public void stepWisePlay(HttpRequest request) {
@@ -47,9 +46,15 @@ public class Player {
     }
 
     public void stop(HttpRequest request) {
-        request.session().getRecorder().stop();
-        request.session().getReport().generateReport();
-        new PlayerStopThread(request.session()).start();
+        Session session = request.session();
+        session.getRecorder().stop();
+        session.getReport().generateReport();
+        Status testStatus = session.getReport().getTestSummary().hasFailed() ? Status.FAILURE : Status.SUCCESS;
+        session.setStatus(testStatus);
+        SahiTestSuite suite = SahiTestSuite.getSuite(session.id());
+        if (suite != null) {
+            suite.notifyComplete(session.getScript().getScriptName());
+        }
     }
 
     public void setScriptFile(HttpRequest request) {
@@ -74,6 +79,7 @@ public class Player {
     }
 
     private void startPlayback(Session session, boolean resetConditions) {
+        session.setStatus(Status.RUNNING);
         session.setVariable("sahi_play", "1");
         session.setVariable("sahi_paused", "1");
         if (resetConditions)
@@ -125,7 +131,7 @@ public class Player {
         String startUrl = request.getParameter("startUrl");
         session.setIsWindowOpen(false);
 
-        Formatter formatter = null;
+        Formatter formatter;
         if (session.getSuite().isJunitReport()) {
             formatter = new JUnitFormatter();
         } else {
@@ -148,46 +154,5 @@ public class Player {
         props.setProperty("sessionId", sessionId);
         return new HttpFileResponse(Configuration.getHtdocsRoot()
                 + "spr/auto.htm", props, false, true);
-    }
-
-    class PlayerStopThread extends Thread {
-        private final Session session;
-
-        PlayerStopThread(Session session) {
-            this.session = session;
-        }
-
-        public void run() {
-            stopPlay();
-        }
-
-        private void stopPlay() {
-            SahiTestSuite suite = SahiTestSuite.getSuite(session.id());
-            if (suite != null) {
-                suite.stop(session.getScript().getScriptName());
-                waitSomeTime();
-                suite.executeNext();
-//					consolidateLogs(session.getSuiteLogDir());
-            } else {
-                //consolidateLogs(session.getScriptLogFile());
-            }
-        }
-
-        private void waitSomeTime() {
-            try {
-                Thread.sleep(Configuration.getTimeBetweenTestsInSuite());
-            } catch (Exception e) {
-
-            }
-
-        }
-
-        private void consolidateLogs(String consolidateBy) {
-            try {
-                new LogFileConsolidator(consolidateBy).summarize();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
     }
 }
