@@ -2,8 +2,8 @@ package net.sf.sahi.session;
 
 import net.sf.sahi.util.Utils;
 
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * User: dlewis
@@ -21,17 +21,15 @@ public class Status {
 
     private Status(String name) {
         this.name = name;
+        mapStatus.put(name, this);
     }
 
-    private boolean equals(String name) {
-        if (!Utils.isBlankOrNull(name)) {
-            return this.name.equalsIgnoreCase(name);
-        }
-        return false;
+    public boolean equals(String name) {
+        return !Utils.isBlankOrNull(name) && this.name.equalsIgnoreCase(name);
     }
 
     public boolean equals(Object obj) {
-        return this.equals(((Status) obj).getName());
+        return obj != null && this.equals(((Status) obj).getName());
     }
 
     public String toString() {
@@ -39,7 +37,7 @@ public class Status {
     }
 
     public static Status getStatus(String name) {
-         return (Status) mapStatus.get(name.toUpperCase());           
+        return (Status) mapStatus.get(name.toUpperCase());
     }
 
     public static final Status RUNNING = new Status("RUNNING");
