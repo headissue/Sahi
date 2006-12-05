@@ -29,7 +29,6 @@ import net.sf.sahi.response.HttpResponse;
 import net.sf.sahi.response.NoCacheHttpResponse;
 import net.sf.sahi.util.FileIsDirectoryException;
 import net.sf.sahi.util.FileNotFoundRuntimeException;
-;
 
 /**
  * User: nraman Date: May 13, 2005 Time: 7:06:11 PM To
