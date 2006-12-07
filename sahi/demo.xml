@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <project name="demo" default="sahitests">
     <taskdef name="sahi" classname="net.sf.sahi.ant.RunSahiTask" classpath="lib/ant-sahi.jar"/>
-    <taskdef name="issueraiser" classname="net.sf.sahi.ant.CreateIssue" classpath="lib/ant-sahi.jar"/>
+    <taskdef name="createissue" classname="net.sf.sahi.ant.CreateIssue" classpath="lib/ant-sahi.jar"/>
     <taskdef name="report" classname="net.sf.sahi.ant.Report" classpath="lib/ant-sahi.jar"/>
     <target name="sahitests" description="start the server and run sahi tests">
         <parallel>
@@ -135,7 +135,7 @@
               sahihost="localhost"
               sahiport="9999"
               failureproperty="sahi.failed"
-              haltonfailure="false"             
+              haltonfailure="false"
                 />
         <!--logdir="D:\xx\logs"-->
         <!--threads="3"-->
@@ -174,7 +174,7 @@
               sahiport="9999"
               failureproperty="sahi.failed"
               haltonfailure="false"
-              threads="3"                
+              threads="3"
                 >
             <createissue tool="jira"/>
             <report type="html"/>
@@ -218,7 +218,9 @@
 
     <target name="start" description="starts proxy">
         <java classname="net.sf.sahi.Proxy" fork="true" dir="bin">
-            <classpath location="lib/sahi.jar"/>
+            <classpath location="lib/sahi.jar">
+                <fileset dir="extlib" includes="*.jar"/>
+            </classpath>
         </java>
     </target>
 
