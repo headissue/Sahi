@@ -1,4 +1,4 @@
-package net.sf.sahi.plugin;
+package net.sf.sahi.issue;
 
 import net.sf.sahi.util.FileNotFoundRuntimeException;
 import net.sf.sahi.util.Utils;

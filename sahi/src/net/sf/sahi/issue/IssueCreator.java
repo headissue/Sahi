@@ -1,6 +1,4 @@
-package net.sf.sahi.plugin;
-
-import org.apache.xmlrpc.XmlRpcException;
+package net.sf.sahi.issue;
 
 /**
  * User: dlewis

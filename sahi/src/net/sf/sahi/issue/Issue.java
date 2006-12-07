@@ -1,4 +1,4 @@
-package net.sf.sahi.plugin;
+package net.sf.sahi.issue;
 
 /**
  * User: dlewis
