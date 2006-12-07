@@ -13,7 +13,6 @@ public class Report {
     protected List listResult = new ArrayList();
     protected String scriptName;
     protected List listReporter;
-    protected boolean fail = false;
     protected TestSummary testSummary;
 
     public Report(String scriptName, List listReporter) {
@@ -24,10 +23,6 @@ public class Report {
     public Report(String scriptName, SahiReporter reporter) {
         this.scriptName = scriptName;
         addReporter(reporter);
-    }
-
-    public boolean hasFailed() {
-        return fail;
     }
 
     public String getScriptName() {
@@ -47,10 +42,6 @@ public class Report {
             listReporter = new ArrayList();
         }
         listReporter.add(reporter);
-    }
-
-    public void setFail(boolean fail) {
-        this.fail = fail;
     }
 
     public List getListResult() {

@@ -85,6 +85,10 @@ public class HtmlFormatter implements Formatter {
         return "";
     }
 
+    public String getSuiteLogFileName() {
+        return "index";
+    }
+
     public String getStartScript() {
         return "\n<br><div class=\"START\"><a class=\"START\">Starting script</a></div>";
     }

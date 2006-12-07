@@ -18,7 +18,11 @@ public class JUnitFormatter implements Formatter {
 		return "</testsuite>";
 	}
 
-	public String getHeader() {
+    public String getSuiteLogFileName() {
+        return "";
+    }
+
+    public String getHeader() {
 		return "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>";
 	}
 

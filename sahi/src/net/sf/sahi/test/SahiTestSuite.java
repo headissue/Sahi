@@ -16,11 +16,9 @@
 
 package net.sf.sahi.test;
 
-import net.sf.sahi.config.Configuration;
-import net.sf.sahi.report.HtmlReporter;
-import net.sf.sahi.report.JunitReporter;
+import net.sf.sahi.issue.IssueCreator;
+import net.sf.sahi.issue.IssueReporter;
 import net.sf.sahi.report.SahiReporter;
-import net.sf.sahi.request.HttpRequest;
 import net.sf.sahi.session.Session;
 import net.sf.sahi.session.Status;
 import net.sf.sahi.util.Utils;
@@ -32,35 +30,21 @@ import java.util.*;
 
 public class SahiTestSuite {
     private final String suitePath;
-
     private final String base;
-
     private List tests = new ArrayList();
-
     private Map testsMap = new HashMap();
-
     private int currentTestIndex = 0;
-
     private final String sessionId;
-
     private final String browser;
-
     private String suiteName;
-
     private int finishedTests = 0;
-
-    private String suiteLogDir;
-
     private List listReporter = new ArrayList();
-
+    private IssueReporter issueReporter;
     private String browserOption;
-
     private int availableThreads = 0;
-
     private static HashMap suites = new HashMap();
 
-
-    private SahiTestSuite(String suitePath, String base, String browser, String sessionId, String browseroption) {
+    public SahiTestSuite(String suitePath, String base, String browser, String sessionId, String browseroption) {
         this.suitePath = suitePath;
         this.base = base;
         this.browser = browser;
@@ -92,10 +76,6 @@ public class SahiTestSuite {
         } else {
             processSuiteFile();
         }
-        if (suiteLogDir != null) {
-            deleteLogDir(suiteLogDir);
-        }
-
     }
 
     private void processSuiteDir(File suite) {
@@ -198,69 +178,23 @@ public class SahiTestSuite {
         }
     }
 
-    public String getSuiteLogDir() {
-        if (Utils.isBlankOrNull(suiteLogDir))
-            suiteLogDir = Configuration.appendLogsRoot(Utils
-                    .createLogFileName(getSuiteName()));
-        return suiteLogDir;
-    }
-
-    private void deleteLogDir(String logDir) {
-        try {
-            if (suiteLogDir == null || suiteLogDir.equals("")) {
-                return;
-            }
-            File logDirFile = new File(Utils.concatPaths(Configuration
-                    .getPlayBackLogsRoot(), suiteLogDir));
-            if (logDirFile.exists()) {
-                File[] files = logDirFile.listFiles();
-                for (int i = 0; i < files.length; i++) {
-                    files[i].delete();
-                }
-                logDirFile.delete();
-            }
-        } catch (Exception e) {
-        }
-    }
-
-    public static void startSuite(HttpRequest request) {
-        Session session = request.session();
-        String suitePath = request.getParameter("suite");
-        String browser = request.getParameter("browser");
-        String base = request.getParameter("base");
-        String threadsStr = request.getParameter("threads");
-        String logDir = request.getParameter("logDir");
-        String junitReport = request.getParameter("junitReport");
-        String browseroption = request.getParameter("browserOption");
-
-        int threads = 1;
-        try {
-            threads = Integer.parseInt(threadsStr);
-        } catch (Exception e) {
-        }
-        logDir = "".equals(logDir) ? null : logDir;
-        SahiTestSuite suite = new SahiTestSuite(suitePath, base, browser,
-                session.id(), browseroption);
-        suite.setReporters(request);
-        suite.availableThreads = threads;
-        session.setStatus(Status.RUNNING);
-        suite.execute();
-        suite.markSuiteStatus();
-        suite.generateSuiteReport();
-
-    }
-
-    private void setReporters(HttpRequest request) {
-        String defaultLogDir = getSuiteLogDir();
-        String temp = request.getParameter("junit");
-        if (temp != null) {
-            listReporter.add(new JunitReporter("".equals(temp) ? defaultLogDir : temp));
-        }
-        temp = request.getParameter("html");
-        if (temp != null) {
-            listReporter.add(new HtmlReporter("".equals(temp) ? defaultLogDir : temp));
-        }
-    }
+//    private void deleteLogDir() {
+//        try {
+//            if (suiteLogDir == null || suiteLogDir.equals("")) {
+//                return;
+//            }
+//            File logDirFile = new File(Utils.concatPaths(Configuration
+//                    .getPlayBackLogsRoot(), suiteLogDir));
+//            if (logDirFile.exists()) {
+//                File[] files = logDirFile.listFiles();
+//                for (int i = 0; i < files.length; i++) {
+//                    files[i].delete();
+//                }
+//                logDirFile.delete();
+//            }
+//        } catch (Exception e) {
+//        }
+//    }
 
     private void markSuiteStatus() {
         Status status = Status.SUCCESS;
@@ -276,7 +210,24 @@ public class SahiTestSuite {
         session.setStatus(status);
     }
 
-    public synchronized void execute() {
+    public void run() {
+        Session session = Session.getInstance(this.sessionId);
+        session.setStatus(Status.RUNNING);
+        executeSuite();
+        waitForSuiteCompletion();
+        markSuiteStatus();
+        generateSuiteReport();
+        createIssues();
+    }
+
+    private void createIssues() {
+        Session session = Session.getInstance(sessionId);
+        if (Status.FAILURE.equals(session.getStatus()) && issueReporter != null) {
+            issueReporter.reportIssue(tests);
+        }
+    }
+
+    private synchronized void executeSuite() {
         while (currentTestIndex < tests.size()) {
             for (; availableThreads > 0 && currentTestIndex < tests.size(); availableThreads--) {
                 this.executeTest();
@@ -289,7 +240,7 @@ public class SahiTestSuite {
         }
     }
 
-    private void generateSuiteReport() {
+    private void waitForSuiteCompletion() {
         while (isRunning()) {
             synchronized (this) {
                 try {
@@ -299,7 +250,9 @@ public class SahiTestSuite {
                 }
             }
         }
+    }
 
+    private void generateSuiteReport() {
         for (Iterator iterator = listReporter.iterator(); iterator.hasNext();) {
             SahiReporter reporter = (SahiReporter) iterator.next();
             reporter.generateSuiteReport(tests);
@@ -310,5 +263,19 @@ public class SahiTestSuite {
         return (TestLauncher) tests.get(currentTestIndex);
     }
 
+    public void setAvailableThreads(int availableThreads) {
+        this.availableThreads = availableThreads;
+    }
 
+    public void addReporter(SahiReporter reporter) {
+        reporter.setSuiteName(suiteName);
+        listReporter.add(reporter);
+    }
+
+    public void addIssueCreator(IssueCreator issueCreator) {
+        if (issueReporter == null) {
+            issueReporter = new IssueReporter(suiteName);
+        }
+        issueReporter.addIssueCreator(issueCreator);
+    }
 }

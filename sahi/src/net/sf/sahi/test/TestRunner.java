@@ -73,7 +73,7 @@ public class TestRunner {
             if (args.length == 9)
                 browserOption = args[8];
             TestRunner testRunner = new TestRunner(suiteName, browser, base, sahiHost, port, threads, browserOption);
-            testRunner.addReport(new Report("html", logDir));
+            testRunner.addReport(new Report("html", logDir));                 
             String status = testRunner.execute();
             System.out.println("Status:" + status);
         } catch (Exception e) {
@@ -125,9 +125,9 @@ public class TestRunner {
             urlStr.append("&").append(encode(report.getType())).append("=").append(report.getLogDir()!=null? encode(report.getLogDir()) : "");
         }
         if (createIssue != null) {
-            urlStr.append("&issueTool=").append(encode(createIssue.getTool()));
+            urlStr.append("&").append(encode(createIssue.getTool())).append("=");
             if (createIssue.getPropertiesFile()!=null) {
-                urlStr.append("&issuePropertiesFile=").append(encode(createIssue.getPropertiesFile()));
+                urlStr.append(encode(createIssue.getPropertiesFile()));
             }
         }
 

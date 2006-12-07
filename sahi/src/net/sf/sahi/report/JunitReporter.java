@@ -15,4 +15,8 @@ public class JunitReporter extends SahiReporter {
 
     public void generateSuiteReport(List tests) {
     }
+
+    public boolean createSuiteLogFolder() {
+        return false;
+    }
 }

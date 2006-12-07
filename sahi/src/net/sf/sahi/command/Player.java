@@ -62,8 +62,7 @@ public class Player {
         session.setScript(script);
         // session.setScript(new ScriptFactory().getScript(
         // Configuration.getScriptFileWithPath(fileName)));
-        session.setReport(new Report(script.getScriptName(), new HtmlReporter(session
-                .getSuiteLogDir())));
+        session.setReport(new Report(script.getScriptName(), new HtmlReporter()));
         startPlayback(session, true);
     }
 
@@ -71,8 +70,7 @@ public class Player {
         Session session = request.session();
         String url = request.getParameter("url");
         session.setScript(new ScriptFactory().getScript(url));
-        session.setReport(new Report(session.getScript().getScriptName(), new HtmlReporter(session
-                .getSuiteLogDir())));
+        session.setReport(new Report(session.getScript().getScriptName(), new HtmlReporter()));
         startPlayback(session, true);
     }
 

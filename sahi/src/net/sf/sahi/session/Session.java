@@ -130,12 +130,6 @@ public class Session {
         return SahiTestSuite.getSuite(this.id());
     }
 
-    public String getSuiteLogDir() {
-        if (getSuite() == null)
-            return null;
-        return getSuite().getSuiteLogDir();
-    }
-
 //    public String getPlayBackStatus() {
 //        if (getSuite().isRunning()) {
 //            return STATE_RUNNING;

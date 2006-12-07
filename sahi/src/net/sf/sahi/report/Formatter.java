@@ -24,4 +24,6 @@ public interface Formatter {
 	String getStopScript();
 
 	String getFooter();
+
+    String getSuiteLogFileName();
 }

@@ -14,13 +14,18 @@ import java.util.List;
  * Date: Dec 6, 2006
  * Time: 3:15:15 PM
  */
-public class SahiReporter {
+public abstract class SahiReporter {
     protected Formatter formatter;
     protected String logDir;
-    private Writer writer;
+    protected Writer writer;
+    protected String suiteName;
 
     public SahiReporter(String logDir, Formatter formatter) {
         this.logDir = logDir;
+        this.formatter = formatter;
+    }
+
+    public SahiReporter(Formatter formatter) {
         this.formatter = formatter;
     }
 
@@ -34,11 +39,12 @@ public class SahiReporter {
 
     public void generateSuiteReport(List tests) {
         try {
-            createWriter(getLogDir());
+            createWriter(formatter.getSuiteLogFileName());
             writer.write(formatter.getHeader());
             writer.write(formatter.getSummaryHeader());
             writeTestSummary(tests);
             writer.write(formatter.getSummaryFooter());
+            writer.write(formatter.getFooter());
             writer.flush();
             writer.close();
         } catch (IOException e) {
@@ -59,21 +65,16 @@ public class SahiReporter {
         }
     }
 
-    protected void createWriter(String suiteLogDir)
-            throws IOException {
-        File dir = new File(suiteLogDir);
+    protected void createWriter(String file) throws IOException {
+        File dir = new File(getLogDir());
         Configuration.createLogFolders(dir);
-        File logFile = new File(dir, formatter.getFileName("index"));
-
+        File logFile = new File(dir, formatter.getFileName(file));
         this.writer = new BufferedWriter(new FileWriter(logFile));
     }
 
     public void generateTestReport(Report report) {
-        File dir = new File(getLogDir());
-        Configuration.createLogFolders(dir);
-        File logFile = new File(dir, formatter.getFileName(report.getTestSummary().getLogFileName()));
         try {
-            BufferedWriter writer = new BufferedWriter(new FileWriter(logFile));
+            createWriter(report.getTestSummary().getLogFileName());
             writer.write(formatter.getHeader());
             writer.write(formatter.getSummaryHeader());
             writer.write(formatter.getSummaryData(report.getTestSummary()));
@@ -90,16 +91,25 @@ public class SahiReporter {
     }
 
     public String getLogDir() {
-        String dir;
-        if (!Utils.isBlankOrNull(logDir)) {
-            dir = logDir;
-        } else {
-            dir = Configuration.getPlayBackLogsRoot();
+        if (Utils.isBlankOrNull(logDir)) {
+            if (createSuiteLogFolder()) {
+                logDir = Configuration.appendLogsRoot(Utils
+                        .createLogFileName(suiteName));
+            } else {
+                logDir = Configuration.getPlayBackLogsRoot();
+            }
         }
-        return dir;
+
+        return logDir;
     }
+
+    public abstract boolean createSuiteLogFolder() ;
 
     public void setLogDir(String logDir) {
         this.logDir = logDir;
+    }
+
+    public void setSuiteName(String suiteName) {
+        this.suiteName = suiteName;
     }
 }

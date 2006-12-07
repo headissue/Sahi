@@ -16,6 +16,9 @@
 
 package net.sf.sahi.command;
 
+import net.sf.sahi.issue.JiraIssueCreator;
+import net.sf.sahi.report.HtmlReporter;
+import net.sf.sahi.report.JunitReporter;
 import net.sf.sahi.request.HttpRequest;
 import net.sf.sahi.response.HttpResponse;
 import net.sf.sahi.response.NoCacheHttpResponse;
@@ -26,7 +29,30 @@ import net.sf.sahi.test.SahiTestSuite;
 public class Suite {
 
     public void start(HttpRequest request) {
-        SahiTestSuite.startSuite(request);
+        Session session = request.session();
+        String suitePath = request.getParameter("suite");
+        String base = request.getParameter("base");
+        String browser = request.getParameter("browser");
+        String browserOption = request.getParameter("browserOption");
+
+        SahiTestSuite suite = new SahiTestSuite(suitePath, base, browser,
+                session.id(), browserOption);
+        int threads = 1;
+        try {
+            threads = Integer.parseInt(request.getParameter("threads"));
+        } catch (Exception e) {
+        }
+        suite.setAvailableThreads(threads);
+        setReporters(suite, request);
+        setIssueCreators(suite, request);
+        suite.run();
+    }
+
+    private void setIssueCreators(SahiTestSuite suite, HttpRequest request) {
+        String propFile = request.getParameter("jira");
+        if (propFile != null) {
+            suite.addIssueCreator(new JiraIssueCreator(propFile));
+        }
     }
 
     public HttpResponse status(HttpRequest request) {
@@ -39,4 +65,14 @@ public class Suite {
         return new NoCacheHttpResponse(status.getName());
     }
 
+    private void setReporters(SahiTestSuite suite, HttpRequest request) {
+        String logDir = request.getParameter("junit");
+        if (logDir != null) {
+            suite.addReporter(new JunitReporter(logDir));
+        }
+        logDir = request.getParameter("html");
+        if (logDir != null) {
+            suite.addReporter(new HtmlReporter(true));
+        }
+    }
 }
