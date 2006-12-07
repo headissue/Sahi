@@ -18,10 +18,4 @@ public class TestReporter {
 				.getParameter("debugInfo"),request
 				.getParameter("failureMsg"));
 	}
-
-	public void generateReport(HttpRequest request) {
-		Session session = request.session();
-		Report report = session.getReport();
-		report.generateReport();
-	}
 }
