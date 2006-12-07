@@ -12,7 +12,7 @@ public class ReportTest extends TestCase {
 
 	protected void setUp() throws Exception {
 		super.setUp();
-		report = new Report("test", null, new HtmlFormatter());
+		report = new Report("test", new HtmlReporter(null));
 	}
 
 	protected void tearDown() throws Exception {
@@ -52,13 +52,5 @@ public class ReportTest extends TestCase {
 		assertEquals("test", summary.getScriptName());
 	}
 
-	public void testGetAbsoluteLogFileNameForDefaultLogDir() {
-		assertEquals(Configuration.getPlayBackLogsRoot(), report.getLogDir());
-	}
-
-	public void testGetAbsoluteLogFileNameForCustomLogDir() {
-		String logDir = "testDir";
-		report = new Report("test", logDir, new HtmlFormatter());
-		assertEquals(logDir, report.getLogDir());
-	}
+	
 }
