@@ -1,16 +1,18 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <project name="demo" default="sahitests">
     <taskdef name="sahi" classname="net.sf.sahi.ant.RunSahiTask" classpath="lib/ant-sahi.jar"/>
+    <taskdef name="issueraiser" classname="net.sf.sahi.ant.CreateIssue" classpath="lib/ant-sahi.jar"/>
+    <taskdef name="report" classname="net.sf.sahi.ant.Report" classpath="lib/ant-sahi.jar"/>
     <target name="sahitests" description="start the server and run sahi tests">
         <parallel>
             <antcall target="start"/>
+            <antcall target="start-web"/>
             <sequential>
                 <waitfor maxwait="3" maxwaitunit="minute" checkevery="100">
                     <http url="http://localhost:10000/demo/index.htm"/>
                 </waitfor>
                 <antcall target="runietests"/>
             </sequential>
-            <antcall target="start-web"/>
         </parallel>
     </target>
 
@@ -133,8 +135,7 @@
               sahihost="localhost"
               sahiport="9999"
               failureproperty="sahi.failed"
-              haltonfailure="false"
-              logdir="D:\xx\logs"
+              haltonfailure="false"             
                 />
         <!--logdir="D:\xx\logs"-->
         <!--threads="3"-->
@@ -173,8 +174,12 @@
               sahiport="9999"
               failureproperty="sahi.failed"
               haltonfailure="false"
-              threads="3"
-                />
+              threads="3"                
+                >
+            <createissue tool="jira"/>
+            <report type="html"/>
+            <report type="junit" logdir="C:/sahi/temp"/>
+        </sahi>
         <!--logdir="D:\xx\logs"-->
         <!--threads="3"-->
         <antcall target="failsahi"/>
