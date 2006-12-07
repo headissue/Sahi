@@ -83,19 +83,4 @@
             <createissue tool="jira"/>
         </sahi>
     </target>
-
-    <target name="testSahiWithDemo">
-        <sahi suite="../scripts/deepak.suite"
-              browser="C:\\Program Files\\Internet Explorer\\iexplore.exe"
-              baseurl="http://localhost:10000/demo/"
-              sahihost="localhost"
-              sahiport="9999"
-              failureproperty="sahi.failed"
-              haltonfailure="false"
-              threads="3"
-                >
-            <report type="junit"/>
-            <createissue tool="jira"/>
-        </sahi>
-    </target>
 </project>

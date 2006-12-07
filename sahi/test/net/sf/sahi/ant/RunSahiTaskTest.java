@@ -51,9 +51,4 @@ public class RunSahiTaskTest extends BuildFileTest {
     public void testSahiWithNestedCreateIssueAndReport() {
         executeTarget("testSahiWithNestedCreateIssueAndReport");
     }
-
-    public void testSahiWithDemo() {
-        executeTarget("testSahiWithDemo");
-    }
-
 }
