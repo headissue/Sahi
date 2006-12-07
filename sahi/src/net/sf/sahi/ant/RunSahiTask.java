@@ -24,15 +24,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 public class RunSahiTask extends Task {
     private String suite;
-
-    private String scriptsDir;
-
-    private String logDir = "";
-
-    private String junitReport;
 
     private String browser;
 
@@ -51,6 +47,10 @@ public class RunSahiTask extends Task {
     private String threads = "1";
 
     private String browserOption;
+
+    private CreateIssue createIssue;
+
+    private List listReport = new ArrayList();
 
     public void setBrowserOption(String browserOption) {
         this.browserOption = browserOption;
@@ -97,21 +97,16 @@ public class RunSahiTask extends Task {
     }
 
     private void startServer() {
-        boolean isFailure = false;
         String status = "FAILURE";
         try {
             TestRunner testRunner = new TestRunner(suite, browser, baseURL,
-                    logDir, junitReport, sahiHost, sahiPort, threads, browserOption);
+                    sahiHost, sahiPort, threads, browserOption, listReport, createIssue);
             status = testRunner.execute();
-            if (!"SUCCESS".equals(status)) {
-                isFailure = true;
-            }
         } catch (Exception e) {
-            isFailure = true;
             e.printStackTrace();
         }
-        if (isFailure) {
-            System.out.println("STATUS:" + status);
+        System.out.println("STATUS:" + status);
+        if (!"SUCCESS".equals(status)) {                
             if (failureProperty != null) {
                 getProject().setProperty(failureProperty, "true");
             }
@@ -137,15 +132,23 @@ public class RunSahiTask extends Task {
         this.threads = threads;
     }
 
-    public void setScriptsDir(String scriptsDir) {
-        this.scriptsDir = scriptsDir;
+//    public Report createReporter() {
+//        this.reporter = new Report();
+//        return this.reporter;
+//    }
+
+//    public CreateIssue createIssueRaiser() {
+//        this.createIssue = new CreateIssue();
+//        return this.createIssue;
+//    }
+
+    public void addConfiguredCreateIssue(CreateIssue createIssue) {
+        createIssue.execute();
+        this.createIssue = createIssue;
     }
 
-    public void setLogDir(String logDir) {
-        this.logDir = logDir;
-    }
-
-    public void setJunitReport(String junitReport) {
-        this.junitReport = junitReport;
+    public void addConfiguredReport(Report report) {
+        report.execute();
+        this.listReport.add(report);
     }
 }

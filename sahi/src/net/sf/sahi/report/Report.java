@@ -1,12 +1,7 @@
 package net.sf.sahi.report;
 
-import net.sf.sahi.config.Configuration;
 import net.sf.sahi.util.Utils;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -16,21 +11,46 @@ import java.util.List;
  */
 public class Report {
     protected List listResult = new ArrayList();
+    protected String scriptName;
+    protected List listReporter;
+    protected boolean fail = false;
+    protected TestSummary testSummary;
 
-    protected Formatter formatter = null;
-
-    protected String scriptName = null;
-
-    protected boolean failure = false;
-
-    protected String logDir = null;
-
-    protected TestSummary testSummary = null;
-
-    public Report(String scriptName, String logDir, Formatter formatter) {
+    public Report(String scriptName, List listReporter) {
         this.scriptName = scriptName;
-        this.formatter = formatter;
-        this.logDir = logDir;
+        this.listReporter = listReporter;
+    }
+
+    public Report(String scriptName, SahiReporter reporter) {
+        this.scriptName = scriptName;
+        addReporter(reporter);
+    }
+
+    public boolean hasFailed() {
+        return fail;
+    }
+
+    public String getScriptName() {
+        return scriptName;
+    }
+
+    public List getListReporter() {
+        return listReporter;
+    }
+
+    public void setListReporter(List listReporter) {
+        this.listReporter = listReporter;
+    }
+
+    public void addReporter(SahiReporter reporter) {
+        if (listReporter == null) {
+            listReporter = new ArrayList();
+        }
+        listReporter.add(reporter);
+    }
+
+    public void setFail(boolean fail) {
+        this.fail = fail;
     }
 
     public List getListResult() {
@@ -47,54 +67,12 @@ public class Report {
                 debugInfo, failureMsg));
     }
 
-    public void generateReport() {
-        File dir = new File(getLogDir());
-        Configuration.createLogFolders(dir);
-        File logFile = new File(dir, formatter.getFileName(Utils
-                .createLogFileName(scriptName)));
-
-        BufferedWriter writer = null;
-        try {
-            writer = new BufferedWriter(new FileWriter(logFile));
-            writer.write(formatter.getHeader());
-            this.setTestSummary(summarizeResults());
-            testSummary.setLogFile(logFile.getName());
-            testSummary.setAddLink(false);
-            writer.write(formatter.getSummaryHeader());
-            writer.write(formatter.getSummaryData(this.getTestSummary()));
-            writer.write(formatter.getSummaryFooter());
-            writer.write(formatter.getStartScript());
-            writer.write(formatter.getResultData(listResult));
-            writer.write(formatter.getStopScript());
-            writer.write(formatter.getFooter());
-            writer.flush();
-            writer.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public String getLogDir() {
-        String dir = null;
-        if (!Utils.isBlankOrNull(logDir)) {
-            dir = logDir;
-            // sb.append(logDir).append(System.getProperty("file.separator"))
-            // .append(
-            // formatter.getFileName(Utils
-            // .createLogFileName(scriptName)));
-        } else {
-            dir = Configuration.getPlayBackLogsRoot();
-            // sb.append(Configuration.appendLogsRoot(formatter.getFileName(Utils
-            // .createLogFileName(scriptName))));
-        }
-        return dir;
-    }
-
     public TestSummary summarizeResults() {
         TestSummary summary = new TestSummary();
         boolean fail = false;
         summary.setScriptName(scriptName);
         summary.setSteps(listResult.size());
+        summary.setLogFileName(Utils.createLogFileName(scriptName));
         for (Iterator iter = listResult.iterator(); iter.hasNext();) {
             TestResult result = (TestResult) iter.next();
             if (ResultType.FAILURE.equals(result.type)) {
@@ -109,19 +87,17 @@ public class Report {
         return summary;
     }
 
-    public Formatter getFormatter() {
-        return formatter;
-    }
-
-    public void setFormatter(Formatter formatter) {
-        this.formatter = formatter;
-    }
-
     public TestSummary getTestSummary() {
+        if (testSummary == null) {
+            testSummary = summarizeResults();
+        }
         return testSummary;
     }
 
-    public void setTestSummary(TestSummary summary) {
-        this.testSummary = summary;
+    public void generateTestReport() {
+        for (Iterator iterator = listReporter.iterator(); iterator.hasNext();) {
+            SahiReporter reporter = (SahiReporter) iterator.next();
+            reporter.generateTestReport(this);
+        }
     }
 }
