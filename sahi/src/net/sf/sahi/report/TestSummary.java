@@ -6,7 +6,7 @@ package net.sf.sahi.report;
 public class TestSummary {
     private String scriptName = null;
 
-    private String logFile = null;
+    private String logFileName = null;
 
     private boolean addLink = false;
 
@@ -26,12 +26,12 @@ public class TestSummary {
         this.addLink = addLink;
     }
 
-    public String getLogFile() {
-        return logFile;
+    public String getLogFileName() {
+        return logFileName;
     }
 
-    public void setLogFile(String logFile) {
-        this.logFile = logFile;
+    public void setLogFileName(String logFileName) {
+        this.logFileName = logFileName;
     }
 
     public int getErrors() {

@@ -21,9 +21,7 @@ import net.sf.sahi.playback.FileScript;
 import net.sf.sahi.playback.SahiScript;
 import net.sf.sahi.playback.SahiScriptHTMLAdapter;
 import net.sf.sahi.playback.ScriptFactory;
-import net.sf.sahi.report.Formatter;
-import net.sf.sahi.report.HtmlFormatter;
-import net.sf.sahi.report.JUnitFormatter;
+import net.sf.sahi.report.HtmlReporter;
 import net.sf.sahi.report.Report;
 import net.sf.sahi.request.HttpRequest;
 import net.sf.sahi.response.HttpFileResponse;
@@ -48,7 +46,7 @@ public class Player {
     public void stop(HttpRequest request) {
         Session session = request.session();
         session.getRecorder().stop();
-        session.getReport().generateReport();
+        session.getReport().generateTestReport();
         Status testStatus = session.getReport().getTestSummary().hasFailed() ? Status.FAILURE : Status.SUCCESS;
         session.setStatus(testStatus);
         SahiTestSuite suite = SahiTestSuite.getSuite(session.id());
@@ -64,8 +62,8 @@ public class Player {
         session.setScript(script);
         // session.setScript(new ScriptFactory().getScript(
         // Configuration.getScriptFileWithPath(fileName)));
-        session.setReport(new Report(script.getScriptName(), session
-                .getSuiteLogDir(), new HtmlFormatter()));
+        session.setReport(new Report(script.getScriptName(), new HtmlReporter(session
+                .getSuiteLogDir())));
         startPlayback(session, true);
     }
 
@@ -73,8 +71,8 @@ public class Player {
         Session session = request.session();
         String url = request.getParameter("url");
         session.setScript(new ScriptFactory().getScript(url));
-        session.setReport(new Report(session.getScript().getScriptName(),
-                session.getSuiteLogDir(), new HtmlFormatter()));
+        session.setReport(new Report(session.getScript().getScriptName(), new HtmlReporter(session
+                .getSuiteLogDir())));
         startPlayback(session, true);
     }
 
@@ -131,14 +129,8 @@ public class Player {
         String startUrl = request.getParameter("startUrl");
         session.setIsWindowOpen(false);
 
-        Formatter formatter;
-        if (session.getSuite().isJunitReport()) {
-            formatter = new JUnitFormatter();
-        } else {
-            formatter = new HtmlFormatter();
-        }
-        session.setReport(new Report(session.getScript().getScriptName(),
-                session.getSuiteLogDir(), formatter));
+        session.setReport(new Report(session.getScript().getScriptName(), session.getSuite().getListReporter()));
+
         return proxyAutoResponse(startUrl, session.id());
     }
 

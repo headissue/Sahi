@@ -23,9 +23,7 @@ import net.sf.sahi.record.Recorder;
 import net.sf.sahi.report.Report;
 import net.sf.sahi.test.SahiTestSuite;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 
 /**
  * User: nraman Date: Jun 21, 2005 Time: 8:03:28 PM
@@ -47,7 +45,25 @@ public class Session {
 
     private MockResponder mockResponder = new MockResponder();
 
+    private List listReport = new ArrayList();
+
     private Report report;
+
+    public Report getReport() {
+        return report;
+    }
+
+    public void setReport(Report report) {
+        this.report = report;
+    }
+
+    public List getListReport() {
+        return listReport;
+    }
+
+    public void addReport(Report report) {
+        this.listReport.add(report);
+    }
 
     public static Session getInstance(String sessionId) {
         if (!sessions.containsKey(sessionId)) {
@@ -129,14 +145,6 @@ public class Session {
 
     public MockResponder mockResponder() {
         return mockResponder;
-    }
-
-    public Report getReport() {
-        return report;
-    }
-
-    public void setReport(Report report) {
-        this.report = report;
     }
 
     public boolean isPlayingBack() {

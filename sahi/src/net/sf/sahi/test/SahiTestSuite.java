@@ -17,7 +17,9 @@
 package net.sf.sahi.test;
 
 import net.sf.sahi.config.Configuration;
-import net.sf.sahi.report.SuiteReport;
+import net.sf.sahi.report.HtmlReporter;
+import net.sf.sahi.report.JunitReporter;
+import net.sf.sahi.report.SahiReporter;
 import net.sf.sahi.request.HttpRequest;
 import net.sf.sahi.session.Session;
 import net.sf.sahi.session.Status;
@@ -49,7 +51,7 @@ public class SahiTestSuite {
 
     private String suiteLogDir;
 
-    private boolean junitReport;
+    private List listReporter = new ArrayList();
 
     private String browserOption;
 
@@ -58,20 +60,21 @@ public class SahiTestSuite {
     private static HashMap suites = new HashMap();
 
 
-    private SahiTestSuite(String suitePath, String base, String browser,
-                          String logDir, String junitReport, String sessionId, String browseroption) {
+    private SahiTestSuite(String suitePath, String base, String browser, String sessionId, String browseroption) {
         this.suitePath = suitePath;
         this.base = base;
         this.browser = browser;
-        this.suiteLogDir = logDir;
-        this.junitReport = "true".equalsIgnoreCase(junitReport);
         this.sessionId = stripSah(sessionId);
         this.browserOption = browseroption;
+
         setSuiteName(suitePath);
         init();
         suites.put(this.sessionId, this);
     }
 
+    public List getListReporter() {
+        return listReporter;
+    }
 
     public static SahiTestSuite getSuite(String sessionId) {
         return (SahiTestSuite) suites.get(stripSah(sessionId));
@@ -230,7 +233,6 @@ public class SahiTestSuite {
         String junitReport = request.getParameter("junitReport");
         String browseroption = request.getParameter("browserOption");
 
-
         int threads = 1;
         try {
             threads = Integer.parseInt(threadsStr);
@@ -238,14 +240,25 @@ public class SahiTestSuite {
         }
         logDir = "".equals(logDir) ? null : logDir;
         SahiTestSuite suite = new SahiTestSuite(suitePath, base, browser,
-                logDir, junitReport, session.id(), browseroption);
+                session.id(), browseroption);
+        suite.setReporters(request);
         suite.availableThreads = threads;
         session.setStatus(Status.RUNNING);
         suite.execute();
         suite.markSuiteStatus();
+        suite.generateSuiteReport();
 
-        if (!suite.isJunitReport()) {
-            suite.generateSuiteReport(request);
+    }
+
+    private void setReporters(HttpRequest request) {
+        String defaultLogDir = getSuiteLogDir();
+        String temp = request.getParameter("junit");
+        if (temp != null) {
+            listReporter.add(new JunitReporter("".equals(temp) ? defaultLogDir : temp));
+        }
+        temp = request.getParameter("html");
+        if (temp != null) {
+            listReporter.add(new HtmlReporter("".equals(temp) ? defaultLogDir : temp));
         }
     }
 
@@ -255,8 +268,8 @@ public class SahiTestSuite {
         for (Iterator iterator = tests.iterator(); iterator.hasNext();) {
             TestLauncher testLauncher = (TestLauncher) iterator.next();
             session = Session.getInstance(testLauncher.getChildSessionId());
-            if(Status.FAILURE.equals(session.getStatus()))  {
-                status =Status.FAILURE;
+            if (Status.FAILURE.equals(session.getStatus())) {
+                status = Status.FAILURE;
             }
         }
         session = Session.getInstance(this.sessionId);
@@ -276,7 +289,7 @@ public class SahiTestSuite {
         }
     }
 
-    private void generateSuiteReport(HttpRequest request) {
+    private void generateSuiteReport() {
         while (isRunning()) {
             synchronized (this) {
                 try {
@@ -286,14 +299,16 @@ public class SahiTestSuite {
                 }
             }
         }
-        new SuiteReport().generateReport(suiteLogDir, tests);
+
+        for (Iterator iterator = listReporter.iterator(); iterator.hasNext();) {
+            SahiReporter reporter = (SahiReporter) iterator.next();
+            reporter.generateSuiteReport(tests);
+        }
     }
 
     public TestLauncher getCurrentTest() {
         return (TestLauncher) tests.get(currentTestIndex);
     }
 
-    public boolean isJunitReport() {
-        return junitReport;
-    }
+
 }

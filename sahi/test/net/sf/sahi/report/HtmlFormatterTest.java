@@ -99,7 +99,7 @@ public class HtmlFormatterTest extends TestCase {
     public void testGetSummaryDataForAllTypesWithLink() {
         String expected = expectedSummaryForAllTypes.replaceFirst("test", "<a class=\"SCRIPT\" href=\"test.htm\">test</a>");
         TestSummary summary =  ReportUtil.getTestSummary();
-        summary.setLogFile("test.htm");
+        summary.setLogFileName("test");
         summary.setAddLink(true);
         assertEquals(expected, formatter
                 .getSummaryData(summary));

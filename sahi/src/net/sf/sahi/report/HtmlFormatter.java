@@ -64,7 +64,7 @@ public class HtmlFormatter implements Formatter {
                 .getName());
         sb.append("\"><td>");
         if (summary.addLink()) {
-            sb.append("<a class=\"SCRIPT\" href=\"").append(summary.getLogFile()).append("\">").append(summary.getScriptName()).append(
+            sb.append("<a class=\"SCRIPT\" href=\"").append(getFileName(summary.getLogFileName())).append("\">").append(summary.getScriptName()).append(
                     "</a>");
         } else {
             sb.append(summary.getScriptName());

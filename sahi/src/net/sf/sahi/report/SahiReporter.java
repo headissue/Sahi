@@ -1,0 +1,105 @@
+package net.sf.sahi.report;
+
+import net.sf.sahi.config.Configuration;
+import net.sf.sahi.session.Session;
+import net.sf.sahi.test.TestLauncher;
+import net.sf.sahi.util.Utils;
+
+import java.io.*;
+import java.util.Iterator;
+import java.util.List;
+
+/**
+ * User: dlewis
+ * Date: Dec 6, 2006
+ * Time: 3:15:15 PM
+ */
+public class SahiReporter {
+    protected Formatter formatter;
+    protected String logDir;
+    private Writer writer;
+
+    public SahiReporter(String logDir, Formatter formatter) {
+        this.logDir = logDir;
+        this.formatter = formatter;
+    }
+
+    public Formatter getFormatter() {
+        return formatter;
+    }
+
+    public void setFormatter(Formatter formatter) {
+        this.formatter = formatter;
+    }
+
+    public void generateSuiteReport(List tests) {
+        try {
+            createWriter(getLogDir());
+            writer.write(formatter.getHeader());
+            writer.write(formatter.getSummaryHeader());
+            writeTestSummary(tests);
+            writer.write(formatter.getSummaryFooter());
+            writer.flush();
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    protected void writeTestSummary(List tests) throws IOException {
+        for (Iterator iter = tests.iterator(); iter.hasNext();) {
+            TestLauncher test = (TestLauncher) iter.next();
+            Session session = Session.getInstance(test.getChildSessionId());
+            Report report = session.getReport();
+            TestSummary summary = report.getTestSummary();
+            if (summary != null) {
+                summary.setAddLink(true);
+                writer.write(formatter.getSummaryData(summary));
+            }
+        }
+    }
+
+    protected void createWriter(String suiteLogDir)
+            throws IOException {
+        File dir = new File(suiteLogDir);
+        Configuration.createLogFolders(dir);
+        File logFile = new File(dir, formatter.getFileName("index"));
+
+        this.writer = new BufferedWriter(new FileWriter(logFile));
+    }
+
+    public void generateTestReport(Report report) {
+        File dir = new File(getLogDir());
+        Configuration.createLogFolders(dir);
+        File logFile = new File(dir, formatter.getFileName(report.getTestSummary().getLogFileName()));
+        try {
+            BufferedWriter writer = new BufferedWriter(new FileWriter(logFile));
+            writer.write(formatter.getHeader());
+            writer.write(formatter.getSummaryHeader());
+            writer.write(formatter.getSummaryData(report.getTestSummary()));
+            writer.write(formatter.getSummaryFooter());
+            writer.write(formatter.getStartScript());
+            writer.write(formatter.getResultData(report.getListResult()));
+            writer.write(formatter.getStopScript());
+            writer.write(formatter.getFooter());
+            writer.flush();
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public String getLogDir() {
+        String dir;
+        if (!Utils.isBlankOrNull(logDir)) {
+            dir = logDir;
+        } else {
+            dir = Configuration.getPlayBackLogsRoot();
+        }
+        return dir;
+    }
+
+    public void setLogDir(String logDir) {
+        this.logDir = logDir;
+    }
+}
