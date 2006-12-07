@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<project name="demo">
+    <taskdef name="sahi" classname="net.sf.sahi.ant.RunSahiTask"/>
+    <taskdef name="createissue" classname="net.sf.sahi.ant.CreateIssue"/>
+    <taskdef name="report" classname="net.sf.sahi.ant.Report"/>
+
+    <target name="testSahiWithoutNested">
+        <sahi suite="../scripts/empty.suite"
+              browser="C:\\Program Files\\Internet Explorer\\iexplore.exe"
+              baseurl="http://localhost:10000/demo/"
+              sahihost="localhost"
+              sahiport="9999"
+              failureproperty="sahi.failed"
+              haltonfailure="false"
+              threads="3"
+                />
+    </target>
+
+    <target name="testSahiWithNestedReport">
+        <sahi suite="../scripts/empty.suite"
+              browser="C:\\Program Files\\Internet Explorer\\iexplore.exe"
+              baseurl="http://localhost:10000/demo/"
+              sahihost="localhost"
+              sahiport="9999"
+              failureproperty="sahi.failed"
+              haltonfailure="false"
+              threads="3"
+                >
+            <report type="junit"/>
+        </sahi>
+    </target>
+    <target name="testReportWithInvalidType">
+        <sahi suite="../scripts/empty.suite"
+              browser="C:\\Program Files\\Internet Explorer\\iexplore.exe"
+              baseurl="http://localhost:10000/demo/"
+              sahihost="localhost"
+              sahiport="9999"
+              failureproperty="sahi.failed"
+              haltonfailure="false"
+              threads="3"
+                >
+            <report type="dummy"/>
+        </sahi>
+    </target>
+
+    <target name="testSahiWithNestedCreateIssue">
+        <sahi suite="../scripts/empty.suite"
+              browser="C:\\Program Files\\Internet Explorer\\iexplore.exe"
+              baseurl="http://localhost:10000/demo/"
+              sahihost="localhost"
+              sahiport="9999"
+              failureproperty="sahi.failed"
+              haltonfailure="false"
+              threads="3"
+                >
+            <createissue tool="jira"/>
+        </sahi>
+    </target>
+    <target name="testCreateIssueWithInvalidTool">
+        <sahi suite="../scripts/empty.suite"
+              browser="C:\\Program Files\\Internet Explorer\\iexplore.exe"
+              baseurl="http://localhost:10000/demo/"
+              sahihost="localhost"
+              sahiport="9999"
+              failureproperty="sahi.failed"
+              haltonfailure="false"
+              threads="3"
+                >
+            <createissue tool="test"/>
+        </sahi>
+    </target>
+    <target name="testSahiWithNestedCreateIssueAndReport">
+        <sahi suite="../scripts/empty.suite"
+              browser="C:\\Program Files\\Internet Explorer\\iexplore.exe"
+              baseurl="http://localhost:10000/demo/"
+              sahihost="localhost"
+              sahiport="9999"
+              failureproperty="sahi.failed"
+              haltonfailure="false"
+              threads="3"
+                >
+            <report type="junit"/>
+            <createissue tool="jira"/>
+        </sahi>
+    </target>
+
+    <target name="testSahiWithDemo">
+        <sahi suite="../scripts/deepak.suite"
+              browser="C:\\Program Files\\Internet Explorer\\iexplore.exe"
+              baseurl="http://localhost:10000/demo/"
+              sahihost="localhost"
+              sahiport="9999"
+              failureproperty="sahi.failed"
+              haltonfailure="false"
+              threads="3"
+                >
+            <report type="junit"/>
+            <createissue tool="jira"/>
+        </sahi>
+    </target>
+</project>
