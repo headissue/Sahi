@@ -19,6 +19,7 @@
     <target name="stressie" description="start the server and run sahi tests">
         <parallel>
             <antcall target="start"/>
+            <antcall target="start-web"/>
             <sequential>
                 <waitfor maxwait="3" maxwaitunit="minute" checkevery="100">
                     <http url="http://localhost:10000/demo/index.htm"/>
@@ -78,7 +79,6 @@
                 <antcall target="proxyoff"/>
                 <antcall target="stopsahi"/>
             </sequential>
-            <antcall target="start-web"/>
         </parallel>
     </target>
 
