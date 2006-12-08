@@ -9,7 +9,6 @@ import net.sf.sahi.playback.SahiScriptHTMLAdapterTest;
 import net.sf.sahi.playback.SahiScriptTest;
 import net.sf.sahi.playback.ScriptHandlerTest;
 import net.sf.sahi.playback.URLScriptTest;
-import net.sf.sahi.playback.log.PlayBackLogFormatterTest;
 import net.sf.sahi.response.HttpFileResponseTest;
 import net.sf.sahi.ssl.SSLHelperTest;
 import net.sf.sahi.util.URLParserTest;
@@ -30,7 +29,6 @@ public class AllTests extends TestSuite {
         suite.addTestSuite(HttpFileResponseTest.class);
         suite.addTestSuite(SahiScriptHTMLAdapterTest.class);
         suite.addTestSuite(UtilsTest.class);
-        suite.addTestSuite(PlayBackLogFormatterTest.class);
         suite.addTestSuite(URLParserTest.class);
         suite.addTestSuite(CommandExecuterTest.class);
         suite.addTestSuite(SSLHelperTest.class);
