@@ -20,39 +20,29 @@ public class SuiteLoader {
     public SuiteLoader(String suitePath, String base) {
         this.suitePath = suitePath;
         this.base = base;
+        loadScripts();          
     }
 
-    public List loadScripts() {
+    private void loadScripts() {
         File suite = new File(suitePath);
         if (suite.isDirectory()) {
             processSuiteDir(suite);
         } else {
             processSuiteFile();
         }
-        return listTest;
     }
 
     private void processSuiteDir(File suite) {
         File[] fileNames = suite.listFiles();
-        Arrays.sort(fileNames, new Comparator() {
-            public int compare(Object o1, Object o2) {
-                return ((File) o1).getName().compareToIgnoreCase(
-                        ((File) o1).getName());
-            }
-        });
-        for (int i = 0; i < fileNames.length; i++) {
-            File file = fileNames[i];
-            if (!file.isDirectory()) {
-                String testName = file.getAbsolutePath();
-                if (testName.endsWith(".sah") || testName.endsWith(".sahi")) {
-                    addTest(testName, base);
-                }
-            }
-        }
         for (int i = 0; i < fileNames.length; i++) {
             File file = fileNames[i];
             if (file.isDirectory()) {
                 processSuiteDir(file);
+            } else {
+                String testName = file.getAbsolutePath();
+                if (testName.endsWith(".sah") || testName.endsWith(".sahi")) {
+                    addTest(testName, base);
+                }
             }
         }
     }
@@ -95,5 +85,9 @@ public class SuiteLoader {
     private void addTest(String testName, String startURL) {
         TestLauncher sahiTest = new TestLauncher(testName, startURL);
         listTest.add(sahiTest);
+    }
+
+    public List getListTest() {
+        return listTest;
     }
 }

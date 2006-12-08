@@ -55,7 +55,7 @@ public class SahiTestSuite {
     }
 
     private void loadScripts() {
-        this.tests = new SuiteLoader(suitePath, base).loadScripts();
+        this.tests = new SuiteLoader(suitePath, base).getListTest();
         for (Iterator iterator = tests.iterator(); iterator.hasNext();) {
             TestLauncher script = (TestLauncher) iterator.next();
             script.setSessionId(sessionId);

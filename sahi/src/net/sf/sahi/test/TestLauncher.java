@@ -60,6 +60,9 @@ public class TestLauncher {
         return sessionId + "sahix" + getRandomInt() + "x";
     }
 
+    public String getStartURL() {
+        return startURL;
+    }
 
     public String getScriptName() {
         return scriptName;
