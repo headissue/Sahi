@@ -12,8 +12,8 @@ import java.util.Comparator;
  * Time: 12:17:44 PM
  */
 public class LogViewer {
-    public static String getLogsList() {
-        File[] fileList = new File(Configuration.getPlayBackLogsRoot())
+    public static String getLogsList(String logsRootDir) {
+        File[] fileList = new File(logsRootDir)
                 .listFiles();
         Arrays.sort(fileList, new Comparator() {
             public int compare(Object file1, Object file2) {
@@ -34,7 +34,6 @@ public class LogViewer {
                 sb.append("</a><br>");
             }
         }
-        sb.append("\n\n\n");
         return sb.toString();
     }
 
@@ -51,7 +50,11 @@ public class LogViewer {
         return sb.toString();
     }
 
-    private static String highlightLine(String data, int lineNumber) {
+    static String highlightLine(String data, int lineNumber) {
+        if(lineNumber <= 0)    {
+            return data;
+        }
+        
         data = data.replaceAll("<", "&lt;");
         data = data.replaceAll(">", "&gt;");
         int startIx = 0;
