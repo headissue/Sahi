@@ -29,23 +29,13 @@ import java.util.*;
  */
 public class Session {
     private Status status;
-
     private static Map sessions = new HashMap();
-
     private String sessionId;
-
     private boolean isWindowOpen = false;
-
     private Recorder recorder;
-
     private SahiScript script;
-
     private Map variables;
-
     private MockResponder mockResponder = new MockResponder();
-
-    private List listReport = new ArrayList();
-
     private Report report;
 
     public Report getReport() {
@@ -54,14 +44,6 @@ public class Session {
 
     public void setReport(Report report) {
         this.report = report;
-    }
-
-    public List getListReport() {
-        return listReport;
-    }
-
-    public void addReport(Report report) {
-        this.listReport.add(report);
     }
 
     public static Session getInstance(String sessionId) {
@@ -129,20 +111,12 @@ public class Session {
         return SahiTestSuite.getSuite(this.id());
     }
 
-//    public String getPlayBackStatus() {
-//        if (getSuite().isRunning()) {
-//            return STATE_RUNNING;
-//        }
-//        return new LogFileConsolidator(getSuiteLogDir()).getStatus();
-//    }
-
     public MockResponder mockResponder() {
         return mockResponder;
     }
 
     public boolean isPlayingBack() {
         return "1".equals(getVariable("sahi_play"));
-        //return Status.RUNNING.equals(status);
     }
 
     public Status getStatus() {
