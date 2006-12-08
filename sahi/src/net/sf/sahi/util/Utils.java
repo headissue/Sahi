@@ -201,7 +201,11 @@ public class Utils {
 
 	}
 
-	public static String escapeQuotes(String input) {
+    public static String escapeQuotes(String input) {
 		return input.replaceAll("\"", "&quot;");
 	}
+
+    public static String stripChildSessionId(String sessionId) {
+        return sessionId.replaceFirst("sahix[0-9]+x", "");
+    }
 }

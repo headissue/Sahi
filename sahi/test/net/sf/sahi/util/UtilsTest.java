@@ -35,4 +35,10 @@ public class UtilsTest extends TestCase {
     public void testMakeString(){
         assertEquals("a\\nb", Utils.makeString("a\nb"));
     }
+
+    public void testStripChildSessionId(){
+        assertEquals("2371283", Utils.stripChildSessionId("2371283sahix34x"));
+        assertEquals("2371283sahixx", Utils.stripChildSessionId("2371283sahixx"));
+        assertEquals("2371283sahix", Utils.stripChildSessionId("2371283sahix"));
+    }
 }

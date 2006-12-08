@@ -19,7 +19,6 @@ package net.sf.sahi.request;
 import net.sf.sahi.StreamHandler;
 import net.sf.sahi.config.Configuration;
 import net.sf.sahi.session.Session;
-import net.sf.sahi.test.SahiTestSuite;
 import net.sf.sahi.util.Utils;
 
 import java.io.IOException;
@@ -131,7 +130,7 @@ public class HttpRequest extends StreamHandler {
                 e.printStackTrace();
             }
         }
-        host = SahiTestSuite.stripSah(host);
+        host = Utils.stripChildSessionId(host);
     }
 
     private void setQueryString() {
