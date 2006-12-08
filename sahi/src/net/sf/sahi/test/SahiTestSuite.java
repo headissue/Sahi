@@ -24,8 +24,6 @@ import net.sf.sahi.session.Status;
 import net.sf.sahi.util.Utils;
 
 import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.*;
 
 public class SahiTestSuite {
@@ -48,12 +46,23 @@ public class SahiTestSuite {
         this.suitePath = suitePath;
         this.base = base;
         this.browser = browser;
-        this.sessionId = stripSah(sessionId);
+        this.sessionId = Utils.stripChildSessionId(sessionId);
         this.browserOption = browseroption;
 
-        setSuiteName(suitePath);
-        init();
+        setSuiteName();
+        loadScripts();
         suites.put(this.sessionId, this);
+    }
+
+    private void loadScripts() {
+        this.tests = new SuiteLoader(suitePath, base).loadScripts();
+        for (Iterator iterator = tests.iterator(); iterator.hasNext();) {
+            TestLauncher script = (TestLauncher) iterator.next();
+            script.setSessionId(sessionId);
+            script.setBrowser(browser);
+            script.setBrowserOption(browserOption);
+            testsMap.put(new File(script.getScriptName()).getName(), script);
+        }
     }
 
     public List getListReporter() {
@@ -61,98 +70,13 @@ public class SahiTestSuite {
     }
 
     public static SahiTestSuite getSuite(String sessionId) {
-        return (SahiTestSuite) suites.get(stripSah(sessionId));
+        return (SahiTestSuite) suites.get(Utils.stripChildSessionId(sessionId));
     }
 
-    public static String stripSah(String s) {
-        return s.replaceFirst("sahix[0-9]+x", "");
-    }
-
-    private void init() {
-        File suite = new File(suitePath);
-        if (suite.isDirectory()) {
-            processSuiteDir(suite);
-
-        } else {
-            processSuiteFile();
-        }
-    }
-
-    private void processSuiteDir(File suite) {
-        File[] fileNames = suite.listFiles();
-        Arrays.sort(fileNames, new Comparator() {
-            public int compare(Object o1, Object o2) {
-                return ((File) o1).getName().compareToIgnoreCase(
-                        ((File) o1).getName());
-            }
-        });
-        for (int i = 0; i < fileNames.length; i++) {
-            File file = fileNames[i];
-            if (!file.isDirectory()) {
-                String testName = file.getAbsolutePath();
-                if (testName.endsWith(".sah") || testName.endsWith(".sahi")) {
-                    addTest(testName, base);
-                }
-            }
-        }
-        for (int i = 0; i < fileNames.length; i++) {
-            File file = fileNames[i];
-            if (file.isDirectory()) {
-                processSuiteDir(file);
-            }
-        }
-    }
-
-    private void processSuiteFile() {
-        String contents = new String(Utils.readFile(suitePath));
-        StringTokenizer tokens = new StringTokenizer(contents, "\n");
-        while (tokens.hasMoreTokens()) {
-            String line = tokens.nextToken();
-            try {
-                processLine(line.trim());
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    private void processLine(String line) throws MalformedURLException {
-        if (line.startsWith("#") || line.startsWith("//")
-                || line.trim().equals(""))
-            return;
-        int ix = line.indexOf(' ');
-        if (ix == -1)
-            ix = line.indexOf('\t');
-        String testName;
-        String startURL;
-        if (ix != -1) {
-            testName = line.substring(0, ix).trim();
-            startURL = line.substring(ix).trim();
-        } else {
-            testName = line;
-            startURL = "";
-        }
-        if (!(startURL.startsWith("http://") || startURL.startsWith("https://"))) {
-            startURL = new URL(new URL(base), startURL).toString();
-        }
-        addTest(Utils.concatPaths(suitePath, testName), startURL);
-    }
-
-    private void addTest(String testName, String startURL) {
-        TestLauncher sahiTest = new TestLauncher(testName, startURL, browser,
-                sessionId, browserOption);
-        tests.add(sahiTest);
-        testsMap.put(new File(testName).getName(), sahiTest);
-    }
-
-    public void executeTest() {
+    private void executeTest() {
         TestLauncher test = (TestLauncher) tests.get(currentTestIndex);
         test.execute();
         currentTestIndex++;
-    }
-
-    public synchronized boolean isRunning() {
-        return (finishedTests < tests.size());
     }
 
     public synchronized void notifyComplete(String scriptName) {
@@ -162,39 +86,13 @@ public class SahiTestSuite {
         this.notify();
     }
 
-    public String getSuiteName() {
-        return suiteName;
-    }
-
-    public String getSuitePath() {
-        return suitePath;
-    }
-
-    protected void setSuiteName(String url) {
-        this.suiteName = url;
-        int lastIndexOfSlash = url.lastIndexOf("/");
+    private void setSuiteName() {
+        this.suiteName = suitePath;
+        int lastIndexOfSlash = suitePath.lastIndexOf("/");
         if (lastIndexOfSlash != -1) {
-            this.suiteName = url.substring(lastIndexOfSlash + 1);
+            this.suiteName = suitePath.substring(lastIndexOfSlash + 1);
         }
     }
-
-//    private void deleteLogDir() {
-//        try {
-//            if (suiteLogDir == null || suiteLogDir.equals("")) {
-//                return;
-//            }
-//            File logDirFile = new File(Utils.concatPaths(Configuration
-//                    .getPlayBackLogsRoot(), suiteLogDir));
-//            if (logDirFile.exists()) {
-//                File[] files = logDirFile.listFiles();
-//                for (int i = 0; i < files.length; i++) {
-//                    files[i].delete();
-//                }
-//                logDirFile.delete();
-//            }
-//        } catch (Exception e) {
-//        }
-//    }
 
     private void markSuiteStatus() {
         Status status = Status.SUCCESS;
@@ -204,6 +102,7 @@ public class SahiTestSuite {
             session = Session.getInstance(testLauncher.getChildSessionId());
             if (Status.FAILURE.equals(session.getStatus())) {
                 status = Status.FAILURE;
+                break;
             }
         }
         session = Session.getInstance(this.sessionId);
@@ -241,10 +140,10 @@ public class SahiTestSuite {
     }
 
     private void waitForSuiteCompletion() {
-        while (isRunning()) {
+        while (finishedTests < tests.size()) {
             synchronized (this) {
                 try {
-                    this.wait();
+                    this.wait(2000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -257,10 +156,6 @@ public class SahiTestSuite {
             SahiReporter reporter = (SahiReporter) iterator.next();
             reporter.generateSuiteReport(tests);
         }
-    }
-
-    public TestLauncher getCurrentTest() {
-        return (TestLauncher) tests.get(currentTestIndex);
     }
 
     public void setAvailableThreads(int availableThreads) {
