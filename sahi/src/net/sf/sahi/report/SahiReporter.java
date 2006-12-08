@@ -112,22 +112,4 @@ public abstract class SahiReporter {
     public void setSuiteName(String suiteName) {
         this.suiteName = suiteName;
     }
-
-//    private void deleteLogDir() {
-//        try {
-//            if (suiteLogDir == null || suiteLogDir.equals("")) {
-//                return;
-//            }
-//            File logDirFile = new File(Utils.concatPaths(Configuration
-//                    .getPlayBackLogsRoot(), suiteLogDir));
-//            if (logDirFile.exists()) {
-//                File[] files = logDirFile.listFiles();
-//                for (int i = 0; i < files.length; i++) {
-//                    files[i].delete();
-//                }
-//                logDirFile.delete();
-//            }
-//        } catch (Exception e) {
-//        }
-//    }
 }
