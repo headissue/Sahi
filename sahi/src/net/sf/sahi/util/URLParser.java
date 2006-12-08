@@ -17,9 +17,9 @@
 package net.sf.sahi.util;
 
 import net.sf.sahi.config.Configuration;
+import net.sf.sahi.command.Command;
 
 public class URLParser {
-
     public static String logFileNamefromURI(String uri) {
         String fileName = getRelativeLogFile(uri);
         if ("".equals(fileName)) return "";
@@ -27,7 +27,7 @@ public class URLParser {
     }
 
     static String getRelativeLogFile(String uri) {
-        String fileName = uri.substring(uri.indexOf("/logs") + 5);
+        String fileName = uri.substring(uri.indexOf(Command.LOG_VIEW) + Command.LOG_VIEW.length());
         while (fileName.startsWith("/")) fileName = fileName.substring(1);
         return fileName;
     }

@@ -16,33 +16,42 @@
 
 package net.sf.sahi.command;
 
+import net.sf.sahi.report.LogViewer;
 import net.sf.sahi.request.HttpRequest;
+import net.sf.sahi.response.HttpFileResponse;
 import net.sf.sahi.response.HttpResponse;
+import net.sf.sahi.response.NoCacheHttpResponse;
 import net.sf.sahi.response.SimpleHttpResponse;
 import net.sf.sahi.session.Session;
+import net.sf.sahi.util.URLParser;
 import net.sf.sahi.util.Utils;
 
 public class Log {
+
+    public HttpResponse viewLogs(HttpRequest request) {
+        String fileName = URLParser.logFileNamefromURI(request.uri());
+        if ("".equals(fileName)) {
+            return new NoCacheHttpResponse(LogViewer.getLogsList());
+        } else {
+            return new HttpFileResponse(fileName, null, false, false);
+        }
+    }
 
     public HttpResponse highlight(HttpRequest request) {
         int lineNumber = getLineNumber(request);
         String href = request.getParameter("href");
         String content;
-        if (href.startsWith("http://") || href.startsWith("https://")){
+        if (href.startsWith("http://") || href.startsWith("https://")) {
             content = new String(Utils.readURL(href));
-        }else{
+        } else {
 //            String fileName = Utils.concatPaths(Configuration.getScriptRoots(), href);
             content = new String(Utils.readFile(href));
         }
         final SimpleHttpResponse response = new SimpleHttpResponse(content);
         if (lineNumber != -1) {
-            response
-                    .setData(("<html><body><style>b{color:brown}</style><pre>"
-                            + Log.highlight(new String(
-                                    response.data()), lineNumber) + "</pre></body></html>")
-                            .getBytes());
+            response.setData(LogViewer.highlight(new String(response.data()), lineNumber).getBytes());
         }
-        response.addHeader("Content-type", "text/html");
+        //response.addHeader("Content-type", "text/html");
         response.resetRawHeaders();
         return response;
     }
@@ -74,12 +83,12 @@ public class Log {
         int endIx = -1;
         int len = s.length();
         StringBuffer sb = new StringBuffer();
-        for (int i=0; i<lineNumber; i++) {
-            startIx = endIx+1;
+        for (int i = 0; i < lineNumber; i++) {
+            startIx = endIx + 1;
             endIx = s.indexOf("\n", startIx);
             if (endIx == -1) break;
         }
-        if (endIx==-1) endIx = len;
+        if (endIx == -1) endIx = len;
         sb.append(s.substring(0, startIx));
         sb.append("<b>");
         sb.append(s.substring(startIx, endIx).replace('\r', ' '));

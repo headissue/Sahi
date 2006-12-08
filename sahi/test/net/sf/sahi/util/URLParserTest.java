@@ -1,14 +1,14 @@
 package net.sf.sahi.util;
 
 import net.sf.sahi.util.URLParser;
-import net.sf.sahi.config.Configuration;
+import net.sf.sahi.command.Command;
 
 import junit.framework.TestCase;
 
 public class URLParserTest extends TestCase {
 	final String uri = "/_s_/dyn/Log_highlight/sahi_demo_include.sah?n=2";
 
-	public void xtestScriptFileNamefromURI() {
+    public void xtestScriptFileNamefromURI() {
 		assertEquals("../scripts/sahi_demo_include.sah", URLParser.scriptFileNamefromURI(uri, "/Log_highlight/"));
 	}
 
@@ -18,14 +18,14 @@ public class URLParserTest extends TestCase {
 	}
 
 	public void testLogFileNamefromURI() {
-		assertEquals("", URLParser.logFileNamefromURI("/_s_/logs/"));
-		assertEquals("", URLParser.logFileNamefromURI("/_s_/logs"));
-        assertEquals("", URLParser.logFileNamefromURI("/_s_/logs////////"));
+		assertEquals("", URLParser.logFileNamefromURI("/_s_/"+ Command.LOG_VIEW +"/"));
+		assertEquals("", URLParser.logFileNamefromURI("/_s_/"+ Command.LOG_VIEW));
+        assertEquals("", URLParser.logFileNamefromURI("/_s_/"+ Command.LOG_VIEW +"////////"));
     }
 
 	public void testGetRelativeLogFile() {
-		assertEquals("a/b/c" , URLParser.getRelativeLogFile("/_s_/logs/a/b/c"));
-		assertEquals("a/b/c" , URLParser.getRelativeLogFile("/_s_//////////logs/a/b/c"));
+		assertEquals("a/b/c" , URLParser.getRelativeLogFile("/_s_/dyn/"+ Command.LOG_VIEW +"/a/b/c"));
+		assertEquals("a/b/c" , URLParser.getRelativeLogFile("/_s_//////////dyn/"+ Command.LOG_VIEW +"/a/b/c"));
 	}
 
 	public void testGetCommandFromUri() {

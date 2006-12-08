@@ -1,5 +1,6 @@
 package net.sf.sahi.report;
 
+import net.sf.sahi.command.Command;
 import net.sf.sahi.config.Configuration;
 import net.sf.sahi.util.Utils;
 
@@ -40,8 +41,7 @@ public class HtmlFormatter implements Formatter {
         sb.append("<div class=\"").append(result.type.getName()).append(
                 "\"><a class=\"").append(result.type.getName());
         if (!Utils.isBlankOrNull(result.debugInfo)) {
-            sb.append("\" href=\"/_s_/dyn/Log_highlight?href=").append(
-                    result.debugInfo);
+            sb.append("\" href=\"/_s_/dyn/").append(Command.LOG_HIGHLIGHT).append("?href=").append(result.debugInfo);
         }
         sb.append("\">").append(result.message).append(result.failureMsg != null ? " " + result.failureMsg : "")
                 .append("</a></div>");
