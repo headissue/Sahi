@@ -18,7 +18,6 @@ package net.sf.sahi.session;
 
 import net.sf.sahi.command.MockResponder;
 import net.sf.sahi.playback.SahiScript;
-import net.sf.sahi.playback.log.LogFileConsolidator;
 import net.sf.sahi.record.Recorder;
 import net.sf.sahi.report.Report;
 import net.sf.sahi.test.SahiTestSuite;
