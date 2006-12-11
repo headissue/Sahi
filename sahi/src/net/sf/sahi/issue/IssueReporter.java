@@ -37,16 +37,22 @@ public class IssueReporter extends SahiReporter {
 
     public void reportIssue(List tests) {
         Issue issue = prepareIssue(tests);
+        createIssue(issue);
+    }
+
+    void createIssue(Issue issue) {
         try {
             for (Iterator iterator = listIssueCreator.iterator(); iterator.hasNext();) {
                 IssueCreator issueCreator = (IssueCreator) iterator.next();
+                issueCreator.login();
                 issueCreator.createIssue(issue);
+                issueCreator.logout();
             }
         } catch (Exception e) {
         }
     }
 
-    private Issue prepareIssue(List tests) {
+    Issue prepareIssue(List tests) {
         generateSuiteReport(tests);
         StringWriter sw = (StringWriter) writer;
         String summary = suiteName + " failed on " + new SimpleDateFormat("ddMMMyy_HH:mm:ss").format(new Date());

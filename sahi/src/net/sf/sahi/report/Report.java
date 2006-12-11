@@ -85,6 +85,10 @@ public class Report {
         return testSummary;
     }
 
+    void setTestSummary(TestSummary testSummary) {
+        this.testSummary = testSummary;
+    }
+
     public void generateTestReport() {
         for (Iterator iterator = listReporter.iterator(); iterator.hasNext();) {
             SahiReporter reporter = (SahiReporter) iterator.next();

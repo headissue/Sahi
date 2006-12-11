@@ -6,5 +6,9 @@ package net.sf.sahi.issue;
  * Time: 4:57:21 PM
  */
 public interface IssueCreator {
-     void createIssue(Issue issue) throws Exception;
+    void login() throws Exception;
+
+    void createIssue(Issue issue) throws Exception;
+
+    void logout() throws Exception;
 }

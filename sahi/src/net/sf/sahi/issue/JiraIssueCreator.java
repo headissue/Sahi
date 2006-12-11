@@ -21,8 +21,35 @@ public class JiraIssueCreator implements IssueCreator {
 
     private XmlRpcClient rpcClient;
     private String loginToken;
+    private Map issueParams;
 
     public JiraIssueCreator(String propFile) {
+        loadPropFile(propFile);
+        initializeXmlRpcClient(new XmlRpcClient(), new XmlRpcClientConfigImpl());
+    }
+
+    void initializeXmlRpcClient(XmlRpcClient rpcClient, XmlRpcClientConfigImpl configImpl) {
+        try {
+            URL jiraRpcUrl = new URL(properties.getProperty("jira.url") + properties.getProperty("jira.rpc.path"));
+            configImpl.setServerURL(jiraRpcUrl);
+            this.rpcClient = rpcClient;
+            rpcClient.setConfig(configImpl);
+        } catch (Exception e) {
+            throw new RuntimeException("Error connecting to CreateIssue", e);
+        }
+    }
+
+    JiraIssueCreator(XmlRpcClient rpcClient) {
+        this.rpcClient = rpcClient;
+        loadPropFile(null);
+    }
+
+
+    void setIssueParams(Map issueParams) {
+        this.issueParams = issueParams;
+    }
+
+    private void loadPropFile(String propFile) {
         if (Utils.isBlankOrNull(propFile)) {
             propFile = "../config/jira.properties";
         }
@@ -32,38 +59,30 @@ public class JiraIssueCreator implements IssueCreator {
         } catch (IOException e) {
             throw new FileNotFoundRuntimeException(e);
         }
-        try {
-            URL jiraRpcUrl = new URL(properties.getProperty("jira.url") + properties.getProperty("jira.rpc.path"));
-            XmlRpcClientConfigImpl impl = new XmlRpcClientConfigImpl();
-            impl.setServerURL(jiraRpcUrl);
-            rpcClient = new XmlRpcClient();
-            rpcClient.setConfig(impl);
-        } catch (Exception e) {
-            throw new RuntimeException("Error connecting to CreateIssue", e);
-        }
     }
 
+
     public static void main(String[] args) {
-        JiraIssueCreator issueCreator = new JiraIssueCreator(null);
+        JiraIssueCreator issueCreator = new JiraIssueCreator("");
         try {
             issueCreator.createIssue(new Issue("Sahi Test", "blah"));
         } catch (Exception e) {
-            e.printStackTrace();  
+            e.printStackTrace();
         }
     }
 
     public void createIssue(Issue issue) throws Exception {
-        Map issueParams = getIssueParameters();
-        issueParams.put("summary",issue.getSummary());
-        issueParams.put("description",issue.getDescription());
+        if (issueParams == null) {
+            issueParams = getIssueParameters();
+        }
+        issueParams.put("summary", issue.getSummary());
+        issueParams.put("description", issue.getDescription());
 
-        rpcClient.execute("jira1.createIssue", new Object[]{loginToken,issueParams});
-
-        logout();
+        rpcClient.execute("jira1.createIssue", new Object[]{getLoginToken(), issueParams});
     }
 
-    public Map getIssueParameters() {
-        Map issueParams = new HashMap();
+    Map getIssueParameters() {
+        issueParams = new HashMap();
         try {
             String projectKey = new JiraItem("jira1.getProjects", null, properties.getProperty("jira.project")).get("key");
             issueParams.put("project", projectKey);
@@ -85,27 +104,25 @@ public class JiraIssueCreator implements IssueCreator {
         return issueParams;
     }
 
-    private void logout() throws XmlRpcException {
-       rpcClient.execute("jira1.logout", new Object[]{loginToken});
+    public void logout() throws XmlRpcException {
+        rpcClient.execute("jira1.logout", new Object[]{getLoginToken()});
     }
 
     public String getLoginToken() {
-        if (loginToken == null) {
+        if(loginToken == null)  {
             login();
         }
-
         return loginToken;
     }
 
-    private void login() {
-
+    public void login() {
         List loginParams = new ArrayList();
         loginParams.add(properties.getProperty("jira.username"));
         loginParams.add(properties.getProperty("jira.password"));
         try {
             loginToken = (String) rpcClient.execute("jira1.login", loginParams);
         } catch (Exception e) {
-            throw new RuntimeException("Error logging in to CreateIssue", e);
+            throw new RuntimeException("Error logging in to Jira", e);
         }
     }
 
