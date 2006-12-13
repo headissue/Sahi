@@ -51,7 +51,7 @@ public class JUnitFormatter implements Formatter {
 		sb.append("\n<testsuite errors=\"").append(summary.getErrors()).append(
 				"\" failures=\"").append(summary.getFailures()).append(
 				"\" name=\"").append(
-				Utils.escapeQuotes(summary.getScriptName())).append(
+				Utils.escapeQuotesForXML(summary.getScriptName())).append(
 				"\" tests=\"").append(summary.getSteps()).append("\">\n");
 
 		return sb.toString();
@@ -60,7 +60,7 @@ public class JUnitFormatter implements Formatter {
 	public String getStringResult(TestResult result) {
 		StringBuffer sb = new StringBuffer();
 		sb.append("<testcase name=\"").append(
-				Utils.escapeQuotes(result.message)).append("\">");
+				Utils.escapeQuotesForXML(result.message)).append("\">");
 		if (ResultType.FAILURE.equals(result.type)
 				|| ResultType.ERROR.equals(result.type)) {
 			sb.append("\n<failure message=\"Assertion Failed\">");

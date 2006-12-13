@@ -192,8 +192,12 @@ public class Utils {
 
     }
 
-    public static String escapeQuotes(String input) {
+    public static String escapeQuotesForXML(String input) {
         return input.replaceAll("\"", "&quot;");
+    }
+
+    public static String escapeQuotes(String input) {
+        return input.replaceAll("\"", "\\\\\"");
     }
 
     public static String stripChildSessionId(String sessionId) {
