@@ -24,6 +24,6 @@ public class HtmlReporterTest extends TestCase {
     public void testGetSuiteDirForCreatedSuiteLogDir()   {
         reporter = new HtmlReporter(true);
         reporter.setSuiteName("testSuite");
-        assertTrue(reporter.getLogDir().contains("testSuite"));
+        assertTrue(reporter.getLogDir().indexOf("testSuite")!=-1);
     }
 }
