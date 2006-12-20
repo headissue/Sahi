@@ -1875,7 +1875,7 @@ function areWindowsLoaded(win) {
         var fs = win.frames;
         if (!fs || fs.length == 0) {
             try {
-                return win.sahiLoaded;
+                return win.document.readyState || win.sahiLoaded;
             } catch(e) {
                 return true;
                 //diff domain; don't bother

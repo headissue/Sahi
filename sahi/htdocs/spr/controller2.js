@@ -93,8 +93,8 @@ function sendPlaybackSnapshot() {
     s += addVar("controller_url", document.scripturlform.url.value);
     s += addVar("controller_logs", document.logForm.logs.value);
     s += addVar("controller_step", document.playform.step.value);
-    s += addVar("controller_step", document.playform.step.value);
     s += addVar("controller_url_starturl", document.scripturlform.starturl.value);
+    s += addVar("controller_pb_dir", document.scriptfileform.dir.value);
     s += addVar("controller_file_starturl", document.scriptfileform.starturl.value);
     var showUrl = "" + (document.getElementById("seturl").style.display == "block");
     s += addVar("controller_show_url", showUrl);
@@ -111,6 +111,7 @@ function sendRecorderSnapshot() {
     s += addVar("controller_history", document.currentForm.history.value);
     s += addVar("controller_waitTime", document.currentForm.waitTime.value);
     s += addVar("controller_result", document.currentForm.result.value);
+    s += addVar("controller_rec_dir", document.recordstartform.dir.value);
     sahiSetServerVar("recorder_state", s);
 }
 
@@ -218,6 +219,7 @@ function populateOptions(el, opts, selectedOpt, defaultOpt, prefix) {
 
 function doOnPlaybackLoad() {
     populateOptions(document.scriptfileform.dir, _scriptDirList, _selectedScriptDir);
+    initPlaybackTab();
     populateOptions(document.scriptfileform.file, _scriptList, _selectedScript, "-- Choose Script --", document.scriptfileform.dir.value);
 
     resizeScriptFileDropdown();
@@ -226,7 +228,6 @@ function doOnPlaybackLoad() {
     if (sahiGetCurrentIndex() != null) {
         displayStepNum();
     }
-    initPlaybackTab();
 }
 function doOnTabsLoad() {
     try {
@@ -371,6 +372,7 @@ function initRecorderTab() {
     document.currentForm.debug.value = getRecVar("controller_debug");
     document.currentForm.waitTime.value = getRecVar("controller_waitTime");
     document.currentForm.result.value = getRecVar("controller_result");
+    document.recordstartform.dir.value = getRecVar("controller_rec_dir");
 }
 function showTab(s) {
     if (top.main.location.href.indexOf(s + '.htm') != -1) return;
@@ -379,6 +381,7 @@ function showTab(s) {
 }
 
 function initPlaybackTab() {
+    document.scriptfileform.dir.value = getPbVar("controller_pb_dir");
     document.scripturlform.url.value = getPbVar("controller_url");
     document.logForm.logs.value = getPbVar("controller_logs");
     document.scripturlform.starturl.value = getPbVar("controller_url_starturl");
