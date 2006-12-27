@@ -252,27 +252,27 @@ function sahi_mouseOver(el) {
     sahiSimulateMouseEvent(el, "mouseover");
 }
 
-function sahi_keyPress(el, c, combo){
-    var prev = el.value ? el.value : null; 
+function sahi_keyPress(el, c, combo) {
+    var prev = el.value ? el.value : null;
     sahiSimulateMouseEvent(el, "focus");
     sahiSimulateKeyEvent(c, el, "keydown", combo);
     sahiSimulateKeyEvent(c, el, "keypress", combo);
-    if (prev && (prev+c != el.value)) {
+    if (prev && (prev + c != el.value)) {
         //                    if (!el.maxLength || el.value.length < el.maxLength)
         el.value += c;
     }
     sahiSimulateKeyEvent(c, el, "keyup", combo);
 }
 
-function sahi_focus(el){
+function sahi_focus(el) {
     sahiSimulateMouseEvent(el, "focus");
 }
 
-function sahi_keyDown(el, c, combo){
+function sahi_keyDown(el, c, combo) {
     sahiSimulateKeyEvent(c, el, "keydown", combo);
 }
 
-function sahi_keyUp(el, c, combo){
+function sahi_keyUp(el, c, combo) {
     sahiSimulateKeyEvent(c, el, "keyup", combo);
 }
 
@@ -489,7 +489,8 @@ function sahi_setValue(el, val) {
 }
 
 function sahi_setFile(el, v) {
-    var url = isBlankOrNull(el.form.action) ? el.ownerDocument.defaultView.location.href : el.form.action;
+    sahi_debug(el.ownerDocument.defaultView.location.href)
+    var url = (isBlankOrNull(el.form.action) || (typeof el.form.action != "string")) ? el.ownerDocument.defaultView.location.href : el.form.action;
     sahi_callServer("FileUpload_setFile", "n=" + el.name + "&v=" + v + "&action=" + url);
 }
 
@@ -588,7 +589,7 @@ function sahi_submit(n) {
 }
 _sahiWaitCondition = null;
 function sahi_wait(i, condn) {
-    if (condn){
+    if (condn) {
         _sahiWaitCondition = condn;
         setTimeout("_sahiWaitCondition=null", i);
     }
@@ -1140,6 +1141,15 @@ function sahiFindElementHelper(id, win, type, res, param, tagName) {
         res = sahiFindFormElementByIndex(id, win, type, res, tagName);
         if (res.found) return res;
     } else {
+        var els = win.document.getElementsByTagName(tagName);
+        for (var j = 0; j < els.length; j++) {
+            if (sahiAreEqualTypes(els[j].type, type) && sahiAreEqual(els[j], param, id)) {
+                res.element = els[j];
+                res.found = true;
+                return res;
+            }
+        }
+
         var o = getArrayNameAndIndex(id);
         var ix = o.index;
         var fetch = o.name;
@@ -1154,6 +1164,7 @@ function sahiFindElementHelper(id, win, type, res, param, tagName) {
                 }
             }
         }
+
 
     }
     var frs = win.frames;
@@ -1928,7 +1939,8 @@ function sahiEx(isStep) {
                             again = false;
                             _sahiWaitCondition = false;
                         }
-                    } catch(e1) {}
+                    } catch(e1) {
+                    }
                     if (again) {
                         sahiExecNextStep(isStep, interval);
                         return;
@@ -2130,10 +2142,10 @@ function sahiReportSuccess(msg, debugInfo) {
     //sahiSendToServer("/_s_/dyn/Player_success?msg=" + sahiEscape(msg) + "&type=" + type + "&debugInfo=" + (debugInfo?sahiEscape(debugInfo):""));
     sahiLogPlayBack(msg, type, debugInfo);
 }
-function sahiLogPlayBack(msg, type, debugInfo, failureMsg) {	
+function sahiLogPlayBack(msg, type, debugInfo, failureMsg) {
     //sahiSendToServer("/_s_/dyn/Log?msg=" + sahiEscape(msg) + "&type=" + type + "&debugInfo=" + (debugInfo?sahiEscape(debugInfo):""));
-    sahiSendToServer("/_s_/dyn/TestReporter_logTestResult?msg=" + sahiEscape(msg) + "&type=" + type 
-    	+ "&debugInfo=" + (debugInfo?sahiEscape(debugInfo):"")+(failureMsg?"&failureMsg="+sahiEscape(failureMsg):""));
+    sahiSendToServer("/_s_/dyn/TestReporter_logTestResult?msg=" + sahiEscape(msg) + "&type=" + type
+        + "&debugInfo=" + (debugInfo?sahiEscape(debugInfo):"") + (failureMsg?"&failureMsg=" + sahiEscape(failureMsg):""));
 }
 function sahiTrim(s) {
     if (s == null) return s;
@@ -2401,7 +2413,7 @@ function sahiQuoteIfString(shortHand) {
 }
 sahiActivateHotKey();
 
-window.sahi_real_alert = window.alert;                                                                                              
+window.sahi_real_alert = window.alert;
 window.sahi_real_confirm = window.confirm;
 window.sahi_real_prompt = window.prompt;
 

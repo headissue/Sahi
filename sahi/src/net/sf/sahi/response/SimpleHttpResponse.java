@@ -39,11 +39,11 @@ public class SimpleHttpResponse extends HttpResponse {
         setFirstLine("HTTP/1.1 200 OK");
         setHeader("Content-Type", "text/html");
 		setHeader("Cache-Control","no-cache");
-		setHeader("Pragma","no-cache");
-		setHeader("Expires", "0");
-        if (closeConnection) {
-        	setHeader("Connection", "close");
-        }
+//		setHeader("Pragma","no-cache");
+//		setHeader("Expires", "0");
+//        if (closeConnection) {
+//        	setHeader("Connection", "close");
+//        }
         setHeader("Content-Length", "" + data().length);
         setRawHeaders(getRebuiltHeaderBytes());
     }

@@ -62,14 +62,14 @@ public class HttpFileResponse extends HttpResponse {
 	}
 
 	private void setHeaders() {
-		setFirstLine("HTTP/1.0 200 OK");
+		setFirstLine("HTTP/1.1 200 OK");
 		setHeader("Content-Type", MimeType.getMimeTypeOfFile(fileName));
 		if (addCacheHeader) {
 			setHeader("Expires", formatForExpiresHeader(new Date(
 							System.currentTimeMillis() + 10 * 60 * 1000))); // 10 minutes
 		}
 		
-		setHeader("Connection", "close");
+//		setHeader("Connection", "close");
 		setHeader("Content-Length", "" + data().length);
 		setRawHeaders(getRebuiltHeaderBytes());
 	}

@@ -49,17 +49,18 @@ public class HttpModifiedResponse extends HttpResponse {
 		this.isSSL = isSSL;
 		if (firstLine().indexOf("30") == -1) { // Response code other than
 			boolean html = isHTML();
+            setFirstLine(firstLine().replaceAll("HTTP/1.0", "HTTP/1.1"));
+            removeHeader("Connection");
+            setHeader("Connection", "keep-alive");
+            setHeader("Proxy-Connection", "keep-alive");
 			if (html) {
 				removeHeader("Transfer-Encoding");
 				removeHeader("ETag");
 				removeHeader("Last-Modified");
-				setHeader("Cache-Control", "no-cache");
-				setHeader("Pragma", "no-cache");
-				setHeader("Expires", "-1");
 				setData(getModifiedData());
-				setHeader("Content-Length", "" + data().length);
-				resetRawHeaders();
 			}
+            setHeader("Content-Length", "" + data().length);
+            resetRawHeaders();
 		}
 	}
 	private boolean isJs() {

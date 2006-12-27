@@ -37,6 +37,7 @@ import java.util.logging.Logger;
  * User: nraman Date: May 13, 2005 Time: 7:06:11 PM To
  */
 public class ProxyProcessor implements Runnable {
+    static int num = 0;
     private Socket client;
 
     private boolean isSSLSocket = false;
@@ -50,6 +51,21 @@ public class ProxyProcessor implements Runnable {
         isSSLSocket = (client instanceof SSLSocket);
     }
 
+    public void run2() {
+        try {
+            HttpRequest requestFromBrowser = getRequestFromBrowser();
+            System.out.println(requestFromBrowser.headers());
+            System.out.println(requestFromBrowser.data());
+            num++;
+            System.out.println("reached " + (num));
+            sendResponseToBrowser(new SimpleHttpResponse("" + num), false);
+            new Thread(new ProxyProcessor(client)).start();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static int count = 0;
     public void run() {
         try {
             HttpRequest requestFromBrowser = getRequestFromBrowser();
@@ -59,23 +75,25 @@ public class ProxyProcessor implements Runnable {
                     processLocally(uri, requestFromBrowser);
                 } else {
                     if (isHostTheProxy(requestFromBrowser.host())
-                            && requestFromBrowser.port() == Configuration.getPort()) {
+                        && requestFromBrowser.port() == Configuration.getPort()) {
                         processLocally(uri, requestFromBrowser);
                     } else if (uri.indexOf("favicon.ico") != -1) {
                         sendResponseToBrowser(new HttpFileResponse(Configuration.getHtdocsRoot()
-                                + "spr/favicon.ico"), false);
+                            + "spr/favicon.ico"), false);
                     } else {
                         processAsProxy(requestFromBrowser);
                     }
                 }
+                this.run();
+            } else {
+                sendResponseToBrowser(new SimpleHttpResponse(""), false);
             }
         } catch (IOException e) {
             logger.fine(e.getMessage());
-        } finally {
             try {
                 client.close();
-            } catch (IOException e) {
-                logger.warning(e.getMessage());
+            } catch (IOException e2) {
+                logger.warning(e2.getMessage());
             }
         }
     }
@@ -83,8 +101,8 @@ public class ProxyProcessor implements Runnable {
     private boolean isHostTheProxy(String host) {
         try {
             return InetAddress.getByName(host).getHostAddress().equals(
-                    InetAddress.getLocalHost().getHostAddress())
-                    || InetAddress.getByName(host).getHostAddress().equals("127.0.0.1");
+                InetAddress.getLocalHost().getHostAddress())
+                || InetAddress.getByName(host).getHostAddress().equals("127.0.0.1");
         } catch (Exception e) {
             return false;
         }
@@ -119,7 +137,7 @@ public class ProxyProcessor implements Runnable {
         try {
             client.getOutputStream().write(("HTTP/1.0 200 OK\r\n\r\n").getBytes());
             SSLSocket sslSocket = new SSLHelper().convertToSecureServerSocket(client,
-                    requestFromBrowser.host());
+                requestFromBrowser.host());
             ProxyProcessor delegatedProcessor = new ProxyProcessor(sslSocket);
             delegatedProcessor.run();
         } catch (IOException e) {
@@ -130,7 +148,7 @@ public class ProxyProcessor implements Runnable {
 
     private void processLocally(String uri, HttpRequest requestFromBrowser) throws IOException {
         HttpResponse httpResponse = new LocalRequestProcessor().getLocalResponse(uri,
-                requestFromBrowser);
+            requestFromBrowser);
         sendResponseToBrowser(httpResponse, false);
     }
 
@@ -148,8 +166,8 @@ public class ProxyProcessor implements Runnable {
         final byte[] data = responseFromHost.data();
         outputStreamToBrowser.write(data);
         outputStreamToBrowser.flush();
-        hackyWaitForIE(wait);
-        outputStreamToBrowser.close();
+//        hackyWaitForIE(wait);
+//        outputStreamToBrowser.close();
     }
 
     private void hackyWaitForIE(boolean wait) {
