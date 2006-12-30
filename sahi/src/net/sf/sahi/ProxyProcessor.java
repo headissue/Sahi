@@ -162,12 +162,9 @@ public class ProxyProcessor implements Runnable {
         OutputStream outputStreamToBrowser = new BufferedOutputStream(client.getOutputStream());
         outputStreamToBrowser.write(responseFromHost.rawHeaders());
         outputStreamToBrowser.flush();
-        outputStreamToBrowser.flush();
         final byte[] data = responseFromHost.data();
         outputStreamToBrowser.write(data);
         outputStreamToBrowser.flush();
-//        hackyWaitForIE(wait);
-//        outputStreamToBrowser.close();
     }
 
     private void hackyWaitForIE(boolean wait) {

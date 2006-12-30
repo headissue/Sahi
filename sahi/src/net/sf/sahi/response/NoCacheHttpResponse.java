@@ -50,7 +50,7 @@ public class NoCacheHttpResponse extends HttpResponse {
         setHeader("Cache-control", "no-store");
         setHeader("Pragma", "no-cache");
         setHeader("Expires", "-1");
-        setHeader("Connection", "close");
+        setHeader("Connection", "keep-alive");
         setHeader("Content-Length", "" + data().length);
         setRawHeaders(getRebuiltHeaderBytes());
         logger.fine(new String(rawHeaders()));

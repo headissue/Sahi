@@ -31,19 +31,20 @@ public class SimpleHttpResponse extends HttpResponse {
     }
 
     public SimpleHttpResponse(byte[] data) {
-    	this(data, true);
+        this(data, false);
     }
 
     public SimpleHttpResponse(byte[] data, boolean closeConnection) {
         setData(data);
         setFirstLine("HTTP/1.1 200 OK");
         setHeader("Content-Type", "text/html");
-		setHeader("Cache-Control","no-cache");
-//		setHeader("Pragma","no-cache");
-//		setHeader("Expires", "0");
-//        if (closeConnection) {
-//        	setHeader("Connection", "close");
-//        }
+        setHeader("Cache-Control", "no-cache");
+		setHeader("Pragma","no-cache");
+		setHeader("Expires", "0");
+        if (closeConnection) {
+            setHeader("Connection", "close");
+        } else
+            setHeader("Connection", "keep-alive");
         setHeader("Content-Length", "" + data().length);
         setRawHeaders(getRebuiltHeaderBytes());
     }

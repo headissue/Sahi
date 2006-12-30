@@ -558,7 +558,7 @@ function sahi_setSelected(el, val, isMultiple) {
     var done = false;
     for (var i = 0; i < l; i++) {
         if (!isMultiple) el.options[i].selected = false;
-        if (sahiTrim(el.options[i].text) == sahiTrim(val)) {
+        if (sahiAreEqual(el.options[i], "text", val)) {
             el.options[i].selected = true;
             done = true;
             sahiSimulateEvent(el, "change");
@@ -910,6 +910,10 @@ function sahi_addMock(pattern, clazz) {
     if (clazz == null) clazz = "MockResponder_simple";
     return sahi_callServer("MockResponder_add", "pattern=" + pattern + "&class=" + clazz);
 }
+function sahi_mockImage(pattern, clazz) {
+    if (clazz == null) clazz = "MockResponder_mockImage";
+    return sahi_callServer("MockResponder_add", "pattern=" + pattern + "&class=" + clazz);
+}
 function sahi_debug(s) {
     return sahi_callServer("Debug_toOut", "msg=" + sahiEscape(s));
 }
@@ -955,10 +959,13 @@ function point(el) {
 function sahiAreEqual(el, param, value) {
     if (param == "linkText") {
         var str = sahiGetText(el);
-        //        sahi_real_alert(str+ " " +value);
+        if (value instanceof RegExp)
+            return str!= null && str.match(value) != null
         return (sahiTrim(str) == sahiTrim(value));
     }
     else {
+        if (value instanceof RegExp)
+            return el[param] != null && el[param].match(value) != null
         return (el[param] == value);
     }
 }
@@ -1236,7 +1243,7 @@ function sahiFindCell(id) {
 function sahiFindCellIx(id, toMatch) {
     var res = getBlankResult();
     var retVal = sahiFindTagIxHelper(id, toMatch, sahiTop(), "td", res, "id").cnt;
-    if (retVal != -1) return retVal;
+    if (retVal != -1) return retVal;                                                                            
 }
 function getBlankResult() {
     var res = new Object();
@@ -1248,7 +1255,7 @@ function getBlankResult() {
 
 function getArrayNameAndIndex(id) {
     var o = new Object();
-    if (id.match(/(.*)\[([0-9]*)\]$/)) {
+    if (!(id instanceof RegExp) && id.match(/(.*)\[([0-9]*)\]$/)) {
         o.name = RegExp.$1;
         o.index = parseInt(RegExp.$2);
     } else {

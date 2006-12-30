@@ -52,7 +52,6 @@ public class HttpModifiedResponse extends HttpResponse {
             setFirstLine(firstLine().replaceAll("HTTP/1.0", "HTTP/1.1"));
             removeHeader("Connection");
             setHeader("Connection", "keep-alive");
-            setHeader("Proxy-Connection", "keep-alive");
 			if (html) {
 				removeHeader("Transfer-Encoding");
 				removeHeader("ETag");

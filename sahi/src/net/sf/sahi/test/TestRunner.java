@@ -166,7 +166,7 @@ public class TestRunner {
             InputStream in = url.openStream();
             StringBuffer sb = new StringBuffer();
             int c = ' ';
-            while ((c = (int) (in.read())) != -1) {
+            while ((c = in.read()) != -1) {
                 sb.append((char) c);
             }
             status = sb.toString();

@@ -22,6 +22,7 @@ import net.sf.sahi.request.HttpRequest;
 import net.sf.sahi.response.HttpFileResponse;
 import net.sf.sahi.response.HttpModifiedResponse;
 import net.sf.sahi.response.HttpResponse;
+import net.sf.sahi.util.Utils;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -52,9 +53,12 @@ public class MockResponder {
     }
 
     public HttpResponse getResponse(HttpRequest request) {
-        final String command = getCommand(request.url());
+        String url = request.url();
+        final String command = getCommand(url);
         if (command == null)
             return null;
+        System.out.println("url: " + url);
+        System.out.println("command: " + command);
         return new CommandExecuter(command, request).execute();
     }
 
@@ -66,11 +70,15 @@ public class MockResponder {
         request.session().mockResponder().add(request.getParameter("pattern"), request.getParameter("class"));
     }
 
+    public HttpResponse mockImage(HttpRequest request) throws IOException {
+        return new HttpFileResponse(Utils.concatPaths(Configuration.getHtdocsRoot(), "spr/mock.gif"), null, true, true);
+    }
+
     public HttpResponse simple(HttpRequest request) throws IOException {
         Properties props = new Properties();
         props.put("url", request.url());
         return new HttpModifiedResponse(new HttpFileResponse(Configuration.getHtdocsRoot() + "spr/simpleMock.htm", props, false, false), request
-                .isSSL(), request.fileExtension());
+            .isSSL(), request.fileExtension());
     }
 
     public HttpResponse fileUpload(HttpRequest request) {
