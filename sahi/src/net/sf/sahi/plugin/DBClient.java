@@ -20,6 +20,7 @@ import net.sf.sahi.request.HttpRequest;
 import net.sf.sahi.response.HttpResponse;
 import net.sf.sahi.response.SimpleHttpResponse;
 import net.sf.sahi.util.Utils;
+import net.sf.sahi.util.ClassLoadHelper;
 
 import java.sql.*;
 import java.util.*;
@@ -34,7 +35,7 @@ public class DBClient {
     public void execute(HttpRequest request) {
         try {
             init(request);
-            Class.forName(driverName);
+            ClassLoadHelper.getClass(driverName);
             Connection connection = DriverManager.getConnection(jdbcurl, username, password);
             Statement stmt = connection.createStatement();
             stmt.executeUpdate(sql);
@@ -56,7 +57,7 @@ public class DBClient {
     }
 
     ArrayList getResult(String driverName, String jdbcurl, String username, String password) throws ClassNotFoundException, SQLException {
-        Class.forName(driverName);
+        ClassLoadHelper.getClass(driverName);
         Connection connection = DriverManager.getConnection(jdbcurl, username, password);
         Statement stmt = connection.createStatement();
         ResultSet rs = stmt.executeQuery(sql);

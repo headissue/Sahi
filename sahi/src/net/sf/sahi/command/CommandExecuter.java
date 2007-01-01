@@ -16,18 +16,25 @@
 
 package net.sf.sahi.command;
 
-import java.lang.reflect.Method;
-
 import net.sf.sahi.request.HttpRequest;
 import net.sf.sahi.response.HttpResponse;
 import net.sf.sahi.response.NoCacheHttpResponse;
+import net.sf.sahi.util.ClassLoadHelper;
+
+import java.io.File;
+import java.lang.reflect.Method;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.net.MalformedURLException;
+import java.util.List;
+import java.util.ArrayList;
 
 public class CommandExecuter {
 
-	private String commandMethod;
-	private String commandClass;
-	private final HttpRequest request;
-	private static String DELIMITER = "_";
+    private String commandMethod;
+    private String commandClass;
+    private final HttpRequest request;
+    private static String DELIMITER = "_";
 
     public CommandExecuter(String cmd, HttpRequest request) {
         this.request = request;
@@ -37,29 +44,29 @@ public class CommandExecuter {
             this.commandClass = cmd.substring(0, cmd.indexOf(DELIMITER));
             this.commandMethod = cmd.substring(cmd.indexOf(DELIMITER) + 1);
         }
-        if (commandClass.indexOf('.')==-1) {
-            commandClass = "net.sf.sahi.command."+commandClass;
+        if (commandClass.indexOf('.') == -1) {
+            commandClass = "net.sf.sahi.command." + commandClass;
         }
     }
 
-	public HttpResponse execute() {
-		Class clazz;
-		try {
-			clazz = Class.forName(commandClass);
-			final Method method = clazz.getDeclaredMethod(commandMethod, new Class[] {HttpRequest.class});
-			final Object returned = method.invoke(clazz.newInstance(), new Object[] {request});
-			return returned == null ? new NoCacheHttpResponse() : (HttpResponse)returned;
-		} catch (Exception e) {
-			e.printStackTrace();
-			return new NoCacheHttpResponse();
-		}
-	}
+    public HttpResponse execute() {
+        Class clazz;
+        try {
+            clazz = ClassLoadHelper.getClass(commandClass);
+            final Method method = clazz.getDeclaredMethod(commandMethod, new Class[]{HttpRequest.class});
+            final Object returned = method.invoke(clazz.newInstance(), new Object[]{request});
+            return returned == null ? new NoCacheHttpResponse() : (HttpResponse) returned;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new NoCacheHttpResponse();
+        }
+    }
 
-	String getCommandClass() {
-		return commandClass;
-	}
+    String getCommandClass() {
+        return commandClass;
+    }
 
-	String getCommandMethod() {
-		return commandMethod;
-	}
+    String getCommandMethod() {
+        return commandMethod;
+    }
 }
