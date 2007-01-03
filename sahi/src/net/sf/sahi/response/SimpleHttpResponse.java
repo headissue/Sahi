@@ -26,25 +26,13 @@ public class SimpleHttpResponse extends HttpResponse {
         this(dataStr.getBytes());
     }
 
-    public SimpleHttpResponse(String dataStr, boolean closeConnection) {
-        this(dataStr.getBytes(), closeConnection);
-    }
-
     public SimpleHttpResponse(byte[] data) {
-        this(data, false);
-    }
-
-    public SimpleHttpResponse(byte[] data, boolean closeConnection) {
         setData(data);
-        setFirstLine("HTTP/1.1 200 OK");
+        setFirstLine("HTTP/1.0 200 OK");
         setHeader("Content-Type", "text/html");
         setHeader("Cache-Control", "no-cache");
-		setHeader("Pragma","no-cache");
-		setHeader("Expires", "0");
-        if (closeConnection) {
-            setHeader("Connection", "close");
-        } else
-            setHeader("Connection", "keep-alive");
+        setHeader("Pragma", "no-cache");
+        setHeader("Expires", "0");
         setHeader("Content-Length", "" + data().length);
         setRawHeaders(getRebuiltHeaderBytes());
     }

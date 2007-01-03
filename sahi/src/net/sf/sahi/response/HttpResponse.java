@@ -41,4 +41,19 @@ public class HttpResponse extends StreamHandler {
     public String contentType() {
         return getLastSetValueOfHeader("Content-Type");
     }
+
+    public void keepAlive() {
+        setFirstLine(firstLine().replaceAll("HTTP/1.0", "HTTP/1.1"));
+        removeHeader("Connection");
+        setHeader("Connection", "Keep-Alive");
+        resetRawHeaders();
+    }
+
+    public void noKeepAlive() {
+        setFirstLine(firstLine().replaceAll("HTTP/1.1", "HTTP/1.0"));
+        setHeader("Content-Length", "" + data().length);
+        removeHeader("Connection");
+        setHeader("Connection", "close");
+        resetRawHeaders();
+    }
 }

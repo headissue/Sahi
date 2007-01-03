@@ -1,5 +1,5 @@
-var db = _getDB("com.mysql.jdbc.Driver", "jdbc:mysql://localhost/test?user=test&password=test", "test", "test");
-var $rs = db.select("select * from employee where rownum < 10");
+var db = _getDB("com.mysql.jdbc.Driver", "jdbc:mysql://localhost/rezzline_development?user=rezzline&password=password", "rezzline", "password");
+var $rs = db.select("select * from hotelListings where rownum < 10");
 for (var $i=0; $i < $rs.length; $i++){
 	_alert($rs[$i]["ID"]+": "+$rs[$i]["NAME"]);
 }

@@ -33,7 +33,7 @@ import java.util.List;
 public class FileUpload {
     public void setFile(HttpRequest request) {
         request.session().setVariable("file:" + request.getParameter("n"), request.getParameter("v"));
-        request.session().mockResponder().add(request.getParameter("action").replaceAll("[.]", "[.]"), "FileUpload_appendFiles");
+        request.session().mockResponder().add(request.getParameter("action").replaceAll("[.]", "[.]")+".*", "FileUpload_appendFiles");
     }
 
     public HttpResponse appendFiles(HttpRequest request) {
@@ -50,8 +50,9 @@ public class FileUpload {
             for (Iterator iterator = parts.iterator(); iterator.hasNext();) {
                 MultiPartSubRequest part = (MultiPartSubRequest) iterator.next();
                 String fileName = session.getVariable("file:" + part.name());
+                System.out.println("Uploading: fileName = "+fileName);
                 if (Utils.isBlankOrNull(fileName)) continue;
-                part.addHeader("Content-Type", MimeType.getMimeTypeOfFile(fileName, "application/octet-stream"));
+                part.setHeader("Content-Type", MimeType.getMimeTypeOfFile(fileName, "application/octet-stream"));
                 byte[] fileContent = Utils.readFile(fileName);
                 part.setData(fileContent);
                 part.setFileName(new File(fileName).getName());

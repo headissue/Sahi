@@ -150,7 +150,7 @@ public abstract class StreamHandler {
         return sb.toString().getBytes();
     }
 
-    protected void setHeader(String key, String value) {
+    public void setHeader(String key, String value) {
         List entry = new ArrayList();
         entry.add(value);
         headers.put(key, entry);

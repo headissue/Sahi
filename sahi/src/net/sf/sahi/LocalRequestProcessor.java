@@ -29,7 +29,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
 public class LocalRequestProcessor {
-    public HttpResponse getLocalResponse(String uri, HttpRequest requestFromBrowser) throws UnsupportedEncodingException, IOException {
+    public HttpResponse getLocalResponse(String uri, HttpRequest requestFromBrowser) throws IOException {
         HttpResponse httpResponse = new NoCacheHttpResponse("");
         if (uri.indexOf("/dyn/") != -1) {
             String command = URLParser.getCommandFromUri(uri);

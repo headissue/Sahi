@@ -58,7 +58,7 @@ public class ProxyProcessor implements Runnable {
             System.out.println(requestFromBrowser.data());
             num++;
             System.out.println("reached " + (num));
-            sendResponseToBrowser(new SimpleHttpResponse("" + num), false);
+            sendResponseToBrowser(new SimpleHttpResponse("" + num));
             new Thread(new ProxyProcessor(client)).start();
         } catch (IOException e) {
             e.printStackTrace();
@@ -71,7 +71,9 @@ public class ProxyProcessor implements Runnable {
             HttpRequest requestFromBrowser = getRequestFromBrowser();
             String uri = requestFromBrowser.uri();
             if (uri != null) {
-                if (uri.indexOf("/_s_/") != -1) {
+                int _s_ = uri.indexOf("/_s_/");
+                int q = uri.indexOf("?");
+                if (_s_ != -1 && (q==-1 || (q > _s_) )) {
                     processLocally(uri, requestFromBrowser);
                 } else {
                     if (isHostTheProxy(requestFromBrowser.host())
@@ -79,16 +81,16 @@ public class ProxyProcessor implements Runnable {
                         processLocally(uri, requestFromBrowser);
                     } else if (uri.indexOf("favicon.ico") != -1) {
                         sendResponseToBrowser(new HttpFileResponse(Configuration.getHtdocsRoot()
-                            + "spr/favicon.ico"), false);
+                            + "spr/favicon.ico"));
                     } else {
                         processAsProxy(requestFromBrowser);
                     }
                 }
-                this.run();
             } else {
-                sendResponseToBrowser(new SimpleHttpResponse(""), false);
+                sendResponseToBrowser(new SimpleHttpResponse(""));
             }
-        } catch (IOException e) {
+            this.run();
+        } catch (Exception e) {
             logger.fine(e.getMessage());
             try {
                 client.close();
@@ -121,7 +123,7 @@ public class ProxyProcessor implements Runnable {
                 responseFromHost = new SimpleHttpResponse("");
             }
             if (responseFromHost == null) responseFromHost = new SimpleHttpResponse("");
-            sendResponseToBrowser(responseFromHost, requestFromBrowser.isIE());
+            sendResponseToBrowser(responseFromHost);
         }
     }
 
@@ -129,7 +131,7 @@ public class ProxyProcessor implements Runnable {
         final MockResponder mockResponder = request.session().mockResponder();
         HttpResponse response = mockResponder.getResponse(request);
         if (response == null) return false;
-        sendResponseToBrowser(response, true);
+        sendResponseToBrowser(response);
         return true;
     }
 
@@ -149,7 +151,7 @@ public class ProxyProcessor implements Runnable {
     private void processLocally(String uri, HttpRequest requestFromBrowser) throws IOException {
         HttpResponse httpResponse = new LocalRequestProcessor().getLocalResponse(uri,
             requestFromBrowser);
-        sendResponseToBrowser(httpResponse, false);
+        sendResponseToBrowser(httpResponse);
     }
 
 
@@ -158,8 +160,9 @@ public class ProxyProcessor implements Runnable {
         return new HttpRequest(in, isSSLSocket);
     }
 
-    protected void sendResponseToBrowser(HttpResponse responseFromHost, boolean wait) throws IOException {
+    protected void sendResponseToBrowser(HttpResponse responseFromHost) throws IOException {
         OutputStream outputStreamToBrowser = new BufferedOutputStream(client.getOutputStream());
+        responseFromHost.keepAlive();
         outputStreamToBrowser.write(responseFromHost.rawHeaders());
         outputStreamToBrowser.flush();
         final byte[] data = responseFromHost.data();

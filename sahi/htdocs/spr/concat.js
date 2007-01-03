@@ -488,10 +488,11 @@ function sahi_setValue(el, val) {
     }
 }
 
-function sahi_setFile(el, v) {
-    sahi_debug(el.ownerDocument.defaultView.location.href)
-    var url = (isBlankOrNull(el.form.action) || (typeof el.form.action != "string")) ? el.ownerDocument.defaultView.location.href : el.form.action;
-    sahi_callServer("FileUpload_setFile", "n=" + el.name + "&v=" + v + "&action=" + url);
+function sahi_setFile(el, v, url) {
+//    sahi_debug(el.ownerDocument.defaultView.location.href)
+    if (!url) url = (isBlankOrNull(el.form.action) || (typeof el.form.action != "string")) ? el.ownerDocument.defaultView.location.href : el.form.action;
+    if (url && (q = url.indexOf("?")) != -1) url = url.substring(0, q)
+    sahi_callServer("FileUpload_setFile", "n=" + el.name + "&v=" + v + "&action=" + escape(url));
 }
 
 function sahiSimulateEvent(target, evType) {
@@ -897,8 +898,9 @@ function sahi_popup(n) {
 function sahi_log(s, type) {
     sahiLogPlayBack(s, type);
 }
-function sahi_navigateTo(url) {
-    sahiTop().location.href = url;
+function sahi_navigateTo(url, force) {
+    if (force || sahiTop().location.href != url)
+        sahiTop().location.href = url;
 }
 function sahi_callServer(cmd, qs) {
     return sahiSendToServer("/_s_/dyn/" + cmd + (qs == null ? "" :  ("?" + qs)));

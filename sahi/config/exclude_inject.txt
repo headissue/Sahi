@@ -1,1 +1,2 @@
 .*/mail/channel/.*
+.*arcwebservices.*

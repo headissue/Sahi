@@ -68,7 +68,6 @@ public class HttpFileResponse extends HttpResponse {
 			setHeader("Expires", formatForExpiresHeader(new Date(
 							System.currentTimeMillis() + 10 * 60 * 1000))); // 10 minutes
 		}
-        setHeader("Connection","keep-alive");
 		setHeader("Content-Length", "" + data().length);
 		setRawHeaders(getRebuiltHeaderBytes());
 	}
