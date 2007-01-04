@@ -51,21 +51,6 @@ public class ProxyProcessor implements Runnable {
         isSSLSocket = (client instanceof SSLSocket);
     }
 
-    public void run2() {
-        try {
-            HttpRequest requestFromBrowser = getRequestFromBrowser();
-            System.out.println(requestFromBrowser.headers());
-            System.out.println(requestFromBrowser.data());
-            num++;
-            System.out.println("reached " + (num));
-            sendResponseToBrowser(new SimpleHttpResponse("" + num));
-            new Thread(new ProxyProcessor(client)).start();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private static int count = 0;
     public void run() {
         try {
             HttpRequest requestFromBrowser = getRequestFromBrowser();

@@ -55,7 +55,6 @@ public class HttpModifiedResponse extends HttpResponse {
 				removeHeader("Last-Modified");
 				setData(getModifiedData());
 			}
-            setHeader("Content-Length", "" + data().length);
             resetRawHeaders();
 		}
 	}

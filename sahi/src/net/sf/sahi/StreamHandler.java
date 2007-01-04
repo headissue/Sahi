@@ -30,7 +30,7 @@ public abstract class StreamHandler {
     private byte[] rawHeaders;
     private int contentLength = -1;
     private byte[] data;
-    private String firstLine;
+    protected String firstLine;
 
     protected void populateData(InputStream in) throws IOException {
         data = Utils.getBytes(in, contentLength());
@@ -44,7 +44,7 @@ public abstract class StreamHandler {
     }
 
     private void setContentLength(int length) {
-        setHeader("Content-Length", ""+length);
+        setHeader("Content-Length", "" + length);
         contentLength = length;
     }
 

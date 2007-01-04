@@ -44,7 +44,10 @@ public class HttpResponse extends StreamHandler {
 
     public void keepAlive() {
         setFirstLine(firstLine().replaceAll("HTTP/1.0", "HTTP/1.1"));
+        removeHeader("Content-length");
+        setHeader("Content-Length", "" + data().length);
         removeHeader("Connection");
+        removeHeader("Accept-ranges");
         setHeader("Connection", "Keep-Alive");
         resetRawHeaders();
     }
@@ -55,5 +58,10 @@ public class HttpResponse extends StreamHandler {
         removeHeader("Connection");
         setHeader("Connection", "close");
         resetRawHeaders();
+    }
+
+    public String status(){
+        int ix = firstLine.indexOf(" ");
+        return firstLine.substring(ix, firstLine.indexOf(" ", ix +1)).trim();
     }
 }
