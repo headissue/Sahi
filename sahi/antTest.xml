@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <project name="demo">
     <taskdef name="sahi" classname="net.sf.sahi.ant.RunSahiTask"/>
-    <taskdef name="createissue" classname="net.sf.sahi.ant.CreateIssue"/>
-    <taskdef name="report" classname="net.sf.sahi.ant.Report"/>
 
     <target name="testSahiWithoutNested">
         <sahi suite="../scripts/empty.suite"

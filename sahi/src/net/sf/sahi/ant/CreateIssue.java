@@ -1,14 +1,11 @@
 package net.sf.sahi.ant;
 
-import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.Task;
-
 /**
  * User: dlewis
  * Date: Dec 5, 2006
  * Time: 5:09:40 PM
  */
-public class CreateIssue extends Task {
+public class CreateIssue {
     private String tool;
     private String propertiesFile;
 
@@ -26,11 +23,5 @@ public class CreateIssue extends Task {
 
     public String getPropertiesFile() {
         return propertiesFile;
-    }
-
-    public void execute() throws BuildException {
-        if (!"jira".equalsIgnoreCase(tool)) {
-            throw new BuildException("tool attribute is mandatory and must be 'jira'");
-        }
     }
 }
