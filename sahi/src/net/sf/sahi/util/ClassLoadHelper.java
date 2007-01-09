@@ -27,7 +27,7 @@ public class ClassLoadHelper {
     private static URLClassLoader customLoader = new URLClassLoader(getURLs());
 
     public static Class getClass(String name) throws ClassNotFoundException {
-        return Class.forName(name, true, customLoader);
+        return Class.forName(name);
     }
 
     private static URL[] getURLs() {
