@@ -35,9 +35,9 @@ function sahiGetKnownTags(src) {
         if (!el.tagName || el.tagName.toLowerCase() == "html" || el.tagName.toLowerCase() == "body") return null;
         var tag = el.tagName.toLowerCase();
         if (tag == "a" || tag == "select" || tag == "img" || tag == "form"
-            || tag == "input" || tag == "button" || tag == "textarea"
-            || tag == "textarea" || tag == "td" || tag == "table"
-            || ((tag == "div" || tag == "span") && (el.id && el.id != ""))) return el;
+                || tag == "input" || tag == "button" || tag == "textarea"
+                || tag == "textarea" || tag == "td" || tag == "table"
+                || ((tag == "div" || tag == "span") && (el.id && el.id != ""))) return el;
         el = el.parentNode;
     }
 }
@@ -347,28 +347,28 @@ function sahiSimulateMouseEvent(el, type, isRight, isDouble) {
         // FF
         var evt = el.ownerDocument.createEvent("MouseEvents");
         evt.initMouseEvent(
-            (isDouble ? "dbl" : "") + type,
-            true, //can bubble
-            true,
-            el.ownerDocument.defaultView,
-            (isDouble ? 2 : 1),
-            x, //screen x
-            y, //screen y
-            x, //client x
-            y, //client y
-            false,
-            false,
-            false,
-            false,
-            isRight ? 2 : 0,
-            null);
+                (isDouble ? "dbl" : "") + type,
+                true, //can bubble
+                true,
+                el.ownerDocument.defaultView,
+                (isDouble ? 2 : 1),
+                x, //screen x
+                y, //screen y
+                x, //client x
+                y, //client y
+                false,
+                false,
+                false,
+                false,
+                isRight ? 2 : 0,
+                null);
         el.dispatchEvent(evt);
     } else {
         // IE
         var evt = el.ownerDocument.createEventObject();
         evt.clientX = x;
         evt.clientY = y;
-        el.fireEvent("on" + (isDouble?"dbl":"") + type, evt);
+        el.fireEvent("on" + (isDouble ? "dbl" : "") + type, evt);
         evt.cancelBubble = true;
     }
 }
@@ -489,7 +489,7 @@ function sahi_setValue(el, val) {
 }
 
 function sahi_setFile(el, v, url) {
-//    sahi_debug(el.ownerDocument.defaultView.location.href)
+    //    sahi_debug(el.ownerDocument.defaultView.location.href)
     if (!url) url = (isBlankOrNull(el.form.action) || (typeof el.form.action != "string")) ? el.ownerDocument.defaultView.location.href : el.form.action;
     if (url && (q = url.indexOf("?")) != -1) url = url.substring(0, q)
     sahi_callServer("FileUpload_setFile", "n=" + el.name + "&v=" + v + "&action=" + escape(url));
@@ -533,7 +533,7 @@ function sahiSimulateKeyEvent(c, target, evType, combo) {
         if (!target) return;
         var event = target.ownerDocument.createEvent("KeyEvents");
         event.initKeyEvent(evt.type, evt.bubbles, evt.cancelable, target.ownerDocument.defaultView,
-            evt.ctrlKey, evt.altKey, evt.shiftKey, evt.metaKey, evt.keyCode, evt.charCode);
+                evt.ctrlKey, evt.altKey, evt.shiftKey, evt.metaKey, evt.keyCode, evt.charCode);
         target.dispatchEvent(event);
     } else {
         var evt = target.ownerDocument.createEventObject();
@@ -708,11 +708,20 @@ function sahi_assertNotTrue(n, s) {
 }
 sahi_assertFalse = sahi_assertNotTrue;
 function sahi_assertEqual(expected, actual, s) {
-    if (sahiTrim(expected) != sahiTrim(actual)) throw new SahiAssertionException(3, (s?s:"") + "\nExpected:[" + expected + "]\nActual:[" + actual + "]");
+    if (sahiTrim(expected) != sahiTrim(actual)) throw new SahiAssertionException(3, (s ? s : "") + "\nExpected:[" + expected + "]\nActual:[" + actual + "]");
     return true;
 }
 function sahi_assertNotEqual(expected, actual, s) {
     if (sahiTrim(expected) == sahiTrim(actual)) throw new SahiAssertionException(4, s);
+    return true;
+}
+function sahi_assertContainsText(expected, el, s){
+    var text = sahi_getText(el);
+    var present = false;
+    if (expected instanceof RegExp)
+        present =  expected != null && text.match(expected) != null
+    else present = text.indexOf(expected) != -1
+    if (!present) throw new SahiAssertionException(3, (s ? s : "") + "\nExpected:[" + expected + "] to be part of [" + text + "]");
     return true;
 }
 function sahi_getSelectedText(el) {
@@ -903,7 +912,7 @@ function sahi_navigateTo(url, force) {
         sahiTop().location.href = url;
 }
 function sahi_callServer(cmd, qs) {
-    return sahiSendToServer("/_s_/dyn/" + cmd + (qs == null ? "" :  ("?" + qs)));
+    return sahiSendToServer("/_s_/dyn/" + cmd + (qs == null ? "" : ("?" + qs)));
 }
 function sahi_removeMock(pattern) {
     return sahi_callServer("MockResponder_remove", "pattern=" + pattern);
@@ -962,7 +971,7 @@ function sahiAreEqual(el, param, value) {
     if (param == "linkText") {
         var str = sahiGetText(el);
         if (value instanceof RegExp)
-            return str!= null && str.match(value) != null
+            return str != null && str.match(value) != null
         return (sahiTrim(str) == sahiTrim(value));
     }
     else {
@@ -1245,7 +1254,7 @@ function sahiFindCell(id) {
 function sahiFindCellIx(id, toMatch) {
     var res = getBlankResult();
     var retVal = sahiFindTagIxHelper(id, toMatch, sahiTop(), "td", res, "id").cnt;
-    if (retVal != -1) return retVal;                                                                            
+    if (retVal != -1) return retVal;
 }
 function getBlankResult() {
     var res = new Object();
@@ -1292,7 +1301,7 @@ function findInForm(name, fm, type) {
 
 function sahiFindTableIx(id, toMatch) {
     var res = getBlankResult();
-    var retVal = sahiFindTagIxHelper(id, toMatch, sahiTop(), "table", res, (id?"id":null)).cnt;
+    var retVal = sahiFindTagIxHelper(id, toMatch, sahiTop(), "table", res, (id ? "id" : null)).cnt;
     if (retVal != -1) return retVal;
 }
 
@@ -1437,7 +1446,7 @@ function sahiOnEv(e) {
         if (targ.form && targ.type) {
             var type = targ.type;
             if (type == "text" || type == "textarea" || type == "password"
-                || type == "select-one" || type == "select-multiple") return true;
+                    || type == "select-one" || type == "select-multiple") return true;
         }
     }
     var info = sahiGetAccessorInfo(targ);
@@ -1536,9 +1545,9 @@ function sahiGetAccessorInfo(el) {
     } else if (type == "file") {
         return new AccessorInfo(accessor, shortHand, type, "setFile", el.value);
     } else if (el.tagName.toLowerCase() == "td") {
-        return new AccessorInfo(accessor, shortHand, "cell", "click", sahiIsIE()? el.innerText : el.textContent);
+        return new AccessorInfo(accessor, shortHand, "cell", "click", sahiIsIE() ? el.innerText : el.textContent);
     } else if (el.tagName.toLowerCase() == "div" || el.tagName.toLowerCase() == "span") {
-        return new AccessorInfo(accessor, shortHand, "byId", "click", sahiIsIE()? el.innerText : el.textContent);
+        return new AccessorInfo(accessor, shortHand, "byId", "click", sahiIsIE() ? el.innerText : el.textContent);
     }
 }
 
@@ -1632,7 +1641,7 @@ function AccessorInfo(accessor, shortHand, type, event, value) {
 
 function sahiGetAccessorInfoQS(ai, isAssert) {
     if (ai == null || ai.event == null) return;
-    var s = "event=" + (isAssert? "assert" : ai.event);
+    var s = "event=" + (isAssert ? "assert" : ai.event);
     s += "&accessor=" + sahiEscape(sahiConvertUnicode(ai.accessor));
     s += "&shorthand=" + sahiEscape(sahiConvertUnicode(ai.shortHand));
     s += "&type=" + ai.type;
@@ -1669,11 +1678,11 @@ function sahiDocEventHandler(e) {
             sahiAttachEvents(t);
         }
         /*
-          if (t.onmouseover){
-              // addEventListenersForCapturing
-              debug("onmouseover"+tag);
-          }
-          */
+        if (t.onmouseover){
+            // addEventListenersForCapturing
+            debug("onmouseover"+tag);
+        }
+        */
         t.hasAttached = true;
     }
 
@@ -1795,9 +1804,9 @@ function sahiOpenControllerWindow(e) {
 }
 function sahiIsHotKeyPressed(e) {
     return ((sahiHotKey == "SHIFT" && e.shiftKey)
-        || (sahiHotKey == "CTRL" && e.ctrlKey)
-        || (sahiHotKey == "ALT" && e.altKey)
-        || (sahiHotKey == "META" && e.metaKey));
+            || (sahiHotKey == "CTRL" && e.ctrlKey)
+            || (sahiHotKey == "ALT" && e.altKey)
+            || (sahiHotKey == "META" && e.metaKey));
 }
 var _lastAccessedInfo;
 function sahiMouseOver(e) {
@@ -1806,7 +1815,6 @@ function sahiMouseOver(e) {
         if (!e.ctrlKey) return;
         var controlWin = getSahiWinHandle();
         if (controlWin) {
-            controlWin.main.displayStepNum();
             var acc = sahiGetAccessorInfo(sahiGetKnownTags(getTarget(e)));
             try {
                 if (acc) controlWin.main.displayInfo(acc, escapeDollar(getAccessor1(acc)), sahiEscapeValue(acc.value));
@@ -1819,9 +1827,11 @@ function sahiMouseOver(e) {
     }
 }
 function escapeDollar(s) {
+    if (s == null) return null;
     return s.replace(/[$]/g, "\\$");
 }
 function getAccessor1(info) {
+    if (info == null) return null;
     if ("" == info.shortHand || info.shortHand == null) {
         return info.accessor;
     } else {
@@ -1895,7 +1905,7 @@ function areWindowsLoaded(win) {
         var fs = win.frames;
         if (!fs || fs.length == 0) {
             try {
-                return win.document.readyState || win.sahiLoaded;
+                return win.document.readyState == "complete" || win.sahiLoaded;
             } catch(e) {
                 return true;
                 //diff domain; don't bother
@@ -1975,7 +1985,7 @@ function sahiEx(isStep) {
                                 throw new SahiNotMyWindowException();
                             }
                         }
-                        updateControlWinDisplay(cmds[i]);
+                        updateControlWinDisplay(cmds[i], i);
                         sahiSetCurrentIndex(i + 1);
                         if (cmds[i].indexOf("sahi_call") != -1 && cmds[i].indexOf("sahi_callServer") == -1) {
                             var bkup = sahiSchedule;
@@ -2063,8 +2073,8 @@ function isForPopup(cmd) {
 }
 function canEval(cmd) {
     return (sahiTop().opener == null && !isForPopup(cmd)) // for base window
-        || (sahiTop().opener && sahiTop().opener.sahiTop() == sahiTop()) // for links in firefox
-        || (sahiTop().opener != null && isForPopup(cmd));
+            || (sahiTop().opener && sahiTop().opener.sahiTop() == sahiTop()) // for links in firefox
+            || (sahiTop().opener != null && isForPopup(cmd));
     // for popups
 }
 function pause() {
@@ -2082,16 +2092,11 @@ function isPaused() {
         sahiTop()._isSahiPaused = sahiGetServerVar("sahi_paused") == "1";
     return sahiTop()._isSahiPaused;
 }
-function updateControlWinDisplay(s) {
-    try {
-        if (window.status) window.status = s;
-    } catch(ex) {
-    }
-
+function updateControlWinDisplay(s, i) {
     try {
         var controlWin = getSahiWinHandle();
         if (controlWin && !controlWin.closed) {
-            controlWin.main.displayStepNum();
+            if (i) controlWin.main.displayStepNum(i+1);
             controlWin.main.displayLogs(s);
         }
     } catch(ex) {
@@ -2147,14 +2152,14 @@ function sahiStopRecording() {
     sahiSetServerVar("sahi_record", 0);
 }
 function sahiReportSuccess(msg, debugInfo) {
-    var type = (msg.indexOf("sahi_assert") == 0)?"success":"info";
+    var type = (msg.indexOf("sahi_assert") == 0) ? "success" : "info";
     //sahiSendToServer("/_s_/dyn/Player_success?msg=" + sahiEscape(msg) + "&type=" + type + "&debugInfo=" + (debugInfo?sahiEscape(debugInfo):""));
     sahiLogPlayBack(msg, type, debugInfo);
 }
 function sahiLogPlayBack(msg, type, debugInfo, failureMsg) {
     //sahiSendToServer("/_s_/dyn/Log?msg=" + sahiEscape(msg) + "&type=" + type + "&debugInfo=" + (debugInfo?sahiEscape(debugInfo):""));
     sahiSendToServer("/_s_/dyn/TestReporter_logTestResult?msg=" + sahiEscape(msg) + "&type=" + type
-        + "&debugInfo=" + (debugInfo?sahiEscape(debugInfo):"") + (failureMsg?"&failureMsg=" + sahiEscape(failureMsg):""));
+            + "&debugInfo=" + (debugInfo ? sahiEscape(debugInfo) : "") + (failureMsg ? "&failureMsg=" + sahiEscape(failureMsg) : ""));
 }
 function sahiTrim(s) {
     if (s == null) return s;
@@ -2374,21 +2379,25 @@ function getScript(info) {
     } else if (ev == "assert") {
         cmd = "_assertNotNull(" + accessor + ");\r\n";
         if (type == "cell") {
-            cmd += "_assertEqual(" + sahiQuotedEscapeValue(value) + ", _getCellText(" + accessor + "));";
+            cmd += "_assertEqual(" + sahiQuotedEscapeValue(value) + ", _getText(" + accessor + "));";
         } else if (type == "select-one" || type == "select-multiple") {
             cmd += "_assertEqual(" + sahiQuotedEscapeValue(value) + ", _getSelectedText(" + accessor + "));";
         } else if (type == "text" || type == "textarea" || type == "password") {
             cmd += "_assertEqual(" + sahiQuotedEscapeValue(value) + ", " + accessor + ".value);";
         } else if (type == "checkbox" || type == "radio") {
-            cmd += "_assert" + ("true" == "" + value ? "":"Not" ) + "True(" + accessor + ".checked);";
+            cmd += "_assert" + ("true" == "" + value ? "" : "Not" ) + "True(" + accessor + ".checked);";
+        } else {
+            cmd += "_assertContainsText("+sahiQuotedEscapeValue(value)+", " + accessor + ");";
         }
-    } else if (ev == "wait") {
-        cmd = "_wait(" + value + ");";
-    } else if (ev == "mark") {
-        cmd = "//MARK: " + value;
-    } else if (ev == "setFile") {
-        cmd = "_setFile(" + accessor + ", " + sahiQuotedEscapeValue(value) + ");";
     }
+    else
+        if (ev == "wait") {
+            cmd = "_wait(" + value + ");";
+        } else if (ev == "mark") {
+            cmd = "//MARK: " + value;
+        } else if (ev == "setFile") {
+            cmd = "_setFile(" + accessor + ", " + sahiQuotedEscapeValue(value) + ");";
+        }
     if (cmd != null && popup != null && popup != "") {
         cmd = "_popup(\"" + popup + "\")." + cmd;
     }
@@ -2421,6 +2430,29 @@ function sahiQuoteIfString(shortHand) {
     return sahiQuotedEscapeValue(shortHand);
 }
 sahiActivateHotKey();
+
+function sahi_style(el, style) {  //http://dhtmlkitchen.com/
+    if (!document.getElementById) return;
+
+    var value = el.style[toCamelCase(style)];
+
+    if (!value)
+        if (document.defaultView)
+            value = document.defaultView.
+                    getComputedStyle(el, "").getPropertyValue(style);
+
+        else if (el.currentStyle)
+            value = el.currentStyle[toCamelCase(style)];
+
+    return value;
+}
+
+function toCamelCase(s) {
+    for (var exp = toCamelCase.exp;
+         exp.test(s); s = s.replace(exp, RegExp.$1.toUpperCase()));
+    return s;
+}
+toCamelCase.exp = /-([a-z])/;
 
 window.sahi_real_alert = window.alert;
 window.sahi_real_confirm = window.confirm;

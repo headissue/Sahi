@@ -24,30 +24,30 @@ import java.io.File;
  */
 
 public class ClassLoadHelper {
-    private static URLClassLoader customLoader = new URLClassLoader(getURLs());
+//    private static URLClassLoader customLoader = new URLClassLoader(getURLs());
 
     public static Class getClass(String name) throws ClassNotFoundException {
         return Class.forName(name);
     }
-
-    private static URL[] getURLs() {
-        ArrayList urls = new ArrayList();
-        addFileURLs("../extlib", urls);
-        addFileURLs("../lib", urls);
-        addFileURLs("../classes", urls);
-        return (URL[]) urls.toArray(new URL[urls.size()]);
-    }
-
-    private static List addFileURLs(String dir, List urls) {
-        File[] files = new File(dir).listFiles();
-        for (int i = 0; i < files.length; i++) {
-            File file = files[i];
-            try {
-                urls.add(file.toURL());
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            }
-        }
-        return urls;
-    }
+//
+//    private static URL[] getURLs() {
+//        ArrayList urls = new ArrayList();
+//        addFileURLs("../extlib", urls);
+//        addFileURLs("../lib", urls);
+//        addFileURLs("../classes", urls);
+//        return (URL[]) urls.toArray(new URL[urls.size()]);
+//    }
+//
+//    private static List addFileURLs(String dir, List urls) {
+//        File[] files = new File(dir).listFiles();
+//        for (int i = 0; i < files.length; i++) {
+//            File file = files[i];
+//            try {
+//                urls.add(file.toURL());
+//            } catch (MalformedURLException e) {
+//                e.printStackTrace();
+//            }
+//        }
+//        return urls;
+//    }
 }

@@ -35,3 +35,4 @@ _readFile
 _lastPrompt
 _lastAlert
 _get
+_style
