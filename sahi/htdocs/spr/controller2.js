@@ -416,6 +416,7 @@ function evaluateExpr(showErr) {
     sahiSetServerVar("sahiEvaluateExpr", "true");
     var res = "";
     try {
+        document.currentForm.history.value += "\n" + document.currentForm.debug.value;
         res = sahiOpener().sahi_eval(addSahi(document.currentForm.debug.value));
     } catch(e) {
         if (e.exceptionType && e.exceptionType == "SahiAssertionException") {

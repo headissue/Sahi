@@ -990,6 +990,8 @@ function sahiFindLink(id) {
 }
 function sahiFindImage(id) {
     var res = getBlankResult();
+    var retVal = sahiFindImageHelper(id, sahiTop(), res, "title", true).element;
+    if (retVal != null) return retVal;
     var retVal = sahiFindImageHelper(id, sahiTop(), res, "alt", true).element;
     if (retVal != null) return retVal;
 
@@ -1119,6 +1121,8 @@ function sahiFindElement(id, type, tagName) {
         if (retVal != null) return retVal;
     }
     else if (type == "image") {
+        retVal = sahiFindElementHelper(id, sahiTop(), type, res, "title", tagName).element;
+        if (retVal != null) return retVal;
         retVal = sahiFindElementHelper(id, sahiTop(), type, res, "alt", tagName).element;
         if (retVal != null) return retVal;
     }
@@ -1209,6 +1213,8 @@ function sahiFindElementIx(id, toMatch, type, tagName) {
         if (retVal != -1) return retVal;
     }
     else if (type == "image") {
+        retVal = sahiFindElementIxHelper(id, type, toMatch, sahiTop(), res, "title", tagName).cnt;
+        if (retVal != -1) return retVal;
         retVal = sahiFindElementIxHelper(id, type, toMatch, sahiTop(), res, "alt", tagName).cnt;
         if (retVal != -1) return retVal;
     }
@@ -1584,7 +1590,10 @@ function getShortHand(el, accessor) {
             return shortHand;
         } else if (tagLC == "button" || tagLC == "input" || tagLC == "textarea" || tagLC.indexOf("select") != -1) {
             if (el.type == "button" || el.type == "reset" || el.type == "submit") shortHand = el.value;
-            if (el.type == "image")    shortHand = el.alt;
+            if (el.type == "image"){
+                shortHand = el.title;
+                if (!shortHand) shortHand = el.alt;
+            }
             else if (!shortHand || shortHand == "") shortHand = el.name;
             if (!shortHand || shortHand == "") shortHand = el.id;
             if (shortHand && shortHand != "") {
@@ -1973,7 +1982,6 @@ function sahiEx(isStep) {
                 if (!areWindowsLoaded(sahiTop()) && sahiWaitForLoad > 0) {
                     sahiWaitForLoad--;
                     sahiExecNextStep(isStep, interval);
-                    //                    if (!isStep) window.setTimeout("try{sahiEx();}catch(ex){}", interval);
                     return;
                 }
                 try {
@@ -2026,7 +2034,6 @@ function sahiEx(isStep) {
                             sahiSetRetries(retries + 1);
                             interval = ONERROR_INTERVAL;
                             sahiExecNextStep(isStep, interval);
-                            //                            if (!isStep) window.setTimeout("try{sahiEx();}catch(ex){}", interval);
                             return;
                         } else {
                             debugInfo = "" + debugs[i];
@@ -2064,11 +2071,9 @@ function sahiEx(isStep) {
             }
         }
         sahiExecNextStep(isStep, interval);
-        //        if (!isStep) window.setTimeout("try{sahiEx();}catch(ex){}", interval);
     } catch(ex2) {
         if (isSahiPlaying()) {
             sahiExecNextStep(isStep, interval);
-            //            if (!isStep) window.setTimeout("try{sahiEx();}catch(ex){sahi_real_alert(ex)}", 1000);
         }
     }
 }
@@ -2393,14 +2398,15 @@ function getScript(info) {
     } else if (ev == "assert") {
         cmd = "_assertNotNull(" + accessor + ");\r\n";
         if (type == "cell") {
-            cmd += "_assertEqual(" + sahiQuotedEscapeValue(value) + ", _getText(" + accessor + "));";
+            cmd += "_assertEqual(" + sahiQuotedEscapeValue(value) + ", _getText(" + accessor + "));\n";
+            cmd += "_assertContainsText(" + sahiQuotedEscapeValue(value) + ", " + accessor + ");";
         } else if (type == "select-one" || type == "select-multiple") {
             cmd += "_assertEqual(" + sahiQuotedEscapeValue(value) + ", _getSelectedText(" + accessor + "));";
         } else if (type == "text" || type == "textarea" || type == "password") {
             cmd += "_assertEqual(" + sahiQuotedEscapeValue(value) + ", " + accessor + ".value);";
         } else if (type == "checkbox" || type == "radio") {
             cmd += "_assert" + ("true" == "" + value ? "" : "Not" ) + "True(" + accessor + ".checked);";
-        } else {
+        } else if (type != "link" && type != "img"){
             cmd += "_assertContainsText(" + sahiQuotedEscapeValue(value) + ", " + accessor + ");";
         }
     }
