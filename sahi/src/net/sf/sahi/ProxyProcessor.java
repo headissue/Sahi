@@ -146,26 +146,13 @@ public class ProxyProcessor implements Runnable {
 
     protected void sendResponseToBrowser(HttpResponse responseFromHost) throws IOException {
         OutputStream outputStreamToBrowser = new BufferedOutputStream(client.getOutputStream());
-        if (Configuration.isKeepAliveEnabled())
-            responseFromHost.keepAlive();
-        else
-            responseFromHost.noKeepAlive();
+        responseFromHost.keepAlive(Configuration.isKeepAliveEnabled());
         outputStreamToBrowser.write(responseFromHost.rawHeaders());
         outputStreamToBrowser.flush();
         final byte[] data = responseFromHost.data();
         outputStreamToBrowser.write(data);
         outputStreamToBrowser.flush();
         if (!Configuration.isKeepAliveEnabled()) outputStreamToBrowser.close();
-    }
-
-    private void hackyWaitForIE(boolean wait) {
-        if (wait) {
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
     }
 
     protected Socket client() {

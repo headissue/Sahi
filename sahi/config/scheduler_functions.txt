@@ -43,3 +43,5 @@ _keyDown
 _keyUp
 _mockImage
 _assertContainsText
+_enableKeepAlive
+_disableKeepAlive

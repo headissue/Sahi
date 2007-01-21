@@ -42,21 +42,13 @@ public class HttpResponse extends StreamHandler {
         return getLastSetValueOfHeader("Content-Type");
     }
 
-    public void keepAlive() {
+    public void keepAlive(boolean keepAliveEnabled) {
         setFirstLine(firstLine().replaceAll("HTTP/1.0", "HTTP/1.1"));
         removeHeader("Content-length");
         setHeader("Content-Length", "" + data().length);
         removeHeader("Connection");
         removeHeader("Accept-ranges");
-        setHeader("Connection", "Keep-Alive");
-        resetRawHeaders();
-    }
-
-    public void noKeepAlive() {
-        setFirstLine(firstLine().replaceAll("HTTP/1.1", "HTTP/1.0"));
-        setHeader("Content-Length", "" + data().length);
-        removeHeader("Connection");
-        setHeader("Connection", "close");
+        setHeader("Connection", keepAliveEnabled ? "Keep-Alive" : "close");
         resetRawHeaders();
     }
 

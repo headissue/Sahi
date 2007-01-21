@@ -81,3 +81,7 @@ var _keyPress = sahi_keyPress;
 var _focus = sahi_focus;
 var _keyDown = sahi_keyDown;
 var _keyUp = sahi_keyUp;
+var _mockImage = sahi_mockImage;
+var _assertContainsText = sahi_assertContainsText;
+var _enableKeepAlive = sahi_enableKeepAlive;
+var _disableKeepAlive = sahi_disableKeepAlive;

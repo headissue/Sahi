@@ -935,7 +935,12 @@ function sahi_debugToFile(s, file) {
     if (file == null) return;
     return sahi_callServer("Debug_toFile", "msg=" + sahiEscape(s) + "&file=" + sahiEscape(file));
 }
-
+function sahi_enableKeepAlive(){
+    sahiSendToServer('/_s_/dyn/Configuration_enableKeepAlive');
+}
+function sahi_disableKeepAlive(){
+    sahiSendToServer('/_s_/dyn/Configuration_disableKeepAlive');        
+}
 
 // finds document of any element
 function sahiGetWin(el) {

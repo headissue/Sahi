@@ -136,8 +136,8 @@ public class Configuration {
     }
 
     public static boolean isKeepAliveEnabled() {
-        return "true".equalsIgnoreCase(properties
-                .getProperty("http.keep_alive"));
+        return (enableKeepAlive > 0) ||
+                (enableKeepAlive == 0 && "true".equalsIgnoreCase(properties.getProperty("http.keep_alive")));
     }
 
     public static String getExternalProxyHost() {
@@ -237,5 +237,15 @@ public class Configuration {
     public static String[] getExclusionList() {
         String s = new String(Utils.readFile("../config/exclude_inject.txt")).trim();
         return s.split("\n");
+    }
+
+    static int enableKeepAlive = 0;
+
+    public static void enableKeepAlive() {
+        enableKeepAlive++;
+    }
+
+    public static void disableKeepAlive() {
+        enableKeepAlive--;
     }
 }
