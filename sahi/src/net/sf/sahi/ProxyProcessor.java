@@ -37,7 +37,6 @@ import java.util.logging.Logger;
  * User: nraman Date: May 13, 2005 Time: 7:06:11 PM To
  */
 public class ProxyProcessor implements Runnable {
-    static int num = 0;
     private Socket client;
 
     private boolean isSSLSocket = false;
@@ -58,15 +57,15 @@ public class ProxyProcessor implements Runnable {
             if (uri != null) {
                 int _s_ = uri.indexOf("/_s_/");
                 int q = uri.indexOf("?");
-                if (_s_ != -1 && (q==-1 || (q > _s_) )) {
+                if (_s_ != -1 && (q == -1 || (q > _s_))) {
                     processLocally(uri, requestFromBrowser);
                 } else {
                     if (isHostTheProxy(requestFromBrowser.host())
-                        && requestFromBrowser.port() == Configuration.getPort()) {
+                            && requestFromBrowser.port() == Configuration.getPort()) {
                         processLocally(uri, requestFromBrowser);
                     } else if (uri.indexOf("favicon.ico") != -1) {
                         sendResponseToBrowser(new HttpFileResponse(Configuration.getHtdocsRoot()
-                            + "spr/favicon.ico"));
+                                + "spr/favicon.ico"));
                     } else {
                         processAsProxy(requestFromBrowser);
                     }
@@ -88,8 +87,8 @@ public class ProxyProcessor implements Runnable {
     private boolean isHostTheProxy(String host) {
         try {
             return InetAddress.getByName(host).getHostAddress().equals(
-                InetAddress.getLocalHost().getHostAddress())
-                || InetAddress.getByName(host).getHostAddress().equals("127.0.0.1");
+                    InetAddress.getLocalHost().getHostAddress())
+                    || InetAddress.getByName(host).getHostAddress().equals("127.0.0.1");
         } catch (Exception e) {
             return false;
         }
@@ -124,7 +123,7 @@ public class ProxyProcessor implements Runnable {
         try {
             client.getOutputStream().write(("HTTP/1.0 200 OK\r\n\r\n").getBytes());
             SSLSocket sslSocket = new SSLHelper().convertToSecureServerSocket(client,
-                requestFromBrowser.host());
+                    requestFromBrowser.host());
             ProxyProcessor delegatedProcessor = new ProxyProcessor(sslSocket);
             delegatedProcessor.run();
         } catch (IOException e) {
@@ -135,7 +134,7 @@ public class ProxyProcessor implements Runnable {
 
     private void processLocally(String uri, HttpRequest requestFromBrowser) throws IOException {
         HttpResponse httpResponse = new LocalRequestProcessor().getLocalResponse(uri,
-            requestFromBrowser);
+                requestFromBrowser);
         sendResponseToBrowser(httpResponse);
     }
 
@@ -147,12 +146,16 @@ public class ProxyProcessor implements Runnable {
 
     protected void sendResponseToBrowser(HttpResponse responseFromHost) throws IOException {
         OutputStream outputStreamToBrowser = new BufferedOutputStream(client.getOutputStream());
-        responseFromHost.keepAlive();
+        if (Configuration.isKeepAliveEnabled())
+            responseFromHost.keepAlive();
+        else
+            responseFromHost.noKeepAlive();
         outputStreamToBrowser.write(responseFromHost.rawHeaders());
         outputStreamToBrowser.flush();
         final byte[] data = responseFromHost.data();
         outputStreamToBrowser.write(data);
         outputStreamToBrowser.flush();
+        if (!Configuration.isKeepAliveEnabled()) outputStreamToBrowser.close();
     }
 
     private void hackyWaitForIE(boolean wait) {

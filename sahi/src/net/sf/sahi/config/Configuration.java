@@ -135,6 +135,11 @@ public class Configuration {
                 .getProperty("ext.proxy.enable"));
     }
 
+    public static boolean isKeepAliveEnabled() {
+        return "true".equalsIgnoreCase(properties
+                .getProperty("http.keep_alive"));
+    }
+
     public static String getExternalProxyHost() {
         return properties.getProperty("ext.proxy.host");
     }
