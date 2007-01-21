@@ -715,11 +715,11 @@ function sahi_assertNotEqual(expected, actual, s) {
     if (sahiTrim(expected) == sahiTrim(actual)) throw new SahiAssertionException(4, s);
     return true;
 }
-function sahi_assertContainsText(expected, el, s){
+function sahi_assertContainsText(expected, el, s) {
     var text = sahi_getText(el);
     var present = false;
     if (expected instanceof RegExp)
-        present =  expected != null && text.match(expected) != null
+        present = expected != null && text.match(expected) != null
     else present = text.indexOf(expected) != -1
     if (!present) throw new SahiAssertionException(3, (s ? s : "") + "\nExpected:[" + expected + "] to be part of [" + text + "]");
     return true;
@@ -1934,7 +1934,12 @@ function sahiExecNextStep(isStep, interval) {
     if (_sahiTimer) window.clearTimeout(_sahiTimer);
     _sahiTimer = window.setTimeout("try{sahiEx();}catch(ex){}", interval);
 }
-
+function sahiGotErrors(b){
+    sahiSetServerVar("sahi_has_errors", b?"1":"0");
+}
+function sahiHadErrors(){
+    return sahiGetServerVar("sahi_has_errors") == "1";        
+}
 function sahiEx(isStep) {
     var cmds = _sahiCmds;
     var debugs = _sahiCmdDebugInfo;
@@ -2029,6 +2034,7 @@ function sahiEx(isStep) {
                             sahiLogPlayBack(cmds[i], "failure", debugInfo, failureMsg);
                             sahiSetRetries(0);
                             sahiSetCurrentIndex(i + 1);
+                            sahiGotErrors(true);
                         }
                     } else if (ex1 instanceof SahiNotMyWindowException) {
                         throw ex1;
@@ -2053,6 +2059,7 @@ function sahiEx(isStep) {
                 if (sahiGetServerVar("sahi_play") == "1") {
                     sahiLogPlayBack(cmds[i], "error", debugInfo, sahiGetExceptionString(ex));
                 }
+                sahiGotErrors(true);
                 sahiStopPlaying();
             }
         }
@@ -2096,7 +2103,7 @@ function updateControlWinDisplay(s, i) {
     try {
         var controlWin = getSahiWinHandle();
         if (controlWin && !controlWin.closed) {
-            if (i) controlWin.main.displayStepNum(i+1);
+            if (i) controlWin.main.displayStepNum(i + 1);
             controlWin.main.displayLogs(s);
         }
     } catch(ex) {
@@ -2128,6 +2135,12 @@ function isSahiPlaying() {
         sahiTop()._isSahiPlaying = sahiGetServerVar("sahi_play") == "1";
     return sahiTop()._isSahiPlaying;
 }
+function sahiPlayManual(ix) {
+    sahiGotErrors(false);
+    sahiSetCurrentIndex(ix);
+    unpause();
+    sahiEx();
+}
 function sahiStartPlaying() {
     sahiSendToServer("/_s_/dyn/Player_start");
     sahiSetServerVar("sahi_play", 1);
@@ -2139,7 +2152,8 @@ function sahiStepWisePlay() {
 function sahiStopPlaying() {
     sahiSendToServer("/_s_/dyn/Player_stop");
     sahiSetServerVar("sahi_play", 0);
-    updateControlWinDisplay("--Stopped Playback--");
+    updateControlWinDisplay("--Stopped Playback: "+(sahiHadErrors()?"FAILURE":"SUCCESS")+"--");
+    sahiGotErrors(false);
     sahiTop()._isSahiPlaying = false;
 }
 function sahiStartRecording() {
@@ -2387,7 +2401,7 @@ function getScript(info) {
         } else if (type == "checkbox" || type == "radio") {
             cmd += "_assert" + ("true" == "" + value ? "" : "Not" ) + "True(" + accessor + ".checked);";
         } else {
-            cmd += "_assertContainsText("+sahiQuotedEscapeValue(value)+", " + accessor + ");";
+            cmd += "_assertContainsText(" + sahiQuotedEscapeValue(value) + ", " + accessor + ");";
         }
     }
     else

@@ -35,12 +35,9 @@ function checkURL(url) {
 }
 function play() {
     try {
-        sahiOpener().sahiSetCurrentIndex(parseInt(document.playform.step.value));
-        sahiOpener().unpause();
-        sahiOpener().sahiEx();
+        sahiOpener().sahiPlayManual(parseInt(document.playform.step.value))
     } catch (e) {
-        //		alert("Please open the Controller again. \n(Press ALT-DblClick on the main window.)");
-        //		top.close();
+        displayLogs("Please open the Controller again. \n(Press ALT-DblClick on the main window.)");
     }
     return true;
 }
