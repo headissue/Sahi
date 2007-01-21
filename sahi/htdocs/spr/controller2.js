@@ -46,6 +46,7 @@ function play() {
 }
 function stepWisePlay() {
     var i = parseInt(document.playform.step.value);
+    if (i==0) i = i+1
     sahiOpener().sahiSetCurrentIndex(i);
     sahiOpener().sahiStepWisePlay();
     sahiOpener().eval("sahiEx(true)");
@@ -225,8 +226,9 @@ function doOnPlaybackLoad() {
     resizeScriptFileDropdown();
     resizeScriptDirDropdown();
 
-    if (sahiGetCurrentIndex() != null) {
-        displayStepNum();
+    var ix = sahiGetCurrentIndex();
+    if (ix != null) {
+        displayStepNum(ix);
     }
 }
 function doOnTabsLoad() {
@@ -239,10 +241,10 @@ function doOnTabsLoad() {
         sahiHandleException(ex);
     }
 }
-function displayStepNum() {
+function displayStepNum(ix) {
     try {
         if (document.playform)
-            document.playform.step.value = "" + (sahiGetCurrentIndex() + 1);
+            document.playform.step.value = "" + ix;
     } catch(e) {
         sahiHandleException(e);
     }

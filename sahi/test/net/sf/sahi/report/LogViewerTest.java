@@ -36,15 +36,15 @@ public class LogViewerTest extends TestCase {
     }
 
     public void testHighlightLine() {
-        assertEquals("<b>one</b>\ntwo\nthree\nfour", LogViewer.highlightLine("one\ntwo\nthree\nfour", 1));
-        assertEquals("one\n<b>two</b>\nthree\nfour", LogViewer.highlightLine("one\ntwo\nthree\nfour", 2));
-        assertEquals("one\ntwo\nthree\n<b>four</b>", LogViewer.highlightLine("one\ntwo\nthree\nfour", 4));
-        assertEquals("one\ntwo\nthree\nfour", LogViewer.highlightLine("one\ntwo\nthree\nfour", -1));
-        assertEquals("one\ntwo\nthree\nfour", LogViewer.highlightLine("one\ntwo\nthree\nfour", 0));
+        assertEquals("<span>1</span> <b>one</b>\n<span>2</span> two\n<span>3</span> three\n<span>4</span> four\n", LogViewer.highlightLine("one\ntwo\nthree\nfour", 1));
+        assertEquals("<span>1</span> one\n<span>2</span> <b>two</b>\n<span>3</span> three\n<span>4</span> four\n", LogViewer.highlightLine("one\ntwo\nthree\nfour", 2));
+        assertEquals("<span>1</span> one\n<span>2</span> two\n<span>3</span> three\n<span>4</span> <b>four</b>\n", LogViewer.highlightLine("one\ntwo\nthree\nfour", 4));
+        assertEquals("<span>1</span> one\n<span>2</span> two\n<span>3</span> three\n<span>4</span> four\n", LogViewer.highlightLine("one\ntwo\nthree\nfour", -1));
+        assertEquals("<span>1</span> one\n<span>2</span> two\n<span>3</span> three\n<span>4</span> four\n", LogViewer.highlightLine("one\ntwo\nthree\nfour", 0));
     }
 
     public void testHighlight() {
         String data = "test";
-        assertEquals("<html><body><style>b{color:brown}</style><pre>" + data + "</pre></body></html>", LogViewer.highlight(data, -1));
+        assertEquals("<html><body><style>b{background:brown;color:white;}\nspan{background:lightgrey;}</style><pre><span>1</span> test\n</pre></body></html>", LogViewer.highlight(data, -1));
     }
 }

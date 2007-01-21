@@ -42,3 +42,4 @@ _focus
 _keyDown
 _keyUp
 _mockImage
+_assertContainsText

@@ -69,7 +69,6 @@ public class RunSahiTask extends Task {
     }
 
     public void setSahiPort(String port) {
-        System.out.println("Setting port");
         this.sahiPort = port;
     }
 
@@ -152,7 +151,6 @@ public class RunSahiTask extends Task {
     }
 
     public void addConfiguredReport(Report report) {
-        System.out.println("Setting report");
         if (!("junit".equalsIgnoreCase(report.getType()) || "html".equalsIgnoreCase(report.getType()))) {
             throw new BuildException("Valid valued for attribute 'type' of tag 'reporter' are html or junit");
         }        

@@ -127,14 +127,18 @@ public class Player {
         String startUrl = request.getParameter("startUrl");
         session.setIsWindowOpen(false);
 
-        session.setReport(new Report(session.getScript().getScriptName(), session.getSuite().getListReporter()));
+			if (session.getSuite()!=null)
+				session.setReport(new Report(session.getScript().getScriptName(), session.getSuite().getListReporter()));
+			else
+				session.setReport(new Report(session.getScript().getScriptName(), new HtmlReporter()));
 
-        return proxyAutoResponse(startUrl, session.id());
+
+				return proxyAutoResponse(startUrl, session.id());
     }
 
     public void success(HttpRequest request) {
         Session session = request.session();
-        new SessionState().setVar("sahi_retries", "0", session);         
+        new SessionState().setVar("sahi_retries", "0", session);
     }
 
     private HttpFileResponse proxyAutoResponse(String startUrl, String sessionId) {

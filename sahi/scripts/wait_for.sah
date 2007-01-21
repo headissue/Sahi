@@ -14,8 +14,9 @@ _assertNotNull(_textbox("t1"));
 _wait(2000, _byId("id2"));
 _assertEqual("", _textbox("t1").value);
 
-_navigateTo("waitFor.htm")
+_navigateTo("/demo/waitFor.htm")
 
+_wait(500);
 _click(_button("Click me"));
 _assertNotNull(_textbox("t1"));
 _wait(15000, _textbox("t1").value == "populated");

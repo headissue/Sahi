@@ -190,13 +190,13 @@
     <target name="passsahi" unless="sahi.failed">
         <antcall target="proxyoff"/>
         <antcall target="stop-web"/>
-        <antcall target="stopsahi"/>
+        <!--<antcall target="stopsahi"/>-->
     </target>
 
     <target name="failsahi" if="sahi.failed">
         <antcall target="proxyoff"/>
         <antcall target="stop-web"/>
-        <antcall target="stopsahi"/>
+        <!--<antcall target="stopsahi"/>-->
         <fail message="Sahi tests failed!"/>
     </target>
 

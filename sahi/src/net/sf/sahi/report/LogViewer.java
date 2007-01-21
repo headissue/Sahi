@@ -1,7 +1,5 @@
 package net.sf.sahi.report;
 
-import net.sf.sahi.config.Configuration;
-
 import java.io.File;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -46,32 +44,21 @@ public class LogViewer {
 
     public static String highlight(String data, int lineNumber) {
         StringBuffer sb = new StringBuffer();
-        sb.append("<html><body><style>b{color:brown}</style><pre>").append(highlightLine(data, lineNumber)).append("</pre></body></html>");
+        sb.append("<html><body><style>b{background:brown;color:white;}\nspan{background:lightgrey;}</style><pre>").append(highlightLine(data, lineNumber)).append("</pre></body></html>");
         return sb.toString();
     }
 
     static String highlightLine(String data, int lineNumber) {
-        if(lineNumber <= 0)    {
-            return data;
-        }
-        
-        data = data.replaceAll("<", "&lt;");
-        data = data.replaceAll(">", "&gt;");
-        int startIx = 0;
-        int endIx = -1;
-        int len = data.length();
+        String[] lines = data.split("\n");
         StringBuffer sb = new StringBuffer();
-        for (int i = 0; i < lineNumber; i++) {
-            startIx = endIx + 1;
-            endIx = data.indexOf("\n", startIx);
-            if (endIx == -1) break;
+        for (int i = 0; i < lines.length; i++) {
+            String line = lines[i];
+            if (i+1 == lineNumber) {
+                line = "<b>" + line + "</b>";
+            }
+            line = "<span>" + (i+1) + "</span> " + line + "\n";
+            sb.append(line);
         }
-        if (endIx == -1) endIx = len;
-        sb.append(data.substring(0, startIx));
-        sb.append("<b>");
-        sb.append(data.substring(startIx, endIx).replace('\r', ' '));
-        sb.append("</b>");
-        sb.append(data.substring(endIx, len));
         return sb.toString();
     }
 }
