@@ -2217,16 +2217,20 @@ function sahiList(el) {
     var j = 0;
     if (typeof el == "object" || typeof el == "array") {
         for (var i in el) {
-            if (el[i]) {
-                if (("" + el[i]).indexOf("function") == 0) {
-                    f += i + "\n";
-                } else {
-                    if (typeof el[i] == "object" && el[i] != el.parentNode) {
-                        s += i + "={{" + el[i] + "}};\n";
+            try{
+                if (el[i]) {
+                    if (("" + el[i]).indexOf("function") == 0) {
+                        f += i + "\n";
+                    } else {
+                        if (typeof el[i] == "object" && el[i] != el.parentNode) {
+                            s += i + "={{" + el[i] + "}};\n";
+                        }
+                        s += i + "=" + el[i] + ";\n";
+                        j++;
                     }
-                    s += i + "=" + el[i] + ";\n";
-                    j++;
                 }
+            }catch(e){
+                s += ""+i+"\n";    
             }
         }
     }else{
