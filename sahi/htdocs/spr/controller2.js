@@ -213,6 +213,7 @@ function populateOptions(el, opts, selectedOpt, defaultOpt, prefix) {
             if (opts[i] == selectedOpt) el.options[ix].selected = true;
         }
     }
+//    alert(el.options.length)
 }
 
 function doOnPlaybackLoad() {
@@ -371,16 +372,20 @@ function initRecorderTab() {
     document.currentForm.debug.value = getRecVar("controller_debug");
     document.currentForm.waitTime.value = getRecVar("controller_waitTime");
     document.currentForm.result.value = getRecVar("controller_result");
-    document.recordstartform.dir.value = getRecVar("controller_rec_dir");
+    var dir = getRecVar("controller_rec_dir");
+    if (dir && dir != null) document.recordstartform.dir.value = getRecVar("controller_rec_dir");
 }
 function showTab(s) {
     if (top.main.location.href.indexOf(s + '.htm') != -1) return;
     hilightTab(s);
     top.main.location.href = s + '.htm'
 }
-
+function listProperties(){
+    document.currentForm.debug.value = sahiOpener().sahi_eval("sahiList("+addSahi(document.currentForm.accessor.value)+")");
+}
 function initPlaybackTab() {
-    document.scriptfileform.dir.value = getPbVar("controller_pb_dir");
+    var dir = getPbVar("controller_pb_dir");
+    if (dir != null && dir != "") document.scriptfileform.dir.value = dir;
     document.scripturlform.url.value = getPbVar("controller_url");
     document.logForm.logs.value = getPbVar("controller_logs");
     document.scripturlform.starturl.value = getPbVar("controller_url_starturl");

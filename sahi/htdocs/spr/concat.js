@@ -19,6 +19,22 @@ function sahiTop() {
     return _sahi_top;
     //Hack for frames named "top"
 }
+function getMostAccessibleAncestor() {
+    var t = window;
+    while (t != _sahi_top) {
+        p = t.parent;
+        if (p == t) return t;
+        try {
+            var test = p.document.domain;
+        } catch(e) {
+            // diff domain
+            return t;
+        }
+        t = p;
+    }
+    return t;
+}
+
 function sahiGetAccessor(src) {
     var fr = sahiGetFrame(sahiTop(), "top");
     var a = sahiGetPartialAccessor(src);
@@ -935,11 +951,11 @@ function sahi_debugToFile(s, file) {
     if (file == null) return;
     return sahi_callServer("Debug_toFile", "msg=" + sahiEscape(s) + "&file=" + sahiEscape(file));
 }
-function sahi_enableKeepAlive(){
+function sahi_enableKeepAlive() {
     sahiSendToServer('/_s_/dyn/Configuration_enableKeepAlive');
 }
-function sahi_disableKeepAlive(){
-    sahiSendToServer('/_s_/dyn/Configuration_disableKeepAlive');        
+function sahi_disableKeepAlive() {
+    sahiSendToServer('/_s_/dyn/Configuration_disableKeepAlive');
 }
 
 // finds document of any element
@@ -1595,7 +1611,7 @@ function getShortHand(el, accessor) {
             return shortHand;
         } else if (tagLC == "button" || tagLC == "input" || tagLC == "textarea" || tagLC.indexOf("select") != -1) {
             if (el.type == "button" || el.type == "reset" || el.type == "submit") shortHand = el.value;
-            if (el.type == "image"){
+            if (el.type == "image") {
                 shortHand = el.title;
                 if (!shortHand) shortHand = el.alt;
             }
@@ -1948,11 +1964,11 @@ function sahiExecNextStep(isStep, interval) {
     if (_sahiTimer) window.clearTimeout(_sahiTimer);
     _sahiTimer = window.setTimeout("try{sahiEx();}catch(ex){}", interval);
 }
-function sahiGotErrors(b){
-    sahiSetServerVar("sahi_has_errors", b?"1":"0");
+function sahiGotErrors(b) {
+    sahiSetServerVar("sahi_has_errors", b ? "1" : "0");
 }
-function sahiHadErrors(){
-    return sahiGetServerVar("sahi_has_errors") == "1";        
+function sahiHadErrors() {
+    return sahiGetServerVar("sahi_has_errors") == "1";
 }
 function sahiEx(isStep) {
     var cmds = _sahiCmds;
@@ -2162,7 +2178,7 @@ function sahiStepWisePlay() {
 function sahiStopPlaying() {
     sahiSendToServer("/_s_/dyn/Player_stop");
     sahiSetServerVar("sahi_play", 0);
-    updateControlWinDisplay("--Stopped Playback: "+(sahiHadErrors()?"FAILURE":"SUCCESS")+"--");
+    updateControlWinDisplay("--Stopped Playback: " + (sahiHadErrors() ? "FAILURE" : "SUCCESS") + "--");
     sahiGotErrors(false);
     sahiTop()._isSahiPlaying = false;
 }
@@ -2195,18 +2211,41 @@ function sahiTrim(s) {
     s = s.replace(/[\t\n\r]{1,}/g, ' ');
     return s;
 }
-function sahiList(el, p) {
+function sahiList(el) {
     var s = "";
+    var f = "";
     var j = 0;
-    for (var i in el) {
-        if (!p || ("" + i).indexOf(p) != -1) {
-            s += i + "=" + el[i] + ";<br>";
-            j++;
-            //            if (j%4==0) s+="\n";
+    if (typeof el == "object" || typeof el == "array") {
+        for (var i in el) {
+            if (el[i]) {
+                if (("" + el[i]).indexOf("function") == 0) {
+                    f += i + "\n";
+                } else {
+                    if (typeof el[i] == "object" && el[i] != el.parentNode) {
+                        s += i + "={{" + el[i] + "}};\n";
+                    }
+                    s += i + "=" + el[i] + ";\n";
+                    j++;
+                }
+            }
         }
+    }else{
+        s += el;
     }
-    return s;
+    return s + "\n\n-----Functions------\n\n" + f;
 }
+//function sahiList(el, p) {
+//    var s = "";
+//    var j = 0;
+//    for (var i in el) {
+//        if (!p || ("" + i).indexOf(p) != -1) {
+//            s += i + "=" + el[i] + ";<br>";
+//            j++;
+//            //            if (j%4==0) s+="\n";
+//        }
+//    }
+//    return s;
+//}
 function debug(s) {
     var win = window.open("", "_blank");
     win.document.write(s);
@@ -2411,7 +2450,7 @@ function getScript(info) {
             cmd += "_assertEqual(" + sahiQuotedEscapeValue(value) + ", " + accessor + ".value);";
         } else if (type == "checkbox" || type == "radio") {
             cmd += "_assert" + ("true" == "" + value ? "" : "Not" ) + "True(" + accessor + ".checked);";
-        } else if (type != "link" && type != "img"){
+        } else if (type != "link" && type != "img") {
             cmd += "_assertContainsText(" + sahiQuotedEscapeValue(value) + ", " + accessor + ");";
         }
     }

@@ -69,6 +69,7 @@ public class TestLauncher {
     }
 
     public void execute() {
+        System.out.println("#### Running Script: " + scriptName);
         String url = addSessionId(getURL());
         process = openURL(url);
     }

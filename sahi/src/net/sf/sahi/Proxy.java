@@ -41,6 +41,7 @@ public class Proxy {
         }
     }
 
+    static int count = 0;
     private void startProxy() throws IOException {
         ServerSocket server = null;
         try {
@@ -50,9 +51,9 @@ public class Proxy {
             System.out.println(">>>> Sahi started. Listening on port:" + port);
             System.out.println(">>>> Configure your browser to use this server and port as its proxy");
             System.out.println(">>>> Browse any page and CTRL-ALT-DblClick on the page to bring up the Sahi Controller");
-//			System.out.println(">>>> For troubleshooting, visit http://sahi.sourceforge.net/diagnostics");
             while (true) {
                 try {
+//                    System.out.println("Count:"+(count++));
                     Socket client = server.accept();
                     new Thread(new ProxyProcessor(client)).start();
                 } catch (Exception e) {

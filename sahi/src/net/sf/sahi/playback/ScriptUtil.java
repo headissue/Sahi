@@ -22,10 +22,12 @@ import net.sf.sahi.util.Utils;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Arrays;
 
 public class ScriptUtil {
     public static String getScriptsJs(String scriptName) {
         String[] fileList = getScriptFiles();
+        Arrays.sort(fileList);
         return getJs(fileList, scriptName, false);
     }
 
