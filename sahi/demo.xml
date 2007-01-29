@@ -178,7 +178,7 @@
               threads="3"
             >
             <report type="html"/>
-            <report type="junit" logdir="C:/sahi/temp"/>
+            <report type="junit" logdir="D:/my/sahi/temp/junit"/>
         </sahi>
         <!--<createissue tool="jira"/>-->
         <!--logdir="D:\xx\logs"-->

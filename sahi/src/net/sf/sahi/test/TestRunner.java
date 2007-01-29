@@ -117,7 +117,7 @@ public class TestRunner {
                 .append("&browser=").append(encode(browser))
                 .append("&threads=").append(encode(threads))
                 .append("&sahisid=").append(encode(this.sessionId));
-        if (listReport == null) {
+        if (listReport == null || listReport.size() == 0) {
             addReport(new Report("html", null));
         }
         for (Iterator iterator = listReport.iterator(); iterator.hasNext();) {

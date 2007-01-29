@@ -58,7 +58,7 @@ public class Suite {
     public HttpResponse status(HttpRequest request) {
         Session session = request.session();
         SahiTestSuite suite = SahiTestSuite.getSuite(session.id());
-        Status status = Status.INITIAL;
+        Status status = Status.FAILURE;
         if (suite != null) {
             status = session.getStatus();
         }
