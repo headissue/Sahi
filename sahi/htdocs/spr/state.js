@@ -16,7 +16,7 @@
 _sahisid = '$sessionId';
 try{
 top._sahisid = '$sessionId';
-top._isSahiWinOpen = true; //$isWindowOpen;
+top._isSahiWinOpen = $isWindowOpen;
 top.sahiCreateCookie('sahisid', '$sessionId');
 top._isSahiPaused = $isSahiPaused;
 top._isSahiPlaying = $isSahiPlaying;

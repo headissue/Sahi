@@ -477,7 +477,6 @@ function findPosY(obj)
 
 function sahiNavigateLink(ln) {
     if (!ln) return;
-    sahi_debug("WIN IS "+ (ln.ownerDocument))
     var win;
     if (isSafariLike()){
         win  = sahiGetWin(ln);
@@ -495,10 +494,10 @@ function sahiNavigateLink(ln) {
             var targetWin = win.open("", target);
             try {
                 targetWin.sahiOnBeforeUnLoad();
-                targetWin.location.href = ln.href;
             } catch(e) {
                 sahi_debug(e.message);
             }
+            targetWin.location.href = ln.href;
         }
         else win.open(ln.href, target);
     }

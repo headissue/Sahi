@@ -1,1 +1,1 @@
-${JAVA_HOME}/bin/java -classpath ${PWD}../lib/sahi.jar net.sf.sahi.WebServer
+java -Djava.ext.dirs=../lib:../extlib net.sf.sahi.WebServer

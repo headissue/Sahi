@@ -73,7 +73,7 @@ public class ProxyProcessor implements Runnable {
             } else {
                 sendResponseToBrowser(new SimpleHttpResponse(""));
             }
-            this.run();
+            new Thread(new ProxyProcessor(client)).start();
         } catch (Exception e) {
             logger.fine(e.getMessage());
             try {
