@@ -72,7 +72,7 @@ public class Suite {
         }
         logDir = request.getParameter("html");
         if (logDir != null) {
-            suite.addReporter(new HtmlReporter(true));
+            suite.addReporter(new HtmlReporter(logDir));
         }
     }
 }

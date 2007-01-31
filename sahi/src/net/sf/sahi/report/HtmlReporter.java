@@ -19,6 +19,7 @@ public class HtmlReporter extends SahiReporter {
 
     public HtmlReporter(String logDir) {
         super(logDir, new HtmlFormatter());
+        createSuiteLogFolder = true;
     }
 
     public boolean createSuiteLogFolder() {
