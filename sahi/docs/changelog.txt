@@ -1,14 +1,21 @@
 * APIS added
-    _keyPress(el, char)
-    _focus(el)
-    _keyDown(el, char)
-    _keyUp(el, char)
-    _wait(max_time, condition) added for AJAX applications
+    _mockImage(pattern, clazz)
+    _assertContainsText(expected, el, msg)
+    _enableKeepAlive()
+    _disableKeepAlive()
+    _style(el, property)
 
-* Fixed bugs relating to:
-    framesets having a frame named "top"
-    Support for popup windows without names
-    
+* Feature additions
+    Test status on Controller
+    Launch test from command line
+    Add line numbers to script in logs
+    Back button support
+    Keep-alive support to tackle too many connections in TIME_WAIT issue
+    regular expression support in all APIs
+    Safari support
+    junit style logs added
+    jira issue tracking added
+        
 Known issues
 * Firefox has problems with multithreaded playback due to session sharing across windows. 
 (Workaround: Do not add the 'threads=n' clause to sahi target)
