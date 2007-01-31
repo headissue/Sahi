@@ -24,6 +24,7 @@ import net.sf.sahi.response.HttpFileResponse;
 import net.sf.sahi.response.HttpResponse;
 import net.sf.sahi.response.NoCacheHttpResponse;
 import net.sf.sahi.util.URLParser;
+import net.sf.sahi.report.LogViewer;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -47,6 +48,8 @@ public class LocalRequestProcessor {
         } else if (uri.indexOf("/spr/") != -1) {
             String fileName = URLParser.fileNamefromURI(requestFromBrowser.uri());
             httpResponse = new HttpFileResponse(fileName, null, true, true);
+        }  else if (uri.indexOf("/logs") != -1) {
+            httpResponse = new NoCacheHttpResponse(LogViewer.getLogsList(Configuration.getPlayBackLogsRoot()));
         } else {
             httpResponse = new HttpFileResponse(Configuration.getHtdocsRoot() + "/spr/launch.htm");
         }
