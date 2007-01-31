@@ -2458,6 +2458,10 @@ function sahiActivateHotKey() {
     try {
         sahiAddEvent(document, "dblclick", sahiOpenControllerWindow);
         sahiAddEvent(document, "mousemove", sahiMouseOver);
+        if (isSafariLike()){
+            var prev = document.ondblclick;
+            document.ondblclick = function(e){if (prev!=null) prev(e); sahiOpenControllerWindow(e)};
+        }
     } catch(ex) {
         sahiHandleException(ex);
     }

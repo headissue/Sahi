@@ -173,7 +173,7 @@ public class Configuration {
     public static String getHotKey() {
         String hotkey = properties.getProperty("controller.hotkey");
         if ("SHIFT".equals(hotkey) || "ALT".equals(hotkey)
-                || "CTRL".equals(hotkey))
+                || "CTRL".equals(hotkey) || "META".equals(hotkey))
             return hotkey;
         return "ALT";
     }
