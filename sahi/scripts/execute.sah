@@ -1,0 +1,2 @@
+_execute("mkdir test_execute") //default sync execution
+_execute("rmdir test_execute", true)//async execution
