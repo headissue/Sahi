@@ -43,6 +43,9 @@ public class HttpRequest extends StreamHandler {
     private String fileExtension;
     private String hostWithPort;
 
+    HttpRequest() {
+    }
+
     public HttpRequest(InputStream in) throws IOException {
         this(in, false);
     }

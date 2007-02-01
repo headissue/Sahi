@@ -2549,6 +2549,16 @@ function sahiQuoteIfString(shortHand) {
     if (("" + shortHand).match(/^[0-9]+$/)) return shortHand;
     return sahiQuotedEscapeValue(shortHand);
 }
+
+
+function sahi_execute(command, sync){
+    var is_sync = sync ? "true" : "false";
+    var status = sahi_callServer("CommandInvoker_execute", "command="+escape(command)+"&sync="+is_sync);
+    if("success" != status){
+        throw new Error("Execute Command Failed!");
+    }
+}
+
 sahiActivateHotKey();
 
 function sahi_style(el, style) {  //http://dhtmlkitchen.com/

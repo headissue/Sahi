@@ -38,6 +38,9 @@
                 <pathelement location="extlib/cglib-nodep-2.1_3.jar"/>
             </classpath>
         </javac>
+        <copy todir="${sahi.output.dir}">
+            <fileset dir="test" includes="**/*.cmd"/>
+        </copy>
     </target>
 
     <target name="start" description="starts proxy">
