@@ -26,11 +26,12 @@ limitations under the License.
 </script>
 
 <script type="text/javascript">
-  sahiCreateCookie('sahisid', '$sessionId');  
+  window.name = null;
+  sahiCreateCookie('sahisid', '$sessionId');
   sahiSetServerVar("sahi_play", 1);
   sahiSetServerVar("sahiIx", 0);
-//  location.href="$startUrl";
-  window.setTimeout('location.href="$startUrl"', 1000);
+  location.href="$startUrl";
+//  window.setTimeout('location.href="$startUrl"', 1000);
 </script>
 </head>
 <body>

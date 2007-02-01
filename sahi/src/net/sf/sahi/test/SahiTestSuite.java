@@ -22,6 +22,7 @@ import net.sf.sahi.report.SahiReporter;
 import net.sf.sahi.session.Session;
 import net.sf.sahi.session.Status;
 import net.sf.sahi.util.Utils;
+import net.sf.sahi.config.Configuration;
 
 import java.io.File;
 import java.util.*;
@@ -83,6 +84,11 @@ public class SahiTestSuite {
         ((TestLauncher) (testsMap.get(scriptName))).stop();
         finishedTests++;
         availableThreads++;
+        try {
+            Thread.sleep(Configuration.getTimeBetweenTestsInSuite());
+        } catch (InterruptedException e) {
+            e.printStackTrace();  
+        }
         this.notify();
     }
 
