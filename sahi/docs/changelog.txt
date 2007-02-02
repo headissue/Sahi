@@ -1,21 +1,10 @@
 * APIS added
-    _mockImage(pattern, clazz)
-    _assertContainsText(expected, el, msg)
-    _enableKeepAlive()
-    _disableKeepAlive()
-    _style(el, property)
+    _execute("commandline command");
 
-* Feature additions
-    Test status on Controller
-    Launch test from command line
-    Add line numbers to script in logs
-    Back button support
-    Keep-alive support to tackle too many connections in TIME_WAIT issue
-    regular expression support in all APIs
-    Safari support
-    junit style logs added
-    jira issue tracking added
+* Bugfixes
+    _condition when used with _include was stopping execution of script.
         
 Known issues
 * Firefox has problems with multithreaded playback due to session sharing across windows. 
 (Workaround: Do not add the 'threads=n' clause to sahi target)
+* Calls to non existent functions in script does not fail script
