@@ -85,3 +85,4 @@ var _mockImage = sahi_mockImage;
 var _assertContainsText = sahi_assertContainsText;
 var _enableKeepAlive = sahi_enableKeepAlive;
 var _disableKeepAlive = sahi_disableKeepAlive;
+var _condition;
