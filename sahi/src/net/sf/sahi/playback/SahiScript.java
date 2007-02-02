@@ -43,7 +43,7 @@ public abstract class SahiScript {
     protected String script;
     private static final String PREFIX = "sahiSchedule(\"";
     private static final String CONJUNCTION = "\", \"";
-    private static final String SUFFIX = "\")";
+    private static final String SUFFIX = "\");";
     private String filePath;
     protected String scriptName;
     protected ArrayList parents;
@@ -52,6 +52,7 @@ public abstract class SahiScript {
     private static final String REG_EXP_FOR_STRIPPING = getRegExp(true);
     private static final String REG_EXP_FOR_ACTIONS = getActionRegExp();
     protected String path;
+    private String jsString;
 
     public SahiScript(String filePath, ArrayList parents, String scriptName) {
         this.filePath = filePath;
@@ -62,13 +63,18 @@ public abstract class SahiScript {
 
     protected void setScript(String s) {
         original = s;
-        script = makeString(modify(s));
+        jsString = modify(s);
+        script = addJSEvalCode(jsString);
     }
 
-    static String makeString(String s) {
+    public String jsString(){
+        return jsString;
+    }
+
+    static String addJSEvalCode(String str) {
         StringBuffer sb = new StringBuffer();
         sb.append("var _sahiExecSteps = \"");
-        sb.append(Utils.makeString(s));
+        sb.append(Utils.makeString(str));
         sb.append("\";\neval(_sahiExecSteps);");
         return sb.toString();
     }
@@ -148,7 +154,7 @@ public abstract class SahiScript {
         if (include != null && !isRecursed(include)) {
             ArrayList clone = (ArrayList) parents.clone();
             clone.add(this.path);
-            return new ScriptFactory().getScript(getFQN(include), clone).modifiedScript();
+            return new ScriptFactory().getScript(getFQN(include), clone).jsString;
         }
         return "";
     }

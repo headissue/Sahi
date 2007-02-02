@@ -2539,7 +2539,7 @@ function sahiEscape(s) {
 }
 
 function sahiSaveCondition(a) {
-    sahi_setGlobal("condn" + sahiGetCurrentIndex(), a);
+    sahi_setGlobal("condn" + sahiGetCurrentIndex(), a ? "true" : "false");
     _sahiCmds = new Array();
     _sahiCmdDebugInfo = new Array();
     eval(_sahiExecSteps);
