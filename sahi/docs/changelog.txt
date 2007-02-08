@@ -1,8 +1,12 @@
-* APIS added
-    _execute("commandline command");
+* Features added
+    Some basic support for identifying script errors in script using "View Script" link on the controller.
 
 * Bugfixes
-    _condition when used with _include was stopping execution of script.
+    HTTPS was not working because of a couple of problems:
+    Keep-alive needed to be disabled for proxying ssl requests.
+    including java.ext.dirs in sahi.bat/sh was causing ssl libraries to not be included.
+    So: Excluded ssl from keep-alive and removed java.ext.dirs.
+    Not sure if this fixes SSL support in Mac.
         
 Known issues
 * Firefox has problems with multithreaded playback due to session sharing across windows. 
