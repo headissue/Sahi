@@ -41,13 +41,14 @@ public class Configuration {
             properties.load(new FileInputStream("../config/sahi.properties"));
             System.setProperty("java.util.logging.config.file",
                     "../config/log.properties");
-            createLogFolders(new File(getPlayBackLogsRoot()));
+            createFolders(new File(getPlayBackLogsRoot()));
+            createFolders(new File(getCertsPath()));
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public static void createLogFolders(File file) {
+    public static void createFolders(File file) {
         if (!file.exists()) {
             file.mkdirs();
         }

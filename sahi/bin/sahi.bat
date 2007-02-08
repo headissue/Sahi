@@ -1,1 +1,1 @@
-java -Djava.ext.dirs=../lib;../extlib -jar ../lib/sahi.jar
+java -jar ../lib/sahi.jar

@@ -1,1 +1,1 @@
-java -Djava.ext.dirs=../lib:../extlib net.sf.sahi.WebServer
+java -cp ../lib net.sf.sahi.WebServer

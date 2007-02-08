@@ -19,7 +19,6 @@ package net.sf.sahi.command;
 import net.sf.sahi.config.Configuration;
 import net.sf.sahi.playback.FileScript;
 import net.sf.sahi.playback.SahiScript;
-import net.sf.sahi.playback.SahiScriptHTMLAdapter;
 import net.sf.sahi.playback.ScriptFactory;
 import net.sf.sahi.report.HtmlReporter;
 import net.sf.sahi.report.Report;
@@ -85,15 +84,12 @@ public class Player {
     public HttpResponse currentScript(HttpRequest request) {
         Session session = request.session();
         HttpResponse httpResponse;
-        if (session.getScript() != null) {
-            httpResponse = new SimpleHttpResponse("<pre>"
-                    + SahiScriptHTMLAdapter.createHTML(session.getScript()
-                    .getOriginal()) + "</pre>");
+        SahiScript script = session.getScript();
+        if (script != null) {
+            return new Script().view(script.getFilePath());
         } else {
-            httpResponse = new SimpleHttpResponse(
-                    "No Script has been set for playback.");
+            return new SimpleHttpResponse("No Script has been set for playback.");
         }
-        return httpResponse;
     }
 
     public HttpResponse currentParsedScript(HttpRequest request) {
@@ -104,8 +100,7 @@ public class Player {
                     + session.getScript().modifiedScript().replaceAll("\\\\r",
                     "").replaceAll("\\\\n", "<br>") + "</pre>");
         } else {
-            httpResponse = new SimpleHttpResponse(
-                    "No Script has been set for playback.");
+            httpResponse = new SimpleHttpResponse("No Script has been set for playback.");
         }
         return httpResponse;
     }
@@ -127,13 +122,12 @@ public class Player {
         String startUrl = request.getParameter("startUrl");
         session.setIsWindowOpen(false);
 
-			if (session.getSuite()!=null)
-				session.setReport(new Report(session.getScript().getScriptName(), session.getSuite().getListReporter()));
-			else
-				session.setReport(new Report(session.getScript().getScriptName(), new HtmlReporter()));
+        if (session.getSuite() != null)
+            session.setReport(new Report(session.getScript().getScriptName(), session.getSuite().getListReporter()));
+        else
+            session.setReport(new Report(session.getScript().getScriptName(), new HtmlReporter()));
 
-
-				return proxyAutoResponse(startUrl, session.id());
+        return proxyAutoResponse(startUrl, session.id());
     }
 
     public void success(HttpRequest request) {

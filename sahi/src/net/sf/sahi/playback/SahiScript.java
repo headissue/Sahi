@@ -236,7 +236,7 @@ public abstract class SahiScript {
         return keywords;
     }
 
-    static ArrayList getKeyWords() {
+    public static ArrayList getKeyWords() {
         if (normalKeywords == null) normalKeywords = loadKeyWords();
         return normalKeywords;
     }

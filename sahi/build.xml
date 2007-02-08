@@ -112,6 +112,7 @@
         <copy todir="temp/sahi/scripts">
             <fileset dir="scripts">
                 <include name="includes/sahi_demo_include.sah"/>
+                <include name="if_include.sah"/>
                 <include name="blank.sah"/>
                 <include name="demo.suite"/>
                 <include name="google.sah"/>
@@ -135,6 +136,7 @@
                 <include name="wait_for.sah"/>
                 <include name="keypress.sah"/>
                 <include name="mouseover.sah"/>
+                <include name="execute.sah"/>
             </fileset>
         </copy>
         <copy todir="temp/sahi/extlib">

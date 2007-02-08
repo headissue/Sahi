@@ -67,7 +67,7 @@ public abstract class SahiReporter {
 
     protected void createWriter(String file) throws IOException {
         File dir = new File(getLogDir());
-        Configuration.createLogFolders(dir);
+        Configuration.createFolders(dir);
         File logFile = new File(dir, formatter.getFileName(file));
         this.writer = new BufferedWriter(new FileWriter(logFile));
     }

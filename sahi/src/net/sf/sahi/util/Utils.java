@@ -21,6 +21,8 @@ import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 
 /**
  * User: nraman Date: Jun 26, 2005 Time: 4:52:58 PM
@@ -175,13 +177,24 @@ public class Utils {
     }
 
     public static String substitute(String content, Properties substitutions) {
+        String patternStr = "";
+        int i = 0;
         Enumeration keys = substitutions.keys();
         while (keys.hasMoreElements()) {
             String key = (String) keys.nextElement();
-            content = content.replaceAll("\\$" + key, substitutions
-                    .getProperty(key));
+            patternStr += (i++ == 0 ? "" : "|") + "\\$" + key;
         }
-        return content;
+        Pattern pattern = Pattern.compile(patternStr);
+        Matcher matcher = pattern.matcher(content);
+
+        StringBuffer buf = new StringBuffer();
+        while (matcher.find()) {
+            String key = matcher.group(0).substring(1);
+            String replaceStr = substitutions.getProperty(key).replaceAll("\\$", "SDLR");
+            matcher.appendReplacement(buf, replaceStr);
+        }
+        matcher.appendTail(buf);
+        return buf.toString().replaceAll("SDLR", "\\$");
     }
 
     public static String makeString(String s) {

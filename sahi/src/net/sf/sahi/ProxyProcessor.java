@@ -146,7 +146,7 @@ public class ProxyProcessor implements Runnable {
 
     protected void sendResponseToBrowser(HttpResponse responseFromHost) throws IOException {
         OutputStream outputStreamToBrowser = new BufferedOutputStream(client.getOutputStream());
-        responseFromHost.keepAlive(Configuration.isKeepAliveEnabled());
+        responseFromHost.keepAlive(Configuration.isKeepAliveEnabled() && !isSSLSocket);
         outputStreamToBrowser.write(responseFromHost.rawHeaders());
         outputStreamToBrowser.flush();
         final byte[] data = responseFromHost.data();
