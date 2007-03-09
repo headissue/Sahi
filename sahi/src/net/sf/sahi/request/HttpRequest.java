@@ -100,14 +100,15 @@ public class HttpRequest extends StreamHandler {
     private void setUri() {
         String withHost = firstLine().substring(firstLine().indexOf(" "),
                 firstLine().lastIndexOf(" ")).trim();
-        uri = withHost;
-        int indexOfHost = withHost.indexOf(host);
-        if (indexOfHost != -1) {
-            int indexOfSlash = withHost.indexOf("/", indexOfHost + 3);
-            if (indexOfSlash != -1) // will happen when the host is embedded in
-                // the querystring too.
-                uri = withHost.substring(indexOfSlash);
+        uri = stripHostName(withHost, host, isSSL());
+    }
+
+    String stripHostName(String withHost, String hostName, boolean ssl) {
+        String stripped = withHost;
+        if (withHost.startsWith("http://") || withHost.startsWith("https://")){
+            stripped = withHost.substring(withHost.indexOf(hostName) + hostName.length());
         }
+        return stripped;
     }
 
     public String uri() {

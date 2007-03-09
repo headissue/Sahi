@@ -85,7 +85,7 @@ public class SSLHelper {
 		if (!Configuration.autoCreateSSLCertificates())
 			return defaultFilePath;
 		try {
-			createKeyStore(domain, fileWithPath);
+            createKeyStore(domain, fileWithPath);
 			return fileWithPath;
 		} catch (Exception e) {
 			return defaultFilePath;

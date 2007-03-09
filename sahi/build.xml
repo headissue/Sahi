@@ -36,6 +36,8 @@
                 <pathelement location="extlib/xmlrpc-client-3.0.jar"/>
                 <pathelement location="extlib/ws-commons-util-1.0.1.jar"/>
                 <pathelement location="extlib/cglib-nodep-2.1_3.jar"/>
+                <pathelement location="extlib/junit.jar"/>
+                <pathelement location="extlib/log4j.jar"/>
             </classpath>
         </javac>
         <copy todir="${sahi.output.dir}">

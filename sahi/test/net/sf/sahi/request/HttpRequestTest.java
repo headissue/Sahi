@@ -23,4 +23,12 @@ public class HttpRequestTest extends TestCase {
     public void testUnicode() throws UnsupportedEncodingException {
         String s = URLDecoder.decode("abc", "sadalkdjlaksjdfl");
     }
+
+    public void testSetUri(){
+        assertEquals("/login?service=http://www.hostname.com/landing",
+                new HttpRequest().stripHostName("/login?service=http://www.hostname.com/landing", "www.hostname.com", false));
+        assertEquals("/login?service=http://www.hostname.com/landing",
+                new HttpRequest().stripHostName("http://www.hostname.com/login?service=http://www.hostname.com/landing",
+                        "www.hostname.com", false));
+    }    
 }

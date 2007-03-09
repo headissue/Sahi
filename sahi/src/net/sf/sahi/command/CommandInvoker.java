@@ -21,8 +21,10 @@ package net.sf.sahi.command;
 import net.sf.sahi.request.HttpRequest;
 import net.sf.sahi.response.HttpResponse;
 import net.sf.sahi.response.SimpleHttpResponse;
+import net.sf.sahi.util.Utils;
 
 import java.io.IOException;
+import java.io.InputStream;
 
 public class CommandInvoker {
     private static final int NORMAL_TERMINATION = 0;
@@ -41,6 +43,20 @@ public class CommandInvoker {
             System.out.println("Executing: "+command);
             Process process = Runtime.getRuntime().exec(command);
             return (isSynchronous) ? getExitStatus(process) : SUCCESS;
+            /**
+             if (isSynchronous){
+                 process.waitFor();
+                 InputStream inputStream = process.getInputStream();
+                 String output = new String(Utils.getBytes(inputStream));
+                 InputStream errorStream = process.getErrorStream();
+                 String error = new String(Utils.getBytes(errorStream));
+                 return output + error;
+             } else {
+                  return SUCCESS;
+             }
+ //            return (isSynchronous) ? getExitStatus(process) : SUCCESS;             
+             */
+
         } catch (Exception e) {
             e.printStackTrace();
             return FAILURE;

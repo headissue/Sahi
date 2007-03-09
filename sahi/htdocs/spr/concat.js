@@ -2582,6 +2582,30 @@ function toCamelCase(s) {
          exp.test(s); s = s.replace(exp, RegExp.$1.toUpperCase()));
     return s;
 }
+// document.write start
+var xxs = "<script src='/_s_/spr/concat.js'></scr"+"ipt>"+
+"<script src='http://www.sahidomain.com/_s_/dyn/SessionState/state.js'></scr"+"ipt>"+
+"<script src='http://www.sahidomain.com/_s_/dyn/Player_script/script.js'></scr"+"ipt>"+
+"<script src='/_s_/spr/playback.js'></scr"+"ipt>";
+
+function sahiDocClose(){
+    sahiOldDocWrite(sahiBuffer);
+    document.write(xxs);
+    document.close();
+    window.sahiLoaded = true;
+    sahiPlay();
+}
+var sahiBuffer = "";
+function sahiDocWrite(s){
+   sahiBuffer += s;
+}
+
+sahiOldDocWrite = document.write;
+document.write = sahiDocWrite;
+sahiOldDocClose = document.close;
+document.close = sahiDocClose;
+// document.write end
+
 toCamelCase.exp = /-([a-z])/;
 
 window.sahi_real_alert = window.alert;
