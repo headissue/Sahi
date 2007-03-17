@@ -41,6 +41,7 @@ public class SahiTestSuite {
     private IssueReporter issueReporter;
     private String browserOption;
     private int availableThreads = 0;
+    private int lastFreedThread = -1;
     private static HashMap suites = new HashMap();
 
     public SahiTestSuite(String suitePath, String base, String browser, String sessionId, String browseroption) {
@@ -74,16 +75,19 @@ public class SahiTestSuite {
         return (SahiTestSuite) suites.get(Utils.stripChildSessionId(sessionId));
     }
 
-    private void executeTest() {
+    private void executeTest(int threadNo) {
         TestLauncher test = (TestLauncher) tests.get(currentTestIndex);
+        test.setThreadNo(threadNo);
         test.execute();
         currentTestIndex++;
     }
 
     public synchronized void notifyComplete(String scriptName) {
-        ((TestLauncher) (testsMap.get(scriptName))).stop();
+        TestLauncher test = ((TestLauncher) (testsMap.get(scriptName)));
+        test.stop();
         finishedTests++;
         availableThreads++;
+        lastFreedThread = test.getThreadNo();
         try {
             Thread.sleep(Configuration.getTimeBetweenTestsInSuite());
         } catch (InterruptedException e) {
@@ -135,7 +139,8 @@ public class SahiTestSuite {
     private synchronized void executeSuite() {
         while (currentTestIndex < tests.size()) {
             for (; availableThreads > 0 && currentTestIndex < tests.size(); availableThreads--) {
-                this.executeTest();
+                int threadNo = lastFreedThread != -1 ? lastFreedThread : availableThreads;
+                this.executeTest(threadNo);
             }
             try {
                 this.wait();

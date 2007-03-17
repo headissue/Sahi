@@ -30,5 +30,11 @@ public class HttpRequestTest extends TestCase {
         assertEquals("/login?service=http://www.hostname.com/landing",
                 new HttpRequest().stripHostName("http://www.hostname.com/login?service=http://www.hostname.com/landing",
                         "www.hostname.com", false));
-    }    
+        assertEquals("/netdirector/",
+                new HttpRequest().stripHostName("http://localhost:8080/netdirector/", "localhost", false));
+        assertEquals("/netdirector/",
+                new HttpRequest().stripHostName("/netdirector/", "localhost", false));
+        assertEquals("/netdirector/?service=http://localhost:8080/landing",
+                new HttpRequest().stripHostName("http://localhost:8080/netdirector/?service=http://localhost:8080/landing", "localhost", false));
+    }
 }

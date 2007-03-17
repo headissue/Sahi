@@ -115,14 +115,16 @@
 
     <target name="runfftests">
         <sahi suite="../scripts/demo.suite"
-              browser="C:\\Program Files\\Mozilla Firefox\\firefox.exe"
+              browser="C:\Program Files\Mozilla Firefox\firefox.exe"
               baseurl="http://localhost:10000/demo/"
               sahihost="localhost"
               sahiport="9999"
               failureproperty="sahi.failed"
               haltonfailure="false"
-            />
-        <antcall target="failsahi"/>
+              browseroption="-profile ${basedir}/ffprofiles/sahi$threadNo"
+              threads="3"
+                />
+        <!--<antcall target="failsahi"/>-->
         <!--logdir="yy"-->
     </target>
 
@@ -134,7 +136,7 @@
               sahiport="9999"
               failureproperty="sahi.failed"
               haltonfailure="false"
-            />
+                />
         <!--logdir="D:\xx\logs"-->
         <!--threads="3"-->
     </target>
@@ -148,7 +150,7 @@
               failureproperty="sahi.failed"
               haltonfailure="false"
               threads="3"
-            />
+                />
     </target>
 
     <target name="justff">
@@ -159,7 +161,7 @@
               sahiport="9999"
               failureproperty="sahi.failed"
               haltonfailure="false"
-            >
+                >
             <report type="html"/>
             <report type="junit" logdir="D:/my/sahi/logs/junit/a"/>
         </sahi>
@@ -176,7 +178,7 @@
               failureproperty="sahi.failed"
               haltonfailure="false"
               threads="3"
-            >
+                >
             <report type="html"/>
             <report type="junit" logdir="D:/my/sahi/temp/junit"/>
         </sahi>
@@ -219,6 +221,7 @@
 
     <target name="start" description="starts proxy">
         <java classname="net.sf.sahi.Proxy" fork="true" dir="bin">
+            <env key="MOZ_NO_REMOTE" value="1"/>
             <classpath location="lib/sahi.jar">
                 <fileset dir="extlib" includes="*.jar"/>
             </classpath>

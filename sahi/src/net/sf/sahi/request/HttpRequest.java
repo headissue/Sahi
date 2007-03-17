@@ -1,4 +1,4 @@
-    /**
+/**
  * Copyright  2006  V Narayan Raman
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,7 +23,6 @@ import net.sf.sahi.util.Utils;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.*;
 import java.util.logging.Logger;
@@ -97,7 +96,7 @@ public class HttpRequest extends StreamHandler {
         return firstLine().substring(0, firstLine().indexOf(" "));
     }
 
-    private void setUri() {
+    void setUri() {
         String withHost = firstLine().substring(firstLine().indexOf(" "),
                 firstLine().lastIndexOf(" ")).trim();
         uri = stripHostName(withHost, host, isSSL());
@@ -105,8 +104,9 @@ public class HttpRequest extends StreamHandler {
 
     String stripHostName(String withHost, String hostName, boolean ssl) {
         String stripped = withHost;
-        if (withHost.startsWith("http://") || withHost.startsWith("https://")){
-            stripped = withHost.substring(withHost.indexOf(hostName) + hostName.length());
+        if (withHost.startsWith("http://") || withHost.startsWith("https://")) {
+            int indexOfSlash = withHost.indexOf("/", withHost.indexOf(hostName));
+            stripped = withHost.substring(indexOfSlash);
         }
         return stripped;
     }
@@ -168,8 +168,8 @@ public class HttpRequest extends StreamHandler {
                     value = keyVal.substring(eqIx + 1);
                 try {
                     params.put(key, URLDecoder.decode(value, "UTF-8"));
-                } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
+                } catch (Exception e) {
+                    params.put(key, value);
                 }
             }
         }
@@ -290,7 +290,7 @@ public class HttpRequest extends StreamHandler {
         this.isSSLSocket = isSSL;
     }
 
-    public boolean isIE(){
+    public boolean isIE() {
         String agent = getLastSetValueOfHeader("User-Agent");
         return (agent == null || agent.indexOf("MSIE") != -1);
     }

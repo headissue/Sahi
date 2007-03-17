@@ -152,7 +152,11 @@ public class Utils {
         if (!parent.isDirectory())
             parent = parent.getParentFile();
         File file = new File(parent, s2);
-        return file.getAbsolutePath();
+        try {
+            return file.getCanonicalPath();
+        } catch (IOException e) {
+            return file.getAbsolutePath();
+        }
     }
 
     public static ArrayList getTokens(String s) {
@@ -232,5 +236,14 @@ public class Utils {
             }
         } catch (Exception e) {
         }
+    }
+
+    public static String makePathOSIndependent(String path) {
+        String separator = System.getProperty("file.separator");
+        return path.replace('/', separator.charAt(0));
+    }
+
+    public static boolean isWindows() {
+        return System.getProperty("os.name").toLowerCase().startsWith("windows");        
     }
 }

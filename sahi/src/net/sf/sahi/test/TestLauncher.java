@@ -37,6 +37,7 @@ public class TestLauncher {
     private String browser;
     private static Logger logger = Configuration.getLogger("net.sf.sahi.test.TestLauncher");
     private String browserOption;
+    private int threadNo;
 
     public TestLauncher(String scriptName, String startURL) {
         this.scriptName = scriptName;
@@ -96,8 +97,9 @@ public class TestLauncher {
     }
 
     private Process openURL(String url) {
-        String cmd = escapeCommandStringForPlatform(url);
+        String cmd = buildCommand(url);
         logger.fine("cmd=" + cmd);
+        System.out.println("cmd=" + cmd);
         Process process = null;
         try {
             process = Runtime.getRuntime().exec(cmd.replaceAll("%20", " "));
@@ -107,32 +109,38 @@ public class TestLauncher {
         return process;
     }
 
-    private String escapeCommandStringForPlatform(String url) {
+    private String buildCommand(String url) {
         String result;
-        if (isWindows()) {
-            result = "\"" + browser + "\" ";
-            if (!Utils.isBlankOrNull(browserOption))
-                result += browserOption;
-            result += " \"" + url + "\"";
-            return result;
-
+        if (Utils.isWindows()) {
+            return buildCommandForWindows(url);
         } else {
-            result = browser.replaceAll("[ ]+", "\\ ");
-            if (!browserOption.equals(""))
-                result += browserOption.replaceAll("[ ]+", "\\ ");
-            result += " " + url.replaceAll("&", "\\&");
-            return result;
+            return buildCommandForNonWindows(url);
         }
     }
 
-    private boolean isWindows() {
-        return System.getProperty("os.name").toLowerCase().startsWith("windows");
+    String buildCommandForWindows(String url) {
+        String result;
+        result = "\"" + browser + "\" ";
+        if (!Utils.isBlankOrNull(browserOption))
+            result += browserOption.replaceAll("[$]threadNo", ""+threadNo);
+        result += " \"" + url + "\"";
+        return result;
+    }
+
+    String buildCommandForNonWindows(String url) {
+        String result;
+        result = browser.replaceAll("[ ]+", "\\ ");
+        if (!Utils.isBlankOrNull(browserOption)) {
+            result += browserOption.replaceAll("[ ]+", "\\ ").replaceAll("[$]threadNo", ""+threadNo);
+        }
+        result += " " + url;
+        return result;
     }
 
     public void stop() {
         logger.fine("Killing " + scriptName);
         if (process != null) {
-            // if (isFirefox() && isWindows()) {
+            // if (isFirefox() && Utils.isWindows()) {
             // try {
             // Runtime.getRuntime().exec("taskkill /PID "+process.toString());
             // } catch (IOException e) {
@@ -150,4 +158,12 @@ public class TestLauncher {
 //	private boolean isFirefox() {
     // return browser.toLowerCase().indexOf("firefox") != -1;
     //	}
+
+    public void setThreadNo(int threadNo) {
+        this.threadNo = threadNo;
+    }
+
+    public int getThreadNo() {
+        return threadNo;
+    }
 }

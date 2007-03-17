@@ -345,21 +345,21 @@ function sahiSimulateClick(el, isRight, isDouble) {
     } else {
         try {
             sahiSimulateMouseEvent(el, "click", isRight, isDouble);
-            if (isSafariLike()){
-                try{
+            if (isSafariLike()) {
+                try {
                     if (el.onclick) el.onclick();
-                    if (el.parentNode.tagName == "A"){
+                    if (el.parentNode.tagName == "A") {
                         el.parentNode.onclick();
                     }
-                }catch(ex){
+                } catch(ex) {
                     sahi_debug(ex.message);
                 }
-                if (el.form){
-                    if (typeof el.checked == "boolean"){
+                if (el.form) {
+                    if (typeof el.checked == "boolean") {
                         el.checked = (el.type == "radio") ? true : !el.checked;
                     } else if (el.type == "submit") {
                         var goOn = el.form.onsubmit();
-                        if (goOn != false){
+                        if (goOn != false) {
                             el.form.submit();
                             sahiOnBeforeUnLoad();
                         }
@@ -378,8 +378,8 @@ function sahiSimulateClick(el, isRight, isDouble) {
         n = n.parentNode;
     }
 }
-function isSafariLike(){
-    return /Konqueror|Safari|KHTML/.test(navigator.userAgent);    
+function isSafariLike() {
+    return /Konqueror|Safari|KHTML/.test(navigator.userAgent);
 }
 function sahiSimulateMouseEvent(el, type, isRight, isDouble) {
     var x = findPosX(el);
@@ -478,10 +478,11 @@ function findPosY(obj)
 function sahiNavigateLink(ln) {
     if (!ln) return;
     var win;
-    if (isSafariLike()){
-        win  = sahiGetWin(ln);
+    if (isSafariLike()) {
+        win = sahiGetWin(ln);
     } else {
-        win = ln.ownerDocument.defaultView; //FF
+        win = ln.ownerDocument.defaultView;
+        //FF
         if (!win) win = ln.ownerDocument.parentWindow; //IE
     }
     if (ln.href.indexOf("javascript:") == 0) {
@@ -490,7 +491,7 @@ function sahiNavigateLink(ln) {
     } else {
         var target = ln.target;
         if (ln.target == null || ln.target == "") target = "_self";
-        if (isSafariLike()){
+        if (isSafariLike()) {
             var targetWin = win.open("", target);
             try {
                 targetWin.sahiOnBeforeUnLoad();
@@ -2129,7 +2130,7 @@ function sahiEx(isStep) {
             if (retries < MAX_RETRIES) {
                 sahiSetRetries(retries + 1);
                 interval = ONERROR_INTERVAL;
-            }
+            }                                                         
             else {
                 var debugInfo = "" + debugs[i];
                 if (sahiGetServerVar("sahi_play") == "1") {
@@ -2265,7 +2266,7 @@ function sahiList(el) {
     var j = 0;
     if (typeof el == "object" || typeof el == "array") {
         for (var i in el) {
-            try{
+            try {
                 if (el[i] && el[i] != el) {
                     if (("" + el[i]).indexOf("function") == 0) {
                         f += i + "\n";
@@ -2277,11 +2278,11 @@ function sahiList(el) {
                         j++;
                     }
                 }
-            }catch(e){
-                s += ""+i+"\n";    
+            } catch(e) {
+                s += "" + i + "\n";
             }
         }
-    }else{
+    } else {
         s += el;
     }
     return s + "\n\n-----Functions------\n\n" + f;
@@ -2443,6 +2444,7 @@ function sahiInit(e) {
     } catch(ex) {
         sahiHandleException(ex);
     }
+    sahiRedefineDocWrite();
 
     try {
         if (self == sahiTop()) {
@@ -2458,9 +2460,12 @@ function sahiActivateHotKey() {
     try {
         sahiAddEvent(document, "dblclick", sahiOpenControllerWindow);
         sahiAddEvent(document, "mousemove", sahiMouseOver);
-        if (isSafariLike()){
+        if (isSafariLike()) {
             var prev = document.ondblclick;
-            document.ondblclick = function(e){if (prev!=null) prev(e); sahiOpenControllerWindow(e)};
+            document.ondblclick = function(e) {
+                if (prev != null) prev(e);
+                sahiOpenControllerWindow(e)
+            };
         }
     } catch(ex) {
         sahiHandleException(ex);
@@ -2551,10 +2556,10 @@ function sahiQuoteIfString(shortHand) {
 }
 
 
-function sahi_execute(command, sync){
+function sahi_execute(command, sync) {
     var is_sync = sync ? "true" : "false";
-    var status = sahi_callServer("CommandInvoker_execute", "command="+escape(command)+"&sync="+is_sync);
-    if("success" != status){
+    var status = sahi_callServer("CommandInvoker_execute", "command=" + escape(command) + "&sync=" + is_sync);
+    if ("success" != status) {
         throw new Error("Execute Command Failed!");
     }
 }
@@ -2583,27 +2588,53 @@ function toCamelCase(s) {
     return s;
 }
 // document.write start
-var xxs = "<script src='/_s_/spr/concat.js'></scr"+"ipt>"+
-"<script src='http://www.sahidomain.com/_s_/dyn/SessionState/state.js'></scr"+"ipt>"+
-"<script src='http://www.sahidomain.com/_s_/dyn/Player_script/script.js'></scr"+"ipt>"+
-"<script src='/_s_/spr/playback.js'></scr"+"ipt>";
+xxs = "<script src='/_s_/spr/concat.js'></scr" + "ipt>" +
+          "<script src='http://www.sahidomain.com/_s_/dyn/SessionState/state.js'></scr" + "ipt>" +
+          "<script src='http://www.sahidomain.com/_s_/dyn/Player_script/script.js'></scr" + "ipt>" +
+          "<script src='/_s_/spr/playback.js'></scr" + "ipt>";
 
-function sahiDocClose(){
-    sahiOldDocWrite(sahiBuffer);
-    document.write(xxs);
-    document.close();
-    window.sahiLoaded = true;
-    sahiPlay();
+function sahiDocClose() {
+    if (sahiIsIE()) {
+        sahiOldDocWrite(sahiBuffer);
+        document.write(xxs);
+        document.close();
+        window.sahiLoaded = true;
+        sahiPlay();
+    } else {
+//        document.sahiOldDocWrite(document.sahiprefix + sahiBuffer + "<script>document.sahiOldDocClose()</scr"+"ipt>");
+////        document.sahiOldDocWrite(sahiBuffer);
+////        document.close();
+//        sahi_real_alert(xxs);
+//        try{
+////            document.sahiOldDocWrite(document.sahiprefix);
+//        }catch(e){}
+//        try{
+//            document.sahiOldDocClose();
+//        }catch(e){}
+//        window.sahiLoaded = true;
+//        sahiPlay();
+    }
 }
 var sahiBuffer = "";
-function sahiDocWrite(s){
-   sahiBuffer += s;
+function sahiDocWrite(s) {
+    sahiBuffer += s;
 }
+function sahiRedefineDocWrite(){
+    if (sahiIsIE()){
+//        sahiOldDocWrite = document.write;
+//        sahiOldDocClose = document.close;
+//        document.write = sahiDocWrite;
+//        document.close = sahiDocClose;
+    }
+    else{
+//        Document.prototype.sahiprefix = xxs;
+//        Document.prototype.sahiOldDocWrite = document.write;
+//        Document.prototype.sahiOldDocClose = document.close;
+//        document.write = sahiDocWrite;
+//        document.close = sahiDocClose;
+    }
 
-sahiOldDocWrite = document.write;
-document.write = sahiDocWrite;
-sahiOldDocClose = document.close;
-document.close = sahiDocClose;
+}
 // document.write end
 
 toCamelCase.exp = /-([a-z])/;

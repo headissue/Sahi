@@ -1,0 +1,6 @@
+_debug(new Date());
+function waitsometime(){
+_wait(60000);
+}
+waitsometime();
+_debug(new Date());
