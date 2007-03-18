@@ -41,7 +41,7 @@ public class SahiTestSuite {
     private IssueReporter issueReporter;
     private String browserOption;
     private int availableThreads = 0;
-    private int lastFreedThread = -1;
+    private boolean[] freeThreads;
     private static HashMap suites = new HashMap();
 
     public SahiTestSuite(String suitePath, String base, String browser, String sessionId, String browseroption) {
@@ -87,7 +87,7 @@ public class SahiTestSuite {
         test.stop();
         finishedTests++;
         availableThreads++;
-        lastFreedThread = test.getThreadNo();
+        freeThreads[test.getThreadNo()] = true;
         try {
             Thread.sleep(Configuration.getTimeBetweenTestsInSuite());
         } catch (InterruptedException e) {
@@ -139,8 +139,9 @@ public class SahiTestSuite {
     private synchronized void executeSuite() {
         while (currentTestIndex < tests.size()) {
             for (; availableThreads > 0 && currentTestIndex < tests.size(); availableThreads--) {
-                int threadNo = lastFreedThread != -1 ? lastFreedThread : availableThreads;
-                this.executeTest(threadNo);
+                int freeThreadNo = getFreeThreadNo();
+                freeThreads[freeThreadNo] = false;
+                this.executeTest(freeThreadNo);
             }
             try {
                 this.wait();
@@ -148,6 +149,13 @@ public class SahiTestSuite {
                 e.printStackTrace();
             }
         }
+    }
+
+    private int getFreeThreadNo() {
+        for (int i = 0; i < freeThreads.length; i++) {
+            if (freeThreads[i]) return i;
+        }
+        return -1;
     }
 
     private void waitForSuiteCompletion() {
@@ -171,6 +179,10 @@ public class SahiTestSuite {
 
     public void setAvailableThreads(int availableThreads) {
         this.availableThreads = availableThreads;
+        freeThreads = new boolean[availableThreads];
+        for (int i = 0; i < freeThreads.length; i++) {
+            freeThreads[i] = true;
+        }
     }
 
     public void addReporter(SahiReporter reporter) {

@@ -121,7 +121,7 @@
               sahiport="9999"
               failureproperty="sahi.failed"
               haltonfailure="false"
-              browseroption="-profile ${basedir}/ffprofiles/sahi$threadNo"
+              browseroption="-profile ${basedir}/browser/ff/profiles/sahi$threadNo"
               threads="3"
                 />
         <!--<antcall target="failsahi"/>-->

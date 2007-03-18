@@ -84,7 +84,6 @@ public class TestLauncher {
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-        logger.fine("cmd=" + cmd);
         return cmd;
     }
 
@@ -99,7 +98,6 @@ public class TestLauncher {
     private Process openURL(String url) {
         String cmd = buildCommand(url);
         logger.fine("cmd=" + cmd);
-        System.out.println("cmd=" + cmd);
         Process process = null;
         try {
             process = Runtime.getRuntime().exec(cmd.replaceAll("%20", " "));

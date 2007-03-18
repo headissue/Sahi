@@ -45,8 +45,9 @@
         </copy>
     </target>
 
-    <target name="start" description="starts proxy">
+    <target name="start" description="starts proxy" depends="create_profiles">
         <java classname="net.sf.sahi.Proxy" fork="true" dir="bin">
+            <env key="MOZ_NO_REMOTE" value="1"/>
             <jvmarg
                 line="-Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5099"/>
             <classpath path="classes"/>
@@ -277,6 +278,21 @@
         <delete dir="D:/sahitest"/>
         <mkdir dir="D:/sahitest"/>
         <unzip src="deploy/sahi-src_${DSTAMP}.zip" dest="D:/sahitest"></unzip>
+    </target>
+
+    <target name="create_profiles">
+        <property name="template" value="${basedir}/browser/ff/profiles/template"/>
+        <property name="prefix" value="${basedir}/browser/ff/profiles/sahi"/>
+        <copy todir="${prefix}0"><fileset dir="${template}"/></copy>
+        <copy todir="${prefix}1"><fileset dir="${template}"/></copy>
+        <copy todir="${prefix}2"><fileset dir="${template}"/></copy>
+        <copy todir="${prefix}3"><fileset dir="${template}"/></copy>
+        <copy todir="${prefix}4"><fileset dir="${template}"/></copy>
+        <copy todir="${prefix}5"><fileset dir="${template}"/></copy>
+        <copy todir="${prefix}6"><fileset dir="${template}"/></copy>
+        <copy todir="${prefix}7"><fileset dir="${template}"/></copy>
+        <copy todir="${prefix}8"><fileset dir="${template}"/></copy>
+        <copy todir="${prefix}9"><fileset dir="${template}"/></copy>
     </target>
 
 </project>
