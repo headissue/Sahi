@@ -17,6 +17,7 @@
 package net.sf.sahi.config;
 
 import net.sf.sahi.util.Utils;
+import net.sf.sahi.util.FileUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -43,8 +44,20 @@ public class Configuration {
                     "../config/log.properties");
             createFolders(new File(getPlayBackLogsRoot()));
             createFolders(new File(getCertsPath()));
+            copyProfiles();
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    private static void copyProfiles() throws IOException {
+        File templateDir = new File(properties.getProperty("ff.profiles.template"));
+        File profileDir = new File(properties.getProperty("ff.profiles.dir"));
+        profileDir.mkdirs();
+        String prefix = properties.getProperty("ff.profiles.prefix");
+        int maxProfiles = Integer.parseInt(properties.getProperty("ff.profiles.max_number", "10"));
+        for (int i = 0; i < 10; i++) {
+            FileUtils.copyDir(templateDir, new File(Utils.concatPaths(profileDir.getCanonicalPath(), prefix + i)));
         }
     }
 

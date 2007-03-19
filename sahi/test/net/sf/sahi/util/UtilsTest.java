@@ -2,6 +2,11 @@ package net.sf.sahi.util;
 
 import junit.framework.TestCase;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+
 public class UtilsTest extends TestCase {
     public UtilsTest(String name) {
         super(name);
