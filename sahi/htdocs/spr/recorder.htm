@@ -36,6 +36,9 @@ limitations under the License.
     <script type="text/javascript" src="/_s_/spr/cookie.js">
     </script>
 
+    <script type="text/javascript" src="/_s_/spr/suggest.js">
+    </script>
+
     <style type="text/css">
         .hiTab {
             border-left: solid white 2px;
@@ -96,10 +99,17 @@ limitations under the License.
             font-size: 10px;
             font-weight: bolder;
         }
+        .suggestDD{
+            border:0px;
+                background-color:lightgray;
+            position:absolute;
+            display:none;
+        }
     </style>
 </head>
 
-<body onload="doOnRecLoad();resizeTA2(document.getElementById('ta'), 40, 350)" onbeforeunload="doOnRecUnLoad()" onresize="resizeTA2(document.getElementById('ta'), 40, 310)">
+<body onload="doOnRecLoad();resizeTA2(document.getElementById('taDebug'), 40, 450)" onbeforeunload="doOnRecUnLoad()"
+      onresize="resizeTA2(document.getElementById('taDebug'), 40, 450)">
 <div id="rec" class="recPane">
 <table bgcolor="">
     <tr>
@@ -115,11 +125,11 @@ limitations under the License.
             <table>
                 <tr>
                     <td>
-                        <form name="recordstartform" action="http://www.sahidomain.com/_s_/dyn/Recorder_start"
+                        <form name="recordstartform" action="/_s_/dyn/Recorder_start"
                               target="channel" onsubmit="return onRecordStartFormSubmit(this)">
                             <table>
                                 <tr>
-                                    <td>Script Directory: </td>
+                                    <td>Script Directory:</td>
                                     <td>
                                         <select name="dir" style="width:200px">
                                             <option value="../scripts">../scripts</option>
@@ -166,10 +176,22 @@ limitations under the License.
 
                     <tr>
                         <td>Accessor:</td>
-                        <td><input name="accessor" value="" size="45"></td>
+                        <td>
+                            <input id="suggestBox" name="accessor" value="" size="45" onkeyup="Suggest.suggests['1'].textboxEvent(event)" autocomplete="off">
+                            <select id="suggestDD" class="suggestDD" onclick="Suggest.suggests['1'].choose(event)" onkeydown="Suggest.suggests['1'].handleUpArrow(event)" onkeyup="Suggest.suggests['1'].selectEvent(event)"></select>
+                        </td>
                         <td><input type="button" class="button" value=" Click " onclick=
                                 "demoClick()"></td>
                     </tr>
+
+                    <script autocomplete="false">
+                        function listProperties(str){
+                            return sahiOpener().sahi_eval(addSahi(str))
+                        }
+                        var suggest = new Suggest(document.getElementById("suggestBox"), document.getElementById("suggestDD"), "1");
+                        suggest.getOptions = getAccessorProps;
+                        suggest.onchange = resetValue;
+                    </script>
 
                     <tr>
                         <td>Alternative:</td>
@@ -196,13 +218,23 @@ limitations under the License.
                     type="input" name="comment" value="" size=
                     "20"><br>
                 <hr>
-                Evaluate expression: <a href="javascript:showHistory()">History</a><br/>
+                APIs List: <input type="text" id="apiTextbox" onkeyup="Suggest.suggests['2'].textboxEvent(event)" autocomplete="off" size="55">
+                <select id="apiSelect" class="suggestDD" onkeydown="Suggest.suggests['2'].handleUpArrow(event)" onkeyup="Suggest.suggests['2'].selectEvent(event)"></select>
+
+                <script autocomplete="false">
+                    var suggest2 = new Suggest(document.getElementById("apiTextbox"), document.getElementById("apiSelect"), "2");
+                    suggest2.getOptions = getAPIs;
+                </script>
+                <br/>
+                <hr>
+                Evaluate expression: <a href="javascript:showHistory()">History</a>
+                <br/>
                 <input type="hidden" name="history">
-                <textarea name="debug" rows="10" cols="50" id="ta" style="white-space:normal"></textarea><br/>
+                <textarea name="debug" rows="8" cols="50" id="taDebug" style="white-space:normal"></textarea><br/>
                 <input type="button" onclick="evaluateExpr(true)" value="Test --&gt; ">
-                <input type="text" size="24" name="result" value="">
+                <input type="button" onclick="append()" value="Append to Script"><br/>
+                <textarea name="result" rows="3" cols="50" id="taResult" style="white-space:normal"></textarea>
                 &nbsp;&nbsp;&nbsp;&nbsp;
-                <input type="button" onclick="append()" value="Append to Script">
             </form>
         </td>
     </tr>

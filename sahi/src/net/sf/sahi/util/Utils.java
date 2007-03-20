@@ -21,8 +21,8 @@ import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.regex.Pattern;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * User: nraman Date: Jun 26, 2005 Time: 4:52:58 PM
@@ -244,6 +244,6 @@ public class Utils {
     }
 
     public static boolean isWindows() {
-        return System.getProperty("os.name").toLowerCase().startsWith("windows");        
+        return System.getProperty("os.name").toLowerCase().startsWith("windows");
     }
 }

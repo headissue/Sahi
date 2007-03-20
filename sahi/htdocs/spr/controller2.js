@@ -25,7 +25,8 @@ function sahiOpener() {
 }
 window.onerror = checkOpener;
 function trim(s) {
-    return s.replace(/[ \t]/, "", "g");
+    s = s.replace(/^[ \t]/, "", "g");
+    return s.replace(/[ \t]$/, "", "g");
 }
 
 function checkURL(url) {
@@ -402,6 +403,21 @@ function displayInfo(info, escapedAccessor, escapedValue) {
     }
 }
 
+function resetValue(){
+    var f = document.currentForm;
+    try{
+        f.elValue.value = getEvaluateExpressionResult(f.accessor.value);
+    }catch(e){}
+}
+
+function handleEnterKey(e, el){
+    if (!e) e = window.event;
+    if (e.keyCode && e.keyCode == 26){
+        resetValue();
+        return false;
+    }
+}
+
 function addWait() {
     try {
         sahiOpener().addWait(document.currentForm.waitTime.value);
@@ -416,13 +432,11 @@ function mark() {
     //   sahiSendToServer('/_s_/dyn/Recorder_record?event=mark&value='+escape(document.currentForm.comment.value));
 }
 
-function evaluateExpr(showErr) {
-    if (!showErr) showErr = false;
+function getEvaluateExpressionResult(str){
     sahiSetServerVar("sahiEvaluateExpr", "true");
     var res = "";
     try {
-        document.currentForm.history.value += "\n" + document.currentForm.debug.value;
-        res = sahiOpener().sahi_eval(addSahi(document.currentForm.debug.value));
+        res = sahiOpener().sahi_eval(addSahi(str));
     } catch(e) {
         if (e.exceptionType && e.exceptionType == "SahiAssertionException") {
             res = "[Assertion Failed]" + (e.messageText?e.messageText:"");
@@ -432,10 +446,17 @@ function evaluateExpr(showErr) {
         }
         sahiHandleException(e);
     }
+    sahiSetServerVar("sahiEvaluateExpr", "false");
+    return res;
+}
+
+function evaluateExpr(showErr) {
+    if (!showErr) showErr = false;
+    document.currentForm.history.value += "\n" + document.currentForm.debug.value;
+    var res = getEvaluateExpressionResult(document.currentForm.debug.value);
     if (showErr) {
         document.currentForm.result.value = "" + res;
     }
-    sahiSetServerVar("sahiEvaluateExpr", "false");
 }
 function demoClick() {
     setDebugValue("_click(" + document.currentForm.accessor.value + ");");
@@ -548,3 +569,75 @@ function showStack() {
     win.document.write(s);
     win.document.close();
 }
+
+function suggest(){
+    var selectBox = document.getElementById("suggestDD");
+    var accessor = document.currentForm.accessor.value;
+    if (accessor.indexOf('.') != -1){
+        var dot = accessor.lastIndexOf('.');
+        var elStr = accessor.substring(0, dot);
+        var prop = accessor.substring(dot + 1);
+        var el = sahiOpener().sahi_eval(addSahi(elStr));
+        selectBox.options.length = 0;
+        for (var i in el){
+            if (i.indexOf(prop) == 0)
+                selectBox.options[selectBox.options.length] = new Option(i, i);            
+        }
+    }
+}
+
+function appendToAccessor(){
+    var accessor = document.currentForm.accessor.value;
+    if (accessor.indexOf('.') != -1){
+        var dot = accessor.lastIndexOf('.');
+        var elStr = accessor.substring(0, dot);
+        var prop = accessor.substring(dot + 1);
+        document.currentForm.accessor.value = elStr + "." + document.getElementById("suggestDD").value;
+    }
+}
+
+
+// Suggest List start
+var stripSahi = function (s){
+	return s.replace(/sahi_/g, "_");
+}
+function getAccessorProps(str){
+    var elStr = "window";
+    var options = [];
+    var dot = -1;
+    if (str.indexOf('.') != -1){
+        dot = str.lastIndexOf('.');
+        elStr = str.substring(0, dot);
+    }
+	var prop = str.substring(dot + 1);
+	var el = null;
+	try{
+        el = sahiOpener().sahi_eval(addSahi(elStr));
+	}catch(e){}
+	for (var i in el){
+		i = stripSahi(i);
+		if (i.indexOf(prop) == 0 && i != prop)
+			options[options.length] = new Option(i, i);
+	}
+    return options;
+}
+
+function getAPIs(str){
+    var options = [];                                       
+    var el = null;
+    try{
+        el = sahiOpener().sahi_eval("window");
+    }catch(e){}
+    if (str == null || str == "") str = "_";
+    str = "sahi"+str;
+    for (var i in el){
+        if (i.indexOf(str) == 0 && i != str){
+            var fnStr = el[i].toString();
+            var val = fnStr.substring(fnStr.indexOf(" "), fnStr.indexOf("{"));
+            val = trim(stripSahi(val));
+            options[options.length] = new Option(val, val);
+        }
+    }
+    return options;
+}
+// Suggest List end
