@@ -41,7 +41,7 @@ public abstract class SahiScript {
     private static ArrayList actionKeywords;
     private static ArrayList normalKeywords;
     protected String script;
-    private static final String PREFIX = "sahiSchedule(\"";
+    private static final String PREFIX = "_sahi.schedule(\"";
     private static final String CONJUNCTION = "\", \"";
     private static final String SUFFIX = "\");";
     private String filePath;
@@ -73,9 +73,9 @@ public abstract class SahiScript {
 
     static String addJSEvalCode(String str) {
         StringBuffer sb = new StringBuffer();
-        sb.append("var _sahiExecSteps = \"");
+        sb.append("_sahi.execSteps = \"");
         sb.append(Utils.makeString(str));
-        sb.append("\";\neval(_sahiExecSteps);");
+        sb.append("\";\neval(_sahi.execSteps);");
         return sb.toString();
     }
 
@@ -197,7 +197,7 @@ public abstract class SahiScript {
 
     public static String modifyFunctionNames(String unmodified) {
         unmodified = stripSahiFromFunctionNames(unmodified);
-        return unmodified.replaceAll(REG_EXP_FOR_ADDING, "sahi$1$2");
+        return unmodified.replaceAll(REG_EXP_FOR_ADDING, "_sahi.$1$2");
     }
 
     public static String stripSahiFromFunctionNames(String unmodified) {
@@ -213,7 +213,7 @@ public abstract class SahiScript {
         StringBuffer sb = new StringBuffer();
         int size = keywords.size();
         if (isForStripping)
-            sb.append("sahi");
+            sb.append("_sahi.");
         sb.append("_?(");
         for (int i = 0; i < size; i++) {
             String keyword = (String) keywords.get(i);
@@ -372,11 +372,11 @@ public abstract class SahiScript {
     }
 
     public String modifyWhile(String s, int lineNumber) {
-        return modifyIfWhile(s, lineNumber, "while (true) {\r\n", "if (\"true\" != sahi_getGlobal(\"condn\" + (_sahiCmds.length))) break;//");
+        return modifyIfWhile(s, lineNumber, "while (true) {\r\n", "if (\"true\" != _sahi._getGlobal(\"condn\" + (_sahi.cmds.length))) break;//");
     }
 
     public String modifyIf(String s, int lineNumber) {
-        return modifyIfWhile(s, lineNumber, "", "if (\"true\" == sahi_getGlobal(\"condn\" +(_sahiCmds.length))");
+        return modifyIfWhile(s, lineNumber, "", "if (\"true\" == _sahi._getGlobal(\"condn\" +(_sahi.cmds.length))");
     }
 
     public String modifyIfWhile(String s, int lineNumber, String prefix, String suffix) {
@@ -385,7 +385,7 @@ public abstract class SahiScript {
         if (condition == null) return modifyLine(s);
         StringBuffer sb = new StringBuffer();
         sb.append(prefix);
-        sb.append(scheduleLine("sahiSaveCondition("+condition+");", lineNumber));
+        sb.append(scheduleLine("_sahi.saveCondition("+condition+");", lineNumber));
         sb.append(suffix);
         int end = s.indexOf(condition) + condition.length() + 1;
         sb.append(s.substring(end));

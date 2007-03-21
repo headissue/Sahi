@@ -13,22 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-_sahisid = '$sessionId';
+_sahi.sid = '$sessionId';
 try{
-top._sahisid = '$sessionId';
-top._isSahiWinOpen = $isWindowOpen;
-top.sahiCreateCookie('sahisid', '$sessionId');
-top._isSahiPaused = $isSahiPaused;
-top._isSahiPlaying = $isSahiPlaying;
-top._isSahiRecording = $isSahiRecording;
-sahiHotKey = '$hotkey';
+top._sahi.sid = '$sessionId';
+top._sahi.isWinOpen = $isWindowOpen;
+top._sahi.createCookie('sahisid', '$sessionId');
+top._sahi._isPaused = $isSahiPaused;
+top.Sahi._isPlaying = $isSahiPlaying;
+top.Sahi._isRecording = $isSahiRecording;
+_sahi.hotKey = '$hotkey';
 
 INTERVAL = $interval;
 ONERROR_INTERVAL = $onErrorInterval;
 MAX_RETRIES = $maxRetries;
 SAHI_MAX_WAIT_FOR_LOAD = $maxWaitForLoad;
 
-sahiWaitForLoad = SAHI_MAX_WAIT_FOR_LOAD;
+_sahi.waitForLoad = SAHI_MAX_WAIT_FOR_LOAD;
 interval = INTERVAL;
 
 }catch(e){}

@@ -21,7 +21,7 @@ function checkOpener() {
     }
 }
 function sahiOpener() {
-    return top.opener.sahiTop();
+    return top.opener._sahi.top();
 }
 window.onerror = checkOpener;
 function trim(s) {
@@ -36,7 +36,7 @@ function checkURL(url) {
 }
 function play() {
     try {
-        sahiOpener().sahiPlayManual(parseInt(document.playform.step.value))
+        sahiOpener()._sahi.playManual(parseInt(document.playform.step.value))
     } catch (e) {
         displayLogs("Please open the Controller again. \n(Press ALT-DblClick on the main window.)");
     }
@@ -45,18 +45,18 @@ function play() {
 function stepWisePlay() {
     var i = parseInt(document.playform.step.value);
     if (i==0) i = i+1
-    sahiOpener().sahiSetCurrentIndex(i);
-    sahiOpener().sahiStepWisePlay();
-    sahiOpener().eval("sahiEx(true)");
+    sahiOpener()._sahi.setCurrentIndex(i);
+    sahiOpener()._sahi.stepWisePlay();
+    sahiOpener().eval("_sahi.ex(true)");
 }
 function a() {
     sahiSetServerVar("sahi_play", 1);
 }
 function pause() {
-    sahiOpener().pause();
+    sahiOpener()._sahi.pause();
 }
 function stopPlay() {
-    sahiOpener().sahiStopPlaying();
+    sahiOpener()._sahi.stopPlaying();
 }
 function resetStep() {
     document.playform.step.value = 0;
@@ -68,7 +68,7 @@ function clearLogs() {
 }
 function stopRec() {
     try {
-        sahiOpener().sahiStopRecording();
+        sahiOpener()._sahi.stopRecording();
     } catch(ex) {
         alert(ex);
     }
@@ -76,7 +76,7 @@ function stopRec() {
 function doOnTabsUnLoad(s) {
     sahiSendToServer('/_s_/dyn/ControllerUI_closed');
     try {
-        sahiOpener()._isSahiWinOpen = false;
+        sahiOpener()._sahi.isWinOpen = false;
     } catch(ex) {
         sahiHandleException(ex);
     }
@@ -235,7 +235,7 @@ function doOnTabsLoad() {
         var hilightedTab = sahiGetServerVar("controller_tab")
         if (hilightedTab == null || hilightedTab == "") hilightedTab = "recorder";
         showTab(hilightedTab);
-        sahiOpener()._isSahiWinOpen = true;
+        sahiOpener()._sahi.isWinOpen = true;
     } catch(ex) {
         sahiHandleException(ex);
     }
@@ -312,7 +312,7 @@ function onRecordStartFormSubmit(f) {
         return false;
     }
     if (sahiOpener()) {
-        sahiOpener().sahiStartRecording(recordAll);
+        sahiOpener()._sahi.startRecording(recordAll);
         //    	window.setTimeout("top.location.reload();", 1000);
     }
     return true;
@@ -382,7 +382,7 @@ function showTab(s) {
     top.main.location.href = s + '.htm'
 }
 function listProperties(){
-    document.currentForm.debug.value = sahiOpener().sahi_eval("sahiList("+addSahi(document.currentForm.accessor.value)+")");
+    document.currentForm.debug.value = sahiOpener()._sahi._eval("sahiList("+addSahi(document.currentForm.accessor.value)+")");
 }
 function initPlaybackTab() {
     var dir = getPbVar("controller_pb_dir");
@@ -420,7 +420,7 @@ function handleEnterKey(e, el){
 
 function addWait() {
     try {
-        sahiOpener().addWait(document.currentForm.waitTime.value);
+        sahiOpener()._sahi.addWait(document.currentForm.waitTime.value);
     } catch(ex) {
         alert("Please enter the number of milliseconds to wait (should be >= 200)");
         document.currentForm.waitTime.value = 3000;
@@ -428,7 +428,7 @@ function addWait() {
 }
 
 function mark() {
-    sahiOpener().mark(document.currentForm.comment.value);
+    sahiOpener()._sahi.mark(document.currentForm.comment.value);
     //   sahiSendToServer('/_s_/dyn/Recorder_record?event=mark&value='+escape(document.currentForm.comment.value));
 }
 
@@ -436,7 +436,7 @@ function getEvaluateExpressionResult(str){
     sahiSetServerVar("sahiEvaluateExpr", "true");
     var res = "";
     try {
-        res = sahiOpener().sahi_eval(addSahi(str));
+        res = sahiOpener()._sahi._eval(addSahi(str));
     } catch(e) {
         if (e.exceptionType && e.exceptionType == "SahiAssertionException") {
             res = "[Assertion Failed]" + (e.messageText?e.messageText:"");
@@ -484,7 +484,7 @@ function append() {
 }
 
 function addSahi(s) {
-    return sahiSendToServer("/_s_/dyn/ControllerUI_getSahiScript?code=" + sahiOpener().sahiEscape(s));
+    return sahiSendToServer("/_s_/dyn/ControllerUI_getSahiScript?code=" + sahiOpener()._sahi.escape(s));
 }
 
 function blankIfNull(s) {
@@ -559,7 +559,7 @@ function resizeTA2(el, minusRight, minusTop) {
 function showStack() {
     var curIx = document.playform.step.value;
     var win = window.open("blank.htm");
-    var cmds = sahiOpener()._sahiCmds;
+    var cmds = sahiOpener()._sahi.cmds;
     var s = "";
     for (var i = 0; i < cmds.length; i++) {
         var sel = (i == curIx - 1);
@@ -577,7 +577,7 @@ function suggest(){
         var dot = accessor.lastIndexOf('.');
         var elStr = accessor.substring(0, dot);
         var prop = accessor.substring(dot + 1);
-        var el = sahiOpener().sahi_eval(addSahi(elStr));
+        var el = sahiOpener()._sahi._eval(addSahi(elStr));
         selectBox.options.length = 0;
         for (var i in el){
             if (i.indexOf(prop) == 0)
@@ -612,7 +612,7 @@ function getAccessorProps(str){
 	var prop = str.substring(dot + 1);
 	var el = null;
 	try{
-        el = sahiOpener().sahi_eval(addSahi(elStr));
+        el = sahiOpener()._sahi._eval(addSahi(elStr));
 	}catch(e){}
 	for (var i in el){
 		i = stripSahi(i);
@@ -626,11 +626,15 @@ function getAPIs(str){
     var options = [];                                       
     var el = null;
     try{
-        el = sahiOpener().sahi_eval("window");
+        el = sahiOpener()._sahi._eval("window");
     }catch(e){}
     if (str == null || str == "") str = "_";
     str = "sahi"+str;
+
+    var d = "";
+
     for (var i in el){
+        d += i + "<br>";
         if (i.indexOf(str) == 0 && i != str){
             var fnStr = el[i].toString();
             var val = fnStr.substring(fnStr.indexOf(" "), fnStr.indexOf("{"));
@@ -638,6 +642,7 @@ function getAPIs(str){
             options[options.length] = new Option(val, val);
         }
     }
+    alert(d);
     return options;
 }
 // Suggest List end

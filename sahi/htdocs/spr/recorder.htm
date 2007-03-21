@@ -186,7 +186,7 @@ limitations under the License.
 
                     <script autocomplete="false">
                         function listProperties(str){
-                            return sahiOpener().sahi_eval(addSahi(str))
+                            return sahiOpener()._sahi._eval(addSahi(str))
                         }
                         var suggest = new Suggest(document.getElementById("suggestBox"), document.getElementById("suggestDD"), "1");
                         suggest.getOptions = getAccessorProps;
@@ -210,7 +210,7 @@ limitations under the License.
 
                 <br>
                 <input type="button" class="button" value="Assert" onclick=
-                        "top.opener.doAssert()"> <input type="button" class="button" value=
+                        "top.opener._sahi.doAssert()"> <input type="button" class="button" value=
                     "Wait" onclick="addWait()"> <input type="input" name="waitTime"
                                                        value="3000" size="6"> ms <input type="button"
                                                                                         value="Comment"
@@ -233,7 +233,7 @@ limitations under the License.
                 <textarea name="debug" rows="8" cols="50" id="taDebug" style="white-space:normal"></textarea><br/>
                 <input type="button" onclick="evaluateExpr(true)" value="Test --&gt; ">
                 <input type="button" onclick="append()" value="Append to Script"><br/>
-                <textarea name="result" rows="3" cols="50" id="taResult" style="white-space:normal"></textarea>
+                <textarea name="result" rows="3" cols="50" id="taResult" style="white-space:normal;background-color:silver" readonly="true"></textarea>
                 &nbsp;&nbsp;&nbsp;&nbsp;
             </form>
         </td>

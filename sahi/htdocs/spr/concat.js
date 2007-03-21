@@ -13,38 +13,53 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+String.prototype.isBlankOrNull = function (s) {
+    return (s == "" || s == null);
+}
+
+var Sahi = function(){
+    this.cmds = new Array();
+    this.cmdDebugInfo = new Array();
+
+    this.cmdsLocal = new Array();
+    this.cmdDebugInfoLocal = new Array();
+
+    this.waitInterval = -1;
+}
+var _sahi = new Sahi();
 var tried = false;
-var _sahi_top = top;
-function sahiTop() {
+var _sahi_top = window.top;
+Sahi.prototype.top = function () {
     return _sahi_top;
     //Hack for frames named "top"
 }
-function getMostAccessibleAncestor() {
-    var t = window;
-    while (t != _sahi_top) {
-        p = t.parent;
-        if (p == t) return t;
-        try {
-            var test = p.document.domain;
-        } catch(e) {
-            // diff domain
-            return t;
-        }
-        t = p;
-    }
-    return t;
-}
+//getMostAccessibleAncestor = function () {
+//    var t = window;
+//    while (t != _sahi_top) {
+//        p = t.parent;
+//        if (p == t) return t;
+//        try {
+//            var test = p.document.domain;
+//        } catch(e) {
+//            // diff domain
+//            return t;
+//        }
+//        t = p;
+//    }
+//    return t;
+//}
 
-function sahiGetAccessor(src) {
-    var fr = sahiGetFrame(sahiTop(), "top");
-    var a = sahiGetPartialAccessor(src);
+Sahi.prototype.getAccessor = function (src) {
+    var fr = this.getFrame(this.top(), "top");
+    var a = this.getPartialAccessor(src);
     if (a == "" || a == null) return a;
     var elStr = fr + ".document." + a;
-    var v = sahiGetArrayElement(elStr, src);
+    var v = this.getArrayElement(elStr, src);
     return v;
 }
 
-function sahiGetKnownTags(src) {
+Sahi.prototype.getKnownTags = function (src) {
     var el = src;
     while (true) {
         if (!el) return src;
@@ -58,40 +73,40 @@ function sahiGetKnownTags(src) {
     }
 }
 
-function sahiById(src) {
+Sahi.prototype.byId = function (src) {
     var s = src.id;
-    if (isBlankOrNull(s)) return "";
+    if (String.isBlankOrNull(s)) return "";
     return "getElementById('" + s + "')";
 }
-function sahiGetPartialAccessor(src) {
+Sahi.prototype.getPartialAccessor = function (src) {
     if (src == null || src.tagName == null) return null;
     var tag = src.tagName.toLowerCase();
-    var a = sahiById(src);
+    var a = this.byId(src);
     if (a != "" && eval("document." + a) == src) {
         return a;
     }
 
     if (tag == "img") {
-        return sahiGetImg(src);
+        return this.getImg(src);
     }
     else if (tag == "a") {
-        return sahiGetLink(src);
+        return this.getLink(src);
     }
     else if (tag == "form") {
-        return sahiGetForm(src);
+        return this.getForm(src);
     }
     else if (tag == "button" || tag == "input" || tag == "textarea" || tag == "select") {
-        return sahiGetFormElement(src);
+        return this.getFormElement(src);
     }
     else if (tag == "td") {
-        return sahiGetTableCell(src);
+        return this.getTableCell(src);
     }
     else if (tag == "table") {
-        return sahiGetTable(src);
+        return this.getTable(src);
     }
     return null;
 }
-function sahiGetLink(src) {
+Sahi.prototype.getLink = function (src) {
     var lnx = document.links;
     for (var j = 0; j < lnx.length; j++) {
         if (lnx[j] == src) {
@@ -100,7 +115,7 @@ function sahiGetLink(src) {
     }
     return  null;
 }
-function sahiGetImg(src) {
+Sahi.prototype.getImg = function (src) {
     var lnx = document.images;
     for (var j = 0; j < lnx.length; j++) {
         if (lnx[j] == src) {
@@ -110,8 +125,8 @@ function sahiGetImg(src) {
     return  null;
 }
 
-function sahiGetForm(src) {
-    if (!isBlankOrNull(src.name) && nameNotAnInputElement(src)) {
+Sahi.prototype.getForm = function (src) {
+    if (!String.isBlankOrNull(src.name) && this.nameNotAnInputElement(src)) {
         return "forms['" + src.name + "']";
     }
     var fs = document.forms;
@@ -122,13 +137,13 @@ function sahiGetForm(src) {
     }
     return null;
 }
-function nameNotAnInputElement(src) {
+Sahi.prototype.nameNotAnInputElement = function (src) {
     return (typeof src.name != "object");
 }
-function sahiGetFormElement(src) {
-    return sahiGetByTagName(src);
+Sahi.prototype.getFormElement = function (src) {
+    return this.getByTagName(src);
     /*
-    if (!isBlankOrNull(src.name)){
+    if (!String.isBlankOrNull(src.name)){
         n = 'elements["'+src.name+'"]';
     }else {
         var els = src.form.elements;
@@ -138,62 +153,61 @@ function sahiGetFormElement(src) {
             }
         }
     }
-    var f = sahiGetForm(src.form);
+    var f = this.getForm(src.form);
     return (n == "") ? f : f+"."+n;
     */
 }
 
-function sahiGetByTagName(src) {
-    tagName = src.tagName.toLowerCase();
+Sahi.prototype.getByTagName = function (src) {
+    var tagName = src.tagName.toLowerCase();
     var els = document.getElementsByTagName(tagName);
-    return "getElementsByTagName('" + tagName + "')[" + sahiFindInArray(els, src) + "]";
+    return "getElementsByTagName('" + tagName + "')[" + this.findInArray(els, src) + "]";
 }
 
-function sahiGetTable(src) {
+Sahi.prototype.getTable = function (src) {
     var tables = document.getElementsByTagName("table");
-    if (src.id && src.id != null && src == document.getElementById(table.id)) {
-        return "getElementById('" + table.id + "')";
+    if (src.id && src.id != null && src == document.getElementById(src.id)) {
+        return "getElementById('" + src.id + "')";
     }
-    return "getElementsByTagName('table')[" + sahiFindInArray(tables, src) + "]";
-
+    return "getElementsByTagName('table')[" + this.findInArray(tables, src) + "]";
 }
 
-function sahiGetTableCell(src) {
+Sahi.prototype.getTableCell = function (src) {
     var tables = document.getElementsByTagName("table");
-    var row = sahiGetRow(src);
+    var row = this.getRow(src);
     if (row.id && row.id != null && row == document.getElementById(row.id)) {
         return "getElementById('" + row.id + "').cells[" + src.cellIndex + "]";
     }
-    var table = sahiGetTableEl(src);
+    var table = this.getTableEl(src);
     if (table.id && table.id != null && table == document.getElementById(table.id)) {
-        return "getElementById('" + table.id + "').rows[" + sahiGetRow(src).rowIndex + "].cells[" + src.cellIndex + "]";
+        return "getElementById('" + table.id + "').rows[" + this.getRow(src).rowIndex + "].cells[" + src.cellIndex + "]";
     }
-    return "getElementsByTagName('table')[" + sahiFindInArray(tables, sahiGetTableEl(src)) + "].rows[" + sahiGetRow(src).rowIndex + "].cells[" + src.cellIndex + "]";
+    return "getElementsByTagName('table')[" + this.findInArray(tables, this.getTableEl(src)) + "].rows[" + this.getRow(src).rowIndex + "].cells[" + src.cellIndex + "]";
 }
 
-function sahiGetRow(src) {
-    return sahiGetParentNode(src, "tr");
+Sahi.prototype.getRow = function (src) {
+    return this.getParentNode(src, "tr");
 }
 
-function sahiGetTableEl(src) {
-    return sahiGetParentNode(src, "table");
+Sahi.prototype.getTableEl = function (src) {
+    return this.getParentNode(src, "table");
 }
 
-function sahiGetArrayElement(s, src) {
+Sahi.prototype.getArrayElement = function (s, src) {
     var tag = src.tagName.toLowerCase();
     if (tag == "input" || tag == "textarea" || tag.indexOf("select") != -1) {
         var el2 = eval(s);
         if (el2 == src) return s;
         var ix = -1;
         if (el2 && el2.length) {
-            ix = sahiFindInArray(el2, src);
+            ix = this.findInArray(el2, src);
             return s + "[" + ix + "]";
         }
     }
     return s;
 }
 
-function sahiGetEncapsulatingLink(src) {
+Sahi.prototype.getEncapsulatingLink = function (src) {
     var el = src;
     while (el && el.tagName && el.tagName.toLowerCase() != "a") {
         el = el.parentNode;
@@ -201,13 +215,13 @@ function sahiGetEncapsulatingLink(src) {
     return el;
 }
 
-function sahiGetFrame(win, s) {
+Sahi.prototype.getFrame = function (win, s) {
     if (win == self) return s;
     var frs = win.frames;
     for (var j = 0; j < frs.length; j++) {
         var n = frs[j].name;
-        if (isBlankOrNull(n)) n = "frames[" + j + "]";
-        var sub = sahiGetFrame(frs[j], n);
+        if (String.isBlankOrNull(n)) n = "frames[" + j + "]";
+        var sub = this.getFrame(frs[j], n);
         if (sub != null) {
             return s + "." + sub;
         }
@@ -215,113 +229,108 @@ function sahiGetFrame(win, s) {
     return null;
 }
 
-function isBlankOrNull(s) {
-    return (s == "" || s == null);
-}
-function linkClick(e) {
+var linkClick = function (e) {
     var performDefault = true;
     if (this.prevClick) {
         performDefault = this.prevClick.apply(this, arguments);
     }
     if (performDefault != false) {
-        sahiNavigateLink(this);
+        _sahi.navigateLink(this);
     }
 }
 
-function sahi_dragDrop(draggable, droppable) {
-    sahiCheckNull(draggable);
-    sahiCheckNull(droppable);
-    sahiSimulateMouseEvent(draggable, "mousedown");
-    draggable.style.left = findPosX(droppable) - findPosX(draggable) + 2;
-    draggable.style.top = findPosY(droppable) - findPosY(draggable) + 2;
+Sahi.prototype._dragDrop = function (draggable, droppable) {
+    this.checkNull(draggable);
+    this.checkNull(droppable);
+    this.simulateMouseEvent(draggable, "mousedown");
+    draggable.style.left = this.findPosX(droppable) - this.findPosX(draggable) + 2;
+    draggable.style.top = this.findPosY(droppable) - this.findPosY(draggable) + 2;
     draggable.style.zIndex = 1;
-    sahiSimulateMouseEvent(droppable, "mousedown");
+    this.simulateMouseEvent(droppable, "mousedown");
 
-    sahiSimulateMouseEvent(draggable, "mousemove");
-    sahiSimulateMouseEvent(droppable, "mousemove");
+    this.simulateMouseEvent(draggable, "mousemove");
+    this.simulateMouseEvent(droppable, "mousemove");
 
-    sahiSimulateMouseEvent(draggable, "mouseup");
-    sahiSimulateMouseEvent(droppable, "mouseup");
+    this.simulateMouseEvent(draggable, "mouseup");
+    this.simulateMouseEvent(droppable, "mouseup");
 }
-function sahiCheckNull(el) {
+Sahi.prototype.checkNull = function (el) {
     if (el == null) {
         el.forceNullPointerException();
     }
 }
-function sahi_click(el) {
-    sahiCheckNull(el);
-    sahiSimulateClick(el, false, false);
+Sahi.prototype._click = function (el) {
+    this.checkNull(el);
+    this.simulateClick(el, false, false);
 }
 
-function sahi_doubleClick(el) {
-    sahiCheckNull(el);
-    sahiSimulateClick(el, false, true);
+Sahi.prototype._doubleClick = function (el) {
+    this.checkNull(el);
+    this.simulateClick(el, false, true);
 }
 
-function sahi_rightClick(el) {
-    sahiCheckNull(el);
-    sahiSimulateClick(el, true, false);
+Sahi.prototype._rightClick = function (el) {
+    this.checkNull(el);
+    this.simulateClick(el, true, false);
 }
 
-function sahi_mouseOver(el) {
-    sahiCheckNull(el);
-    sahiSimulateMouseEvent(el, "mousemove");
-    sahiSimulateMouseEvent(el, "mouseover");
+Sahi.prototype._mouseOver = function (el) {
+    this.checkNull(el);
+    this.simulateMouseEvent(el, "mousemove");
+    this.simulateMouseEvent(el, "mouseover");
 }
 
-function sahi_keyPress(el, c, combo) {
+Sahi.prototype._keyPress = function (el, c, combo) {
     var prev = el.value ? el.value : null;
-    sahiSimulateMouseEvent(el, "focus");
-    sahiSimulateKeyEvent(c, el, "keydown", combo);
-    sahiSimulateKeyEvent(c, el, "keypress", combo);
+    this.simulateMouseEvent(el, "focus");
+    this.simulateKeyEvent(c, el, "keydown", combo);
+    this.simulateKeyEvent(c, el, "keypress", combo);
     if (prev && (prev + c != el.value)) {
         //                    if (!el.maxLength || el.value.length < el.maxLength)
         el.value += c;
     }
-    sahiSimulateKeyEvent(c, el, "keyup", combo);
+    this.simulateKeyEvent(c, el, "keyup", combo);
 }
 
-function sahi_focus(el) {
-    sahiSimulateMouseEvent(el, "focus");
+Sahi.prototype._focus = function (el) {
+    this.simulateMouseEvent(el, "focus");
 }
 
-function sahi_keyDown(el, c, combo) {
-    sahiSimulateKeyEvent(c, el, "keydown", combo);
+Sahi.prototype._keyDown = function (el, c, combo) {
+    this.simulateKeyEvent(c, el, "keydown", combo);
 }
 
-function sahi_keyUp(el, c, combo) {
-    sahiSimulateKeyEvent(c, el, "keyup", combo);
+Sahi.prototype._keyUp = function (el, c, combo) {
+    this.simulateKeyEvent(c, el, "keyup", combo);
 }
 
 
-function sahi_readFile(fileName) {
+Sahi.prototype._readFile = function (fileName) {
     var qs = "fileName=" + fileName;
-    return sahi_callServer("net.sf.sahi.plugin.FileReader_contents", qs)
+    return this._callServer("net.sf.this..plugin.FileReader_contents", qs)
 }
-function sahi_getDB(driver, jdbcurl, username, password) {
-    return new sahiDB(driver, jdbcurl, username, password);
+Sahi.prototype._getDB = function (driver, jdbcurl, username, password) {
+    return new this.dB(driver, jdbcurl, username, password);
 }
-function sahiDB(driver, jdbcurl, username, password) {
+Sahi.prototype.dB = function (driver, jdbcurl, username, password) {
     this.driver = driver;
     this.jdbcurl = jdbcurl;
     this.username = username;
     this.password = password;
-    function select1(sql) {
+    this.select = function (sql) {
         var qs = "driver=" + this.driver + "&jdbcurl=" + this.jdbcurl + "&username=" + this.username + "&password=" + this.password + "&sql=" + sql;
-        return eval(sahi_callServer("net.sf.sahi.plugin.DBClient_select", qs));
+        return eval(this._callServer("net.sf.this..plugin.DBClient_select", qs));
     }
-    this.select = select1;
-    function update1(sql) {
+    this.update = function (sql) {
         var qs = "driver=" + this.driver + "&jdbcurl=" + this.jdbcurl + "&username=" + this.username + "&password=" + this.password + "&sql=" + sql;
-        return eval(sahi_callServer("net.sf.sahi.plugin.DBClient_execute", qs));
+        return eval(this._callServer("net.sf.this..plugin.DBClient_execute", qs));
     }
-    this.update = update1;
 }
 
-function sahiSimulateClick(el, isRight, isDouble) {
+Sahi.prototype.simulateClick = function (el, isRight, isDouble) {
     var n = el;
 
-    if (sahiIsIE() && !isRight) {
+    if (this.isIE() && !isRight) {
         if (el && ((el.type && (el.type == "submit" || el.type == "button" || el.type == "reset" || el.type == "image" || el.type == "checkbox" || el.type == "radio")))) {
             return el.click();
         }
@@ -335,24 +344,24 @@ function sahiSimulateClick(el, isRight, isDouble) {
         n = n.parentNode;
     }
 
-    sahiSimulateMouseEvent(el, "mousemove");
-    sahiSimulateMouseEvent(el, "focus");
-    sahiSimulateMouseEvent(el, "mouseover");
-    sahiSimulateMouseEvent(el, "mousedown", isRight);
-    sahiSimulateMouseEvent(el, "mouseup", isRight);
+    this.simulateMouseEvent(el, "mousemove");
+    this.simulateMouseEvent(el, "focus");
+    this.simulateMouseEvent(el, "mouseover");
+    this.simulateMouseEvent(el, "mousedown", isRight);
+    this.simulateMouseEvent(el, "mouseup", isRight);
     if (isRight) {
-        sahiSimulateMouseEvent(el, "contextmenu", isRight, isDouble);
+        this.simulateMouseEvent(el, "contextmenu", isRight, isDouble);
     } else {
         try {
-            sahiSimulateMouseEvent(el, "click", isRight, isDouble);
-            if (isSafariLike()) {
+            this.simulateMouseEvent(el, "click", isRight, isDouble);
+            if (this.isSafariLike()) {
                 try {
                     if (el.onclick) el.onclick();
                     if (el.parentNode.tagName == "A") {
                         el.parentNode.onclick();
                     }
                 } catch(ex) {
-                    sahi_debug(ex.message);
+                    this._debug(ex.message);
                 }
                 if (el.form) {
                     if (typeof el.checked == "boolean") {
@@ -361,7 +370,7 @@ function sahiSimulateClick(el, isRight, isDouble) {
                         var goOn = el.form.onsubmit();
                         if (goOn != false) {
                             el.form.submit();
-                            sahiOnBeforeUnLoad();
+                            this.onBeforeUnLoad();
                         }
                     }
                 }
@@ -369,7 +378,7 @@ function sahiSimulateClick(el, isRight, isDouble) {
         } catch(e) {
         }
     }
-    sahiSimulateMouseEvent(el, "blur");
+    this.simulateMouseEvent(el, "blur");
     n = el;
     while (n != null) {
         if (n.tagName && n.tagName == "A") {
@@ -378,14 +387,14 @@ function sahiSimulateClick(el, isRight, isDouble) {
         n = n.parentNode;
     }
 }
-function isSafariLike() {
+Sahi.prototype.isSafariLike = function () {
     return /Konqueror|Safari|KHTML/.test(navigator.userAgent);
 }
-function sahiSimulateMouseEvent(el, type, isRight, isDouble) {
-    var x = findPosX(el);
-    var y = findPosY(el);
+Sahi.prototype.simulateMouseEvent = function (el, type, isRight, isDouble) {
+    var x = this.findPosX(el);
+    var y = this.findPosY(el);
     if (document.createEvent) {
-        if (isSafariLike()) {
+        if (this.isSafariLike()) {
             var evt = el.ownerDocument.createEvent('HTMLEvents')
             evt.initEvent(type, true, true);
             el.dispatchEvent(evt);
@@ -420,30 +429,30 @@ function sahiSimulateMouseEvent(el, type, isRight, isDouble) {
         evt.cancelBubble = true;
     }
 }
-var sahiPointTimer;
-function sahi_highlight(el) {
-    var d = sahiFindElementById(sahiTop(), "sahi_pointer_div");
+Sahi.pointTimer = 0;
+Sahi.prototype._highlight = function (el) {
+    var d = this.findElementById(this.top(), "sahi_pointer_div");
     d.innerHTML = "<span style='color:red;font-family:verdana;font-size:20px;'>&raquo;</span>";
     d.style.position = "absolute";
-    var x = findPosX(el) - 10;
-    var y = findPosY(el) - 8;
+    var x = this.findPosX(el) - 10;
+    var y = this.findPosY(el) - 8;
     d.style.left = x + "px";
     d.style.top = y + "px";
     d.style.zIndex = 10;
     d.style.display = "block";
-    sahiPointTimer = window.setTimeout("sahiFade()", 2000);
+    Sahi.pointTimer = window.setTimeout("this.fade()", 2000);
     window.scrollTo(x, y);
 }
-function sahiFade() {
-    window.clearTimeout(sahiPointTimer);
-    var d = sahiFindElementById(sahiTop(), "sahi_pointer_div");
+Sahi.prototype.fade = function () {
+    window.clearTimeout(Sahi.pointTimer);
+    var d = this.findElementById(this.top(), "sahi_pointer_div");
     d.style.position = "absolute";
     d.style.left = "0px";
     d.style.top = "0px";
     d.style.zIndex = 0;
     d.style.display = "none";
 }
-function findPosX(obj)
+Sahi.prototype.findPosX = function (obj)
 {
     var curleft = 0;
     if (obj.offsetParent)
@@ -459,7 +468,7 @@ function findPosX(obj)
     return curleft;
 }
 
-function findPosY(obj)
+Sahi.prototype.findPosY = function (obj)
 {
     var curtop = 0;
     if (obj.offsetParent)
@@ -475,11 +484,11 @@ function findPosY(obj)
     return curtop;
 }
 
-function sahiNavigateLink(ln) {
+Sahi.prototype.navigateLink = function (ln) {
     if (!ln) return;
     var win;
-    if (isSafariLike()) {
-        win = sahiGetWin(ln);
+    if (this.isSafariLike()) {
+        win = this.getWin(ln);
     } else {
         win = ln.ownerDocument.defaultView;
         //FF
@@ -491,37 +500,34 @@ function sahiNavigateLink(ln) {
     } else {
         var target = ln.target;
         if (ln.target == null || ln.target == "") target = "_self";
-        if (isSafariLike()) {
+        if (this.isSafariLike()) {
             var targetWin = win.open("", target);
             try {
-                targetWin.sahiOnBeforeUnLoad();
+                targetWin._sahi.onBeforeUnLoad();
             } catch(e) {
-                sahi_debug(e.message);
+                this._debug(e.message);
             }
             targetWin.location.href = ln.href;
         }
         else win.open(ln.href, target);
     }
 }
-function appendSahiSid(url) {
-    return url + (url.indexOf("?") == -1 ? "?" : "&") + "sahisid=" + sahiReadCookie("sahisid");
-}
 
-function sahiGetClickEv(el) {
+Sahi.prototype.getClickEv = function (el) {
     var e = new Object();
-    if (sahiIsIE()) el.srcElement = e;
+    if (this.isIE()) el.srcElement = e;
     else e.target = el;
-    e.stopPropagation = noop;
+    e.stopPropagation = this.noop;
     return e;
 }
 
-function noop() {
+Sahi.prototype.noop = function () {
 }
 
 // api for link click end
 
 // api for set value start
-function sahi_setValue(el, val) {
+Sahi.prototype._setValue = function (el, val) {
     val = "" + val;
     var prevVal = el.value;
     if (!document.createEvent) el.value = val;
@@ -532,8 +538,8 @@ function sahi_setValue(el, val) {
         if (typeof val == "string") {
             for (var i = 0; i < val.length; i++) {
                 var c = val.charAt(i);
-                sahiSimulateKeyEvent(c, el, "keydown");
-                sahiSimulateKeyEvent(c, el, "keypress");
+                this.simulateKeyEvent(c, el, "keydown");
+                this.simulateKeyEvent(c, el, "keypress");
                 if (i == 0 && el.value != c) {
                     append = true;
                 }
@@ -541,23 +547,23 @@ function sahi_setValue(el, val) {
                     //                    if (!el.maxLength || el.value.length < el.maxLength)
                     el.value += c;
                 }
-                sahiSimulateKeyEvent(c, el, "keyup");
+                this.simulateKeyEvent(c, el, "keyup");
             }
         }
     }
     if (prevVal != val && el.onchange) {
-        sahiSimulateEvent(el, "change");
+        this.simulateEvent(el, "change");
     }
 }
 
-function sahi_setFile(el, v, url) {
-    //    sahi_debug(el.ownerDocument.defaultView.location.href)
-    if (!url) url = (isBlankOrNull(el.form.action) || (typeof el.form.action != "string")) ? el.ownerDocument.defaultView.location.href : el.form.action;
+Sahi.prototype._setFile = function (el, v, url) {
+    //    this._debug(el.ownerDocument.defaultView.location.href)
+    if (!url) url = (String.isBlankOrNull(el.form.action) || (typeof el.form.action != "string")) ? el.ownerDocument.defaultView.location.href : el.form.action;
     if (url && (q = url.indexOf("?")) != -1) url = url.substring(0, q)
-    sahi_callServer("FileUpload_setFile", "n=" + el.name + "&v=" + v + "&action=" + escape(url));
+    this._callServer("FileUpload_setFile", "n=" + el.name + "&v=" + v + "&action=" + escape(url));
 }
 
-function sahiSimulateEvent(target, evType) {
+Sahi.prototype.simulateEvent = function (target, evType) {
     if (document.createEvent) {
         var evt = new Object();
         evt.type = evType;
@@ -577,12 +583,12 @@ function sahiSimulateEvent(target, evType) {
     }
 }
 
-function sahiSimulateKeyEvent(c, target, evType, combo) {
-    var x = findPosX(target);
-    var y = findPosY(target);
+Sahi.prototype.simulateKeyEvent = function (c, target, evType, combo) {
+    var x = this.findPosX(target);
+    var y = this.findPosY(target);
 
     if (document.createEvent) {
-        if (isSafariLike()) {
+        if (this.isSafariLike()) {
             var event = target.ownerDocument.createEvent('HTMLEvents')
             event.initEvent(evType, false, false);
             target.dispatchEvent(event);
@@ -622,117 +628,117 @@ function sahiSimulateKeyEvent(c, target, evType, combo) {
     }
 }
 
-function sahi_setSelected(el, val, isMultiple) {
+Sahi.prototype._setSelected = function (el, val, isMultiple) {
     var l = el.options.length;
     var done = false;
     for (var i = 0; i < l; i++) {
         if (!isMultiple) el.options[i].selected = false;
-        if (sahiAreEqual(el.options[i], "text", val)) {
+        if (this.areEqual(el.options[i], "text", val)) {
             el.options[i].selected = true;
             done = true;
-            sahiSimulateEvent(el, "change");
+            this.simulateEvent(el, "change");
         }
     }
     if (!done) throw new Error();
 }
 // api for set value end
-function sahi_check(el, val) {
+Sahi.prototype._check = function (el, val) {
     el.checked = val;
     if (el.onclick) el.onclick();
 }
 
-function sahi_button(n) {
-    var el = sahiFindElement(n, "button", "input");
-    if (el == null) el = sahiFindElement(n, "button", "button");
+Sahi.prototype._button = function (n) {
+    var el = this.findElement(n, "button", "input");
+    if (el == null) el = this.findElement(n, "button", "button");
     return el;
 }
-function sahi_reset(n) {
-    var el = sahiFindElement(n, "reset", "input");
-    if (el == null) el = sahiFindElement(n, "reset", "button");
+Sahi.prototype._reset = function (n) {
+    var el = this.findElement(n, "reset", "input");
+    if (el == null) el = this.findElement(n, "reset", "button");
     return el;
 }
-function sahi_submit(n) {
-    var el = sahiFindElement(n, "submit", "input");
-    if (el == null) el = sahiFindElement(n, "submit", "button");
+Sahi.prototype._submit = function (n) {
+    var el = this.findElement(n, "submit", "input");
+    if (el == null) el = this.findElement(n, "submit", "button");
     return el;
 }
-_sahiWaitCondition = null;
-function sahi_wait(i, condn) {
+Sahi._waitCondition = null;
+Sahi.prototype._wait = function (i, condn) {
     if (condn) {
-        _sahiWaitCondition = condn;
-        setTimeout("_sahiWaitCondition=null", i);
+        Sahi._waitCondition = condn;
+        setTimeout("Sahi._waitCondition=null", i);
     }
-    else _sahi_wait = i;
+    else this.waitInterval = i;
 }
 
-function sahi_file(n) {
-    return sahiFindElement(n, "file", "input");
+Sahi.prototype._file = function (n) {
+    return this.findElement(n, "file", "input");
 }
-function sahi_textbox(n) {
-    return sahiFindElement(n, "text", "input");
+Sahi.prototype._textbox = function (n) {
+    return this.findElement(n, "text", "input");
 }
-function sahi_password(n) {
-    return sahiFindElement(n, "password", "input");
+Sahi.prototype._password = function (n) {
+    return this.findElement(n, "password", "input");
 }
-function sahi_checkbox(n) {
-    return sahiFindElement(n, "checkbox", "input");
+Sahi.prototype._checkbox = function (n) {
+    return this.findElement(n, "checkbox", "input");
 }
-function sahi_textarea(n) {
-    return sahiFindElement(n, "textarea", "textarea");
+Sahi.prototype._textarea = function (n) {
+    return this.findElement(n, "textarea", "textarea");
 }
-function sahi_accessor(n) {
+Sahi.prototype._accessor = function (n) {
     return eval(n);
 }
-function sahi_byId(id) {
-    return sahiFindElementById(sahiTop(), id);
+Sahi.prototype._byId = function (id) {
+    return this.findElementById(this.top(), id);
 }
-function sahi_select(n) {
-    var el = sahiFindElement(n, "select", "select");
-    //    if (!el) el = sahiFindElement(n, "select-multiple", "select");
+Sahi.prototype._select = function (n) {
+    var el = this.findElement(n, "select", "select");
+    //    if (!el) el = this.findElement(n, "select-multiple", "select");
     return el;
 }
-function sahi_radio(n) {
-    return sahiFindElement(n, "radio", "input");
+Sahi.prototype._radio = function (n) {
+    return this.findElement(n, "radio", "input");
 }
-function sahi_div(id) {
-    return sahiDivSpanByText(sahiTop(), id, "div");
+Sahi.prototype._div = function (id) {
+    return this.divSpanByText(this.top(), id, "div");
 }
-function sahi_span(id) {
-    return sahiDivSpanByText(sahiTop(), id, "span");
+Sahi.prototype._span = function (id) {
+    return this.divSpanByText(this.top(), id, "span");
 }
-function sahi_spandiv(id) {
-    var el = sahiDivSpanByText(sahiTop(), id, "span");
-    if (el == null) el = sahiDivSpanByText(sahiTop(), id, "div");
+Sahi.prototype._spandiv = function (id) {
+    var el = this.divSpanByText(this.top(), id, "span");
+    if (el == null) el = this.divSpanByText(this.top(), id, "div");
     return el;
 }
-function sahiDivSpanByText(win, id, tagName) {
+Sahi.prototype.divSpanByText = function (win, id, tagName) {
     var res = null;
     var els = win.document.getElementsByTagName(tagName);
     for (var i = 0; i < els.length; i++) {
-        if (sahi_getText(els[i]) == id) {
+        if (this._getText(els[i]) == id) {
             return els[i];
         }
     }
     var frs = win.frames;
     if (frs) {
         for (var j = 0; j < frs.length; j++) {
-            res = sahiDivSpanByText(frs[j], id, tagName);
+            res = this.divSpanByText(frs[j], id, tagName);
             if (res) return res;
         }
     }
     return res;
 }
-function sahi_image(n) {
-    return sahiFindImage(n, sahiTop(), "img");
+Sahi.prototype._image = function (n) {
+    return this.findImage(n, this.top(), "img");
 }
-function sahi_imageSubmitButton(n) {
-    return sahiFindElement(n, "image", "input");
+Sahi.prototype._imageSubmitButton = function (n) {
+    return this.findElement(n, "image", "input");
 }
-function sahi_link(n) {
-    return sahiFindLink(n, sahiTop());
+Sahi.prototype._link = function (n) {
+    return this.findLink(n, this.top());
 }
-function sahi_simulateEvent(el, ev) {
-    if (sahiIsIE()) {
+Sahi.prototype._simulateEvent = function (el, ev) {
+    if (this.isIE()) {
         var newFn = (eval("el.on" + ev.type)).toString();
         newFn = newFn.replace("anonymous()", "s_anon(s_ev)", "g").replace("event", "s_ev", "g");
         eval(newFn);
@@ -741,50 +747,50 @@ function sahi_simulateEvent(el, ev) {
         eval("el.on" + ev.type + "(ev);");
     }
 }
-function sahi_setGlobal(name, value) {
-    //    sahi_debug("*** name="+name+" value="+value);
-    sahiSetServerVar(name, value);
+Sahi.prototype._setGlobal = function (name, value) {
+    //    this._debug("*** name="+name+" value="+value);
+    this.setServerVar(name, value);
 }
-function sahi_getGlobal(name) {
-    var value = sahiGetServerVar(name);
-    //    sahi_debug("GET name="+name+" value="+value);
+Sahi.prototype._getGlobal = function (name) {
+    var value = this.getServerVar(name);
+    //    this._debug("GET name="+name+" value="+value);
     return value;
 }
-var sahiLocals = new Array();
-function sahi_set(name, value) {
-    sahiLocals[name] = value;
+Sahi.locals = new Array();
+Sahi.prototype._set = function (name, value) {
+    this.locals[name] = value;
 }
-function sahi_get(name) {
-    var value = sahiLocals[name];
+Sahi.prototype._get = function (name) {
+    var value = this.locals[name];
     return value;
 }
-function sahi_assertNotNull(n, s) {
+Sahi.prototype._assertNotNull = function (n, s) {
     if (n == null) throw new SahiAssertionException(1, s);
     return true;
 }
-function sahi_assertNull(n, s) {
+Sahi.prototype._assertNull = function (n, s) {
     if (n != null) throw new SahiAssertionException(2, s);
     return true;
 }
-function sahi_assertTrue(n, s) {
+Sahi.prototype._assertTrue = function (n, s) {
     if (n != true) throw new SahiAssertionException(5, s);
     return true;
 }
-function sahi_assertNotTrue(n, s) {
+Sahi.prototype._assertNotTrue = function (n, s) {
     if (n) throw new SahiAssertionException(6, s);
     return true;
 }
-sahi_assertFalse = sahi_assertNotTrue;
-function sahi_assertEqual(expected, actual, s) {
-    if (sahiTrim(expected) != sahiTrim(actual)) throw new SahiAssertionException(3, (s ? s : "") + "\nExpected:[" + expected + "]\nActual:[" + actual + "]");
+Sahi.prototype._assertFalse = Sahi.prototype._assertNotTrue;
+Sahi.prototype._assertEqual = function (expected, actual, s) {
+    if (this.trim(expected) != this.trim(actual)) throw new SahiAssertionException(3, (s ? s : "") + "\nExpected:[" + expected + "]\nActual:[" + actual + "]");
     return true;
 }
-function sahi_assertNotEqual(expected, actual, s) {
-    if (sahiTrim(expected) == sahiTrim(actual)) throw new SahiAssertionException(4, s);
+Sahi.prototype._assertNotEqual = function (expected, actual, s) {
+    if (this.trim(expected) == this.trim(actual)) throw new SahiAssertionException(4, s);
     return true;
 }
-function sahi_assertContainsText(expected, el, s) {
-    var text = sahi_getText(el);
+Sahi.prototype._assertContainsText = function (expected, el, s) {
+    var text = this._getText(el);
     var present = false;
     if (expected instanceof RegExp)
         present = expected != null && text.match(expected) != null
@@ -792,233 +798,233 @@ function sahi_assertContainsText(expected, el, s) {
     if (!present) throw new SahiAssertionException(3, (s ? s : "") + "\nExpected:[" + expected + "] to be part of [" + text + "]");
     return true;
 }
-function sahi_getSelectedText(el) {
+Sahi.prototype._getSelectedText = function (el) {
     var opts = el.options;
     for (var i = 0; i < opts.length; i++) {
         if (el.value == opts[i].value) return opts[i].text;
     }
     return null;
 }
-function sahi_option(el, text) {
+Sahi.prototype._option = function (el, text) {
     var opts = el.options;
     for (var i = 0; i < opts.length; i++) {
         if (text == opts[i].text) return opts[i];
     }
     return null;
 }
-function sahi_getText(el) {
-    sahiCheckNull(el);
-    return sahiTrim(sahiIsIE() || isSafariLike() ? el.innerText : el.textContent);
+Sahi.prototype._getText = function (el) {
+    this.checkNull(el);
+    return this.trim(this.isIE() || this.isSafariLike() ? el.innerText : el.textContent);
 }
-sahi_getCellText = sahi_getText;
-function sahiGetRowIndexWith(txt, tableEl) {
-    var r = sahiGetRowWith(txt, tableEl);
+Sahi.prototype._getCellText = Sahi.prototype._getText;
+Sahi.prototype.getRowIndexWith = function (txt, tableEl) {
+    var r = this.getRowWith(txt, tableEl);
     return (r == null) ? -1 : r.rowIndex;
 }
-function sahiGetRowWith(txt, tableEl) {
+Sahi.prototype.getRowWith = function (txt, tableEl) {
     for (var i = 0; i < tableEl.rows.length; i++) {
         var r = tableEl.rows[i];
         for (var j = 0; j < r.cells.length; j++) {
-            if (sahi_getText(r.cells[j]).indexOf(txt) != -1) {
+            if (this._getText(r.cells[j]).indexOf(txt) != -1) {
                 return r;
             }
         }
     }
     return null;
 }
-function sahiGetColIndexWith(txt, tableEl) {
+Sahi.prototype.getColIndexWith = function (txt, tableEl) {
     for (var i = 0; i < tableEl.rows.length; i++) {
         var r = tableEl.rows[i];
         for (var j = 0; j < r.cells.length; j++) {
-            if (sahi_getText(r.cells[j]).indexOf(txt) != -1) {
+            if (this._getText(r.cells[j]).indexOf(txt) != -1) {
                 return j;
             }
         }
     }
     return -1;
 }
-function sahi_alert(s) {
+Sahi.prototype._alert = function (s) {
     return sahi_real_alert(s);
 }
-var _sahiLastAlert = "";
-function sahiAlertMock(s) {
-    if (isSahiPlaying()) {
-        sahiTop()._sahiLastAlert = s;
+Sahi._lastAlert = "";
+Sahi.alertMock = function (s) {
+    if (_sahi.isPlaying()) {
+        _sahi.top().Sahi._lastAlert = s;
     } else {
         return sahi_real_alert(s);
     }
 }
-function sahi_lastAlert() {
-    var v = sahiTop()._sahiLastAlert;
-    //    _sahiLastAlert = null;
+Sahi.prototype._lastAlert = function () {
+    var v = this.top().Sahi._lastAlert;
+    //    Sahi._lastAlert = null;
     return v;
 }
-function sahi_eval(s) {
+Sahi.prototype._eval = function (s) {
     return eval(s);
 }
-function sahi_call(s) {
+Sahi.prototype._call = function (s) {
     return s;
 }
-function sahi_random(n) {
+Sahi.prototype._random = function (n) {
     return Math.floor(Math.random() * (n + 1));
 }
-function sahi_savedRandom(id, min, max) {
+Sahi.prototype._savedRandom = function (id, min, max) {
     if (min == null) min = 0;
     if (max == null) max = 10000;
-    var r = sahi_getGlobal("srandom" + id);
+    var r = this._getGlobal("srandom" + id);
     if (r == null || r == "") {
-        r = min + sahi_random(max - min);
-        sahi_setGlobal("srandom" + id, r);
+        r = min + this._random(max - min);
+        this._setGlobal("srandom" + id, r);
     }
     return r;
 }
-function sahi_resetSavedRandom(id) {
-    sahi_setGlobal("srandom" + id, "");
+Sahi.prototype._resetSavedRandom = function (id) {
+    this._setGlobal("srandom" + id, "");
 }
-_sahiConfirmReturnValue = new Array();
-_sahiLastConfirmText = null;
+Sahi._confirmReturnValue = new Array();
+Sahi._lastConfirmText = null;
 
-function sahi_expectConfirm(text, value) {
-    _sahiConfirmReturnValue[text] = value;
+Sahi.prototype._expectConfirm = function (text, value) {
+    Sahi._confirmReturnValue[text] = value;
 }
-function sahConfirmMock(s) {
-    if (isSahiPlaying()) {
-        var retVal = _sahiConfirmReturnValue[s];
+Sahi.confirmMock = function (s) {
+    if (this.isPlaying()) {
+        var retVal = Sahi._confirmReturnValue[s];
         if (retVal == null) retVal = true;
-        _sahiLastConfirmText = s;
-        _sahiConfirmReturnValue[s] = null;
+        Sahi._lastConfirmText = s;
+        Sahi._confirmReturnValue[s] = null;
         return retVal;
     } else {
         var retVal = sahi_real_confirm(s);
-        sahiSendToServer('/_s_/dyn/Recorder_record?cmd=' + sahiEscape("_expectConfirm(\"" + s + "\", " + retVal + ")"));
+        _sahi.sendToServer('/_s_/dyn/Recorder_record?cmd=' + _sahi.escape("_expectConfirm(\"" + s + "\", " + retVal + ")"));
         return retVal;
     }
 }
-function sahi_lastConfirm() {
-    var v = _sahiLastConfirmText;
-    //    _sahiLastConfirmText = null;
+Sahi.prototype._lastConfirm = function () {
+    var v = Sahi._lastConfirmText;
+    //    Sahi._lastConfirmText = null;
     return v;
 }
-var _sahiPromptReturnValue = new Array();
-var _sahiLastPromptText = null;
-function sahPromptMock(s) {
-    if (isSahiPlaying()) {
-        var retVal = _sahiPromptReturnValue[s];
+Sahi._promptReturnValue = new Array();
+Sahi._lastPromptText = null;
+Sahi.promptMock = function (s) {
+    if (this.isPlaying()) {
+        var retVal = Sahi._promptReturnValue[s];
         if (retVal == null) retVal = "";
-        _sahiLastPromptText = s;
-        _sahiPromptReturnValue[s] = null;
+        Sahi._lastPromptText = s;
+        Sahi._promptReturnValue[s] = null;
         return retVal;
     } else {
         var retVal = sahi_real_prompt(s);
-        sahiSendToServer('/_s_/dyn/Recorder_record?cmd=' + sahiEscape("_expectPrompt(\"" + s + "\", \"" + retVal + "\")"));
+        _sahi.sendToServer('/_s_/dyn/Recorder_record?cmd=' + _sahi.escape("_expectPrompt(\"" + s + "\", \"" + retVal + "\")"));
         return retVal;
     }
 }
-function sahi_lastPrompt() {
-    var v = _sahiLastPromptText;
-    //    _sahiLastPromptText = null;
+Sahi.prototype._lastPrompt = function () {
+    var v = Sahi._lastPromptText;
+    //    Sahi._lastPromptText = null;
     return v;
 }
 
-function sahi_expectPrompt(text, value) {
-    _sahiPromptReturnValue[text] = value;
+Sahi.prototype._expectPrompt = function (text, value) {
+    Sahi._promptReturnValue[text] = value;
 }
-function sahi_prompt(s) {
+Sahi.prototype._prompt = function (s) {
     return sahi_real_prompt(s);
 }
 
-function sahi_cell(id, row, col) {
+Sahi.prototype._cell = function (id, row, col) {
     if (id == null) return null;
     if (row == null && col == null) {
-        return sahiFindCell(id);
+        return this.findCell(id);
     }
     var rowIx = row;
     var colIx = col;
     if (typeof row == "string") {
-        rowIx = sahiGetRowIndexWith(row, id);
+        rowIx = this.getRowIndexWith(row, id);
         if (rowIx == -1) return null;
     }
     if (typeof col == "string") {
-        colIx = sahiGetColIndexWith(col, id);
+        colIx = this.getColIndexWith(col, id);
         if (colIx == -1) return null;
     }
     if (id.rows[rowIx] == null) return null;
     return id.rows[rowIx].cells[colIx];
 }
-function sahi_table(n) {
-    return sahiFindTable(n);
+Sahi.prototype._table = function (n) {
+    return this.findTable(n);
 }
-function sahi_row(tableEl, rowIx) {
+Sahi.prototype._row = function (tableEl, rowIx) {
     if (typeof rowIx == "string") {
-        return sahiGetRowWith(rowIx, tableEl);
+        return this.getRowWith(rowIx, tableEl);
     }
     if (typeof rowIx == "number") {
         return tableEl.rows[rowIx];
     }
     return null;
 }
-function sahi_containsHTML(el, htm) {
+Sahi.prototype._containsHTML = function (el, htm) {
     return el && el.innerHTML && el.innerHTML.indexOf(htm) != -1;
 }
-function sahi_containsText(el, txt) {
-    return el && sahiGetText(el).indexOf(txt) != -1;
+Sahi.prototype._containsText = function (el, txt) {
+    return el && this.getText(el).indexOf(txt) != -1;
 }
-function sahi_popup(n) {
-    if (sahiTop().name == n || sahiTop().document.title == n) {
-        return sahiTop();
+Sahi.prototype._popup = function (n) {
+    if (this.top().name == n || this.top().document.title == n) {
+        return this.top();
     }
     throw new SahiNotMyWindowException();
 }
-function sahi_log(s, type) {
-    sahiLogPlayBack(s, type);
+Sahi.prototype._log = function (s, type) {
+    this.logPlayBack(s, type);
 }
-function sahi_navigateTo(url, force) {
-    if (force || sahiTop().location.href != url)
-        sahiTop().location.href = url;
+Sahi.prototype._navigateTo = function (url, force) {
+    if (force || this.top().location.href != url)
+        this.top().location.href = url;
 }
-function sahi_callServer(cmd, qs) {
-    return sahiSendToServer("/_s_/dyn/" + cmd + (qs == null ? "" : ("?" + qs)));
+Sahi.prototype._callServer = function (cmd, qs) {
+    return this.sendToServer("/_s_/dyn/" + cmd + (qs == null ? "" : ("?" + qs)));
 }
-function sahi_removeMock(pattern) {
-    return sahi_callServer("MockResponder_remove", "pattern=" + pattern);
+Sahi.prototype._removeMock = function (pattern) {
+    return this._callServer("MockResponder_remove", "pattern=" + pattern);
 }
-function sahi_addMock(pattern, clazz) {
+Sahi.prototype._addMock = function (pattern, clazz) {
     if (clazz == null) clazz = "MockResponder_simple";
-    return sahi_callServer("MockResponder_add", "pattern=" + pattern + "&class=" + clazz);
+    return this._callServer("MockResponder_add", "pattern=" + pattern + "&class=" + clazz);
 }
-function sahi_mockImage(pattern, clazz) {
+Sahi.prototype._mockImage = function (pattern, clazz) {
     if (clazz == null) clazz = "MockResponder_mockImage";
-    return sahi_callServer("MockResponder_add", "pattern=" + pattern + "&class=" + clazz);
+    return this._callServer("MockResponder_add", "pattern=" + pattern + "&class=" + clazz);
 }
-function sahi_debug(s) {
-    return sahi_callServer("Debug_toOut", "msg=" + sahiEscape(s));
+Sahi.prototype._debug = function (s) {
+    return this._callServer("Debug_toOut", "msg=" + this.escape(s));
 }
-function sahi_debugToErr(s) {
-    return sahi_callServer("Debug_toErr", "msg=" + sahiEscape(s));
+Sahi.prototype._debugToErr = function (s) {
+    return this._callServer("Debug_toErr", "msg=" + this.escape(s));
 }
-function sahi_debugToFile(s, file) {
+Sahi.prototype._debugToFile = function (s, file) {
     if (file == null) return;
-    return sahi_callServer("Debug_toFile", "msg=" + sahiEscape(s) + "&file=" + sahiEscape(file));
+    return this._callServer("Debug_toFile", "msg=" + this.escape(s) + "&file=" + this.escape(file));
 }
-function sahi_enableKeepAlive() {
-    sahiSendToServer('/_s_/dyn/Configuration_enableKeepAlive');
+Sahi.prototype._enableKeepAlive = function () {
+    this.sendToServer('/_s_/dyn/Configuration_enableKeepAlive');
 }
-function sahi_disableKeepAlive() {
-    sahiSendToServer('/_s_/dyn/Configuration_disableKeepAlive');
+Sahi.prototype._disableKeepAlive = function () {
+    this.sendToServer('/_s_/dyn/Configuration_disableKeepAlive');
 }
 
 // finds document of any element
-function sahiGetWin(el) {
+Sahi.prototype.getWin = function (el) {
     if (el == null) return self;
-    if (el.nodeName.indexOf("document") != -1) return sahiGetFrame1(sahiTop(), el);
-    return sahiGetWin(el.parentNode);
+    if (el.nodeName.indexOf("document") != -1) return this.getFrame1(this.top(), el);
+    return this.getWin(el.parentNode);
 }
 // finds window to which a document belongs
-function sahiGetFrame1(win, doc) {
+Sahi.prototype.getFrame1 = function (win, doc) {
     if (win.document == doc) return win;
     var frs = win.frames;
     for (var j = 0; j < frs.length; j++) {
-        var sub = sahiGetFrame1(frs[j], doc);
+        var sub = this.getFrame1(frs[j], doc);
         if (sub != null) {
             return sub;
         }
@@ -1026,7 +1032,7 @@ function sahiGetFrame1(win, doc) {
     return null;
 }
 
-function sahiSimulateChange(el) {
+Sahi.prototype.simulateChange = function (el) {
     if (document.all) {
         if (el.onchange) el.onchange();
         if (el.onblur) el.onblur();
@@ -1035,14 +1041,12 @@ function sahiSimulateChange(el) {
         if (el.onchange) el.onchange();
     }
 }
-function point(el) {
-}
-function sahiAreEqual(el, param, value) {
+Sahi.prototype.areEqual = function (el, param, value) {
     if (param == "linkText") {
-        var str = sahiGetText(el);
+        var str = this.getText(el);
         if (value instanceof RegExp)
             return str != null && str.match(value) != null
-        return (sahiTrim(str) == sahiTrim(value));
+        return (this.trim(str) == this.trim(value));
     }
     else {
         if (value instanceof RegExp)
@@ -1050,37 +1054,37 @@ function sahiAreEqual(el, param, value) {
         return (el[param] == value);
     }
 }
-function sahiFindLink(id) {
-    var res = getBlankResult();
-    var retVal = sahiFindImageHelper(id, sahiTop(), res, "linkText", false).element;
+Sahi.prototype.findLink = function (id) {
+    var res = this.getBlankResult();
+    var retVal = this.findImageHelper(id, this.top(), res, "linkText", false).element;
     if (retVal != null) return retVal;
 
-    res = getBlankResult();
-    return sahiFindImageHelper(id, sahiTop(), res, "id", false).element;
+    res = this.getBlankResult();
+    return this.findImageHelper(id, this.top(), res, "id", false).element;
 }
-function sahiFindImage(id) {
-    var res = getBlankResult();
-    var retVal = sahiFindImageHelper(id, sahiTop(), res, "title", true).element;
+Sahi.prototype.findImage = function (id) {
+    var res = this.getBlankResult();
+    var retVal = this.findImageHelper(id, this.top(), res, "title", true).element;
     if (retVal != null) return retVal;
-    retVal = sahiFindImageHelper(id, sahiTop(), res, "alt", true).element;
+    retVal = this.findImageHelper(id, this.top(), res, "alt", true).element;
     if (retVal != null) return retVal;
 
-    res = getBlankResult();
-    return sahiFindImageHelper(id, sahiTop(), res, "id", true).element;
+    res = this.getBlankResult();
+    return this.findImageHelper(id, this.top(), res, "id", true).element;
 }
-function sahiFindImageHelper(id, win, res, param, isImg) {
+Sahi.prototype.findImageHelper = function (id, win, res, param, isImg) {
     var imgs = isImg ? win.document.images : win.document.links;
 
     if ((typeof id) == "number") {
         res.cnt = 0;
-        res = sahiFindImageByIx(id, sahiTop(), res, isImg);
+        res = this.findImageByIx(id, this.top(), res, isImg);
         return res;
     } else {
-        var o = getArrayNameAndIndex(id);
+        var o = this.getArrayNameAndIndex(id);
         var imgIx = o.index;
         var fetch = o.name;
         for (var i = 0; i < imgs.length; i++) {
-            if (sahiAreEqual(imgs[i], param, fetch)) {
+            if (this.areEqual(imgs[i], param, fetch)) {
                 res.cnt++;
                 if (res.cnt == imgIx || imgIx == -1) {
                     res.element = imgs[i];
@@ -1094,14 +1098,14 @@ function sahiFindImageHelper(id, win, res, param, isImg) {
     var frs = win.frames;
     if (frs) {
         for (var j = 0; j < frs.length; j++) {
-            res = sahiFindImageHelper(id, frs[j], res, param, isImg);
+            res = this.findImageHelper(id, frs[j], res, param, isImg);
             if (res && res.found) return res;
         }
     }
     return res;
 }
 
-function sahiFindImageByIx(ix, win, res, isImg) {
+Sahi.prototype.findImageByIx = function (ix, win, res, isImg) {
     var imgs = isImg ? win.document.images : win.document.links;
     if (imgs[ix - res.cnt]) {
         res.element = imgs[ix - res.cnt];
@@ -1112,47 +1116,47 @@ function sahiFindImageByIx(ix, win, res, isImg) {
     var frs = win.frames;
     if (frs) {
         for (var j = 0; j < frs.length; j++) {
-            res = sahiFindImageByIx(ix, frs[j], res, isImg);
+            res = this.findImageByIx(ix, frs[j], res, isImg);
             if (res && res.found) return res;
         }
     }
     return res;
 }
 
-function sahiFindLinkIx(id, toMatch) {
-    var res = getBlankResult();
+Sahi.prototype.findLinkIx = function (id, toMatch) {
+    var res = this.getBlankResult();
     if (id == null || id == "") {
-        retVal = sahiFindImageIxHelper(id, toMatch, sahiTop(), res, null, false).cnt;
+        var retVal = this.findImageIxHelper(id, toMatch, this.top(), res, null, false).cnt;
         if (retVal != -1) return retVal;
     }
 
-    res = getBlankResult();
-    var retVal = sahiFindImageIxHelper(id, toMatch, sahiTop(), res, "linkText", false).cnt;
+    res = this.getBlankResult();
+    var retVal = this.findImageIxHelper(id, toMatch, this.top(), res, "linkText", false).cnt;
     if (retVal != -1) return retVal;
 
-    res = getBlankResult();
-    return sahiFindImageIxHelper(id, toMatch, sahiTop(), res, "id", false).cnt;
+    res = this.getBlankResult();
+    return this.findImageIxHelper(id, toMatch, this.top(), res, "id", false).cnt;
 }
-function sahiFindImageIx(id, toMatch) {
-    var res = getBlankResult();
+Sahi.prototype.findImageIx = function (id, toMatch) {
+    var res = this.getBlankResult();
     if (id == null || id == "") {
-        retVal = sahiFindImageIxHelper(id, toMatch, sahiTop(), res, null, true).cnt;
+        var retVal = this.findImageIxHelper(id, toMatch, this.top(), res, null, true).cnt;
         if (retVal != -1) return retVal;
     }
 
-    res = getBlankResult();
-    var retVal = sahiFindImageIxHelper(id, toMatch, sahiTop(), res, "alt", true).cnt;
+    res = this.getBlankResult();
+    var retVal = this.findImageIxHelper(id, toMatch, this.top(), res, "alt", true).cnt;
     if (retVal != -1) return retVal;
 
-    res = getBlankResult();
-    return sahiFindImageIxHelper(id, toMatch, sahiTop(), res, "id", true).cnt;
+    res = this.getBlankResult();
+    return this.findImageIxHelper(id, toMatch, this.top(), res, "id", true).cnt;
 }
-function sahiFindImageIxHelper(id, toMatch, win, res, param, isImg) {
+Sahi.prototype.findImageIxHelper = function (id, toMatch, win, res, param, isImg) {
     if (res && res.found) return res;
 
     var imgs = isImg ? win.document.images : win.document.links;
     for (var i = 0; i < imgs.length; i++) {
-        if (param == null || sahiAreEqual(imgs[i], param, id)) {
+        if (param == null || this.areEqual(imgs[i], param, id)) {
             res.cnt++;
             if (imgs[i] == toMatch) {
                 res.found = true;
@@ -1163,13 +1167,13 @@ function sahiFindImageIxHelper(id, toMatch, win, res, param, isImg) {
     var frs = win.frames;
     if (frs) {
         for (var j = 0; j < frs.length; j++) {
-            res = sahiFindImageIxHelper(id, toMatch, frs[j], res, param, isImg);
+            res = this.findImageIxHelper(id, toMatch, frs[j], res, param, isImg);
             if (res && res.found) return res;
         }
     }
     return res;
 }
-function sahiFindElementById(win, id) {
+Sahi.prototype.findElementById = function (win, id) {
     var res = null;
     if (win.document.getElementById(id) != null) {
         return win.document.getElementById(id);
@@ -1177,39 +1181,39 @@ function sahiFindElementById(win, id) {
     var frs = win.frames;
     if (frs) {
         for (var j = 0; j < frs.length; j++) {
-            res = sahiFindElementById(frs[j], id);
+            res = this.findElementById(frs[j], id);
             if (res) return res;
         }
     }
     return res;
 }
-function sahiFindElement(id, type, tagName) {
-    var res = getBlankResult();
+Sahi.prototype.findElement = function (id, type, tagName) {
+    var res = this.getBlankResult();
     var retVal = null;
     if (type == "button" || type == "reset" || type == "submit") {
-        retVal = sahiFindElementHelper(id, sahiTop(), type, res, "value", tagName).element;
+        retVal = this.findElementHelper(id, this.top(), type, res, "value", tagName).element;
         if (retVal != null) return retVal;
     }
     else if (type == "image") {
-        retVal = sahiFindElementHelper(id, sahiTop(), type, res, "title", tagName).element;
+        retVal = this.findElementHelper(id, this.top(), type, res, "title", tagName).element;
         if (retVal != null) return retVal;
-        retVal = sahiFindElementHelper(id, sahiTop(), type, res, "alt", tagName).element;
+        retVal = this.findElementHelper(id, this.top(), type, res, "alt", tagName).element;
         if (retVal != null) return retVal;
     }
 
-    res = getBlankResult();
-    retVal = sahiFindElementHelper(id, sahiTop(), type, res, "name", tagName).element;
+    res = this.getBlankResult();
+    retVal = this.findElementHelper(id, this.top(), type, res, "name", tagName).element;
     if (retVal != null) return retVal;
 
-    res = getBlankResult();
-    return sahiFindElementHelper(id, sahiTop(), type, res, "id", tagName).element;
+    res = this.getBlankResult();
+    return this.findElementHelper(id, this.top(), type, res, "id", tagName).element;
 }
 
-function sahiFindFormElementByIndex(ix, win, type, res, tagName) {
+Sahi.prototype.findFormElementByIndex = function (ix, win, type, res, tagName) {
     var els = win.document.getElementsByTagName(tagName);
     for (var j = 0; j < els.length; j++) {
         var el = els[j];
-        if (el != null && sahiAreEqualTypes(el.type, type)) {
+        if (el != null && this.areEqualTypes(el.type, type)) {
             res.cnt++;
             if (res.cnt == ix) {
                 res.element = el;
@@ -1221,33 +1225,33 @@ function sahiFindFormElementByIndex(ix, win, type, res, tagName) {
     var frs = win.frames;
     if (frs) {
         for (var j = 0; j < frs.length; j++) {
-            res = sahiFindFormElementByIndex(ix, frs[j], type, res, tagName);
+            res = this.findFormElementByIndex(ix, frs[j], type, res, tagName);
             if (res && res.found) return res;
         }
     }
     return res;
 }
 
-function sahiFindElementHelper(id, win, type, res, param, tagName) {
+Sahi.prototype.findElementHelper = function (id, win, type, res, param, tagName) {
     if ((typeof id) == "number") {
-        res = sahiFindFormElementByIndex(id, win, type, res, tagName);
+        res = this.findFormElementByIndex(id, win, type, res, tagName);
         if (res.found) return res;
     } else {
         var els = win.document.getElementsByTagName(tagName);
         for (var j = 0; j < els.length; j++) {
-            if (sahiAreEqualTypes(els[j].type, type) && sahiAreEqual(els[j], param, id)) {
+            if (this.areEqualTypes(els[j].type, type) && this.areEqual(els[j], param, id)) {
                 res.element = els[j];
                 res.found = true;
                 return res;
             }
         }
 
-        var o = getArrayNameAndIndex(id);
+        var o = this.getArrayNameAndIndex(id);
         var ix = o.index;
         var fetch = o.name;
         els = win.document.getElementsByTagName(tagName);
         for (var j = 0; j < els.length; j++) {
-            if (sahiAreEqualTypes(els[j].type, type) && sahiAreEqual(els[j], param, fetch)) {
+            if (this.areEqualTypes(els[j].type, type) && this.areEqual(els[j], param, fetch)) {
                 res.cnt++;
                 if (res.cnt == ix || ix == -1) {
                     res.element = els[j];
@@ -1262,46 +1266,46 @@ function sahiFindElementHelper(id, win, type, res, param, tagName) {
     var frs = win.frames;
     if (frs) {
         for (var j = 0; j < frs.length; j++) {
-            res = sahiFindElementHelper(id, frs[j], type, res, param, tagName);
+            res = this.findElementHelper(id, frs[j], type, res, param, tagName);
             if (res && res.found) return res;
         }
     }
     return res;
 }
 
-function sahiFindElementIx(id, toMatch, type, tagName) {
-    var res = getBlankResult();
+Sahi.prototype.findElementIx = function (id, toMatch, type, tagName) {
+    var res = this.getBlankResult();
     var retVal = -1;
 
     if (id == null || id == "") {
-        retVal = sahiFindElementIxHelper(id, type, toMatch, sahiTop(), res, null, tagName).cnt;
+        retVal = this.findElementIxHelper(id, type, toMatch, this.top(), res, null, tagName).cnt;
         if (retVal != -1) return retVal;
     }
 
     if (type == "button" || type == "reset" || type == "submit") {
-        retVal = sahiFindElementIxHelper(id, type, toMatch, sahiTop(), res, "value", tagName).cnt;
+        retVal = this.findElementIxHelper(id, type, toMatch, this.top(), res, "value", tagName).cnt;
         if (retVal != -1) return retVal;
     }
     else if (type == "image") {
-        retVal = sahiFindElementIxHelper(id, type, toMatch, sahiTop(), res, "title", tagName).cnt;
+        retVal = this.findElementIxHelper(id, type, toMatch, this.top(), res, "title", tagName).cnt;
         if (retVal != -1) return retVal;
-        retVal = sahiFindElementIxHelper(id, type, toMatch, sahiTop(), res, "alt", tagName).cnt;
+        retVal = this.findElementIxHelper(id, type, toMatch, this.top(), res, "alt", tagName).cnt;
         if (retVal != -1) return retVal;
     }
-    res = getBlankResult();
-    retVal = sahiFindElementIxHelper(id, type, toMatch, sahiTop(), res, "name", tagName).cnt;
+    res = this.getBlankResult();
+    retVal = this.findElementIxHelper(id, type, toMatch, this.top(), res, "name", tagName).cnt;
     if (retVal != -1) return retVal;
 
-    res = getBlankResult();
-    retVal = sahiFindElementIxHelper(id, type, toMatch, sahiTop(), res, "id", tagName).cnt;
+    res = this.getBlankResult();
+    retVal = this.findElementIxHelper(id, type, toMatch, this.top(), res, "id", tagName).cnt;
     return retVal;
 
 }
-function sahiFindElementIxHelper(id, type, toMatch, win, res, param, tagName) {
+Sahi.prototype.findElementIxHelper = function (id, type, toMatch, win, res, param, tagName) {
     if (res && res.found) return res;
     var els = win.document.getElementsByTagName(tagName);
     for (var j = 0; j < els.length; j++) {
-        if (sahiAreEqualTypes(els[j].type, type) && sahiAreEqual(els[j], param, id)) {
+        if (this.areEqualTypes(els[j].type, type) && this.areEqual(els[j], param, id)) {
             res.cnt++;
             if (els[j] == toMatch) {
                 res.found = true;
@@ -1312,27 +1316,27 @@ function sahiFindElementIxHelper(id, type, toMatch, win, res, param, tagName) {
     var frs = win.frames;
     if (frs) {
         for (var j = 0; j < frs.length; j++) {
-            res = sahiFindElementIxHelper(id, type, toMatch, frs[j], res, param, tagName);
+            res = this.findElementIxHelper(id, type, toMatch, frs[j], res, param, tagName);
             if (res && res.found) return res;
         }
     }
     return res;
 }
-function sahiAreEqualTypes(type1, type2) {
+Sahi.prototype.areEqualTypes = function (type1, type2) {
     if (type1 == type2) return true;
     return (type1.indexOf("select") != -1 && type2.indexOf("select") != -1);
 }
-function sahiFindCell(id) {
-    var res = getBlankResult();
-    return sahiFindTagHelper(id, sahiTop(), "td", res, "id").element;
+Sahi.prototype.findCell = function (id) {
+    var res = this.getBlankResult();
+    return this.findTagHelper(id, this.top(), "td", res, "id").element;
 }
 
-function sahiFindCellIx(id, toMatch) {
-    var res = getBlankResult();
-    var retVal = sahiFindTagIxHelper(id, toMatch, sahiTop(), "td", res, "id").cnt;
+Sahi.prototype.findCellIx = function (id, toMatch) {
+    var res = this.getBlankResult();
+    var retVal = this.findTagIxHelper(id, toMatch, this.top(), "td", res, "id").cnt;
     if (retVal != -1) return retVal;
 }
-function getBlankResult() {
+Sahi.prototype.getBlankResult = function () {
     var res = new Object();
     res.cnt = -1;
     res.found = false;
@@ -1340,7 +1344,7 @@ function getBlankResult() {
     return res;
 }
 
-function getArrayNameAndIndex(id) {
+Sahi.prototype.getArrayNameAndIndex = function (id) {
     var o = new Object();
     if (!(id instanceof RegExp) && id.match(/(.*)\[([0-9]*)\]$/)) {
         o.name = RegExp.$1;
@@ -1351,21 +1355,21 @@ function getArrayNameAndIndex(id) {
     }
     return o;
 }
-function findInForms(id, win, type) {
+Sahi.prototype.findInForms = function (id, win, type) {
     var fms = win.document.forms;
     if (fms == null) return null;
     for (var j = 0; j < fms.length; j++) {
-        var el = findInForm(id, fms[j], type);
+        var el = this.findInForm(id, fms[j], type);
         if (el != null) return el;
     }
     return null;
 }
-function findInForm(name, fm, type) {
+Sahi.prototype.findInForm = function (name, fm, type) {
     var els = fm.elements;
     var matchedEls = new Array();
     for (var i = 0; i < els.length; i++) {
         var el = els[i];
-        if (el.name == name && el.type && sahiAreEqualTypes(el.type, type)) {
+        if (el.name == name && el.type && this.areEqualTypes(el.type, type)) {
             matchedEls[matchedEls.length] = el;
         }
         else if ((el.type == "button" || el.type == "submit") && el.value == name && el.type == type) {
@@ -1375,18 +1379,18 @@ function findInForm(name, fm, type) {
     return (matchedEls.length > 0) ? (matchedEls.length == 1 ? matchedEls[0] : matchedEls ) : null;
 }
 
-function sahiFindTableIx(id, toMatch) {
-    var res = getBlankResult();
-    var retVal = sahiFindTagIxHelper(id, toMatch, sahiTop(), "table", res, (id ? "id" : null)).cnt;
+Sahi.prototype.findTableIx = function (id, toMatch) {
+    var res = this.getBlankResult();
+    var retVal = this.findTagIxHelper(id, toMatch, this.top(), "table", res, (id ? "id" : null)).cnt;
     if (retVal != -1) return retVal;
 }
 
-function sahiFindTable(id) {
-    var res = getBlankResult();
-    return sahiFindTagHelper(id, sahiTop(), "table", res, "id").element;
+Sahi.prototype.findTable = function (id) {
+    var res = this.getBlankResult();
+    return this.findTagHelper(id, this.top(), "table", res, "id").element;
 }
 
-function sahiFindResByIndexInList(ix, win, type, res) {
+Sahi.prototype.findResByIndexInList = function (ix, win, type, res) {
     var tags = win.document.getElementsByTagName(type);
     if (tags[ix - res.cnt]) {
         res.element = tags[ix - res.cnt];
@@ -1397,7 +1401,7 @@ function sahiFindResByIndexInList(ix, win, type, res) {
     var frs = win.frames;
     if (frs) {
         for (var j = 0; j < frs.length; j++) {
-            res = sahiFindResByIndexInList(ix, frs[j], type, res);
+            res = this.findResByIndexInList(ix, frs[j], type, res);
             if (res && res.found) return res;
         }
     }
@@ -1405,19 +1409,19 @@ function sahiFindResByIndexInList(ix, win, type, res) {
 }
 
 
-function sahiFindTagHelper(id, win, type, res, param) {
+Sahi.prototype.findTagHelper = function (id, win, type, res, param) {
     if ((typeof id) == "number") {
         res.cnt = 0;
-        res = sahiFindResByIndexInList(id, win, type, res);
+        res = this.findResByIndexInList(id, win, type, res);
         return res;
     } else {
-        var o = getArrayNameAndIndex(id);
+        var o = this.getArrayNameAndIndex(id);
         var ix = o.index;
         var fetch = o.name;
         var tags = win.document.getElementsByTagName(type);
         if (tags) {
             for (var i = 0; i < tags.length; i++) {
-                if (sahiAreEqual(tags[i], param, fetch)) {
+                if (this.areEqual(tags[i], param, fetch)) {
                     res.cnt++;
                     if (res.cnt == ix || ix == -1) {
                         res.element = tags[i];
@@ -1432,19 +1436,19 @@ function sahiFindTagHelper(id, win, type, res, param) {
     var frs = win.frames;
     if (frs) {
         for (var j = 0; j < frs.length; j++) {
-            res = sahiFindTagHelper(id, frs[j], type, res, param);
+            res = this.findTagHelper(id, frs[j], type, res, param);
             if (res && res.found) return res;
         }
     }
     return res;
 }
-function sahiFindTagIxHelper(id, toMatch, win, type, res, param) {
+Sahi.prototype.findTagIxHelper = function (id, toMatch, win, type, res, param) {
     if (res && res.found) return res;
 
     var tags = win.document.getElementsByTagName(type);
     if (tags) {
         for (var i = 0; i < tags.length; i++) {
-            if (param == null || sahiAreEqual(tags[i], param, id)) {
+            if (param == null || this.areEqual(tags[i], param, id)) {
                 res.cnt++;
                 if (tags[i] == toMatch) {
                     res.found = true;
@@ -1456,33 +1460,33 @@ function sahiFindTagIxHelper(id, toMatch, win, type, res, param) {
     var frs = win.frames;
     if (frs) {
         for (var j = 0; j < frs.length; j++) {
-            res = sahiFindTagIxHelper(id, toMatch, frs[j], type, res, param);
+            res = this.findTagIxHelper(id, toMatch, frs[j], type, res, param);
             if (res && res.found) return res;
         }
     }
     return res;
 }
-function sahiCanSimulateClick(el) {
+Sahi.prototype.canSimulateClick = function (el) {
     return (el.click || el.dispatchEvent);
 }
 
-function sahiIsRecording() {
-    if (sahiTop()._isSahiRecording == null)
-        sahiTop()._isSahiRecording = sahiGetServerVar("sahi_record") == "1";
-    return sahiTop()._isSahiRecording;
+Sahi.prototype.isRecording = function () {
+    if (this.top().Sahi._isRecording == null)
+        this.top().Sahi._isRecording = this.getServerVar("sahi_record") == "1";
+    return this.top().Sahi._isRecording;
 }
-function sahiCreateCookie(name, value, days)
+Sahi.prototype.createCookie = function (name, value, days)
 {
+    var expires = "";
     if (days) {
         var date = new Date();
         date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-        var expires = "; expires=" + date.toGMTString();
+        expires = "; expires=" + date.toGMTString();
     }
-    else var expires = "";
     document.cookie = name + "=" + value + expires + "; path=/";
 }
 
-function sahiReadCookie(name)
+Sahi.prototype.readCookie = function (name)
 {
     var nameEQ = name + "=";
     var ca = document.cookie.split(';');
@@ -1495,29 +1499,29 @@ function sahiReadCookie(name)
     return null;
 }
 
-function sahiEraseCookie(name)
+Sahi.prototype.eraseCookie = function (name)
 {
-    sahiCreateCookie(name, "", -1);
+    this.createCookie(name, "", -1);
 }
-function sahi_event(type, keyCode) {
+Sahi.prototype._event = function (type, keyCode) {
     this.type = type;
     this.keyCode = keyCode;
 }
-function SahiAssertionException(msgNum, msgText) {
+SahiAssertionException = function (msgNum, msgText) {
     this.messageNumber = msgNum;
     this.messageText = msgText;
     this.exceptionType = "SahiAssertionException";
 }
-function SahiNotMyWindowException() {
+SahiNotMyWindowException = function () {
     this.name = "SahiNotMyWindowException";
     this.message = "SahiNotMyWindowException";
 }
 var lastQs = "";
 var lastTime = 0;
-function sahiOnEv(e) {
+Sahi.prototype.onEv = function (e) {
     if (e.handled == true) return true; //FF
-    if (sahiGetServerVar("sahiEvaluateExpr") == "true") return true;
-    var targ = getTarget(e);
+    if (_sahi.getServerVar("this.evaluateExpr") == "true") return true;
+    var targ = _sahi.getTarget(e);
     if (e.type == "click") {
         if (targ.form && targ.type) {
             var type = targ.type;
@@ -1525,23 +1529,23 @@ function sahiOnEv(e) {
                     || type == "select-one" || type == "select-multiple") return true;
         }
     }
-    var info = sahiGetAccessorInfo(targ);
-    var cmd = getScript(info);
+    var info = _sahi.getAccessorInfo(targ);
+    var cmd = _sahi.getScript(info);
     if (cmd == null) return true;
-    if (sahiHasEventBeenRecorded(cmd)) return true; //IE
-    sahiSendToServer('/_s_/dyn/Recorder_record?cmd=' + sahiEscape(cmd));
+    if (_sahi.hasEventBeenRecorded(cmd)) return true; //IE
+    _sahi.sendToServer('/_s_/dyn/Recorder_record?cmd=' + _sahi.escape(cmd));
     e.handled = true;
     //FF
-    showInController(info);
+    _sahi.showInController(info);
     return true;
 }
-function showInController(info) {
+Sahi.prototype.showInController = function (info) {
     try {
-        var c = getSahiWinHandle();
+        var c = this.getWinHandle();
         if (c) {
             var d = c.top.main.document.currentForm.debug;
             c.top.main.document.currentForm.history.value += "\n" + d.value;
-            d.value = getScript(info);
+            d.value = this.getScript(info);
             //			d.value+="\n"+getScript(info);
             //			d.scrollTop = d.scrollHeight;
         }
@@ -1549,47 +1553,47 @@ function showInController(info) {
         //		throw ex2;
     }
 }
-function sahiHasEventBeenRecorded(qs) {
+Sahi.prototype.hasEventBeenRecorded = function (qs) {
     var now = (new Date()).getTime();
     if (qs == lastQs && (now - lastTime) < 500) return true;
     lastQs = qs;
     lastTime = now;
     return false;
 }
-function getPopupName() {
+Sahi.prototype.getPopupName = function () {
     var n = null;
-    if (sahiIsPopup()) {
-        n = sahiTop().name;
+    if (this.isPopup()) {
+        n = this.top().name;
         if (!n || n == "") {
-            n = sahiTop().document.title;
+            n = this.top().document.title;
         }
     }
     return n ? n : "";
 }
-function sahiIsPopup() {
-    return window.sahiTop().opener != null && window.sahiTop().opener != window.sahiTop()
+Sahi.prototype.isPopup = function () {
+    return window._sahi.top().opener != null && window._sahi.top().opener != window._sahi.top()
 }
-function addWait(time) {
+Sahi.prototype.addWait = function (time) {
     var val = parseInt(time);
     if (("" + val) == "NaN" || val < 200) throw new Error();
     showInController(new AccessorInfo("", "", "", "wait", time));
-    //    sahiSendToServer('/_s_/dyn/Recorder_record?event=wait&value='+val);
+    //    this.sendToServer('/_s_/dyn/Recorder_record?event=wait&value='+val);
 }
-function mark(s) {
+Sahi.prototype.mark = function (s) {
     showInController(new AccessorInfo("", "", "", "mark", s));
 }
-function doAssert(e) {
+Sahi.prototype.doAssert = function (e) {
     try {
-        if (!sahiTop()._lastAccessedInfo) return;
-        sahiTop()._lastAccessedInfo.event = "assert";
-        showInController(sahiTop()._lastAccessedInfo);
-        //      sahiSendToServer('/_s_/dyn/Recorder_record?'+getSahiPopUpQS()+sahiGetAccessorInfoQS(sahiTop()._lastAccessedInfo, true));
+        if (!this.top()._lastAccessedInfo) return;
+        this.top()._lastAccessedInfo.event = "assert";
+        this.showInController(this.top()._lastAccessedInfo);
+        //      this.sendToServer('/_s_/dyn/Recorder_record?'+getSahiPopUpQS()+this.getAccessorInfoQS(this.top()._lastAccessedInfo, true));
     } catch(ex) {
-        sahiHandleException(ex);
+        this.handleException(ex);
     }
 }
 
-function getTarget(e) {
+Sahi.prototype.getTarget = function (e) {
     var targ;
     if (!e) e = window.event;
     var evType = e.type;
@@ -1600,18 +1604,18 @@ function getTarget(e) {
     return targ;
 }
 
-function sahiGetAccessorInfo(el) {
+Sahi.prototype.getAccessorInfo = function (el) {
     if (el == null) return null;
     var type = el.type;
-    var accessor = sahiGetAccessor(el);
-    var shortHand = getShortHand(el, accessor);
+    var accessor = this.getAccessor(el);
+    var shortHand = this.getShortHand(el, accessor);
     //    alert(type+" -- "+accessor+" --- "+shortHand);
     if (el.tagName.toLowerCase() == "img") {
         return new AccessorInfo(accessor, shortHand, "img", "click");
     } else if (type == "text" || type == "textarea" || type == "password") {
         return new AccessorInfo(accessor, shortHand, type, "setvalue", el.value);
     } else if (type == "select-one" || type == "select-multiple") {
-        return new AccessorInfo(accessor, shortHand, type, "setselected", sahiGetOptionText(el, el.value));
+        return new AccessorInfo(accessor, shortHand, type, "setselected", this.getOptionText(el, el.value));
     } else if (el.tagName.toLowerCase() == "a") {
         return new AccessorInfo(accessor, shortHand, "link", "click");
     } else if (type == "button" || type == "reset" || type == "submit" || type == "image") {
@@ -1621,13 +1625,13 @@ function sahiGetAccessorInfo(el) {
     } else if (type == "file") {
         return new AccessorInfo(accessor, shortHand, type, "setFile", el.value);
     } else if (el.tagName.toLowerCase() == "td") {
-        return new AccessorInfo(accessor, shortHand, "cell", "click", sahiIsIE() ? el.innerText : el.textContent);
+        return new AccessorInfo(accessor, shortHand, "cell", "click", this.isIE() ? el.innerText : el.textContent);
     } else if (el.tagName.toLowerCase() == "div" || el.tagName.toLowerCase() == "span") {
-        return new AccessorInfo(accessor, shortHand, "byId", "click", sahiIsIE() ? el.innerText : el.textContent);
+        return new AccessorInfo(accessor, shortHand, "byId", "click", this.isIE() ? el.innerText : el.textContent);
     }
 }
 
-function getShortHand(el, accessor) {
+Sahi.prototype.getShortHand = function (el, accessor) {
     var shortHand = "";
     try {
         var tagLC = el.tagName.toLowerCase();
@@ -1635,24 +1639,24 @@ function getShortHand(el, accessor) {
             shortHand = el.alt;
             if (!shortHand || shortHand == "") shortHand = el.id;
             if (shortHand && shortHand != "") {
-                if (sahiFindImage(shortHand) != el) {
-                    var ix = sahiFindImageIx(shortHand, el);
+                if (this.findImage(shortHand) != el) {
+                    var ix = this.findImageIx(shortHand, el);
                     if (ix == -1) return "";
                     return shortHand + "[" + ix + "]";
                 }
             } else {
-                var ix = sahiFindImageIx(null, el);
+                var ix = this.findImageIx(null, el);
                 if (ix != -1) shortHand = ix;
             }
             return shortHand;
         } else if (tagLC == "a") {
-            shortHand = sahiGetText(el);
+            shortHand = this.getText(el);
             //(el.innerText) ? el.innerText : el.text;
-            shortHand = sahiTrim(shortHand);
+            shortHand = this.trim(shortHand);
             if (!shortHand || shortHand == "") shortHand = el.id;
             if (shortHand && shortHand != "") {
-                if (sahiFindLink(shortHand) != el) {
-                    var ix = sahiFindLinkIx(shortHand, el);
+                if (this.findLink(shortHand) != el) {
+                    var ix = this.findLinkIx(shortHand, el);
                     if (ix == -1) return "";
                     return shortHand + "[" + ix + "]";
                 }
@@ -1667,50 +1671,50 @@ function getShortHand(el, accessor) {
             else if (!shortHand || shortHand == "") shortHand = el.name;
             if (!shortHand || shortHand == "") shortHand = el.id;
             if (shortHand && shortHand != "") {
-                if (sahiFindElement(shortHand, el.type, tagLC) != el) {
-                    var ix = sahiFindElementIx(shortHand, el, el.type, tagLC);
+                if (this.findElement(shortHand, el.type, tagLC) != el) {
+                    var ix = this.findElementIx(shortHand, el, el.type, tagLC);
                     if (ix == -1) return "";
                     return shortHand + "[" + ix + "]";
                 }
             } else {
-                var ix = sahiFindElementIx(null, el, el.type, tagLC);
+                var ix = this.findElementIx(null, el, el.type, tagLC);
                 if (ix != -1) shortHand = ix;
             }
             return shortHand;
         } else if (el.tagName.toLowerCase() == "td") {
             shortHand = el.id;
             if (shortHand && shortHand != "") {
-                if (sahiFindCell(shortHand) != el) {
-                    var ix = sahiFindCellIx(shortHand, el);
-                    if (ix != -1) return quoted(shortHand + "[" + ix + "]");
+                if (this.findCell(shortHand) != el) {
+                    var ix = this.findCellIx(shortHand, el);
+                    if (ix != -1) return this.quoted(shortHand + "[" + ix + "]");
                 }
-                return quoted(shortHand);
+                return this.quoted(shortHand);
             }
-            shortHand = getTableShortHand(sahiGetTableEl(el));
+            shortHand = this.getTableShortHand(this.getTableEl(el));
             //"_table(\""+tabId+"\")";
-            shortHand += ", " + sahiGetRow(el).rowIndex;
+            shortHand += ", " + this.getRow(el).rowIndex;
             shortHand += ", " + el.cellIndex;
         } else if (el.tagName.toLowerCase() == "span" || el.tagName.toLowerCase() == "div") {
             shortHand = el.id;
         }
     } catch(ex) {
-        sahiHandleException(ex);
+        this.handleException(ex);
     }
     return shortHand;
 }
-function getTableShortHand(el) {
+Sahi.prototype.getTableShortHand = function (el) {
     var shortHand = el.id;
     if (shortHand && shortHand != "") {
-        if (sahiFindTable(shortHand) != el) {
-            var ix = sahiFindTableIx(shortHand, el);
-            if (ix != -1) return "_table(" + quoted(shortHand + "[" + ix + "]") + ")";
+        if (this.findTable(shortHand) != el) {
+            var ix = this.findTableIx(shortHand, el);
+            if (ix != -1) return "_table(" + this.quoted(shortHand + "[" + ix + "]") + ")";
         }
-        return "_table(" + quoted(shortHand) + ")";
+        return "_table(" + this.quoted(shortHand) + ")";
     }
-    return "_table(" + sahiFindTableIx(null, el) + ")";
+    return "_table(" + this.findTableIx(null, el) + ")";
 }
 
-function AccessorInfo(accessor, shortHand, type, event, value) {
+var AccessorInfo = function (accessor, shortHand, type, event, value) {
     this.accessor = accessor;
     this.shortHand = shortHand;
     this.type = type;
@@ -1718,19 +1722,19 @@ function AccessorInfo(accessor, shortHand, type, event, value) {
     this.value = value;
 }
 
-function sahiGetAccessorInfoQS(ai, isAssert) {
+Sahi.prototype.getAccessorInfoQS = function (ai, isAssert) {
     if (ai == null || ai.event == null) return;
     var s = "event=" + (isAssert ? "assert" : ai.event);
-    s += "&accessor=" + sahiEscape(sahiConvertUnicode(ai.accessor));
-    s += "&shorthand=" + sahiEscape(sahiConvertUnicode(ai.shortHand));
+    s += "&accessor=" + this.escape(this.convertUnicode(ai.accessor));
+    s += "&shorthand=" + this.escape(this.convertUnicode(ai.shortHand));
     s += "&type=" + ai.type;
     if (ai.value) {
-        s += "&value=" + sahiEscape(sahiConvertUnicode(ai.value));
+        s += "&value=" + this.escape(this.convertUnicode(ai.value));
     }
     return s;
 }
 
-function sahiGetOptionText(sel, val) {
+Sahi.prototype.getOptionText = function (sel, val) {
     var l = sel.options.length;
     for (var i = 0; i < l; i++) {
         if (sel.options[i].value == val) return sel.options[i].text;
@@ -1738,23 +1742,23 @@ function sahiGetOptionText(sel, val) {
     return null;
 }
 
-function sahiAddHandlersToAllFrames(win) {
+Sahi.prototype.addHandlersToAllFrames = function (win) {
     var fs = win.frames;
     if (!fs || fs.length == 0) {
-        sahiAddHandlers(self);
+        this.addHandlers(self);
     } else {
         for (var i = 0; i < fs.length; i++) {
-            sahiAddHandlersToAllFrames(fs[i]);
+            this.addHandlersToAllFrames(fs[i]);
         }
     }
 }
-function sahiDocEventHandler(e) {
+Sahi.prototype.docEventHandler = function (e) {
     if (!e) e = window.event;
-    var t = getTarget(e);
+    var t = _sahi.getTarget(e);
     if (t && !t.hasAttached && t.tagName) {
         var tag = t.tagName.toLowerCase();
         if (tag == "a" || t.form || tag == "img" || tag == "div" || tag == "span" || tag == "td" || tag == "table") {
-            sahiAttachEvents(t);
+            _sahi.attachEvents(t);
         }
         /*
         if (t.onmouseover){
@@ -1766,41 +1770,41 @@ function sahiDocEventHandler(e) {
     }
 
 }
-function sahiAddHandlers(win) {
+Sahi.prototype.addHandlers = function (win) {
     if (!win) win = self;
     var doc = win.document;
-    sahiAddEvent(doc, "keyup", sahiDocEventHandler);
-    sahiAddEvent(doc, "mousemove", sahiDocEventHandler);
+    this.addEvent(doc, "keyup", this.docEventHandler);
+    this.addEvent(doc, "mousemove", this.docEventHandler);
 }
 
-function sahiAttachEvents(el) {
+Sahi.prototype.attachEvents = function (el) {
     var tagName = el.tagName.toLowerCase();
     if (tagName == "a") {
-        sahiAttachLinkEvents(el)
+        this.attachLinkEvents(el)
     } else if (el.form && el.type) {
-        sahiAttachFormElementEvents(el);
+        this.attachFormElementEvents(el);
     } else if (tagName == "img" || tagName == "div" || tagName == "span" || tagName == "td" || tagName == "table") {
-        sahiAttachImageEvents(el);
+        this.attachImageEvents(el);
     }
 }
-function sahiAttachFormElementEvents(el) {
+Sahi.prototype.attachFormElementEvents = function (el) {
     var type = el.type;
-    if (el.onchange == sahiOnEv || el.onblur == sahiOnEv || el.onclick == sahiOnEv) return;
+    if (el.onchange == this.onEv || el.onblur == this.onEv || el.onclick == this.onEv) return;
     if (type == "text" || type == "file" || type == "textarea" || type == "password") {
-        sahiAddEvent(el, "change", sahiOnEv);
+        this.addEvent(el, "change", this.onEv);
     } else if (type == "select-one" || type == "select-multiple") {
-        sahiAddEvent(el, "change", sahiOnEv);
+        this.addEvent(el, "change", this.onEv);
     } else if (type == "button" || type == "submit" || type == "reset" || type == "checkbox" || type == "radio" || type == "image") {
-        sahiAddEvent(el, "click", sahiOnEv);
+        this.addEvent(el, "click", this.onEv);
     }
 }
-function sahiAttachLinkEvents(el) {
-    sahiAddEvent(el, "click", sahiOnEv);
+Sahi.prototype.attachLinkEvents = function (el) {
+    this.addEvent(el, "click", this.onEv);
 }
-function sahiAttachImageEvents(el) {
-    sahiAddEvent(el, "click", sahiOnEv);
+Sahi.prototype.attachImageEvents = function (el) {
+    this.addEvent(el, "click", this.onEv);
 }
-function sahiAddEvent(el, ev, fn) {
+Sahi.prototype.addEvent = function (el, ev, fn) {
     if (!el) return;
     if (el.attachEvent) {
         el.attachEvent("on" + ev, fn);
@@ -1808,7 +1812,7 @@ function sahiAddEvent(el, ev, fn) {
         el.addEventListener(ev, fn, false);
     }
 }
-function sahiRemoveEvent(el, ev, fn) {
+Sahi.prototype.removeEvent = function (el, ev, fn) {
     if (!el) return;
     if (el.attachEvent) {
         el.detachEvent("on" + ev, fn);
@@ -1816,124 +1820,125 @@ function sahiRemoveEvent(el, ev, fn) {
         el.removeEventListener(ev, fn, false);
     }
 }
-function sahiSetRetries(i) {
-    sahiSetServerVar("sahi_retries", i);
+Sahi.prototype.setRetries = function (i) {
+    this.setServerVar("sahi_retries", i);
 }
-function sahiGetRetries() {
-    var i = parseInt(sahiGetServerVar("sahi_retries"));
+Sahi.prototype.getRetries = function () {
+    var i = parseInt(this.getServerVar("sahi_retries"));
     return ("" + i != "NaN") ? i : 0;
 }
-function sahiGetExceptionString(e)
+Sahi.prototype.getExceptionString = function (e)
 {
     var stack = e.stack ? e.stack : "No trace available";
     return e.name + ": " + e.message + "<br>" + stack.replace(/\n/g, "<br>");
 }
 
-function sahiOnError(msg, url, lno) {
+Sahi.prototype.onError = function (msg, url, lno) {
     try {
         var debugInfo = "Javascript error on page";
         if (!url) url = "";
         if (!lno) lno = "";
         if (msg && msg.indexOf("Access to XPConnect service denied") != -1) { //FF hack
-            sahiLogPlayBack("msg: " + msg + "\nurl: " + url + "\nLine no: " + lno, "info", debugInfo);
+            this.logPlayBack("msg: " + msg + "\nurl: " + url + "\nLine no: " + lno, "info", debugInfo);
         }
-        else sahiLogPlayBack("msg: " + msg + "\nurl: " + url + "\nLine no: " + lno, "info", debugInfo);
+        else this.logPlayBack("msg: " + msg + "\nurl: " + url + "\nLine no: " + lno, "info", debugInfo);
     } catch(swallow) {
     }
 }
-window.onerror = sahiOnError;
-var _sahiControl;
-function sahiOpenWin(e) {
+window.onerror = _sahi.onError;
+Sahi._control = null;
+Sahi.prototype.openWin = function (e) {
     try {
         if (!e) e = window.event;
-        sahiTop()._sahiControl = window.open("", "_sahiControl", getWinParams(e));
+        this.top().Sahi._control = window.open("", "_sahiControl", this.getWinParams(e));
         var diffDom = false;
         try {
-            var checkDiffDomain = sahiTop()._sahiControl.document.domain;
+            var checkDiffDomain = this.top().Sahi._control.document.domain;
         } catch(domainInaccessible) {
             diffDom = true;
         }
-        if (diffDom || !sahiTop()._sahiControl.isOpen) {
-            sahiTop()._sahiControl = window.open("/_s_/spr/controller2.htm", "_sahiControl", getWinParams(e));
+        if (diffDom || !this.top()._sahi.isWinOpen) {
+            this.top().Sahi._control = window.open("/_s_/spr/controller2.htm", "_sahiControl", this.getWinParams(e));
         }
-        if (sahiTop()._sahiControl) sahiTop()._sahiControl.opener = this;
-        if (e) sahiTop()._sahiControl.focus();
+        if (this.top().Sahi._control) this.top().Sahi._control.opener = this;
+        if (e) this.top().Sahi._control.focus();
     } catch(ex) {
-        sahiHandleException(ex);
+        this.handleException(ex);
     }
 }
-function getWinParams(e) {
+Sahi.prototype.getWinParams = function (e) {
     var x = e ? e.screenX - 40 : 500;
     var y = e ? e.screenY - 60 : 100;
     var positionParams = "";
     if (e) {
-        if (sahiIsIE()) positionParams = ",screenX=" + x + ",screenY=" + y;
+        if (this.isIE()) positionParams = ",screenX=" + x + ",screenY=" + y;
         else positionParams = ",screenX=" + x + ",screenY=" + y;
     }
     return "height=550px,width=460px,resizable=yes,toolbar=no,status=no" + positionParams;
 }
-function getSahiWinHandle() {
-    if (sahiTop()._sahiControl && !sahiTop()._sahiControl.isClosed) return sahiTop()._sahiControl;
+Sahi.prototype.getWinHandle = function () {
+    if (this.top().Sahi._control && !this.top().Sahi._control.closed) return this.top().Sahi._control;
 }
-function sahiOpenControllerWindow(e) {
+Sahi.openControllerWindow = function (e) {
     if (!e) e = window.event;
-    if (!sahiIsHotKeyPressed(e)) return true;
-    sahiOpenWin(e);
+    if (!_sahi.isHotKeyPressed(e)) return true;
+    _sahi.openWin(e);
     return true;
 }
-function sahiIsHotKeyPressed(e) {
-    return ((sahiHotKey == "SHIFT" && e.shiftKey)
-            || (sahiHotKey == "CTRL" && e.ctrlKey)
-            || (sahiHotKey == "ALT" && e.altKey)
-            || (sahiHotKey == "META" && e.metaKey));
+Sahi.prototype.isHotKeyPressed = function (e) {
+    return ((this.hotKey == "SHIFT" && e.shiftKey)
+            || (this.hotKey == "CTRL" && e.ctrlKey)
+            || (this.hotKey == "ALT" && e.altKey)
+            || (this.hotKey == "META" && e.metaKey));
 }
 var _lastAccessedInfo;
-function sahiMouseOver(e) {
+Sahi.prototype.mouseOver = function (e) {
     try {
-        if (getTarget(e) == null) return;
+        if (_sahi.getTarget(e) == null) return;
         if (!e.ctrlKey) return;
-        var controlWin = getSahiWinHandle();
+        var controlWin = _sahi.getWinHandle();
         if (controlWin) {
-            var acc = sahiGetAccessorInfo(sahiGetKnownTags(getTarget(e)));
+            var acc = _sahi.getAccessorInfo(_sahi.getKnownTags(_sahi.getTarget(e)));
             try {
-                if (acc) controlWin.main.displayInfo(acc, escapeDollar(getAccessor1(acc)), sahiEscapeValue(acc.value));
+                if (acc) controlWin.main.displayInfo(acc, _sahi.escapeDollar(_sahi.getAccessor1(acc)), _sahi.escapeValue(acc.value));
             } catch(ex2) {
+                throw ex2;
             }
-            sahiTop()._lastAccessedInfo = acc ? acc : sahiTop()._lastAccessedInfo;
+            _sahi.top()._lastAccessedInfo = acc ? acc : _sahi.top()._lastAccessedInfo;
         }
     } catch(ex) {
-        //        throw ex
+        throw ex;
     }
 }
-function escapeDollar(s) {
+Sahi.prototype.escapeDollar = function (s) {
     if (s == null) return null;
     return s.replace(/[$]/g, "\\$");
 }
-function getAccessor1(info) {
+Sahi.prototype.getAccessor1 = function (info) {
     if (info == null) return null;
     if ("" == info.shortHand || info.shortHand == null) {
         return info.accessor;
     } else {
         if ("image" == info.type) {
-            return "_imageSubmitButton(" + escapeForScript(info.shortHand) + ")";
+            return "_imageSubmitButton(" + this.escapeForScript(info.shortHand) + ")";
         } else if ("img" == info.type) {
-            return "_image(" + escapeForScript(info.shortHand) + ")";
+            return "_image(" + this.escapeForScript(info.shortHand) + ")";
         } else if ("link" == info.type) {
-            return "_link(" + escapeForScript(info.shortHand) + ")";
+            return "_link(" + this.escapeForScript(info.shortHand) + ")";
         } else if ("select-one" == info.type || "select-multiple" == info.type) {
-            return "_select(" + escapeForScript(info.shortHand) + ")";
+            return "_select(" + this.escapeForScript(info.shortHand) + ")";
         } else if ("text" == info.type) {
-            return "_textbox(" + escapeForScript(info.shortHand) + ")";
+            return "_textbox(" + this.escapeForScript(info.shortHand) + ")";
         } else if ("file" == info.type) {
-            return "_file(" + escapeForScript(info.shortHand) + ")";
+            return "_file(" + this.escapeForScript(info.shortHand) + ")";
         } else if ("cell" == info.type) {
             return "_cell(" + info.shortHand + ")";
         }
-        return "_" + info.type + "(" + escapeForScript(info.shortHand) + ")";
+        return "_" + info.type + "(" + this.escapeForScript(info.shortHand) + ")";
     }
 }
-function escapeForScript(s) {
-    return sahiQuoteIfString(s);
+Sahi.prototype.escapeForScript = function (s) {
+    return this.quoteIfString(s);
 }
 var _key;
 var KEY_SHIFT = 16;
@@ -1946,34 +1951,28 @@ var INTERVAL = 100;
 var ONERROR_INTERVAL = 1000;
 var MAX_RETRIES = 5;
 var SAHI_MAX_WAIT_FOR_LOAD = 30;
-var sahiWaitForLoad = SAHI_MAX_WAIT_FOR_LOAD;
+_sahi.waitForLoad = SAHI_MAX_WAIT_FOR_LOAD;
 var interval = INTERVAL;
 
-var _sahiCmds = new Array();
-var _sahiCmdDebugInfo = new Array();
-
-var _sahiCmdsLocal = new Array();
-var _sahiCmdDebugInfoLocal = new Array();
 var _localIx = 0;
 
-var _sahi_wait = -1;
 
-function sahiSchedule(cmd, debugInfo) {
-    if (!_sahiCmds) return;
-    var i = _sahiCmds.length;
-    _sahiCmds[i] = cmd;
-    _sahiCmdDebugInfo[i] = debugInfo;
+Sahi.prototype.schedule = function (cmd, debugInfo) {
+    if (!this.cmds) return;
+    var i = this.cmds.length;
+    this.cmds[i] = cmd;
+    this.cmdDebugInfo[i] = debugInfo;
 }
-function sahiInstant(cmd, debugInfo) {
-    if (!_sahiCmds) return;
-    var i = _sahiCmdsLocal.length;
-    _sahiCmdsLocal[i] = cmd;
-    _sahiCmdDebugInfoLocal[i] = debugInfo;
+Sahi.prototype.instant = function (cmd, debugInfo) {
+    if (!this.cmds) return;
+    var i = this.cmdsLocal.length;
+    this.cmdsLocal[i] = cmd;
+    this.cmdDebugInfoLocal[i] = debugInfo;
 }
-function sahiPlay() {
-    window.setTimeout("try{sahiEx();}catch(ex){}", INTERVAL);
+Sahi.prototype.play = function () {
+    window.setTimeout("try{_sahi.ex();}catch(ex){}", INTERVAL);
 }
-function areWindowsLoaded(win) {
+Sahi.prototype.areWindowsLoaded = function (win) {
     try {
         if (win.location.href == "about:blank") return true;
     } catch(e) {
@@ -1984,78 +1983,78 @@ function areWindowsLoaded(win) {
         var fs = win.frames;
         if (!fs || fs.length == 0) {
             try {
-                return win.document.readyState == "complete" || win.sahiLoaded;
+                return win.document.readyState == "complete" || this.loaded;
             } catch(e) {
                 return true;
                 //diff domain; don't bother
             }
         } else {
             for (var i = 0; i < fs.length; i++) {
-                if (!areWindowsLoaded(fs[i])) return false;
+                if (!this.areWindowsLoaded(fs[i])) return false;
             }
             if (win.document && win.document.getElementsByTagName("frameset").length == 0)
-                return win.sahiLoaded;
+                return this.loaded;
             else return true;
         }
     }
     catch(ex) {
-        sahiLogErr("2 to " + typeof ex);
-        sahiLogErr("3 pr " + ex.prototype);
+        this.logErr("2 to " + typeof ex);
+        this.logErr("3 pr " + ex.prototype);
         return true;
         //for diff domains.
     }
 }
 var _isLocal = false;
-var _sahiTimer = null
+Sahi._timer = null
 
-function sahiExecNextStep(isStep, interval) {
+Sahi.prototype.execNextStep = function (isStep, interval) {
     if (isStep) return;
-    if (_sahiTimer) window.clearTimeout(_sahiTimer);
-    _sahiTimer = window.setTimeout("try{sahiEx();}catch(ex){}", interval);
+    if (Sahi._timer) window.clearTimeout(Sahi._timer);
+    Sahi._timer = window.setTimeout("try{_sahi.ex();}catch(ex){}", interval);
 }
-function sahiGotErrors(b) {
-    sahiSetServerVar("sahi_has_errors", b ? "1" : "0");
+Sahi.prototype.gotErrors = function (b) {
+    this.setServerVar("sahi_has_errors", b ? "1" : "0");
 }
-function sahiHadErrors() {
-    return sahiGetServerVar("sahi_has_errors") == "1";
+Sahi.prototype.hadErrors = function () {
+    return this.getServerVar("sahi_has_errors") == "1";
 }
-function sahiEx(isStep) {
-    var cmds = _sahiCmds;
-    var debugs = _sahiCmdDebugInfo;
+Sahi.prototype.ex = function (isStep) {
+    var cmds = this.cmds;
+    var debugs = this.cmdDebugInfo;
     try {
         try {
-            if (isPaused() && !isStep) return;
-            var i = sahiGetCurrentIndex();
+            if (this.isPaused() && !isStep) return;
+            var i = this.getCurrentIndex();
             if (_isLocal) {
-                cmds = _sahiCmdsLocal;
-                debugs = _sahiCmdDebugInfoLocal;
+                cmds = this.cmdsLocal;
+                debugs = this.cmdDebugInfoLocal;
             }
-            if (isSahiPlaying() && cmds.length == i) {
-                sahiStopPlaying();
+            if (this.isPlaying() && cmds.length == i) {
+                this.stopPlaying();
                 return;
             }
-            if ((isStep || isSahiPlaying()) && cmds[i] != null) {
-                if (_sahiWaitCondition) {
+            if ((isStep || this.isPlaying()) && cmds[i] != null) {
+                if (Sahi._waitCondition) {
                     var again = true;
                     try {
-                        if (eval(_sahiWaitCondition)) {
+                        if (eval(Sahi._waitCondition)) {
                             again = false;
-                            _sahiWaitCondition = false;
+                            Sahi._waitCondition = false;
                         }
                     } catch(e1) {
                     }
                     if (again) {
-                        sahiExecNextStep(isStep, interval);
+                        this.execNextStep(isStep, interval);
                         return;
                     }
                 }
-                if (!areWindowsLoaded(sahiTop()) && sahiWaitForLoad > 0) {
-                    sahiWaitForLoad--;
-                    sahiExecNextStep(isStep, interval);
+                if (!this.areWindowsLoaded(this.top()) && this.waitForLoad > 0) {
+                    this.waitForLoad--;
+                    this.execNextStep(isStep, interval);
                     return;
                 }
                 try {
-                    sahiWaitForLoad = SAHI_MAX_WAIT_FOR_LOAD;
+                    this.waitForLoad = SAHI_MAX_WAIT_FOR_LOAD;
                     var debugInfo = "" + debugs[i];
                     try {
                         if (cmds[i].indexOf("sahi_popup") != -1) {
@@ -2063,55 +2062,55 @@ function sahiEx(isStep) {
                             eval(cmds[i].substring(0, cmds[i].indexOf(")") + 1));
                         } else {
                             // don't need popup, so if I am popup, throw error.
-                            var popup = getPopupName();
+                            var popup = this.getPopupName();
                             if (popup != null && popup != "") {
                                 throw new SahiNotMyWindowException();
                             }
                         }
-                        updateControlWinDisplay(cmds[i], i);
-                        sahiSetCurrentIndex(i + 1);
-                        if (cmds[i].indexOf("sahi_call") != -1 && cmds[i].indexOf("sahi_callServer") == -1) {
-                            var bkup = sahiSchedule;
+                        this.updateControlWinDisplay(cmds[i], i);
+                        this.setCurrentIndex(i + 1);
+                        if (cmds[i].indexOf("_sahi._call") != -1 && cmds[i].indexOf("_sahi._callServer") == -1) {
+                            var bkup = this.schedule;
                             var exc = null;
-                            sahiSchedule = sahiInstant;
+                            this.schedule = this.instant;
                             try {
                                 eval(cmds[i]);
                             } catch(e) {
                                 exc = e;
                             }
-                            sahiSchedule = bkup;
+                            this.schedule = bkup;
                             if (exc) {
                                 _isLocal = false;
-                                _sahiCmdsLocal = new Array();
-                                sahiSetRetries(MAX_RETRIES);
+                                this.cmdsLocal = new Array();
+                                this.setRetries(MAX_RETRIES);
                                 throw exc;
                             }
-                            _isLocal = (_sahiCmdsLocal.length > 0);
+                            _isLocal = (this.cmdsLocal.length > 0);
                             //sahi_alert("Calling");
-                            sahiEx(isStep);
+                            this.ex(isStep);
                         } else {
                             eval(cmds[i]);
-                            sahiReportSuccess(cmds[i], debugInfo);
+                            this.reportSuccess(cmds[i], debugInfo);
                         }
                     } catch(e) {
-                        sahiSetCurrentIndex(i);
+                        this.setCurrentIndex(i);
                         throw e;
                     }
                 } catch (ex1) {
                     if (ex1 instanceof SahiAssertionException) {
-                        var retries = sahiGetRetries();
+                        var retries = this.getRetries();
                         if (retries < MAX_RETRIES / 2) {
-                            sahiSetRetries(retries + 1);
+                            this.setRetries(retries + 1);
                             interval = ONERROR_INTERVAL;
-                            sahiExecNextStep(isStep, interval);
+                            this.execNextStep(isStep, interval);
                             return;
                         } else {
-                            debugInfo = "" + debugs[i];
+                            var debugInfo = "" + debugs[i];
                             var failureMsg = "Assertion Failed. " + (ex1.messageText ? ex1.messageText : "");
-                            sahiLogPlayBack(cmds[i], "failure", debugInfo, failureMsg);
-                            sahiSetRetries(0);
-                            sahiSetCurrentIndex(i + 1);
-                            sahiGotErrors(true);
+                            this.logPlayBack(cmds[i], "failure", debugInfo, failureMsg);
+                            this.setRetries(0);
+                            this.setCurrentIndex(i + 1);
+                            this.gotErrors(true);
                         }
                     } else if (ex1 instanceof SahiNotMyWindowException) {
                         throw ex1;
@@ -2119,64 +2118,64 @@ function sahiEx(isStep) {
                         throw ex1;
                     }
                 }
-                interval = _sahi_wait > 0 ? _sahi_wait : INTERVAL;
-                _sahi_wait = -1;
+                interval = this.waitInterval > 0 ? this.waitInterval : INTERVAL;
+                this.waitInterval = -1;
             }
             else {
                 return;
             }
         } catch(ex) {
-            var retries = sahiGetRetries();
+            var retries = this.getRetries();
             if (retries < MAX_RETRIES) {
-                sahiSetRetries(retries + 1);
+                this.setRetries(retries + 1);
                 interval = ONERROR_INTERVAL;
             }                                                         
             else {
                 var debugInfo = "" + debugs[i];
-                if (sahiGetServerVar("sahi_play") == "1") {
-                    sahiLogPlayBack(cmds[i], "error", debugInfo, sahiGetExceptionString(ex));
+                if (this.getServerVar("sahi_play") == "1") {
+                    this.logPlayBack(cmds[i], "error", debugInfo, this.getExceptionString(ex));
                 }
-                sahiGotErrors(true);
-                sahiStopPlaying();
+                this.gotErrors(true);
+                this.stopPlaying();
             }
         }
-        sahiExecNextStep(isStep, interval);
+        this.execNextStep(isStep, interval);
     } catch(ex2) {
-        if (isSahiPlaying()) {
-            sahiExecNextStep(isStep, interval);
+        if (this.isPlaying()) {
+            this.execNextStep(isStep, interval);
         }
     }
 }
-function canEvalInBase(cmd) {
-    return  (sahiTop().opener == null && !isForPopup(cmd)) || (sahiTop().opener && sahiTop().opener.sahiTop() == sahiTop());
+Sahi.prototype.canEvalInBase = function (cmd) {
+    return  (this.top().opener == null && !this.isForPopup(cmd)) || (this.top().opener && this.top().opener._sahi.top() == this.top());
 }
-function isForPopup(cmd) {
+Sahi.prototype.isForPopup = function (cmd) {
     return cmd.indexOf("sahi_popup") == 0;
 }
-function canEval(cmd) {
-    return (sahiTop().opener == null && !isForPopup(cmd)) // for base window
-            || (sahiTop().opener && sahiTop().opener.sahiTop() == sahiTop()) // for links in firefox
-            || (sahiTop().opener != null && isForPopup(cmd));
+Sahi.prototype.canEval = function (cmd) {
+    return (this.top().opener == null && !this.isForPopup(cmd)) // for base window
+            || (this.top().opener && this.top().opener._sahi.top() == this.top()) // for links in firefox
+            || (this.top().opener != null && this.isForPopup(cmd));
     // for popups
 }
-function pause() {
-    sahiTop()._isSahiPaused = true;
-    sahiSetServerVar("sahi_paused", 1);
+Sahi.prototype.pause = function () {
+    this._isPaused = true;
+    this.setServerVar("sahi_paused", 1);
 }
-function unpause() {
-    sahiTop()._isSahiPaused = false;
-    sahiSetServerVar("sahi_paused", 0);
-    sahiSetServerVar("sahi_play", 1);
-    sahiTop()._isSahiPlaying = true;
+Sahi.prototype.unpause = function () {
+    this._isPaused = false;
+    this.setServerVar("sahi_paused", 0);
+    this.setServerVar("sahi_play", 1);
+    this.top()._sahi._isPlaying = true;
 }
-function isPaused() {
-    if (sahiTop()._isSahiPaused == null)
-        sahiTop()._isSahiPaused = sahiGetServerVar("sahi_paused") == "1";
-    return sahiTop()._isSahiPaused;
+Sahi.prototype.isPaused = function () {
+    if (this.top()._sahi._isPaused == null)
+        this.top()._sahi._isPaused = this.getServerVar("sahi_paused") == "1";
+    return this.top()._sahi._isPaused;
 }
-function updateControlWinDisplay(s, i) {
+Sahi.prototype.updateControlWinDisplay = function (s, i) {
     try {
-        var controlWin = getSahiWinHandle();
+        var controlWin = this.getWinHandle();
         if (controlWin && !controlWin.closed) {
             if (i) controlWin.main.displayStepNum(i + 1);
             controlWin.main.displayLogs(s);
@@ -2184,73 +2183,73 @@ function updateControlWinDisplay(s, i) {
     } catch(ex) {
     }
 }
-function sahiSetCurrentIndex(i) {
+Sahi.prototype.setCurrentIndex = function (i) {
     if (_isLocal) {
-        sahiSetServerVar("sahiLocalIx", i);
+        this.setServerVar("this.localIx", i);
     }
-    else sahiSetServerVar("sahiIx", i);
+    else this.setServerVar("this.ix", i);
 }
-function sahiGetCurrentIndex() {
-    if (_sahiCmdsLocal.length > 0) {
-        var i = parseInt(sahiGetServerVar("sahiLocalIx"));
+Sahi.prototype.getCurrentIndex = function () {
+    if (this.cmdsLocal.length > 0) {
+        var i = parseInt(this.getServerVar("this.localIx"));
         var localIx = ("" + i != "NaN") ? i : 0;
-        if (_sahiCmdsLocal.length == localIx) {
-            _sahiCmdsLocal = new Array();
-            sahiSetServerVar("sahiLocalIx", 0);
+        if (this.cmdsLocal.length == localIx) {
+            this.cmdsLocal = new Array();
+            this.setServerVar("this.localIx", 0);
             _isLocal = false;
         } else {
             return localIx;
         }
     }
-    var i = parseInt(sahiGetServerVar("sahiIx"));
+    var i = parseInt(this.getServerVar("this.ix"));
     return ("" + i != "NaN") ? i : 0;
 }
-function isSahiPlaying() {
-    if (sahiTop()._isSahiPlaying == null)
-        sahiTop()._isSahiPlaying = sahiGetServerVar("sahi_play") == "1";
-    return sahiTop()._isSahiPlaying;
+Sahi.prototype.isPlaying = function () {
+    if (this.top().Sahi._isPlaying == null)
+        this.top().Sahi._isPlaying = this.getServerVar("sahi_play") == "1";
+    return this.top().Sahi._isPlaying;
 }
-function sahiPlayManual(ix) {
-    sahiGotErrors(false);
-    sahiSetCurrentIndex(ix);
-    unpause();
-    sahiEx();
+Sahi.prototype.playManual = function (ix) {
+    this.gotErrors(false);
+    this.setCurrentIndex(ix);
+    this.unpause();
+    this.ex();
 }
-function sahiStartPlaying() {
-    sahiSendToServer("/_s_/dyn/Player_start");
-    sahiSetServerVar("sahi_play", 1);
-    //	sahiTop()._isSahiPlaying = true;
+Sahi.prototype.startPlaying = function () {
+    this.sendToServer("/_s_/dyn/Player_start");
+    this.setServerVar("sahi_play", 1);
+    //	this.top()._isPlaying = true;
 }
-function sahiStepWisePlay() {
-    sahiSendToServer("/_s_/dyn/Player_stepWisePlay");
+Sahi.prototype.stepWisePlay = function () {
+    this.sendToServer("/_s_/dyn/Player_stepWisePlay");
 }
-function sahiStopPlaying() {
-    sahiSendToServer("/_s_/dyn/Player_stop");
-    sahiSetServerVar("sahi_play", 0);
-    updateControlWinDisplay("--Stopped Playback: " + (sahiHadErrors() ? "FAILURE" : "SUCCESS") + "--");
-    sahiGotErrors(false);
-    sahiTop()._isSahiPlaying = false;
+Sahi.prototype.stopPlaying = function () {
+    this.sendToServer("/_s_/dyn/Player_stop");
+    this.setServerVar("sahi_play", 0);
+    this.updateControlWinDisplay("--Stopped Playback: " + (this.hadErrors() ? "FAILURE" : "SUCCESS") + "--");
+    this.gotErrors(false);
+    this.top().Sahi._isPlaying = false;
 }
-function sahiStartRecording() {
-    sahiTop()._isSahiRecording = true;
-    sahiAddHandlersToAllFrames(sahiTop());
+Sahi.prototype.startRecording = function () {
+    this.top().Sahi._isRecording = true;
+    this.addHandlersToAllFrames(this.top());
 }
-function sahiStopRecording() {
-    sahiTop()._isSahiRecording = false;
-    sahiSendToServer("/_s_/dyn/Recorder_stop");
-    sahiSetServerVar("sahi_record", 0);
+Sahi.prototype.stopRecording = function () {
+    this.top().Sahi._isRecording = false;
+    this.sendToServer("/_s_/dyn/Recorder_stop");
+    this.setServerVar("sahi_record", 0);
 }
-function sahiReportSuccess(msg, debugInfo) {
+Sahi.prototype.reportSuccess = function (msg, debugInfo) {
     var type = (msg.indexOf("sahi_assert") == 0) ? "success" : "info";
-    //sahiSendToServer("/_s_/dyn/Player_success?msg=" + sahiEscape(msg) + "&type=" + type + "&debugInfo=" + (debugInfo?sahiEscape(debugInfo):""));
-    sahiLogPlayBack(msg, type, debugInfo);
+    //this.sendToServer("/_s_/dyn/Player_success?msg=" + this.escape(msg) + "&type=" + type + "&debugInfo=" + (debugInfo?this.escape(debugInfo):""));
+    this.logPlayBack(msg, type, debugInfo);
 }
-function sahiLogPlayBack(msg, type, debugInfo, failureMsg) {
-    //sahiSendToServer("/_s_/dyn/Log?msg=" + sahiEscape(msg) + "&type=" + type + "&debugInfo=" + (debugInfo?sahiEscape(debugInfo):""));
-    sahiSendToServer("/_s_/dyn/TestReporter_logTestResult?msg=" + sahiEscape(msg) + "&type=" + type
-            + "&debugInfo=" + (debugInfo ? sahiEscape(debugInfo) : "") + (failureMsg ? "&failureMsg=" + sahiEscape(failureMsg) : ""));
+Sahi.prototype.logPlayBack = function (msg, type, debugInfo, failureMsg) {
+    //this.sendToServer("/_s_/dyn/Log?msg=" + this.escape(msg) + "&type=" + type + "&debugInfo=" + (debugInfo?this.escape(debugInfo):""));
+    this.sendToServer("/_s_/dyn/TestReporter_logTestResult?msg=" + this.escape(msg) + "&type=" + type
+            + "&debugInfo=" + (debugInfo ? this.escape(debugInfo) : "") + (failureMsg ? "&failureMsg=" + this.escape(failureMsg) : ""));
 }
-function sahiTrim(s) {
+Sahi.prototype.trim = function (s) {
     if (s == null) return s;
     if ((typeof s) != "string") return s;
     s = s.replace(/&nbsp;/g, ' ');
@@ -2260,7 +2259,7 @@ function sahiTrim(s) {
     s = s.replace(/[\t\n\r]{1,}/g, ' ');
     return s;
 }
-function sahiList(el) {
+Sahi.prototype.list = function (el) {
     var s = "";
     var f = "";
     var j = 0;
@@ -2287,69 +2286,40 @@ function sahiList(el) {
     }
     return s + "\n\n-----Functions------\n\n" + f;
 }
-//function sahiList(el, p) {
-//    var s = "";
-//    var j = 0;
-//    for (var i in el) {
-//        if (!p || ("" + i).indexOf(p) != -1) {
-//            s += i + "=" + el[i] + ";<br>";
-//            j++;
-//            //            if (j%4==0) s+="\n";
-//        }
-//    }
-//    return s;
-//}
-function debug(s) {
-    var win = window.open("", "_blank");
-    win.document.write(s);
-}
-function arrayCopy(ar1, ar2) {
-    var ar = new Array();
-    for (var i = 0; i < ar1.length; i++) {
-        ar[ar.length] = ar1[i];
-    }
-    for (var i = 0; i < ar2.length; i++) {
-        ar[ar.length] = ar2[i];
-    }
-    return ar;
-}
-function getElementOrArray(ar) {
-    if (ar && ar.length == 1) return ar[0];
-    return ar;
-}
-function sahiFindInArray(ar, el) {
+
+Sahi.prototype.findInArray = function (ar, el) {
     for (var i = 0; i < ar.length; i++) {
         if (ar[i] == el) return i;
     }
     return -1;
 }
-function sahiIsIE() {
+Sahi.prototype.isIE = function () {
     var browser = navigator.appName;
     return browser == "Microsoft Internet Explorer";
 }
-function sahiCreateRequestObject() {
+Sahi.prototype.createRequestObject = function () {
     var obj;
-    if (sahiIsIE()) {
+    if (this.isIE()) {
         obj = new ActiveXObject("Microsoft.XMLHTTP");
     } else {
         obj = new XMLHttpRequest();
     }
     return obj;
 }
-function sahiGetServerVar(name) {
-    var v = sahiSendToServer("/_s_/dyn/SessionState_getVar?name=" + sahiEscape(name));
+Sahi.prototype.getServerVar = function (name) {
+    var v = this.sendToServer("/_s_/dyn/SessionState_getVar?name=" + this.escape(name));
     if (v == "null") return null;
     return v;
 }
-function sahiSetServerVar(name, value) {
-    sahiSendToServer("/_s_/dyn/SessionState_setVar?name=" + sahiEscape(name) + "&value=" + sahiEscape(value));
+Sahi.prototype.setServerVar = function (name, value) {
+    this.sendToServer("/_s_/dyn/SessionState_setVar?name=" + this.escape(name) + "&value=" + this.escape(value));
 }
-function sahiLogErr(msg) {
+Sahi.prototype.logErr = function (msg) {
     //    return;
-    sahiSendToServer("/_s_/dyn/Log?msg=" + sahiEscape(msg) + "&type=err");
+    this.sendToServer("/_s_/dyn/Log?msg=" + this.escape(msg) + "&type=err");
 }
 
-function sahiGetParentNode(el, tagName) {
+Sahi.prototype.getParentNode = function (el, tagName) {
     var parent = el.parentNode;
     while (parent && parent.tagName.toLowerCase() != "body" && parent.tagName.toLowerCase() != "html") {
         if (parent.tagName.toLowerCase() == tagName.toLowerCase()) return parent;
@@ -2357,10 +2327,10 @@ function sahiGetParentNode(el, tagName) {
     }
     return null;
 }
-function sahiSendToServer(url) {
+Sahi.prototype.sendToServer = function (url) {
     try {
         var rand = (new Date()).getTime() + Math.floor(Math.random() * (10000));
-        var http = sahiCreateRequestObject();
+        var http = this.createRequestObject();
         url = url + (url.indexOf("?") == -1 ? "?" : "&") + "t=" + rand;
         var post = url.substring(url.indexOf("?") + 1);
         url = url.substring(0, url.indexOf("?"));
@@ -2368,28 +2338,28 @@ function sahiSendToServer(url) {
         http.send(post);
         return http.responseText;
     } catch(ex) {
-        sahiHandleException(ex)
+        this.handleException(ex)
     }
 }
-function s_v(v) {
+s_v = function (v) {
     var type = typeof v;
     if (type == "number") return v;
     else if (type == "string") return "\"" + v + "\"";
     else return v;
 }
-function quoted(s) {
+Sahi.prototype.quoted = function (s) {
     return '"' + s.replace(/"/g, '\\"') + '"';
 }
-function sahiHandleException(e) {
+Sahi.prototype.handleException = function (e) {
     //	alert(e);
     //	throw e;
 }
-function sahiGetText(el) {
+Sahi.prototype.getText = function (el) {
     if (el.innerHTML)
-        return sahiGetTextFromHTML(el.innerHTML);
+        return this.getTextFromHTML(el.innerHTML);
     return null;
 }
-function sahiGetTextFromHTML(s) {
+Sahi.prototype.getTextFromHTML = function (s) {
     s = s.replace(/<[^>]*>/g, "");
     s = s.replace(/&amp;/g, "&");
     s = s.replace(/&lt;/g, "<");
@@ -2397,17 +2367,17 @@ function sahiGetTextFromHTML(s) {
     s = s.replace(/&nbsp;/g, " ");
     return s;
 }
-function sahiConvertUnicode(source) {
+Sahi.prototype.convertUnicode = function (source) {
     if (source == null) return null;
     var result = '';
-    for (i = 0; i < source.length; i++) {
+    for (var i = 0; i < source.length; i++) {
         if (source.charCodeAt(i) > 127)
-            result += addSlashU(source.charCodeAt(i).toString(16));
+            result += this.addSlashU(source.charCodeAt(i).toString(16));
         else result += source.charAt(i);
     }
     return result;
 }
-function addSlashU(num) {
+Sahi.prototype.addSlashU = function (num) {
     var buildU
     switch (num.length) {
         case 1:
@@ -2426,68 +2396,74 @@ function addSlashU(num) {
     return buildU;
 }
 
-function sahiOnBeforeUnLoad() {
-    window.sahiLoaded = false;
+var _sahiOnBeforeUnLoad = function () {
+    _sahi.onBeforeUnLoad();
+}
+Sahi.prototype.onBeforeUnLoad = function () {
+    this.loaded = false;
 }
 /*
-function trap1(e){
+trap1 = function (e){
 	if (!e) e = window.event;
-	if (sahiTop()._sahiControl) debug(sahiList(e));
+	if (this.top().Sahi._control) debug(this.list(e));
 	if (prevDown) prevDown(e);
 }
 var prevDown = null;
 */
-function sahiInit(e) {
+var _sahiInit = function (e){
+    _sahi.init(e);
+}
+Sahi.prototype.init = function (e) {
     try {
-        window.sahiLoaded = true;
-        sahiActivateHotKey();
+        this.loaded = true;
+        this.activateHotKey();
     } catch(ex) {
-        sahiHandleException(ex);
+        this.handleException(ex);
     }
-    sahiRedefineDocWrite();
+    this.redefineDocWrite();
 
     try {
-        if (self == sahiTop()) {
-            sahiPlay();
+        if (self == this.top()) {
+            this.play();
         }
-        if (sahiIsRecording()) sahiAddHandlers();
+        if (this.isRecording()) this.addHandlers();
     } catch(ex) {
         //		throw ex;
-        sahiHandleException(ex);
+        this.handleException(ex);
     }
 }
-function sahiActivateHotKey() {
+Sahi.prototype.activateHotKey = function () {
     try {
-        sahiAddEvent(document, "dblclick", sahiOpenControllerWindow);
-        sahiAddEvent(document, "mousemove", sahiMouseOver);
-        if (isSafariLike()) {
+        this.addEvent(document, "dblclick", Sahi.openControllerWindow);
+        this.addEvent(document, "mousemove", this.mouseOver);
+        if (this.isSafariLike()) {
             var prev = document.ondblclick;
             document.ondblclick = function(e) {
                 if (prev != null) prev(e);
-                sahiOpenControllerWindow(e)
+                this.openControllerWindow(e)
             };
         }
     } catch(ex) {
-        sahiHandleException(ex);
+        this.handleException(ex);
     }
 }
-function sahiIsFirstExecutableFrame() {
-    var fs = sahiTop().frames;
+Sahi.prototype.isFirstExecutableFrame = function () {
+    var fs = this.top().frames;
     for (var i = 0; i < fs.length; i++) {
-        if (self == sahiTop().frames[i]) return true;
-        if ("" + (typeof sahiTop().frames[i].location) != "undefined") { // = undefined when previous frames are not accessible due to some reason (may be from diff domain)
+        if (self == this.top().frames[i]) return true;
+        if ("" + (typeof this.top().frames[i].location) != "undefined") { // = undefined when previous frames are not accessible due to some reason (may be from diff domain)
             return false;
         }
     }
     return false;
 }
-function getScript(info) {
-    var accessor = escapeDollar(getAccessor1(info));
+Sahi.prototype.getScript = function (info) {
+    var accessor = this.escapeDollar(this.getAccessor1(info));
     if (accessor == null) return null;
     var ev = info.event;
     var value = info.value;
     var type = info.type
-    var popup = getPopupName();
+    var popup = this.getPopupName();
 
     var cmd = null;
     if (value == null)
@@ -2497,22 +2473,22 @@ function getScript(info) {
     } else if (ev == "click") {
         cmd = "_click(" + accessor + ");";
     } else if (ev == "setvalue") {
-        cmd = "_setValue(" + accessor + ", " + sahiQuotedEscapeValue(value) + ");";
+        cmd = "_setValue(" + accessor + ", " + this.quotedEscapeValue(value) + ");";
     } else if (ev == "setselected") {
-        cmd = "_setSelected(" + accessor + ", " + sahiQuotedEscapeValue(value) + ");";
+        cmd = "_setSelected(" + accessor + ", " + this.quotedEscapeValue(value) + ");";
     } else if (ev == "assert") {
         cmd = "_assertNotNull(" + accessor + ");\r\n";
         if (type == "cell") {
-            cmd += "_assertEqual(" + sahiQuotedEscapeValue(value) + ", _getText(" + accessor + "));\n";
-            cmd += "_assertContainsText(" + sahiQuotedEscapeValue(value) + ", " + accessor + ");";
+            cmd += "_assertEqual(" + this.quotedEscapeValue(value) + ", _getText(" + accessor + "));\n";
+            cmd += "_assertContainsText(" + this.quotedEscapeValue(value) + ", " + accessor + ");";
         } else if (type == "select-one" || type == "select-multiple") {
-            cmd += "_assertEqual(" + sahiQuotedEscapeValue(value) + ", _getSelectedText(" + accessor + "));";
+            cmd += "_assertEqual(" + this.quotedEscapeValue(value) + ", _getSelectedText(" + accessor + "));";
         } else if (type == "text" || type == "textarea" || type == "password") {
-            cmd += "_assertEqual(" + sahiQuotedEscapeValue(value) + ", " + accessor + ".value);";
+            cmd += "_assertEqual(" + this.quotedEscapeValue(value) + ", " + accessor + ".value);";
         } else if (type == "checkbox" || type == "radio") {
             cmd += "_assert" + ("true" == "" + value ? "" : "Not" ) + "True(" + accessor + ".checked);";
         } else if (type != "link" && type != "img") {
-            cmd += "_assertContainsText(" + sahiQuotedEscapeValue(value) + ", " + accessor + ");";
+            cmd += "_assertContainsText(" + this.quotedEscapeValue(value) + ", " + accessor + ");";
         }
     }
     else
@@ -2521,7 +2497,7 @@ function getScript(info) {
         } else if (ev == "mark") {
             cmd = "//MARK: " + value;
         } else if (ev == "setFile") {
-            cmd = "_setFile(" + accessor + ", " + sahiQuotedEscapeValue(value) + ");";
+            cmd = "_setFile(" + accessor + ", " + this.quotedEscapeValue(value) + ");";
         }
     if (cmd != null && popup != null && popup != "") {
         cmd = "_popup(\"" + popup + "\")." + cmd;
@@ -2529,47 +2505,47 @@ function getScript(info) {
     return cmd;
 }
 
-function sahiQuotedEscapeValue(s) {
-    return quoted(sahiEscapeValue(s));
+Sahi.prototype.quotedEscapeValue = function (s) {
+    return this.quoted(this.escapeValue(s));
 }
 
-function sahiEscapeValue(s) {
+Sahi.prototype.escapeValue = function (s) {
     if (s == null || typeof s != "string") return s;
-    return sahiConvertUnicode(s.replace(/\r/g, "").replace(/\\/g, "\\\\").replace(/\n/g, "\\n"));
+    return this.convertUnicode(s.replace(/\r/g, "").replace(/\\/g, "\\\\").replace(/\n/g, "\\n"));
 }
 
-function sahiEscape(s) {
+Sahi.prototype.escape = function (s) {
     if (s == null) return s;
     return escape(s).replace(/[+]/g, "%2B");
 }
 
-function sahiSaveCondition(a) {
-    sahi_setGlobal("condn" + sahiGetCurrentIndex(), a ? "true" : "false");
-    _sahiCmds = new Array();
-    _sahiCmdDebugInfo = new Array();
-    eval(_sahiExecSteps);
+Sahi.prototype.saveCondition = function (a) {
+    this._setGlobal("condn" + this.getCurrentIndex(), a ? "true" : "false");
+    this.cmds = new Array();
+    this.cmdDebugInfo = new Array();
+    eval(_sahi.execSteps);
 }
 
-function sahiQuoteIfString(shortHand) {
+Sahi.prototype.quoteIfString = function (shortHand) {
     if (("" + shortHand).match(/^[0-9]+$/)) return shortHand;
-    return sahiQuotedEscapeValue(shortHand);
+    return this.quotedEscapeValue(shortHand);
 }
 
 
-function sahi_execute(command, sync) {
+Sahi.prototype._execute = function (command, sync) {
     var is_sync = sync ? "true" : "false";
-    var status = sahi_callServer("CommandInvoker_execute", "command=" + escape(command) + "&sync=" + is_sync);
+    var status = this._callServer("CommandInvoker_execute", "command=" + escape(command) + "&sync=" + is_sync);
     if ("success" != status) {
         throw new Error("Execute Command Failed!");
     }
 }
 
-sahiActivateHotKey();
+Sahi.prototype.activateHotKey();
 
-function sahi_style(el, style) {  //http://dhtmlkitchen.com/
+Sahi.prototype._style = function (el, style) {  //http://dhtmlkitchen.com/
     if (!document.getElementById) return;
 
-    var value = el.style[toCamelCase(style)];
+    var value = el.style[this.toCamelCase(style)];
 
     if (!value)
         if (document.defaultView)
@@ -2582,71 +2558,70 @@ function sahi_style(el, style) {  //http://dhtmlkitchen.com/
     return value;
 }
 
-function toCamelCase(s) {
-    for (var exp = toCamelCase.exp;
-         exp.test(s); s = s.replace(exp, RegExp.$1.toUpperCase()));
+Sahi.prototype.toCamelCase = function (s) {
+    var exp = /-([a-z])/
+    for (;exp.test(s); s = s.replace(exp, RegExp.$1.toUpperCase()));
     return s;
 }
 // document.write start
 xxs = "<script src='/_s_/spr/concat.js'></scr" + "ipt>" +
-          "<script src='http://www.sahidomain.com/_s_/dyn/SessionState/state.js'></scr" + "ipt>" +
-          "<script src='http://www.sahidomain.com/_s_/dyn/Player_script/script.js'></scr" + "ipt>" +
+          "<script src='http://www.this.domain.com/_s_/dyn/SessionState/state.js'></scr" + "ipt>" +
+          "<script src='http://www.this.domain.com/_s_/dyn/Player_script/script.js'></scr" + "ipt>" +
           "<script src='/_s_/spr/playback.js'></scr" + "ipt>";
 
-function sahiDocClose() {
-    if (sahiIsIE()) {
-        sahiOldDocWrite(sahiBuffer);
+Sahi.prototype.docClose = function () {
+    if (this.isIE()) {
+        this.oldDocWrite(this.buffer);
         document.write(xxs);
         document.close();
-        window.sahiLoaded = true;
-        sahiPlay();
+        this.loaded = true;
+        this.play();
     } else {
-//        document.sahiOldDocWrite(document.sahiprefix + sahiBuffer + "<script>document.sahiOldDocClose()</scr"+"ipt>");
-////        document.sahiOldDocWrite(sahiBuffer);
+//        document.this.oldDocWrite(document.this.prefix + this.buffer + "<script>document.this.oldDocClose()</scr"+"ipt>");
+////        document.this.oldDocWrite(this.buffer);
 ////        document.close();
 //        sahi_real_alert(xxs);
 //        try{
-////            document.sahiOldDocWrite(document.sahiprefix);
+////            document.this.oldDocWrite(document.this.prefix);
 //        }catch(e){}
 //        try{
-//            document.sahiOldDocClose();
+//            document.this.oldDocClose();
 //        }catch(e){}
-//        window.sahiLoaded = true;
-//        sahiPlay();
+//        window.this.loaded = true;
+//        this.play();
     }
 }
-var sahiBuffer = "";
-function sahiDocWrite(s) {
-    sahiBuffer += s;
+Sahi.buffer = "";
+Sahi.prototype.docWrite = function (s) {
+    Sahi.buffer += s;
 }
-function sahiRedefineDocWrite(){
-    if (sahiIsIE()){
-//        sahiOldDocWrite = document.write;
-//        sahiOldDocClose = document.close;
-//        document.write = sahiDocWrite;
-//        document.close = sahiDocClose;
+Sahi.prototype.redefineDocWrite = function (){
+    if (this.isIE()){
+//        this.oldDocWrite = document.write;
+//        this.oldDocClose = document.close;
+//        document.write = this.docWrite;
+//        document.close = this.docClose;
     }
     else{
-//        Document.prototype.sahiprefix = xxs;
-//        Document.prototype.sahiOldDocWrite = document.write;
-//        Document.prototype.sahiOldDocClose = document.close;
-//        document.write = sahiDocWrite;
-//        document.close = sahiDocClose;
+//        Document.prototype.this.prefix = xxs;
+//        Document.prototype.this.oldDocWrite = document.write;
+//        Document.prototype.this.oldDocClose = document.close;
+//        document.write = this.docWrite;
+//        document.close = this.docClose;
     }
 
 }
 // document.write end
 
-toCamelCase.exp = /-([a-z])/;
 
 window.sahi_real_alert = window.alert;
 window.sahi_real_confirm = window.confirm;
 window.sahi_real_prompt = window.prompt;
 
-window.sahiAlert = window.alert;
-window.sahiConfirm = window.confirm;
-window.sahiPrompt = window.prompt;
+window._sahi.alert = window.alert;
+window._sahi.confirm = window.confirm;
+window._sahi.prompt = window.prompt;
 
-window.alert = sahiAlertMock;
-window.confirm = sahConfirmMock;
-window.prompt = sahPromptMock;
+window.alert = Sahi.alertMock;
+window.confirm = Sahi.confirmMock;
+window.prompt = Sahi.promptMock;
