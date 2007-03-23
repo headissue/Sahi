@@ -17,7 +17,7 @@ public class ScriptHandlerTest extends TestCase {
     }
 
     public void testModify() {
-        assertEquals("sahiSchedule(\"sahi_setValue ( elements['username'] , 'test'+\"+s_v($ix)+\" )\", \"fileName&n=1\");\r\n", script.modify("_setValue ( elements['username'] , 'test'+$ix )"));
+        assertEquals("_sahi.schedule(\"_sahi._setValue ( elements['username'] , 'test'+\"+s_v($ix)+\" )\", \"fileName&n=1\");\r\n", script.modify("_setValue ( elements['username'] , 'test'+$ix )"));
     }
 
     public void testSeparateVariables(){
@@ -50,14 +50,14 @@ public class ScriptHandlerTest extends TestCase {
     }
 
     public void testModifyFunctionNames(){
-        assertEquals("sahi_setValue ( sahi_textbox('username') , 'test'+$ix )", script.modifyFunctionNames("_setValue ( _textbox('username') , 'test'+$ix )"));
-        assertEquals("sahi_setValue(sahi_textbox('username') , 'test'+$ix )", script.modifyFunctionNames("_setValue(_textbox('username') , 'test'+$ix )"));
-        assertEquals("sahi_click(sahi_image(\"Link Quote Application \" + sahi_getCellText(sahi_accessor(\"top.content.creditFrameContent.document.getElementById('tblRecentlyAccessedQuotes').rows[3].cells[1]\"))));", script.modifyFunctionNames("_click(_image(\"Link Quote Application \" + _getCellText(_accessor(\"top.content.creditFrameContent.document.getElementById('tblRecentlyAccessedQuotes').rows[3].cells[1]\"))));"));
+        assertEquals("_sahi._setValue ( _sahi._textbox('username') , 'test'+$ix )", script.modifyFunctionNames("_setValue ( _textbox('username') , 'test'+$ix )"));
+        assertEquals("_sahi._setValue(_sahi._textbox('username') , 'test'+$ix )", script.modifyFunctionNames("_setValue(_textbox('username') , 'test'+$ix )"));
+        assertEquals("_sahi._click(_sahi._image(\"Link Quote Application \" + _sahi._getCellText(_sahi._accessor(\"top.content.creditFrameContent.document.getElementById('tblRecentlyAccessedQuotes').rows[3].cells[1]\"))));", script.modifyFunctionNames("_click(_image(\"Link Quote Application \" + _getCellText(_accessor(\"top.content.creditFrameContent.document.getElementById('tblRecentlyAccessedQuotes').rows[3].cells[1]\"))));"));
     }
 
     public void testStripSahiFromFunctionNames(){
-        assertEquals("_setValue ( _textbox('username') , 'test'+$ix )", script.stripSahiFromFunctionNames( "sahi_setValue ( sahi_textbox('username') , 'test'+$ix )"  ));
-        assertEquals("_setValue(_textbox('username') , 'test'+$ix )", script.stripSahiFromFunctionNames( "sahi_setValue(sahi_textbox('username') , 'test'+$ix )"));
+        assertEquals("_setValue ( _textbox('username') , 'test'+$ix )", script.stripSahiFromFunctionNames( "_sahi._setValue ( _sahi._textbox('username') , 'test'+$ix )"  ));
+        assertEquals("_setValue(_textbox('username') , 'test'+$ix )", script.stripSahiFromFunctionNames( "_sahi._setValue(_sahi._textbox('username') , 'test'+$ix )"));
     }
 
     private class MockFileScript extends FileScript{

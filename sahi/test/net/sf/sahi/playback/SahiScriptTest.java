@@ -20,59 +20,59 @@ public class SahiScriptTest extends TestCase {
 	}
 
 	public void testModify() {
-        assertEquals("sahiSchedule(\"sahi_assertEqual(sahi_table(\\\"aa\\\"))\", \"scrName&n=1\");\r\n",
+        assertEquals("_sahi.schedule(\"_sahi._assertEqual(_sahi._table(\\\"aa\\\"))\", \"scrName&n=1\");\r\n",
                 testScript.modify("_assertEqual(_table(\"aa\"))"));
 
-		assertEquals("sahi_assertEqual(sahi_table(\"aa\"))\r\n", testScript
+		assertEquals("_sahi._assertEqual(_sahi._table(\"aa\"))\r\n", testScript
 				.modify("__assertEqual(_table(\"aa\"))"));
 
-		assertEquals("if(sahi_table(\"aa\"))\r\n", testScript.modify("if(_table(\"aa\"))"));
+		assertEquals("if(_sahi._table(\"aa\"))\r\n", testScript.modify("if(_table(\"aa\"))"));
 
 		assertEquals(
-				"sahiSchedule(\"sahi_setGlobal(\\\"newFinanceTypeName\\\", \'sahiTestFT\'+sahi_random(10000))\", \"scrName&n=1\");\r\n",
+				"_sahi.schedule(\"_sahi._setGlobal(\\\"newFinanceTypeName\\\", \'sahiTestFT\'+_sahi._random(10000))\", \"scrName&n=1\");\r\n",
 				testScript
 						.modify("_setGlobal(\"newFinanceTypeName\", \'sahiTestFT\'+_random(10000))"));
 
-		assertEquals("var $n = sahi_getGlobal(\"nv\");\r\n", testScript
+		assertEquals("var $n = _sahi._getGlobal(\"nv\");\r\n", testScript
 				.modify("var $n = _getGlobal(\"nv\");\r\n"));
 
-		assertEquals("var $n = sahi_getGlobal(\"nv\");\r\n", testScript
-				.modify("var $n = sahi_getGlobal(\"nv\");\r\n"));
+		assertEquals("var $n = _sahi._getGlobal(\"nv\");\r\n", testScript
+				.modify("var $n = _sahi._getGlobal(\"nv\");\r\n"));
 
-		assertEquals("sahi_setGlobal(\"n\", \'aa\'+sahi_random(10000));\r\n", testScript
-				.modify("sahi_setGlobal(\"n\", \'aa\'+_random(10000));"));
+		assertEquals("_sahi._setGlobal(\"n\", \'aa\'+_sahi._random(10000));\r\n", testScript
+				.modify("_sahi._setGlobal(\"n\", \'aa\'+_random(10000));"));
 
-		assertEquals("sahi_textbox(\"username\").value=\"kk\";\r\n", testScript
+		assertEquals("_sahi._textbox(\"username\").value=\"kk\";\r\n", testScript
 				.modify("_textbox(\"username\").value=\"kk\";"));
 
-		assertEquals("sahi_textbox(\"username\").value=\"kk\";\r\n", testScript
+		assertEquals("_sahi._textbox(\"username\").value=\"kk\";\r\n", testScript
 				.modify("__textbox(\"username\").value=\"kk\";"));
-		assertEquals("sahiSchedule(\"sahi_call(fn1())\", \"scrName&n=1\");\r\n", testScript
+		assertEquals("_sahi.schedule(\"_sahi._call(fn1())\", \"scrName&n=1\");\r\n", testScript
 				.modify("_call(fn1())"));
 
-        assertEquals("sahiSchedule(\"sahi_click(\"+s_v($ar[$i[1][\"COL\"]])+\")\", \"scrName&n=1\");\r\n", testScript
+        assertEquals("_sahi.schedule(\"_sahi._click(\"+s_v($ar[$i[1][\"COL\"]])+\")\", \"scrName&n=1\");\r\n", testScript
 				.modify("_click($ar[$i[1][\"COL\"]])"));
 
 	}
 
 	public void testKeywordsAsASubstringFails() {
 		assertEquals(
-				"sahiSchedule(\"sahi_setValue(sahi_textbox (\\\"form_loginname\\\"), \\\"narayanraman\\\");\", \"scrName&n=1\");\r\n",
+				"_sahi.schedule(\"_sahi._setValue(_sahi._textbox (\\\"form_loginname\\\"), \\\"narayanraman\\\");\", \"scrName&n=1\");\r\n",
 				testScript
 						.modify("_setValue(_textbox (\"form_loginname\"), \"narayanraman\");"));
 	}
 
 	public void testModifyFunctionNames() {
-		assertEquals("sahi_setGlobal(", TestScript.modifyFunctionNames("_setGlobal("));
+		assertEquals("_sahi._setGlobal(", TestScript.modifyFunctionNames("_setGlobal("));
 		assertEquals("_insert  (", TestScript.modifyFunctionNames("_insert  ("));
-		assertEquals("sahi_setValue (", TestScript.modifyFunctionNames("__setValue ("));
+		assertEquals("_sahi._setValue (", TestScript.modifyFunctionNames("__setValue ("));
 	}
 
 	public void testGetRegExp() {
 		ArrayList keywords = new ArrayList();
 		keywords.add("_accessor");
 		keywords.add("_alert");
-		assertEquals("sahi_?(_accessor|_alert)(\\s*\\()", TestScript.getRegExp(true, keywords));
+		assertEquals("_sahi._?(_accessor|_alert)(\\s*\\()", TestScript.getRegExp(true, keywords));
 	}
 
 	public void testGetActionRegExp() {
@@ -233,18 +233,18 @@ public class SahiScriptTest extends TestCase {
 
     public void testWhile(){
         assertEquals("while (true) {\r\n" +
-                "sahiSchedule(\"sahiSaveCondition(parseInt(sahi_getGlobal(\\\"ix\\\")) < 2);\", \"scrName&n=10\");\r\n" +
-                "if (\"true\" != sahi_getGlobal(\"condn\" + (_sahiCmds.length))) break;//)",
+                "_sahi.schedule(\"_sahi.saveCondition(parseInt(_sahi._getGlobal(\\\"ix\\\")) < 2);\", \"scrName&n=10\");\r\n" +
+                "if (\"true\" != _sahi._getGlobal(\"condn\" + (_sahi.cmds.length))) break;//)",
                 testScript.modifyWhile("while (_condition(parseInt(_getGlobal(\"ix\")) < 2))", 10));
     }
 
     public void testIf(){
-        assertEquals("sahiSchedule(\"sahiSaveCondition('' == sahi_textbox(\\\"t1\\\").value);\", \"scrName&n=10\");\r\nif (\"true\" == sahi_getGlobal(\"condn\" +(_sahiCmds.length))) {",
+        assertEquals("_sahi.schedule(\"_sahi.saveCondition('' == _sahi._textbox(\\\"t1\\\").value);\", \"scrName&n=10\");\r\nif (\"true\" == _sahi._getGlobal(\"condn\" +(_sahi.cmds.length))) {",
                 testScript.modifyIf("if (_condition('' == _textbox(\"t1\").value)) {", 10));
     }
 
     public void testWait(){
-        assertEquals("sahiSchedule(\"sahi_wait(1000, \\\"sahi_byId(\\\\\\\"abc\\\\\\\")\\\");\", \"scrName&n=12\");\r\n", testScript.modifyWait("_wait(1000, _byId(\"abc\"))", 12));
-        assertEquals("sahiSchedule(\"sahi_wait(1000, \\\"sahi_byId(\\\"+s_v(\"+s_v($abc)+\")+\\\")\\\");\", \"scrName&n=12\");\r\n", testScript.modifyWait("_wait(1000, _byId($abc))", 12));
+        assertEquals("_sahi.schedule(\"_sahi._wait(1000, \\\"_sahi._byId(\\\\\\\"abc\\\\\\\")\\\");\", \"scrName&n=12\");\r\n", testScript.modifyWait("_wait(1000, _byId(\"abc\"))", 12));
+        assertEquals("_sahi.schedule(\"_sahi._wait(1000, \\\"_sahi._byId(\\\"+s_v(\"+s_v($abc)+\")+\\\")\\\");\", \"scrName&n=12\");\r\n", testScript.modifyWait("_wait(1000, _byId($abc))", 12));
     }
 }
