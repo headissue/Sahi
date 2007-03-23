@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-String.prototype.isBlankOrNull = function (s) {
+String.isBlankOrNull = function (s) {
     return (s == "" || s == null);
 }
 
@@ -26,6 +26,14 @@ var Sahi = function(){
     this.cmdDebugInfoLocal = new Array();
 
     this.waitInterval = -1;
+
+    this._lastAlertText = "";
+
+    this._confirmReturnValue = new Array();
+    this._lastConfirmText = null;
+
+    this._promptReturnValue = new Array();
+    this._lastPromptText = null;
 }
 var _sahi = new Sahi();
 var tried = false;
@@ -846,17 +854,15 @@ Sahi.prototype.getColIndexWith = function (txt, tableEl) {
 Sahi.prototype._alert = function (s) {
     return sahi_real_alert(s);
 }
-Sahi._lastAlert = "";
-Sahi.alertMock = function (s) {
+Sahi.prototype.alertMock = function (s) {
     if (_sahi.isPlaying()) {
-        _sahi.top().Sahi._lastAlert = s;
+        _sahi.top()._sahi._lastAlertText = s;
     } else {
         return sahi_real_alert(s);
     }
 }
 Sahi.prototype._lastAlert = function () {
-    var v = this.top().Sahi._lastAlert;
-    //    Sahi._lastAlert = null;
+    var v = _sahi.top()._sahi._lastAlertText;
     return v;
 }
 Sahi.prototype._eval = function (s) {
@@ -881,18 +887,17 @@ Sahi.prototype._savedRandom = function (id, min, max) {
 Sahi.prototype._resetSavedRandom = function (id) {
     this._setGlobal("srandom" + id, "");
 }
-Sahi._confirmReturnValue = new Array();
-Sahi._lastConfirmText = null;
+
 
 Sahi.prototype._expectConfirm = function (text, value) {
-    Sahi._confirmReturnValue[text] = value;
+    _sahi._confirmReturnValue[text] = value;
 }
-Sahi.confirmMock = function (s) {
-    if (this.isPlaying()) {
-        var retVal = Sahi._confirmReturnValue[s];
+Sahi.prototype.confirmMock = function (s) {
+    if (_sahi.isPlaying()) {
+        var retVal = _sahi._confirmReturnValue[s];
         if (retVal == null) retVal = true;
-        Sahi._lastConfirmText = s;
-        Sahi._confirmReturnValue[s] = null;
+        _sahi._lastConfirmText = s;
+        _sahi._confirmReturnValue[s] = null;
         return retVal;
     } else {
         var retVal = sahi_real_confirm(s);
@@ -901,18 +906,16 @@ Sahi.confirmMock = function (s) {
     }
 }
 Sahi.prototype._lastConfirm = function () {
-    var v = Sahi._lastConfirmText;
-    //    Sahi._lastConfirmText = null;
+    var v = _sahi._lastConfirmText;
     return v;
 }
-Sahi._promptReturnValue = new Array();
-Sahi._lastPromptText = null;
-Sahi.promptMock = function (s) {
-    if (this.isPlaying()) {
-        var retVal = Sahi._promptReturnValue[s];
+
+Sahi.prototype.promptMock = function (s) {
+    if (_sahi.isPlaying()) {
+        var retVal = _sahi._promptReturnValue[s];
         if (retVal == null) retVal = "";
-        Sahi._lastPromptText = s;
-        Sahi._promptReturnValue[s] = null;
+        _sahi._lastPromptText = s;
+        _sahi._promptReturnValue[s] = null;
         return retVal;
     } else {
         var retVal = sahi_real_prompt(s);
@@ -921,13 +924,12 @@ Sahi.promptMock = function (s) {
     }
 }
 Sahi.prototype._lastPrompt = function () {
-    var v = Sahi._lastPromptText;
-    //    Sahi._lastPromptText = null;
+    var v = this._lastPromptText;
     return v;
 }
 
 Sahi.prototype._expectPrompt = function (text, value) {
-    Sahi._promptReturnValue[text] = value;
+    _sahi._promptReturnValue[text] = value;
 }
 Sahi.prototype._prompt = function (s) {
     return sahi_real_prompt(s);
@@ -1571,7 +1573,7 @@ Sahi.prototype.getPopupName = function () {
     return n ? n : "";
 }
 Sahi.prototype.isPopup = function () {
-    return window._sahi.top().opener != null && window._sahi.top().opener != window._sahi.top()
+    return _sahi.top().opener != null && _sahi.top().opener != window._sahi.top()
 }
 Sahi.prototype.addWait = function (time) {
     var val = parseInt(time);
@@ -1860,7 +1862,7 @@ Sahi.prototype.openWin = function (e) {
         if (diffDom || !this.top()._sahi.isWinOpen) {
             this.top().Sahi._control = window.open("/_s_/spr/controller2.htm", "_sahiControl", this.getWinParams(e));
         }
-        if (this.top().Sahi._control) this.top().Sahi._control.opener = this;
+        if (this.top().Sahi._control) this.top().Sahi._control.opener = window;
         if (e) this.top().Sahi._control.focus();
     } catch(ex) {
         this.handleException(ex);
@@ -2057,7 +2059,7 @@ Sahi.prototype.ex = function (isStep) {
                     this.waitForLoad = SAHI_MAX_WAIT_FOR_LOAD;
                     var debugInfo = "" + debugs[i];
                     try {
-                        if (cmds[i].indexOf("sahi_popup") != -1) {
+                        if (cmds[i].indexOf("_sahi._popup") != -1) {
                             // needed popup so see if I am the needed popup
                             eval(cmds[i].substring(0, cmds[i].indexOf(")") + 1));
                         } else {
@@ -2150,7 +2152,7 @@ Sahi.prototype.canEvalInBase = function (cmd) {
     return  (this.top().opener == null && !this.isForPopup(cmd)) || (this.top().opener && this.top().opener._sahi.top() == this.top());
 }
 Sahi.prototype.isForPopup = function (cmd) {
-    return cmd.indexOf("sahi_popup") == 0;
+    return cmd.indexOf("_sahi._popup") == 0;
 }
 Sahi.prototype.canEval = function (cmd) {
     return (this.top().opener == null && !this.isForPopup(cmd)) // for base window
@@ -2622,6 +2624,6 @@ window._sahi.alert = window.alert;
 window._sahi.confirm = window.confirm;
 window._sahi.prompt = window.prompt;
 
-window.alert = Sahi.alertMock;
-window.confirm = Sahi.confirmMock;
-window.prompt = Sahi.promptMock;
+window.alert = _sahi.alertMock;
+window.confirm = _sahi.confirmMock;
+window.prompt = _sahi.promptMock;

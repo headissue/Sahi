@@ -41,7 +41,7 @@ public class SahiTestSuite {
     private IssueReporter issueReporter;
     private String browserOption;
     private int availableThreads = 0;
-    private boolean[] freeThreads;
+    private volatile boolean[] freeThreads;
     private static HashMap suites = new HashMap();
 
     public SahiTestSuite(String suitePath, String base, String browser, String sessionId, String browseroption) {
@@ -151,7 +151,7 @@ public class SahiTestSuite {
         }
     }
 
-    private int getFreeThreadNo() {
+    private synchronized int getFreeThreadNo() {
         for (int i = 0; i < freeThreads.length; i++) {
             if (freeThreads[i]) return i;
         }
