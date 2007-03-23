@@ -626,23 +626,26 @@ function getAPIs(str){
     var options = [];                                       
     var el = null;
     try{
-        el = sahiOpener()._sahi._eval("window");
+        el = sahiOpener()._sahi;
     }catch(e){}
     if (str == null || str == "") str = "_";
-    str = "sahi"+str;
+//    str = "sahi"+str;
 
     var d = "";
 
     for (var i in el){
         d += i + "<br>";
-        if (i.indexOf(str) == 0 && i != str){
+        if (i.indexOf(str) == 0 && i != str && el[i]){
+            var val = i
             var fnStr = el[i].toString();
-            var val = fnStr.substring(fnStr.indexOf(" "), fnStr.indexOf("{"));
-            val = trim(stripSahi(val));
+            var args = trim(fnStr.substring(fnStr.indexOf(" "), fnStr.indexOf("{")));
+            if (args == "") continue; 
+            val = i + args;
+            val = stripSahi(val);
             options[options.length] = new Option(val, val);
         }
     }
-    alert(d);
+//    alert(d);
     return options;
 }
 // Suggest List end
