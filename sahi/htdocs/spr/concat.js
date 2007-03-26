@@ -318,7 +318,7 @@ Sahi.prototype._keyUp = function (el, c, combo) {
 
 Sahi.prototype._readFile = function (fileName) {
     var qs = "fileName=" + fileName;
-    return this._callServer("net.sf.this..plugin.FileReader_contents", qs)
+    return this._callServer("net.sf.sahi.plugin.FileReader_contents", qs)
 }
 Sahi.prototype._getDB = function (driver, jdbcurl, username, password) {
     return new this.dB(driver, jdbcurl, username, password);
@@ -330,11 +330,11 @@ Sahi.prototype.dB = function (driver, jdbcurl, username, password) {
     this.password = password;
     this.select = function (sql) {
         var qs = "driver=" + this.driver + "&jdbcurl=" + this.jdbcurl + "&username=" + this.username + "&password=" + this.password + "&sql=" + sql;
-        return eval(this._callServer("net.sf.this..plugin.DBClient_select", qs));
+        return eval(this._callServer("net.sf.sahi.plugin.DBClient_select", qs));
     }
     this.update = function (sql) {
         var qs = "driver=" + this.driver + "&jdbcurl=" + this.jdbcurl + "&username=" + this.username + "&password=" + this.password + "&sql=" + sql;
-        return eval(this._callServer("net.sf.this..plugin.DBClient_execute", qs));
+        return eval(this._callServer("net.sf.sahi.plugin.DBClient_execute", qs));
     }
 }
 
@@ -2255,7 +2255,7 @@ Sahi.prototype.stopRecording = function () {
     this.setServerVar("sahi_record", 0);
 }
 Sahi.prototype.reportSuccess = function (msg, debugInfo) {
-    var type = (msg.indexOf("sahi_assert") == 0) ? "success" : "info";
+    var type = (msg.indexOf("_sahi._assert") == 0) ? "success" : "info";
     //this.sendToServer("/_s_/dyn/Player_success?msg=" + this.escape(msg) + "&type=" + type + "&debugInfo=" + (debugInfo?this.escape(debugInfo):""));
     this.logPlayBack(msg, type, debugInfo);
 }
