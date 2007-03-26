@@ -451,7 +451,7 @@ Sahi.prototype._highlight = function (el) {
     d.style.top = y + "px";
     d.style.zIndex = 10;
     d.style.display = "block";
-    Sahi.pointTimer = window.setTimeout("this.fade()", 2000);
+    Sahi.pointTimer = window.setTimeout("_sahi.fade()", 2000);
     window.scrollTo(x, y);
 }
 Sahi.prototype.fade = function () {
