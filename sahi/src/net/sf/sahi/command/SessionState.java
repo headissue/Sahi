@@ -24,6 +24,7 @@ import net.sf.sahi.response.HttpFileResponse;
 import net.sf.sahi.response.HttpResponse;
 import net.sf.sahi.response.NoCacheHttpResponse;
 import net.sf.sahi.session.Session;
+import net.sf.sahi.util.Utils;
 
 public class SessionState {
 
@@ -41,7 +42,14 @@ public class SessionState {
         props.setProperty("interval", "" + Configuration.getTimeBetweenSteps());
         props.setProperty("onErrorInterval", "" + Configuration.getTimeBetweenStepsOnError());
         props.setProperty("maxRetries", "" + Configuration.getMaxReAttemptsOnError());
-        props.setProperty("maxWaitForLoad", "" + Configuration.getMaxCyclesForPageLoad());             
+        props.setProperty("maxWaitForLoad", "" + Configuration.getMaxCyclesForPageLoad());
+
+        String waitCondition = session.getVariable("waitCondition");
+        if (Utils.isBlankOrNull(waitCondition)) waitCondition = "";
+        props.setProperty("waitCondition", "" + Utils.escapeDoubleQuotesAndBackSlashes(Utils.escapeDoubleQuotesAndBackSlashes(waitCondition)));
+        String waitTime = session.getVariable("waitConditionTime");
+        if (Utils.isBlankOrNull(waitTime)) waitTime = "-1";
+        props.setProperty("waitConditionTime", "" + waitTime);
 
         NoCacheHttpResponse httpResponse = new NoCacheHttpResponse(
 				new HttpFileResponse(Configuration.getHtdocsRoot()

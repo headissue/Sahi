@@ -27,13 +27,14 @@ var Sahi = function(){
 
     this.waitInterval = -1;
 
-    this._lastAlertText = "";
+    this.lastAlertText = "";
 
-    this._confirmReturnValue = new Array();
-    this._lastConfirmText = null;
+    this.confirmReturnValue = new Array();
+    this.lastConfirmText = null;
 
-    this._promptReturnValue = new Array();
-    this._lastPromptText = null;
+    this.promptReturnValue = new Array();
+    this.lastPromptText = null;
+    this.waitCondition = null
 }
 var _sahi = new Sahi();
 var tried = false;
@@ -670,13 +671,24 @@ Sahi.prototype._submit = function (n) {
     if (el == null) el = this.findElement(n, "submit", "button");
     return el;
 }
-Sahi._waitCondition = null;
 Sahi.prototype._wait = function (i, condn) {
+    this.setServerVar("waitConditionTime", new Date().valueOf()+i);
     if (condn) {
-        Sahi._waitCondition = condn;
-        setTimeout("Sahi._waitCondition=null", i);
+        _sahi.waitCondition = condn;
+        this.setServerVar("waitCondition", condn)
+        window.setTimeout("_sahi.cancelWaitCondition()", i);
     }
-    else this.waitInterval = i;
+    else {
+        window.setTimeout("_sahi.cancelWaitCondition()", i);
+        this.waitInterval = i;
+    }
+}
+
+Sahi.prototype.cancelWaitCondition = function (){
+    this.waitCondition=null;
+    this.waitInterval=INTERVAL;
+    this.setServerVar("waitCondition", "");
+    this.setServerVar("waitConditionTime", "-1");
 }
 
 Sahi.prototype._file = function (n) {
@@ -856,13 +868,13 @@ Sahi.prototype._alert = function (s) {
 }
 Sahi.prototype.alertMock = function (s) {
     if (_sahi.isPlaying()) {
-        _sahi.top()._sahi._lastAlertText = s;
+        _sahi.top()._sahi.lastAlertText = s;
     } else {
         return sahi_real_alert(s);
     }
 }
 Sahi.prototype._lastAlert = function () {
-    var v = _sahi.top()._sahi._lastAlertText;
+    var v = _sahi.top()._sahi.lastAlertText;
     return v;
 }
 Sahi.prototype._eval = function (s) {
@@ -890,14 +902,14 @@ Sahi.prototype._resetSavedRandom = function (id) {
 
 
 Sahi.prototype._expectConfirm = function (text, value) {
-    _sahi._confirmReturnValue[text] = value;
+    _sahi.confirmReturnValue[text] = value;
 }
 Sahi.prototype.confirmMock = function (s) {
     if (_sahi.isPlaying()) {
-        var retVal = _sahi._confirmReturnValue[s];
+        var retVal = _sahi.confirmReturnValue[s];
         if (retVal == null) retVal = true;
-        _sahi._lastConfirmText = s;
-        _sahi._confirmReturnValue[s] = null;
+        _sahi.lastConfirmText = s;
+        _sahi.confirmReturnValue[s] = null;
         return retVal;
     } else {
         var retVal = sahi_real_confirm(s);
@@ -906,16 +918,16 @@ Sahi.prototype.confirmMock = function (s) {
     }
 }
 Sahi.prototype._lastConfirm = function () {
-    var v = _sahi._lastConfirmText;
+    var v = _sahi.lastConfirmText;
     return v;
 }
 
 Sahi.prototype.promptMock = function (s) {
     if (_sahi.isPlaying()) {
-        var retVal = _sahi._promptReturnValue[s];
+        var retVal = _sahi.promptReturnValue[s];
         if (retVal == null) retVal = "";
-        _sahi._lastPromptText = s;
-        _sahi._promptReturnValue[s] = null;
+        _sahi.lastPromptText = s;
+        _sahi.promptReturnValue[s] = null;
         return retVal;
     } else {
         var retVal = sahi_real_prompt(s);
@@ -924,12 +936,12 @@ Sahi.prototype.promptMock = function (s) {
     }
 }
 Sahi.prototype._lastPrompt = function () {
-    var v = this._lastPromptText;
+    var v = this.lastPromptText;
     return v;
 }
 
 Sahi.prototype._expectPrompt = function (text, value) {
-    _sahi._promptReturnValue[text] = value;
+    _sahi.promptReturnValue[text] = value;
 }
 Sahi.prototype._prompt = function (s) {
     return sahi_real_prompt(s);
@@ -982,7 +994,7 @@ Sahi.prototype._log = function (s, type) {
 }
 Sahi.prototype._navigateTo = function (url, force) {
     if (force || this.top().location.href != url)
-        this.top().location.href = url;
+        this.top().setTimeout("location.href = '"+url+"'", 1);
 }
 Sahi.prototype._callServer = function (cmd, qs) {
     return this.sendToServer("/_s_/dyn/" + cmd + (qs == null ? "" : ("?" + qs)));
@@ -1972,7 +1984,7 @@ Sahi.prototype.instant = function (cmd, debugInfo) {
     this.cmdDebugInfoLocal[i] = debugInfo;
 }
 Sahi.prototype.play = function () {
-    window.setTimeout("try{_sahi.ex();}catch(ex){}", INTERVAL);
+    window.setTimeout("try{_sahi.ex();}catch(ex){}", this.waitInterval > 0 && !this.waitCondition ? this.waitInterval : INTERVAL);
 }
 Sahi.prototype.areWindowsLoaded = function (win) {
     try {
@@ -2036,12 +2048,12 @@ Sahi.prototype.ex = function (isStep) {
                 return;
             }
             if ((isStep || this.isPlaying()) && cmds[i] != null) {
-                if (Sahi._waitCondition) {
+                if (_sahi.waitCondition) {
                     var again = true;
                     try {
-                        if (eval(Sahi._waitCondition)) {
+                        if (eval(_sahi.waitCondition)) {
                             again = false;
-                            Sahi._waitCondition = false;
+                            _sahi.cancelWaitCondition();
                         }
                     } catch(e1) {
                     }
@@ -2207,9 +2219,9 @@ Sahi.prototype.getCurrentIndex = function () {
     return ("" + i != "NaN") ? i : 0;
 }
 Sahi.prototype.isPlaying = function () {
-    if (this.top().Sahi._isPlaying == null)
-        this.top().Sahi._isPlaying = this.getServerVar("sahi_play") == "1";
-    return this.top().Sahi._isPlaying;
+    if (this.top()._sahi._isPlaying == null)
+        this.top()._sahi._isPlaying = this.getServerVar("sahi_play") == "1";
+    return this.top()._sahi._isPlaying;
 }
 Sahi.prototype.playManual = function (ix) {
     this.gotErrors(false);
@@ -2230,7 +2242,7 @@ Sahi.prototype.stopPlaying = function () {
     this.setServerVar("sahi_play", 0);
     this.updateControlWinDisplay("--Stopped Playback: " + (this.hadErrors() ? "FAILURE" : "SUCCESS") + "--");
     this.gotErrors(false);
-    this.top().Sahi._isPlaying = false;
+    this.top()._sahi._isPlaying = false;
 }
 Sahi.prototype.startRecording = function () {
     this.top().Sahi._isRecording = true;
@@ -2423,6 +2435,13 @@ Sahi.prototype.init = function (e) {
         this.handleException(ex);
     }
     this.redefineDocWrite();
+    if (this.waitInterval > 0){
+        if (this.waitCondition){
+            this._wait(this.waitInterval, this.waitCondition);
+        }else {
+            this._wait(this.waitInterval);            
+        }
+    }
 
     try {
         if (self == this.top()) {

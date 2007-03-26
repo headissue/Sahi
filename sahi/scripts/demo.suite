@@ -12,5 +12,7 @@ alert.sah alertTest.htm
 popup_title.sah
 popup_title_name_mix.sah
 wait_for.sah
+wait_long.sah
+wait_for_with_reload.sah
 keypress.sah
 execute.sah

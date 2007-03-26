@@ -1,6 +1,5 @@
+_navigateTo("waitCondition1.htm");
 _debug(new Date());
-function waitsometime(){
-_wait(60000);
-}
-waitsometime();
+_wait(10000);
+_assertEqual("", _textbox("t1").value);
 _debug(new Date());
