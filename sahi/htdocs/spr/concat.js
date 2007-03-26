@@ -34,7 +34,9 @@ var Sahi = function(){
 
     this.promptReturnValue = new Array();
     this.lastPromptText = null;
-    this.waitCondition = null
+    this.waitCondition = null;
+
+    this.locals = [];
 }
 var _sahi = new Sahi();
 var tried = false;
@@ -776,7 +778,6 @@ Sahi.prototype._getGlobal = function (name) {
     //    this._debug("GET name="+name+" value="+value);
     return value;
 }
-Sahi.locals = new Array();
 Sahi.prototype._set = function (name, value) {
     this.locals[name] = value;
 }
