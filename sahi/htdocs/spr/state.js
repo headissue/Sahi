@@ -13,31 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-_sahi.sid = '$sessionId';
-try{
-top._sahi.sid = '$sessionId';
-top._sahi.isWinOpen = $isWindowOpen;
-top._sahi.createCookie('sahisid', '$sessionId');
-top._sahi._isPaused = $isSahiPaused;
-top._sahi._isPlaying = $isSahiPlaying;
-top._sahi._isRecording = $isSahiRecording;
-_sahi.hotKey = '$hotkey';
+try {
+    _sahi.sid = '$sessionId';
+    _sahi.isWinOpen = $isWindowOpen;
+    _sahi.createCookie('sahisid', '$sessionId');
+    _sahi._isPaused = $isSahiPaused;
+    _sahi._isPlaying = $isSahiPlaying;
+    _sahi._isRecording = $isSahiRecording;
+    _sahi.hotKey = '$hotkey';
 
-INTERVAL = $interval;
-ONERROR_INTERVAL = $onErrorInterval;
-MAX_RETRIES = $maxRetries;
-SAHI_MAX_WAIT_FOR_LOAD = $maxWaitForLoad;
+    _sahi.INTERVAL = $interval;
+    _sahi.ONERROR_INTERVAL = $onErrorInterval;
+    _sahi.MAX_RETRIES = $maxRetries;
+    _sahi.SAHI_MAX_WAIT_FOR_LOAD = $maxWaitForLoad;
 
-_sahi.waitForLoad = SAHI_MAX_WAIT_FOR_LOAD;
-interval = INTERVAL;
+    _sahi.waitForLoad = _sahi.SAHI_MAX_WAIT_FOR_LOAD;
+    _sahi.interval = _sahi.INTERVAL;
 
-var waitCondn = "$waitCondition";
-if (!String.isBlankOrNull(waitCondn) && waitCondn != "null"){
-    top._sahi.waitCondition = waitCondn;
+    _sahi.setWaitCondition("$waitCondition");
+    _sahi.setWaitConditionTime("$waitConditionTime");
+} catch(e) {
 }
-var time = "$waitConditionTime";
-if (!String.isBlankOrNull(time) && time != "-1"){
-    var diff = time - new Date().valueOf();
-    top._sahi.waitInterval = (diff > 0) ? diff : -1;
-}
-}catch(e){}

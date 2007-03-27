@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-_sahi.removeEvent(window, "load", _sahiInit);
-_sahi.removeEvent(window, "beforeunload", _sahiOnBeforeUnLoad);
-_sahi.addEvent(window, "load", _sahiInit);
-_sahi.addEvent(window, "beforeunload", _sahiOnBeforeUnLoad);
+_sahi.removeEvent(window, "load", function(e){_sahi.init(e);});
+_sahi.removeEvent(window, "beforeunload", function(){_sahi.onBeforeUnLoad();});
+_sahi.addEvent(window, "load", function(e){_sahi.init(e);});
+_sahi.addEvent(window, "beforeunload", function(){_sahi.onBeforeUnLoad();});
 try{
 if (!tried){
-    if (_sahi.top()._sahi.isWinOpen){
-		_sahi.top()._sahi.openWin();
+    if (_sahi.isWinOpen){
+		_sahi.openWin();
 	}
 	tried = true;
 }

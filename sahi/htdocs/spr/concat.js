@@ -37,6 +37,16 @@ var Sahi = function(){
     this.waitCondition = null;
 
     this.locals = [];
+
+    this.INTERVAL = 100;
+    this.ONERROR_INTERVAL = 1000;
+    this.MAX_RETRIES = 5;
+    this.SAHI_MAX_WAIT_FOR_LOAD = 30;
+    this.waitForLoad = this.SAHI_MAX_WAIT_FOR_LOAD;
+    this.interval = this.INTERVAL;
+    this.localIx = 0;
+    this.buffer = "";
+
 }
 var _sahi = new Sahi();
 var tried = false;
@@ -688,7 +698,7 @@ Sahi.prototype._wait = function (i, condn) {
 
 Sahi.prototype.cancelWaitCondition = function (){
     this.waitCondition=null;
-    this.waitInterval=INTERVAL;
+    this.waitInterval=this.INTERVAL;
     this.setServerVar("waitCondition", "");
     this.setServerVar("waitConditionTime", "-1");
 }
@@ -1522,12 +1532,12 @@ Sahi.prototype._event = function (type, keyCode) {
     this.type = type;
     this.keyCode = keyCode;
 }
-SahiAssertionException = function (msgNum, msgText) {
+var SahiAssertionException = function (msgNum, msgText) {
     this.messageNumber = msgNum;
     this.messageText = msgText;
     this.exceptionType = "SahiAssertionException";
 }
-SahiNotMyWindowException = function () {
+var SahiNotMyWindowException = function () {
     this.name = "SahiNotMyWindowException";
     this.message = "SahiNotMyWindowException";
 }
@@ -1872,7 +1882,7 @@ Sahi.prototype.openWin = function (e) {
         } catch(domainInaccessible) {
             diffDom = true;
         }
-        if (diffDom || !this.top()._sahi.isWinOpen) {
+        if (diffDom || !this.isWinOpen) {
             this.top().Sahi._control = window.open("/_s_/spr/controller2.htm", "_sahiControl", this.getWinParams(e));
         }
         if (this.top().Sahi._control) this.top().Sahi._control.opener = window;
@@ -1955,21 +1965,7 @@ Sahi.prototype.getAccessor1 = function (info) {
 Sahi.prototype.escapeForScript = function (s) {
     return this.quoteIfString(s);
 }
-var _key;
-var KEY_SHIFT = 16;
-var KEY_CONTROL = 17;
-var KEY_ALT = 18;
-var KEY_Q = 81;
-var KEY_K = 75;
 
-var INTERVAL = 100;
-var ONERROR_INTERVAL = 1000;
-var MAX_RETRIES = 5;
-var SAHI_MAX_WAIT_FOR_LOAD = 30;
-_sahi.waitForLoad = SAHI_MAX_WAIT_FOR_LOAD;
-var interval = INTERVAL;
-
-var _localIx = 0;
 
 
 Sahi.prototype.schedule = function (cmd, debugInfo) {
@@ -1985,7 +1981,7 @@ Sahi.prototype.instant = function (cmd, debugInfo) {
     this.cmdDebugInfoLocal[i] = debugInfo;
 }
 Sahi.prototype.play = function () {
-    window.setTimeout("try{_sahi.ex();}catch(ex){}", this.waitInterval > 0 && !this.waitCondition ? this.waitInterval : INTERVAL);
+    window.setTimeout("try{_sahi.ex();}catch(ex){}", this.waitInterval > 0 && !this.waitCondition ? this.waitInterval : this.INTERVAL);
 }
 Sahi.prototype.areWindowsLoaded = function (win) {
     try {
@@ -2059,17 +2055,17 @@ Sahi.prototype.ex = function (isStep) {
                     } catch(e1) {
                     }
                     if (again) {
-                        this.execNextStep(isStep, interval);
+                        this.execNextStep(isStep, this.interval);
                         return;
                     }
                 }
                 if (!this.areWindowsLoaded(this.top()) && this.waitForLoad > 0) {
                     this.waitForLoad--;
-                    this.execNextStep(isStep, interval);
+                    this.execNextStep(isStep, this.interval);
                     return;
                 }
                 try {
-                    this.waitForLoad = SAHI_MAX_WAIT_FOR_LOAD;
+                    this.waitForLoad = this.SAHI_MAX_WAIT_FOR_LOAD;
                     var debugInfo = "" + debugs[i];
                     try {
                         if (cmds[i].indexOf("_sahi._popup") != -1) {
@@ -2097,7 +2093,7 @@ Sahi.prototype.ex = function (isStep) {
                             if (exc) {
                                 _isLocal = false;
                                 this.cmdsLocal = new Array();
-                                this.setRetries(MAX_RETRIES);
+                                this.setRetries(this.MAX_RETRIES);
                                 throw exc;
                             }
                             _isLocal = (this.cmdsLocal.length > 0);
@@ -2114,10 +2110,10 @@ Sahi.prototype.ex = function (isStep) {
                 } catch (ex1) {
                     if (ex1 instanceof SahiAssertionException) {
                         var retries = this.getRetries();
-                        if (retries < MAX_RETRIES / 2) {
+                        if (retries < this.MAX_RETRIES / 2) {
                             this.setRetries(retries + 1);
-                            interval = ONERROR_INTERVAL;
-                            this.execNextStep(isStep, interval);
+                            this.interval = this.ONERROR_INTERVAL;
+                            this.execNextStep(isStep, this.interval);
                             return;
                         } else {
                             var debugInfo = "" + debugs[i];
@@ -2133,7 +2129,7 @@ Sahi.prototype.ex = function (isStep) {
                         throw ex1;
                     }
                 }
-                interval = this.waitInterval > 0 ? this.waitInterval : INTERVAL;
+                this.interval = this.waitInterval > 0 ? this.waitInterval : this.INTERVAL;
                 this.waitInterval = -1;
             }
             else {
@@ -2141,9 +2137,9 @@ Sahi.prototype.ex = function (isStep) {
             }
         } catch(ex) {
             var retries = this.getRetries();
-            if (retries < MAX_RETRIES) {
+            if (retries < this.MAX_RETRIES) {
                 this.setRetries(retries + 1);
-                interval = ONERROR_INTERVAL;
+                this.interval = this.ONERROR_INTERVAL;
             }                                                         
             else {
                 var debugInfo = "" + debugs[i];
@@ -2154,10 +2150,10 @@ Sahi.prototype.ex = function (isStep) {
                 this.stopPlaying();
             }
         }
-        this.execNextStep(isStep, interval);
+        this.execNextStep(isStep, this.interval);
     } catch(ex2) {
         if (this.isPlaying()) {
-            this.execNextStep(isStep, interval);
+            this.execNextStep(isStep, this.interval);
         }
     }
 }
@@ -2181,12 +2177,12 @@ Sahi.prototype.unpause = function () {
     this._isPaused = false;
     this.setServerVar("sahi_paused", 0);
     this.setServerVar("sahi_play", 1);
-    this.top()._sahi._isPlaying = true;
+    this._isPlaying = true;
 }
 Sahi.prototype.isPaused = function () {
-    if (this.top()._sahi._isPaused == null)
-        this.top()._sahi._isPaused = this.getServerVar("sahi_paused") == "1";
-    return this.top()._sahi._isPaused;
+    if (this._isPaused == null)
+        this._isPaused = this.getServerVar("sahi_paused") == "1";
+    return this._isPaused;
 }
 Sahi.prototype.updateControlWinDisplay = function (s, i) {
     try {
@@ -2220,9 +2216,9 @@ Sahi.prototype.getCurrentIndex = function () {
     return ("" + i != "NaN") ? i : 0;
 }
 Sahi.prototype.isPlaying = function () {
-    if (this.top()._sahi._isPlaying == null)
-        this.top()._sahi._isPlaying = this.getServerVar("sahi_play") == "1";
-    return this.top()._sahi._isPlaying;
+    if (this._isPlaying == null)
+        this._isPlaying = this.getServerVar("sahi_play") == "1";
+    return this._isPlaying;
 }
 Sahi.prototype.playManual = function (ix) {
     this.gotErrors(false);
@@ -2243,7 +2239,7 @@ Sahi.prototype.stopPlaying = function () {
     this.setServerVar("sahi_play", 0);
     this.updateControlWinDisplay("--Stopped Playback: " + (this.hadErrors() ? "FAILURE" : "SUCCESS") + "--");
     this.gotErrors(false);
-    this.top()._sahi._isPlaying = false;
+    this._isPlaying = false;
 }
 Sahi.prototype.startRecording = function () {
     this.top().Sahi._isRecording = true;
@@ -2356,7 +2352,7 @@ Sahi.prototype.sendToServer = function (url) {
         this.handleException(ex)
     }
 }
-s_v = function (v) {
+var s_v = function (v) {
     var type = typeof v;
     if (type == "number") return v;
     else if (type == "string") return "\"" + v + "\"";
@@ -2411,9 +2407,6 @@ Sahi.prototype.addSlashU = function (num) {
     return buildU;
 }
 
-var _sahiOnBeforeUnLoad = function () {
-    _sahi.onBeforeUnLoad();
-}
 Sahi.prototype.onBeforeUnLoad = function () {
     this.loaded = false;
 }
@@ -2425,9 +2418,7 @@ trap1 = function (e){
 }
 var prevDown = null;
 */
-var _sahiInit = function (e){
-    _sahi.init(e);
-}
+
 Sahi.prototype.init = function (e) {
     try {
         this.loaded = true;
@@ -2585,8 +2576,21 @@ Sahi.prototype.toCamelCase = function (s) {
     for (;exp.test(s); s = s.replace(exp, RegExp.$1.toUpperCase()));
     return s;
 }
+
+Sahi.prototype.setWaitCondition = function(waitCondn) {
+    if (!String.isBlankOrNull(waitCondn) && waitCondn != "null") {
+        this.waitCondition = waitCondn;
+    }
+}
+
+Sahi.prototype.setWaitConditionTime = function(time) {
+    if (!String.isBlankOrNull(time) && time != "-1") {
+        var diff = time - new Date().valueOf();
+        this.waitInterval = (diff > 0) ? diff : -1;
+    }
+}
 // document.write start
-xxs = "<script src='/_s_/spr/concat.js'></scr" + "ipt>" +
+Sahi.INSERT_TEXT = "<script src='/_s_/spr/concat.js'></scr" + "ipt>" +
           "<script src='http://www.this.domain.com/_s_/dyn/SessionState/state.js'></scr" + "ipt>" +
           "<script src='http://www.this.domain.com/_s_/dyn/Player_script/script.js'></scr" + "ipt>" +
           "<script src='/_s_/spr/playback.js'></scr" + "ipt>";
@@ -2594,7 +2598,7 @@ xxs = "<script src='/_s_/spr/concat.js'></scr" + "ipt>" +
 Sahi.prototype.docClose = function () {
     if (this.isIE()) {
         this.oldDocWrite(this.buffer);
-        document.write(xxs);
+        document.write(Sahi.INSERT_TEXT);
         document.close();
         this.loaded = true;
         this.play();
@@ -2613,16 +2617,15 @@ Sahi.prototype.docClose = function () {
 //        this.play();
     }
 }
-Sahi.buffer = "";
 Sahi.prototype.docWrite = function (s) {
-    Sahi.buffer += s;
+    _sahi.buffer += s;
 }
 Sahi.prototype.redefineDocWrite = function (){
     if (this.isIE()){
-//        this.oldDocWrite = document.write;
-//        this.oldDocClose = document.close;
-//        document.write = this.docWrite;
-//        document.close = this.docClose;
+        this.oldDocWrite = document.write;
+        this.oldDocClose = document.close;
+        document.write = function (){_sahi.docWrite()};
+        document.close = function (){_sahi.docClose()};
     }
     else{
 //        Document.prototype.this.prefix = xxs;
