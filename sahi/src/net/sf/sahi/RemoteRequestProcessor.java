@@ -184,7 +184,6 @@ public class RemoteRequestProcessor {
         final HttpFileResponse httpFileResponse = new HttpFileResponse(Configuration
                 .getHtdocsRoot()
                 + "spr/cannotConnect.htm", props, false, true);
-        final HttpResponse modifiedResponse = HttpModifiedResponse.modify(httpFileResponse);
-        return modifiedResponse;
+        return HttpModifiedResponse.modify(httpFileResponse);
     }
 }

@@ -20,6 +20,9 @@ function checkOpener() {
     catch (e) {
     }
 }
+function sahi(){
+    return sahiOpener()._sahi;        
+}
 function sahiOpener() {
     return top.opener._sahi.top();
 }
@@ -36,7 +39,7 @@ function checkURL(url) {
 }
 function play() {
     try {
-        sahiOpener()._sahi.playManual(parseInt(document.playform.step.value))
+        sahi().playManual(parseInt(document.playform.step.value))
     } catch (e) {
         displayLogs("Please open the Controller again. \n(Press ALT-DblClick on the main window.)");
     }
@@ -45,18 +48,18 @@ function play() {
 function stepWisePlay() {
     var i = parseInt(document.playform.step.value);
     if (i==0) i = i+1
-    sahiOpener()._sahi.setCurrentIndex(i);
-    sahiOpener()._sahi.stepWisePlay();
+    sahi().setCurrentIndex(i);
+    sahi().stepWisePlay();
     sahiOpener().eval("_sahi.ex(true)");
 }
 function a() {
     sahiSetServerVar("sahi_play", 1);
 }
 function pause() {
-    sahiOpener()._sahi.pause();
+    sahi().pause();
 }
 function stopPlay() {
-    sahiOpener()._sahi.stopPlaying();
+    sahi().stopPlaying();
 }
 function resetStep() {
     document.playform.step.value = 0;
@@ -68,7 +71,7 @@ function clearLogs() {
 }
 function stopRec() {
     try {
-        sahiOpener()._sahi.stopRecording();
+        sahi().stopRecording();
     } catch(ex) {
         alert(ex);
     }
@@ -76,7 +79,7 @@ function stopRec() {
 function doOnTabsUnLoad(s) {
     sahiSendToServer('/_s_/dyn/ControllerUI_closed');
     try {
-        sahiOpener()._sahi.isWinOpen = false;
+        sahi().isWinOpen = false;
     } catch(ex) {
         sahiHandleException(ex);
     }
@@ -146,7 +149,7 @@ function getPbVar(name) {
     }
     return blankIfNull(_pbVars[name]);
 }
-_selectedScriptDir = null;
+var _selectedScriptDir = null;
 function doOnRecLoad() {
     var f = document.recordstartform;
     populateOptions(f.dir, _scriptDirList, _selectedScriptDir);
@@ -235,7 +238,7 @@ function doOnTabsLoad() {
         var hilightedTab = sahiGetServerVar("controller_tab")
         if (hilightedTab == null || hilightedTab == "") hilightedTab = "recorder";
         showTab(hilightedTab);
-        sahiOpener()._sahi.isWinOpen = true;
+        sahi().isWinOpen = true;
     } catch(ex) {
         sahiHandleException(ex);
     }
@@ -312,49 +315,13 @@ function onRecordStartFormSubmit(f) {
         return false;
     }
     if (sahiOpener()) {
-        sahiOpener()._sahi.startRecording(recordAll);
+        sahi().startRecording(recordAll);
         //    	window.setTimeout("top.location.reload();", 1000);
     }
     return true;
 }
 var _scriptList = new Array();
 var _scriptDirList = new Array();
-
-
-var KEY_SHIFT = 16;
-var KEY_CONTROL = 17;
-var KEY_ALT = 18;
-var KEY_Q = 81;
-var KEY_K = 75;
-
-try {
-    sahiOpener()._isControlKeyPressed = false;
-    sahiOpener()._isQKeyPressed = false;
-    sahiOpener()._isAltKeyPressed = false;
-} catch(ex) {
-}
-function sahiKeyUp(e) {
-    try {
-        if (!e) e = window.event;
-        if (e.keyCode == KEY_CONTROL) sahiOpener()._isControlKeyPressed = false;
-        if (e.keyCode == KEY_ALT) sahiOpener()._isAltKeyPressed = false;
-    } catch(ex) {
-    }
-}
-function sahiKeyDown(e) {
-    try {
-        if (!e) e = window.event;
-        if (e.keyCode == KEY_CONTROL) sahiOpener()._isControlKeyPressed = true;
-        else if (e.keyCode == KEY_ALT) sahiOpener()._isAltKeyPressed = true;
-    } catch(e) {
-    }
-}
-try {
-    document.onkeydown = sahiKeyDown;
-    document.onkeypress = sahiKeyUp;
-    document.onkeyup = sahiKeyUp;
-} catch(ex) {
-}
 
 function hilightTab(n) {
     document.getElementById("playbackTab").className = "dimTab";
@@ -382,7 +349,7 @@ function showTab(s) {
     top.main.location.href = s + '.htm'
 }
 function listProperties(){
-    document.currentForm.debug.value = sahiOpener()._sahi._eval("sahiList("+addSahi(document.currentForm.accessor.value)+")");
+    document.currentForm.debug.value = sahi()._eval("sahiList("+addSahi(document.currentForm.accessor.value)+")");
 }
 function initPlaybackTab() {
     var dir = getPbVar("controller_pb_dir");
@@ -420,7 +387,7 @@ function handleEnterKey(e, el){
 
 function addWait() {
     try {
-        sahiOpener()._sahi.addWait(document.currentForm.waitTime.value);
+        sahi().addWait(document.currentForm.waitTime.value);
     } catch(ex) {
         alert("Please enter the number of milliseconds to wait (should be >= 200)");
         document.currentForm.waitTime.value = 3000;
@@ -428,7 +395,7 @@ function addWait() {
 }
 
 function mark() {
-    sahiOpener()._sahi.mark(document.currentForm.comment.value);
+    sahi().mark(document.currentForm.comment.value);
     //   sahiSendToServer('/_s_/dyn/Recorder_record?event=mark&value='+escape(document.currentForm.comment.value));
 }
 
@@ -436,7 +403,7 @@ function getEvaluateExpressionResult(str){
     sahiSetServerVar("sahiEvaluateExpr", "true");
     var res = "";
     try {
-        res = sahiOpener()._sahi._eval(addSahi(str));
+        res = sahi()._eval(addSahi(str));
     } catch(e) {
         if (e.exceptionType && e.exceptionType == "SahiAssertionException") {
             res = "[Assertion Failed]" + (e.messageText?e.messageText:"");
@@ -484,7 +451,7 @@ function append() {
 }
 
 function addSahi(s) {
-    return sahiSendToServer("/_s_/dyn/ControllerUI_getSahiScript?code=" + sahiOpener()._sahi.escape(s));
+    return sahiSendToServer("/_s_/dyn/ControllerUI_getSahiScript?code=" + sahi().escape(s));
 }
 
 function blankIfNull(s) {
@@ -559,7 +526,7 @@ function resizeTA2(el, minusRight, minusTop) {
 function showStack() {
     var curIx = document.playform.step.value;
     var win = window.open("blank.htm");
-    var cmds = sahiOpener()._sahi.cmds;
+    var cmds = sahi().cmds;
     var s = "";
     for (var i = 0; i < cmds.length; i++) {
         var sel = (i == curIx - 1);
@@ -577,7 +544,7 @@ function suggest(){
         var dot = accessor.lastIndexOf('.');
         var elStr = accessor.substring(0, dot);
         var prop = accessor.substring(dot + 1);
-        var el = sahiOpener()._sahi._eval(addSahi(elStr));
+        var el = sahi()._eval(addSahi(elStr));
         selectBox.options.length = 0;
         for (var i in el){
             if (i.indexOf(prop) == 0)
@@ -612,7 +579,7 @@ function getAccessorProps(str){
 	var prop = str.substring(dot + 1);
 	var el = null;
 	try{
-        el = sahiOpener()._sahi._eval(addSahi(elStr));
+        el = sahi()._eval(addSahi(elStr));
 	}catch(e){}
 	for (var i in el){
 		i = stripSahi(i);
@@ -626,7 +593,7 @@ function getAPIs(str){
     var options = [];                                       
     var el = null;
     try{
-        el = sahiOpener()._sahi;
+        el = sahi();
     }catch(e){}
     if (str == null || str == "") str = "_";
 //    str = "sahi"+str;
