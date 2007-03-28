@@ -140,6 +140,7 @@
                 <include name="keypress.sah"/>
                 <include name="mouseover.sah"/>
                 <include name="execute.sah"/>
+                <include name="docWrite.sah"/>
             </fileset>
         </copy>
         <copy todir="temp/sahi/extlib">

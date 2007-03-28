@@ -68,9 +68,9 @@ public class SocketPool {
 		Socket socket = get();
 		try {
 			socket.connect(new InetSocketAddress(host, port));
-		} catch (BindException e) {
+		} catch (Exception e) {
 			lastPort++;
-//			System.out.println("### Creating New Socket : "+lastPort);
+			System.out.println("### Creating New Socket : "+lastPort);
 			socket = createSocket(lastPort);
 			socket.connect(new InetSocketAddress(host, port));
 		}

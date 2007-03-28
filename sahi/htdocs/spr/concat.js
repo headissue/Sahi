@@ -47,30 +47,34 @@ var Sahi = function(){
     this.localIx = 0;
     this.buffer = "";
 
-    this.control = null;
+    this.controller = null;
     this.lastAccessedInfo = null;
+    this.execSteps = null; // from SahiScript through script.js
+
+    this.sahiBuffer = "";
 }
 var _sahi = new Sahi();
 var tried = false;
 var _sahi_top = window.top;
 Sahi.prototype.top = function () {
-    return _sahi_top;
     //Hack for frames named "top"
+    return _sahi_top;
 }
+
 //getMostAccessibleAncestor = function () {
-//    var t = window;
-//    while (t != _sahi_top) {
-//        p = t.parent;
-//        if (p == t) return t;
+//    var w = window;
+//    while (w != _sahi_top) {
+//        p = w.parent;
+//        if (p == w) return w;
 //        try {
 //            var test = p.document.domain;
 //        } catch(e) {
 //            // diff domain
-//            return t;
+//            return w;
 //        }
-//        t = p;
+//        w = p;
 //    }
-//    return t;
+//    return w;
 //}
 
 Sahi.prototype.getAccessor = function (src) {
@@ -1874,18 +1878,18 @@ window.onerror = _sahi.onError;
 Sahi.prototype.openWin = function (e) {
     try {
         if (!e) e = window.event;
-        this.control = window.open("", "_sahiControl", this.getWinParams(e));
+        this.controller = window.open("", "_sahiControl", this.getWinParams(e));
         var diffDom = false;
         try {
-            var checkDiffDomain = this.control.document.domain;
+            var checkDiffDomain = this.controller.document.domain;
         } catch(domainInaccessible) {
             diffDom = true;
         }
         if (diffDom || !this.isWinOpen) {
-            this.control = window.open("/_s_/spr/controller2.htm", "_sahiControl", this.getWinParams(e));
+            this.controller = window.open("/_s_/spr/controller2.htm", "_sahiControl", this.getWinParams(e));
         }
-        if (this.control) this.control.opener = window;
-        if (e) this.control.focus();
+        if (this.controller) this.controller.opener = window;
+        if (e) this.controller.focus();
     } catch(ex) {
         this.handleException(ex);
     }
@@ -1900,8 +1904,8 @@ Sahi.prototype.getWinParams = function (e) {
     }
     return "height=550px,width=460px,resizable=yes,toolbar=no,status=no" + positionParams;
 }
-Sahi.prototype.getWinHandle = function () {
-    if (this.control && !this.control.closed) return this.control;
+Sahi.prototype.getController = function () {
+    if (this.controller && !this.controller.closed) return this.controller;
 }
 Sahi.openControllerWindow = function (e) {
     if (!e) e = window.event;
@@ -1919,7 +1923,7 @@ Sahi.prototype.mouseOver = function (e) {
     try {
         if (_sahi.getTarget(e) == null) return;
         if (!e.ctrlKey) return;
-        var controlWin = _sahi.getWinHandle();
+        var controlWin = _sahi.getController();
         if (controlWin) {
             var acc = _sahi.getAccessorInfo(_sahi.getKnownTags(_sahi.getTarget(e)));
             try {
@@ -2184,10 +2188,10 @@ Sahi.prototype.isPaused = function () {
 }
 Sahi.prototype.updateControlWinDisplay = function (s, i) {
     try {
-        var controlWin = this.getWinHandle();
+        var controlWin = this.getController();
         if (controlWin && !controlWin.closed) {
             if (i) controlWin.main.displayStepNum(i + 1);
-            controlWin.main.displayLogs(s);
+            controlWin.main.displayLogs(s.replace(/_sahi[.]/g, ""));
         }
     } catch(ex) {
     }
@@ -2416,7 +2420,6 @@ Sahi.prototype.init = function (e) {
     } catch(ex) {
         this.handleException(ex);
     }
-    this.redefineDocWrite();
     if (this.waitInterval > 0){
         if (this.waitCondition){
             this._wait(this.waitInterval, this.waitCondition);
@@ -2578,51 +2581,42 @@ Sahi.prototype.setWaitConditionTime = function(time) {
     }
 }
 // document.write start
-Sahi.INSERT_TEXT = "<script src='/_s_/spr/concat.js'></scr" + "ipt>" +
-          "<script src='http://www.this.domain.com/_s_/dyn/SessionState/state.js'></scr" + "ipt>" +
-          "<script src='http://www.this.domain.com/_s_/dyn/Player_script/script.js'></scr" + "ipt>" +
-          "<script src='/_s_/spr/playback.js'></scr" + "ipt>";
+Sahi.INSERT_TEXT = "<script src='/_s_/spr/concat.js'></scr"+"ipt>"+
+"<script src='http://www.sahidomain.com/_s_/dyn/SessionState/state.js'></scr"+"ipt>"+
+"<script src='http://www.sahidomain.com/_s_/dyn/Player_script/script.js'></scr"+"ipt>"+
+"<script src='/_s_/spr/playback.js'></scr"+"ipt>" +
+"";
 
-Sahi.prototype.docClose = function () {
-    if (this.isIE()) {
-        this.oldDocWrite(this.buffer);
-        document.write(Sahi.INSERT_TEXT);
-        document.close();
-        this.loaded = true;
-        this.play();
-    } else {
-//        document.this.oldDocWrite(document.this.prefix + this.buffer + "<script>document.this.oldDocClose()</scr"+"ipt>");
-////        document.this.oldDocWrite(this.buffer);
-////        document.close();
-//        this.real_alert(xxs);
-//        try{
-////            document.this.oldDocWrite(document.this.prefix);
-//        }catch(e){}
-//        try{
-//            document.this.oldDocClose();
-//        }catch(e){}
-//        window.this.loaded = true;
-//        this.play();
-    }
+Sahi.prototype.ieDocClose = function(){
+    this.oldDocWrite(this.sahiBuffer);
+    document.write(Sahi.INSERT_TEXT);
+    document.close();
+    this.loaded = true;
+    this.play();
 }
-Sahi.prototype.docWrite = function (s) {
-    _sahi.buffer += s;
+Sahi.prototype.ieDocWrite = function(s){
+   this.sahiBuffer += s;
 }
-Sahi.prototype.redefineDocWrite = function (){
-    if (this.isIE()){
-        this.oldDocWrite = document.write;
-        this.oldDocClose = document.close;
-        document.write = function (){_sahi.docWrite()};
-        document.close = function (){_sahi.docClose()};
-    }
-    else{
-//        Document.prototype.this.prefix = xxs;
-//        Document.prototype.this.oldDocWrite = document.write;
-//        Document.prototype.this.oldDocClose = document.close;
-//        document.write = this.docWrite;
-//        document.close = this.docClose;
-    }
-
+if (_sahi.isIE()){  // Donot move into method.
+    Sahi.prototype.oldDocWrite = document.write;
+    document.write = function (s) {_sahi.ieDocWrite(s);};
+    document.close = function () {_sahi.ieDocClose();};
+}
+//--
+Sahi.prototype.ffDocClose = function(){
+    this.oldDocWrite.apply(document, [this.sahiBuffer + Sahi.INSERT_TEXT]);
+    this.oldDocClose.apply(document);
+    this.loaded = true;
+    this.play();
+}
+Sahi.prototype.ffDocWrite = function(s){
+   this.sahiBuffer += s;
+}
+if (!_sahi.isIE()) {
+//    Sahi.prototype.oldDocWrite = document.write;
+//    document.write = function (s) {_sahi.ffDocWrite(s);};
+//    Sahi.prototype.oldDocClose = document.close;
+//    document.close = function () {_sahi.ffDocClose();};
 }
 // document.write end
 
