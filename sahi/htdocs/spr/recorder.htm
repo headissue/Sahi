@@ -109,7 +109,7 @@ limitations under the License.
 </head>
 
 <body onload="doOnRecLoad();resizeTA2(document.getElementById('taDebug'), 40, 470)" onbeforeunload="doOnRecUnLoad()"
-      onresize="resizeTA2(document.getElementById('taDebug'), 40, 470)">
+      onresize="resizeTA2(document.getElementById('taDebug'), 40, 470)" onkeyup="hideAllSuggests(event)" onclick="Suggest.hideAll()">
 <div id="rec" class="recPane">
 <table bgcolor="">
     <tr>
@@ -222,11 +222,12 @@ limitations under the License.
                     "20"><br>
                 <hr>
                 APIs List: <input type="text" id="apiTextbox" onkeyup="Suggest.suggests['2'].textboxEvent(event)" autocomplete="off" size="55">
-                <select id="apiSelect" class="suggestDD" onkeydown="Suggest.suggests['2'].handleUpArrow(event)" onkeyup="Suggest.suggests['2'].selectEvent(event)"></select>
+                <select id="apiSelect" class="suggestDD" onclick="Suggest.suggests['2'].choose(event)" onkeydown="Suggest.suggests['2'].handleUpArrow(event)" onkeyup="Suggest.suggests['2'].selectEvent(event)"></select>
 
                 <script autocomplete="false">
                     var suggest2 = new Suggest(document.getElementById("apiTextbox"), document.getElementById("apiSelect"), "2");
                     suggest2.getOptions = getAPIs;
+                    suggest2.onchange = setAPI;
                 </script>
                 <br/>
                 <hr>

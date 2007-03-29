@@ -34,6 +34,12 @@ Suggest.prototype.escape = function(e){
 	this.hide();
 }
 
+Suggest.hideAll = function (e){
+    for (i in Suggest.suggests){
+        Suggest.suggests[i].hide();
+    }
+}
+
 Suggest.prototype.suggest = function (e){
     var str = this.textEl.value;
 

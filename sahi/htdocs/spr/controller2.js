@@ -378,6 +378,13 @@ function resetValue(){
     }catch(e){}
 }
 
+function setAPI(){
+    var el = document.getElementById("apiTextbox");
+//    try{
+        el.value = document.getElementById("apiSelect").value;
+//    }catch(e){}
+}
+
 function handleEnterKey(e, el){
     if (!e) e = window.event;
     if (e.keyCode && e.keyCode == 26){
@@ -617,3 +624,9 @@ function getAPIs(str){
     return options;
 }
 // Suggest List end
+function hideAllSuggests(e){
+    if (!e) e = window.event;
+    if (e.keyCode == Suggest.KEY_ESCAPE){
+        Suggest.hideAll();
+    }
+}
