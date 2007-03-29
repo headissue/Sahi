@@ -1608,11 +1608,11 @@ Sahi.prototype.isPopup = function () {
 Sahi.prototype.addWait = function (time) {
     var val = parseInt(time);
     if (("" + val) == "NaN" || val < 200) throw new Error();
-    showInController(new AccessorInfo("", "", "", "wait", time));
+    this.showInController(new AccessorInfo("", "", "", "wait", time));
     //    this.sendToServer('/_s_/dyn/Recorder_record?event=wait&value='+val);
 }
 Sahi.prototype.mark = function (s) {
-    showInController(new AccessorInfo("", "", "", "mark", s));
+    this.showInController(new AccessorInfo("", "", "", "mark", s));
 }
 Sahi.prototype.doAssert = function (e) {
     try {

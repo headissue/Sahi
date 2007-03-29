@@ -171,7 +171,7 @@ limitations under the License.
                                                  target='_blank'>More ...</a><br>
                         </td>
                         <td><input type="button" class="button" value=" Props " onclick=
-                                "listProperties()"></td>
+                                "showProperties()"></td>
                     </tr>
 
                     <tr>
@@ -185,8 +185,11 @@ limitations under the License.
                     </tr>
 
                     <script autocomplete="false">
+                        function showProperties(){
+                            document.currentForm.debug.value = sahi().list(sahi()._eval(addSahi(document.getElementById('suggestBox').value)));
+                        }
                         function listProperties(str){
-                            return sahiOpener()._sahi._eval(addSahi(str))
+                            return sahi()._eval(addSahi(str))
                         }
                         var suggest = new Suggest(document.getElementById("suggestBox"), document.getElementById("suggestDD"), "1");
                         suggest.getOptions = getAccessorProps;
