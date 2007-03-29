@@ -581,6 +581,9 @@ Sahi.prototype._setValue = function (el, val) {
     if (prevVal != val && el.onchange) {
         this.simulateEvent(el, "change");
     }
+    if (el.form){
+        this.simulateEvent(el.form, "change");        
+    }
 }
 
 Sahi.prototype._setFile = function (el, v, url) {
@@ -1572,7 +1575,7 @@ Sahi.prototype.onEv = function (e) {
 }
 Sahi.prototype.showInController = function (info) {
     try {
-        var c = this.getWinHandle();
+        var c = this.getController();
         if (c) {
             var d = c.top.main.document.currentForm.debug;
             c.top.main.document.currentForm.history.value += "\n" + d.value;
@@ -2410,6 +2413,7 @@ Sahi.prototype.addSlashU = function (num) {
 }
 
 Sahi.prototype.onBeforeUnLoad = function () {
+//    this._debug(this.real_onbeforeunload());
     this.loaded = false;
 }
 
@@ -2625,9 +2629,9 @@ Sahi.prototype.real_alert = window.alert;
 Sahi.prototype.real_confirm = window.confirm;
 Sahi.prototype.real_prompt = window.prompt;
 
-Sahi.prototype.alert = window.alert;
-Sahi.prototype.confirm = window.confirm;
-Sahi.prototype.prompt = window.prompt;
+//Sahi.prototype.alert = window.alert;
+//Sahi.prototype.confirm = window.confirm;
+//Sahi.prototype.prompt = window.prompt;
 
 window.alert = function (s){return _sahi.alertMock(s)};
 window.confirm = function (s){return _sahi.confirmMock(s)};

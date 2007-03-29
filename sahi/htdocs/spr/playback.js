@@ -16,6 +16,8 @@
 _sahi.removeEvent(window, "load", function(e){_sahi.init(e);});
 _sahi.removeEvent(window, "beforeunload", function(){_sahi.onBeforeUnLoad();});
 _sahi.addEvent(window, "load", function(e){_sahi.init(e);});
+//Sahi.prototype.real_onbeforeunload = window.onbeforeunload;
+//window.onbeforeunload =  function(){_sahi.onBeforeUnLoad();}
 _sahi.addEvent(window, "beforeunload", function(){_sahi.onBeforeUnLoad();});
 try{
 if (!tried){
