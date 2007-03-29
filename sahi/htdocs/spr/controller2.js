@@ -76,10 +76,11 @@ function stopRec() {
         alert(ex);
     }
 }
+var isWinOpen = true;
 function doOnTabsUnLoad(s) {
     sahiSendToServer('/_s_/dyn/ControllerUI_closed');
     try {
-        sahi().isWinOpen = false;
+        isWinOpen = false;
     } catch(ex) {
         sahiHandleException(ex);
     }
@@ -238,7 +239,7 @@ function doOnTabsLoad() {
         var hilightedTab = sahiGetServerVar("controller_tab")
         if (hilightedTab == null || hilightedTab == "") hilightedTab = "recorder";
         showTab(hilightedTab);
-        sahi().isWinOpen = true;
+        isWinOpen = true;
     } catch(ex) {
         sahiHandleException(ex);
     }

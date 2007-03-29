@@ -1014,7 +1014,8 @@ Sahi.prototype._log = function (s, type) {
 }
 Sahi.prototype._navigateTo = function (url, force) {
     if (force || this.top().location.href != url)
-        this.top().setTimeout("location.href = '"+url+"'", 1);
+        this.top().location.href = url;
+//        this.top().setTimeout("location.href = '"+url+"'", 1);
 }
 Sahi.prototype._callServer = function (cmd, qs) {
     return this.sendToServer("/_s_/dyn/" + cmd + (qs == null ? "" : ("?" + qs)));
@@ -1888,7 +1889,7 @@ Sahi.prototype.openWin = function (e) {
         } catch(domainInaccessible) {
             diffDom = true;
         }
-        if (diffDom || !this.isWinOpen) {
+        if (diffDom || !this.controller.isWinOpen) {
             this.controller = window.open("/_s_/spr/controller2.htm", "_sahiControl", this.getWinParams(e));
         }
         if (this.controller) this.controller.opener = window;
