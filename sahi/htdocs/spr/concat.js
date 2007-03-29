@@ -695,7 +695,7 @@ Sahi.prototype._submit = function (n) {
 Sahi.prototype._wait = function (i, condn) {
     this.setServerVar("waitConditionTime", new Date().valueOf()+i);
     if (condn) {
-        _sahi.waitCondition = condn;
+        this.waitCondition = condn;
         this.setServerVar("waitCondition", condn)
         window.setTimeout("_sahi.cancelWaitCondition()", i);
     }
@@ -2050,10 +2050,10 @@ Sahi.prototype.ex = function (isStep) {
                 return;
             }
             if ((isStep || this.isPlaying()) && cmds[i] != null) {
-                if (_sahi.waitCondition) {
+                if (this.waitCondition) {
                     var again = true;
                     try {
-                        if (eval(_sahi.waitCondition)) {
+                        if (eval(this.waitCondition)) {
                             again = false;
                             _sahi.cancelWaitCondition();
                         }
