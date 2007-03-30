@@ -69,15 +69,26 @@ public class SocketPool {
 		try {
 			socket.connect(new InetSocketAddress(host, port));
 		} catch (Exception e) {
-			lastPort++;
-			System.out.println("### Creating New Socket : "+lastPort);
-			socket = createSocket(lastPort);
-			socket.connect(new InetSocketAddress(host, port));
+            socket = createNew(host, port);
 		}
 		return socket;
 	}
 
-	public void release(Socket socket) {
+    private Socket createNew(String host, int port) throws IOException {
+        Socket socket;
+        try {
+            lastPort++;
+            System.out.println("### Creating New Socket : "+lastPort);
+            socket = createSocket(lastPort);
+            socket.connect(new InetSocketAddress(host, port));
+            return socket;
+        } catch (BindException e) {
+            socket = createNew(host, port);
+        }
+        return socket;
+    }
+
+    public void release(Socket socket) {
 		returnToPool(socket.getLocalPort());
 		try {
 			socket.close();
