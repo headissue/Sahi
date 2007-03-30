@@ -107,6 +107,9 @@
         <mkdir dir="temp/sahi/scripts"/>
         <mkdir dir="temp/sahi/extlib"/>
         <copy file="demo.xml" todir="temp/sahi/"/>
+        <copy file="sample.xml" todir="temp/sahi/"/>
+        <copy file="sample.properties" todir="temp/sahi/"/>
+        <copy file="stress.xml" todir="temp/sahi/"/>
         <copy file="lib/ant-sahi.jar" todir="temp/sahi/lib"/>
         <copy file="lib/sahi.jar" todir="temp/sahi/lib"/>
         <copy todir="temp/sahi/bin">
