@@ -1920,6 +1920,7 @@ Sahi.openControllerWindow = function (e) {
     return true;
 }
 Sahi.prototype.isHotKeyPressed = function (e) {
+    if (!e) return false;
     return ((this.hotKey == "SHIFT" && e.shiftKey)
             || (this.hotKey == "CTRL" && e.ctrlKey)
             || (this.hotKey == "ALT" && e.altKey)
