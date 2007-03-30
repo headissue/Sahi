@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<project name="project" default="all">
+    <property file="sample.properties"/>
+    <taskdef name="sahi" classname="net.sf.sahi.ant.RunSahiTask"
+             classpath="${sahidir}/lib/ant-sahi.jar"/>
+
+    <target name="run-ff-tests">
+        <sahi suite="${suite}"
+              browser="${ff-exe}"
+              baseurl="${baseurl}"
+              sahihost="localhost"
+              sahiport="9999"
+              failureproperty="sahi.failed"
+              haltonfailure="false"
+              browseroption="-profile ${basedir}/browser/ff/profiles/sahi$threadNo"
+              threads="3">
+            <report type="html"/>
+            <report type="junit" logdir="${junit-log-dir}"/>
+            <createissue tool="jira"/>
+        </sahi>
+    </target>
+
+    <target name="run-ie-tests">
+        <antcall target="proxyon"/>
+        <sahi suite="${suite}"
+              browser="${ie-exe}"
+              baseurl="${baseurl}"
+              sahihost="localhost"
+              sahiport="9999"
+              failureproperty="sahi.failed"
+              haltonfailure="false"
+              threads="3">
+            <report type="html"/>
+            <report type="junit" logdir="${junit-log-dir}"/>
+            <createissue tool="jira"/>
+        </sahi>
+        <antcall target="proxyoff"/>
+    </target>
+
+    <target name="stopserver">
+        <echo message="Dummy Stop Server: Modify target to stop your own application server."/>
+        <get dest="stopserver.htm" src="http://localhost:10000/dyn/stopserver" ignoreerrors="true"/>
+        <delete file="stopserver.htm"/>
+    </target>
+
+    <target name="startserver">
+        <echo message="Dummy Start Server: Modify target to start your own application server."/>
+        <java classname="net.sf.sahi.WebServer" fork="true" dir="bin"
+              jvmargs="-Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5006">
+            <classpath location="lib/sahi.jar"/>
+        </java>
+    </target>
+
+    <target name="all">
+        <parallel>
+            <sequential>
+                <waitfor maxwait="15" maxwaitunit="second" checkevery="100">
+                    <http url="${server-ping-url}"/>
+                </waitfor>
+                <antcall target="sahi-tests"/>
+            </sequential>
+            <antcall target="startsahi"/>
+            <antcall target="startserver"/>
+        </parallel>
+    </target>
+
+    <target name="sahi-tests" depends="run-ie-tests, stopsahi, stopserver, failsahi">
+    </target>
+
+    <target name="failsahi" if="sahi.failed">
+        <fail message="Sahi tests failed!"/>
+    </target>
+
+    <target name="startsahi" description="starts proxy">
+        <java classname="net.sf.sahi.Proxy" fork="true" dir="${sahidir}/bin">
+            <env key="MOZ_NO_REMOTE" value="1"/>
+            <classpath location="${sahidir}/lib/sahi.jar">
+                <fileset dir="extlib" includes="*.jar"/>
+            </classpath>
+        </java>
+    </target>
+
+    <target name="stopsahi" description="stop sahi server">
+        <sahi stop="true" sahihost="localhost" sahiport="9999"/>
+    </target>
+
+    <target name="proxyon">
+        <exec executable="${sahidir}/tools/toggle_IE_proxy.exe">
+            <arg value="enable"/>
+        </exec>
+    </target>
+
+    <target name="proxyoff">
+        <exec executable="${sahidir}/tools/toggle_IE_proxy.exe">
+            <arg value="disable"/>
+        </exec>
+    </target>
+
+</project>
