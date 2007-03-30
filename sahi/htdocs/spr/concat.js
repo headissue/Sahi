@@ -581,8 +581,10 @@ Sahi.prototype._setValue = function (el, val) {
     if (prevVal != val && el.onchange) {
         this.simulateEvent(el, "change");
     }
-    if (el.form){
-        this.simulateEvent(el.form, "change");        
+    if (el && el.form){
+        try{
+            this.simulateEvent(el.form, "change");
+        }catch(e){}
     }
 }
 
