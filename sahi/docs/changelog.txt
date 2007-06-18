@@ -1,11 +1,14 @@
 * Features added
-    Refactored javascript code into objects to lessen clutter to global variables
-    Autocomplete help in controller
     Some basic support for identifying script errors in script using "View Script" link on the controller.
-    Multi threaded play back support added for firefox. Look at sample.xml for ant target.
 
 * Bugfixes
-    Bugfixes for fileupload, some browser hang issues
-
-* Known issues
-    Calls to non existent functions in script does not fail script
+    HTTPS was not working because of a couple of problems:
+    Keep-alive needed to be disabled for proxying ssl requests.
+    including java.ext.dirs in sahi.bat/sh was causing ssl libraries to not be included.
+    So: Excluded ssl from keep-alive and removed java.ext.dirs.
+    Not sure if this fixes SSL support in Mac.
+        
+Known issues
+* Firefox has problems with multithreaded playback due to session sharing across windows. 
+(Workaround: Do not add the 'threads=n' clause to sahi target)
+* Calls to non existent functions in script does not fail script
