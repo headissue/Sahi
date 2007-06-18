@@ -27,13 +27,7 @@ var Sahi = function(){
 
     this.waitInterval = -1;
 
-    this.lastAlertText = "";
-
-    this.confirmReturnValue = new Array();
-    this.lastConfirmText = null;
-
     this.promptReturnValue = new Array();
-    this.lastPromptText = null;
     this.waitCondition = null;
 
     this.locals = [];
@@ -60,22 +54,6 @@ Sahi.prototype.top = function () {
     //Hack for frames named "top"
     return _sahi_top;
 }
-
-//getMostAccessibleAncestor = function () {
-//    var w = window;
-//    while (w != _sahi_top) {
-//        p = w.parent;
-//        if (p == w) return w;
-//        try {
-//            var test = p.document.domain;
-//        } catch(e) {
-//            // diff domain
-//            return w;
-//        }
-//        w = p;
-//    }
-//    return w;
-//}
 
 Sahi.prototype.getAccessor = function (src) {
     var fr = this.getFrame(this.top(), "top");
@@ -134,7 +112,7 @@ Sahi.prototype.getPartialAccessor = function (src) {
     return null;
 }
 Sahi.prototype.getLink = function (src) {
-    var lnx = document.links;
+    var lnx = document.getElementsByTagName("A");
     for (var j = 0; j < lnx.length; j++) {
         if (lnx[j] == src) {
             return "links[" + j + "]";
@@ -307,28 +285,32 @@ Sahi.prototype._mouseOver = function (el) {
     this.simulateMouseEvent(el, "mouseover");
 }
 
-Sahi.prototype._keyPress = function (el, c, combo) {
-    var prev = el.value ? el.value : null;
-    this.simulateMouseEvent(el, "focus");
-    this.simulateKeyEvent(c, el, "keydown", combo);
-    this.simulateKeyEvent(c, el, "keypress", combo);
-    if (prev && (prev + c != el.value)) {
-        //                    if (!el.maxLength || el.value.length < el.maxLength)
-        el.value += c;
+Sahi.prototype._keyPress = function (el, charCode, combo) {
+    if (typeof charCode == "string"){
+        charCode = charCode.charCodeAt(0);
     }
-    this.simulateKeyEvent(c, el, "keyup", combo);
+    var c = String.fromCharCode(charCode);
+    var prev = el.value;
+    this.simulateMouseEvent(el, "focus");
+    this.simulateKeyEvent(charCode, el, "keydown", combo);
+    this.simulateKeyEvent(charCode, el, "keypress", combo);
+    if (prev + c != el.value) {
+//      if (!el.maxLength || el.value.length < el.maxLength)
+        el.value = el.value + c;
+    }
+    this.simulateKeyEvent(charCode, el, "keyup", combo);
 }
 
 Sahi.prototype._focus = function (el) {
     this.simulateMouseEvent(el, "focus");
 }
 
-Sahi.prototype._keyDown = function (el, c, combo) {
-    this.simulateKeyEvent(c, el, "keydown", combo);
+Sahi.prototype._keyDown = function (el, charCode, combo) {
+    this.simulateKeyEvent(charCode, el, "keydown", combo);
 }
 
-Sahi.prototype._keyUp = function (el, c, combo) {
-    this.simulateKeyEvent(c, el, "keyup", combo);
+Sahi.prototype._keyUp = function (el, charCode, combo) {
+    this.simulateKeyEvent(charCode, el, "keyup", combo);
 }
 
 
@@ -565,8 +547,8 @@ Sahi.prototype._setValue = function (el, val) {
         if (typeof val == "string") {
             for (var i = 0; i < val.length; i++) {
                 var c = val.charAt(i);
-                this.simulateKeyEvent(c, el, "keydown");
-                this.simulateKeyEvent(c, el, "keypress");
+                this.simulateKeyEvent(c.charCodeAt(0), el, "keydown");
+                this.simulateKeyEvent(c.charCodeAt(0), el, "keypress");
                 if (i == 0 && el.value != c) {
                     append = true;
                 }
@@ -574,7 +556,7 @@ Sahi.prototype._setValue = function (el, val) {
                     //                    if (!el.maxLength || el.value.length < el.maxLength)
                     el.value += c;
                 }
-                this.simulateKeyEvent(c, el, "keyup");
+                this.simulateKeyEvent(c.charCodeAt(0), el, "keyup");
             }
         }
     }
@@ -615,9 +597,12 @@ Sahi.prototype.simulateEvent = function (target, evType) {
     }
 }
 
-Sahi.prototype.simulateKeyEvent = function (c, target, evType, combo) {
+Sahi.prototype.simulateKeyEvent = function (charCode, target, evType, combo) {
     var x = this.findPosX(target);
     var y = this.findPosY(target);
+
+    var c = String.fromCharCode(charCode);
+    var isShift = combo == "SHIFT" || (charCode >= 65 && charCode <= 122 && c.toUpperCase() == c);
 
     if (document.createEvent) {
         if (this.isSafariLike()) {
@@ -632,8 +617,14 @@ Sahi.prototype.simulateKeyEvent = function (c, target, evType, combo) {
             evt.ctrlKey = combo == "CTRL";
             evt.altKey = combo == "ALT";
             evt.metaKey = combo == "META";
-            evt.charCode = c.charCodeAt(0);
-            evt.shiftKey = combo == "SHIFT" || c.toUpperCase().charCodeAt(0) == evt.charCode;
+            if (charCode >= 31 && charCode <= 256){
+                evt.charCode = charCode;
+                evt.keyCode = 0;
+            }else{
+                evt.charCode = 0;
+                evt.keyCode = charCode;
+            }
+            evt.shiftKey = isShift;
 
             if (!target) return;
             var event = target.ownerDocument.createEvent("KeyEvents");
@@ -651,10 +642,9 @@ Sahi.prototype.simulateKeyEvent = function (c, target, evType, combo) {
         evt.ctrlKey = combo == "CTRL";
         evt.altKey = combo == "ALT";
         evt.metaKey = combo == "META";
-        evt.keyCode = c.charCodeAt(0);
-        evt.charCode = c.charCodeAt(0);
-        evt.shiftKey = c.toUpperCase().charCodeAt(0) == evt.charCode;
-        evt.shiftLeft = combo == "SHIFT" || c.toUpperCase().charCodeAt(0) == evt.charCode;
+        evt.keyCode = charCode;
+        evt.shiftKey = isShift; //c.toUpperCase().charCodeAt(0) == evt.charCode;
+        evt.shiftLeft = isShift;
         evt.cancelBubble = true;
         target.fireEvent("on" + evType, evt);
     }
@@ -886,17 +876,17 @@ Sahi.prototype.getColIndexWith = function (txt, tableEl) {
     return -1;
 }
 Sahi.prototype._alert = function (s) {
-    return this.real_alert(s);
+    return this.real_alert.apply(window, [s]);
 }
 Sahi.prototype.alertMock = function (s) {
     if (this.isPlaying()) {
-        this.lastAlertText = s;
+        this.setServerVar("lastAlertText", s);
     } else {
         return this.real_alert.apply(window, [s]);
     }
 }
 Sahi.prototype._lastAlert = function () {
-    var v = _sahi.top()._sahi.lastAlertText;
+    var v = this.getServerVar("lastAlertText");
     return v;
 }
 Sahi.prototype._eval = function (s) {
@@ -924,14 +914,14 @@ Sahi.prototype._resetSavedRandom = function (id) {
 
 
 Sahi.prototype._expectConfirm = function (text, value) {
-    this.confirmReturnValue[text] = value;
+    this.setServerVar("confirm: "+text, value);
 }
 Sahi.prototype.confirmMock = function (s) {
     if (this.isPlaying()) {
-        var retVal = this.confirmReturnValue[s];
+        var retVal = eval(this.getServerVar("confirm: "+s));
         if (retVal == null) retVal = true;
-        this.lastConfirmText = s;
-        this.confirmReturnValue[s] = null;
+        this.setServerVar("lastConfirmText", s);
+        this.setServerVar("confirm: "+s, null);
         return retVal;
     } else {
         var retVal = this.real_confirm.apply(window, [s]);
@@ -940,16 +930,16 @@ Sahi.prototype.confirmMock = function (s) {
     }
 }
 Sahi.prototype._lastConfirm = function () {
-    var v = _sahi.lastConfirmText;
+    var v = this.getServerVar("lastConfirmText");
     return v;
 }
 
 Sahi.prototype.promptMock = function (s) {
     if (this.isPlaying()) {
-        var retVal = this.promptReturnValue[s];
+        var retVal = this.getServerVar("prompt: "+s);//this.promptReturnValue[s];
         if (retVal == null) retVal = "";
-        this.lastPromptText = s;
-        this.promptReturnValue[s] = null;
+        this.setServerVar("lastPromptText", s);
+        this.setServerVar("prompt: "+s, null);
         return retVal;
     } else {
         var retVal = this.real_prompt.apply(window, [s]);
@@ -958,12 +948,12 @@ Sahi.prototype.promptMock = function (s) {
     }
 }
 Sahi.prototype._lastPrompt = function () {
-    var v = this.lastPromptText;
+    var v = this.getServerVar("lastPromptText");
     return v;
 }
 
 Sahi.prototype._expectPrompt = function (text, value) {
-    _sahi.promptReturnValue[text] = value;
+    this.setServerVar("prompt: "+text, value);
 }
 Sahi.prototype._prompt = function (s) {
     return this.real_prompt(s);
@@ -1012,6 +1002,7 @@ Sahi.prototype._popup = function (n) {
     throw new SahiNotMyWindowException();
 }
 Sahi.prototype._log = function (s, type) {
+    if (!type) type = "info";
     this.logPlayBack(s, type);
 }
 Sahi.prototype._navigateTo = function (url, force) {
@@ -1110,7 +1101,7 @@ Sahi.prototype.findImage = function (id) {
     return this.findImageHelper(id, this.top(), res, "id", true).element;
 }
 Sahi.prototype.findImageHelper = function (id, win, res, param, isImg) {
-    var imgs = isImg ? win.document.images : win.document.links;
+    var imgs = isImg ? win.document.images : win.document.getElementsByTagName("A");
 
     if ((typeof id) == "number") {
         res.cnt = 0;
@@ -1143,7 +1134,7 @@ Sahi.prototype.findImageHelper = function (id, win, res, param, isImg) {
 }
 
 Sahi.prototype.findImageByIx = function (ix, win, res, isImg) {
-    var imgs = isImg ? win.document.images : win.document.links;
+    var imgs = isImg ? win.document.images : win.document.getElementsByTagName("A");
     if (imgs[ix - res.cnt]) {
         res.element = imgs[ix - res.cnt];
         res.found = true;
@@ -1191,7 +1182,7 @@ Sahi.prototype.findImageIx = function (id, toMatch) {
 Sahi.prototype.findImageIxHelper = function (id, toMatch, win, res, param, isImg) {
     if (res && res.found) return res;
 
-    var imgs = isImg ? win.document.images : win.document.links;
+    var imgs = isImg ? win.document.images : win.document.getElementsByTagName("A");
     for (var i = 0; i < imgs.length; i++) {
         if (param == null || this.areEqual(imgs[i], param, id)) {
             res.cnt++;
@@ -1920,7 +1911,6 @@ Sahi.openControllerWindow = function (e) {
     return true;
 }
 Sahi.prototype.isHotKeyPressed = function (e) {
-    if (!e) return false;
     return ((this.hotKey == "SHIFT" && e.shiftKey)
             || (this.hotKey == "CTRL" && e.ctrlKey)
             || (this.hotKey == "ALT" && e.altKey)
@@ -1990,7 +1980,8 @@ Sahi.prototype.instant = function (cmd, debugInfo) {
     this.cmdDebugInfoLocal[i] = debugInfo;
 }
 Sahi.prototype.play = function () {
-    window.setTimeout("try{_sahi.ex();}catch(ex){}", this.waitInterval > 0 && !this.waitCondition ? this.waitInterval : this.INTERVAL);
+    var interval = this.waitInterval > 0 && !this.waitCondition ? this.waitInterval : this.INTERVAL;
+    this.execNextStep(false, interval);
 }
 Sahi.prototype.areWindowsLoaded = function (win) {
     try {
@@ -2045,6 +2036,12 @@ Sahi.prototype.ex = function (isStep) {
         try {
             if (this.isPaused() && !isStep) return;
             var i = this.getCurrentIndex();
+            if (i == 0){
+                if (_sahi.loadError){
+                    this.logPlayBack("Error loading script. Firefox may point to the exact line.", 'error', "", this.getExceptionString(_sahi.loadError))
+                    this.gotErrors(true);
+                }
+            }
             if (_isLocal) {
                 cmds = this.cmdsLocal;
                 debugs = this.cmdDebugInfoLocal;
@@ -2094,7 +2091,8 @@ Sahi.prototype.ex = function (isStep) {
                             var exc = null;
                             this.schedule = this.instant;
                             try {
-                                eval(cmds[i]);
+                                _sahi.scriptScope.execute(cmds[i]);
+                                //eval(cmds[i]);
                             } catch(e) {
                                 exc = e;
                             }
@@ -2109,7 +2107,8 @@ Sahi.prototype.ex = function (isStep) {
                             //sahi_alert("Calling");
                             this.ex(isStep);
                         } else {
-                            eval(cmds[i]);
+                            _sahi.scriptScope.execute(cmds[i]);
+                            //eval(cmds[i]);
                             this.reportSuccess(cmds[i], debugInfo);
                         }
                     } catch(e) {
@@ -2149,7 +2148,7 @@ Sahi.prototype.ex = function (isStep) {
             if (retries < this.MAX_RETRIES) {
                 this.setRetries(retries + 1);
                 this.interval = this.ONERROR_INTERVAL;
-            }                                                         
+            }
             else {
                 var debugInfo = "" + debugs[i];
                 if (this.getServerVar("sahi_play") == "1") {
@@ -2326,6 +2325,22 @@ Sahi.prototype.createRequestObject = function () {
     }
     return obj;
 }
+//---XMLHttpObject Wrap Start---
+/*
+if (typeof ActiveXObject != "undefined") Sahi.prototype.real_ActiveXObject = ActiveXObject;
+if (typeof XMLHttpRequest != "undefined") window.real_XMLHttpRequest = XMLHttpRequest;
+
+XMLHttpRequest = function(){
+    _sahi._alert("Called");
+    var obj = new real_XMLHttpRequest(arguments);
+    obj.onreadystatechange = _sahi.onreadystatechange;
+    return obj;
+}
+Sahi.prototype.onreadystatechange = function(){
+    _sahi._alert(_sahi.list(arguments));
+}
+*/
+//---XMLHttpObject Wrap End---
 Sahi.prototype.getServerVar = function (name) {
     var v = this.sendToServer("/_s_/dyn/SessionState_getVar?name=" + this.escape(name));
     if (v == "null") return null;
@@ -2432,7 +2447,7 @@ Sahi.prototype.init = function (e) {
         if (this.waitCondition){
             this._wait(this.waitInterval, this.waitCondition);
         }else {
-            this._wait(this.waitInterval);            
+            this._wait(this.waitInterval);
         }
     }
 
@@ -2537,7 +2552,8 @@ Sahi.prototype.saveCondition = function (a) {
     this._setGlobal("condn" + this.getCurrentIndex(), a ? "true" : "false");
     this.cmds = new Array();
     this.cmdDebugInfo = new Array();
-    eval(_sahi.execSteps);
+    this.scriptScope();
+    //eval(_sahi.execSteps);
 }
 
 Sahi.prototype.quoteIfString = function (shortHand) {
@@ -2584,7 +2600,7 @@ Sahi.prototype.setWaitCondition = function(waitCondn) {
 
 Sahi.prototype.setWaitConditionTime = function(time) {
     if (!String.isBlankOrNull(time) && time != "-1") {
-        var diff = time - new Date().valueOf();
+        var diff = eval(time) - new Date().valueOf();
         this.waitInterval = (diff > 0) ? diff : -1;
     }
 }
