@@ -2,6 +2,8 @@
 function testWith($s){
     _setValue(_textbox("t1"), "Message "+$s);
     _click(_button("Click For Alert"));
+    _navigateTo("/demo/alertTest.htm", true);
+    _wait(1000);
     _assertEqual("Message "+$s, _lastAlert());
 }
 

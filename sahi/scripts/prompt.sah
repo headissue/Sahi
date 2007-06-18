@@ -2,4 +2,6 @@ _expectPrompt("Some prompt?", "abc")
 _click(_button("Click For Prompt"));
 _assertNotNull(_textbox("t1"));
 _assertEqual("abc", _textbox("t1").value);
+_navigateTo("/demo/promptTest.htm", true);
+_wait(2000);
 _assertEqual(_lastPrompt(), "Some prompt?");
