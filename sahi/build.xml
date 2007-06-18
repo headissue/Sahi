@@ -107,11 +107,6 @@
         <mkdir dir="temp/sahi/scripts"/>
         <mkdir dir="temp/sahi/extlib"/>
         <copy file="demo.xml" todir="temp/sahi/"/>
-        <copy file="sample.xml" todir="temp/sahi/"/>
-        <copy file="sample.properties" todir="temp/sahi/"/>
-        <copy file="stress.xml" todir="temp/sahi/"/>
-        <copy file="sahi.rake" todir="temp/sahi/"/>
-        <copy file="default_props.rb" todir="temp/sahi/"/>
         <copy file="lib/ant-sahi.jar" todir="temp/sahi/lib"/>
         <copy file="lib/sahi.jar" todir="temp/sahi/lib"/>
         <copy todir="temp/sahi/bin">
@@ -146,17 +141,10 @@
                 <include name="mouseover.sah"/>
                 <include name="execute.sah"/>
                 <include name="docWrite.sah"/>
-                <include name="wait_long.sah"/>
-                <include name="wait_for_with_reload.sah"/>
             </fileset>
         </copy>
         <copy todir="temp/sahi/extlib">
-            <fileset dir="extlib">
-                <include name="README.txt"/>
-                <include name="ws-commons-util-1.0.1.jar"/>
-                <include name="xmlrpc-client-3.0.jar"/>
-                <include name="xmlrpc-common-3.0.jar"/>
-            </fileset>
+            <fileset dir="extlib" includes="README.txt"/>
         </copy>
         <copy todir="temp/sahi/htdocs">
             <fileset dir="htdocs">
