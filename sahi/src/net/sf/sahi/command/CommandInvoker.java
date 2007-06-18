@@ -23,9 +23,6 @@ import net.sf.sahi.response.HttpResponse;
 import net.sf.sahi.response.SimpleHttpResponse;
 import net.sf.sahi.util.Utils;
 
-import java.io.IOException;
-import java.io.InputStream;
-
 public class CommandInvoker {
     private static final int NORMAL_TERMINATION = 0;
     public static final String SUCCESS = "success";
@@ -38,8 +35,18 @@ public class CommandInvoker {
         return new SimpleHttpResponse(exitStatus);
     }
 
+    public String getCommandForOS(String command){
+        if (Utils.isWindows95()){
+            command = "command.com /C " + command;
+        }else if (Utils.isWindows()){
+            command = "cmd.exe /C " + command;
+        }
+        return command;
+    }
+
     private String executeSystemCommand(String command, boolean isSynchronous) throws InterruptedException {
         try {
+            command = getCommandForOS(command);
             System.out.println("Executing: "+command);
             Process process = Runtime.getRuntime().exec(command);
             return (isSynchronous) ? getExitStatus(process) : SUCCESS;
@@ -54,7 +61,7 @@ public class CommandInvoker {
              } else {
                   return SUCCESS;
              }
- //            return (isSynchronous) ? getExitStatus(process) : SUCCESS;             
+ //            return (isSynchronous) ? getExitStatus(process) : SUCCESS;
              */
 
         } catch (Exception e) {

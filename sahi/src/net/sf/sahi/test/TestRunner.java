@@ -50,15 +50,7 @@ public class TestRunner {
     public static void main(String[] args) {
         try {
             if (args.length == 0) {
-                System.out
-                        .println("Usage: java TestRunner <suite_name> <start_url> <browser_executable> <log_dir> <sahi_host> <sahi_port> <number_of_threads>  optional<browser_option>");
-                System.out
-                        .println("Set log_dir to \"default\" if you want to log to the default log dir");
-                System.out
-                        .println("Set number_of_threads to a number less than 5 for Internet Explorer");
-                System.out.println("Set number_of_threads to 1 for FireFox");
-                System.out.println("Set browser_option to the profile dir to open FireFox with the given profile ");
-                System.exit(-1);
+                help();
             }
             String suiteName = args[0];
             String base = getBase(args);
@@ -73,13 +65,26 @@ public class TestRunner {
             if (args.length == 9)
                 browserOption = args[8];
             TestRunner testRunner = new TestRunner(suiteName, browser, base, sahiHost, port, threads, browserOption);
-            testRunner.addReport(new Report("html", logDir));                 
+            testRunner.addReport(new Report("html", logDir));
             String status = testRunner.execute();
             System.out.println("Status:" + status);
         } catch (Exception e) {
             e.printStackTrace();
+            help();
         }
     }
+
+	private static void help() {
+		System.out
+		        .println("Usage: java TestRunner <suite_name> <browser_executable> <start_url> <log_dir> <sahi_host> <sahi_port> <number_of_threads>  optional<browser_option>");
+		System.out
+		        .println("Set log_dir to \"default\" if you want to log to the default log dir");
+		System.out
+		        .println("Set number_of_threads to a number less than 5 for Internet Explorer");
+		System.out.println("Set number_of_threads to 1 for FireFox");
+		System.out.println("Set browser_option to the profile dir to open FireFox with the given profile ");
+		System.exit(-1);
+	}
 
     private void addReport(Report report) {
         if (listReport == null) {
@@ -97,6 +102,7 @@ public class TestRunner {
         this.port = port;
         this.threads = threads;
         this.browserOption = browserOption;
+        System.out.println(this.toString());
     }
 
     public TestRunner(String suiteName, String browser, String base,
@@ -200,4 +206,18 @@ public class TestRunner {
         }
         return browser;
     }
+
+    public String toString(){
+    	StringBuffer sb = new StringBuffer();
+    	sb.append("\nsuiteName = "+suiteName);
+    	sb.append("\nbrowser = "+browser);
+    	sb.append("\nbase = "+base);
+    	sb.append("\nsahiHost = "+sahiHost);
+    	sb.append("\nport = "+port);
+    	sb.append("\nthreads = "+threads);
+    	sb.append("\nbrowserOption = "+browserOption);
+    	return sb.toString();
+
+    }
+
 }

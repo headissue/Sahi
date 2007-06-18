@@ -64,7 +64,23 @@ public abstract class SahiScript {
     protected void setScript(String s) {
         original = s;
         jsString = modify(s);
-        script = addJSEvalCode(jsString);
+        script = appendFunction(jsString);//addJSEvalCode(jsString);
+    }
+
+    private String appendFunction(String jsString) {
+        String s = "" +
+                "_sahi.scriptScope = function (){" +
+                "\n\t_sahi.scriptScope.execute = function(s){eval(s);};" +
+                "\n\n" +
+                "//Your code starts" +
+                "\n\n";
+        s += jsString;
+        s += "\n\n" +
+                "//Your code ends" +
+                "\n\n" +
+                "}" +
+                "\ntry{_sahi.scriptScope();}catch(e){_sahi.loadError = e; throw e;}";
+        return s;
     }
 
     public String jsString(){

@@ -16,15 +16,12 @@
 
 package net.sf.sahi.response;
 
-import net.sf.sahi.config.Configuration;
-import net.sf.sahi.util.Utils;
-
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Enumeration;
 import java.util.Properties;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+
+import net.sf.sahi.config.Configuration;
+import net.sf.sahi.util.Utils;
 
 /**
  * User: nraman Date: May 15, 2005 Time: 10:14:34 PM

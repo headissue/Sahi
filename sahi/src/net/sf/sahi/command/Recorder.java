@@ -19,7 +19,6 @@ package net.sf.sahi.command;
 import net.sf.sahi.request.HttpRequest;
 import net.sf.sahi.session.Session;
 import net.sf.sahi.util.Utils;
-import net.sf.sahi.record.*;
 
 public class Recorder {
     public void start(HttpRequest request) {

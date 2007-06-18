@@ -27,7 +27,6 @@ import net.sf.sahi.util.URLParser;
 import net.sf.sahi.report.LogViewer;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 
 public class LocalRequestProcessor {
     public HttpResponse getLocalResponse(String uri, HttpRequest requestFromBrowser) throws IOException {

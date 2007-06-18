@@ -16,18 +16,12 @@
 
 package net.sf.sahi.command;
 
+import java.lang.reflect.Method;
+
 import net.sf.sahi.request.HttpRequest;
 import net.sf.sahi.response.HttpResponse;
 import net.sf.sahi.response.NoCacheHttpResponse;
 import net.sf.sahi.util.ClassLoadHelper;
-
-import java.io.File;
-import java.lang.reflect.Method;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.net.MalformedURLException;
-import java.util.List;
-import java.util.ArrayList;
 
 public class CommandExecuter {
 

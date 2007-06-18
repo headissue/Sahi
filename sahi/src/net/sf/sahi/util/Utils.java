@@ -119,10 +119,10 @@ public class Utils {
                 .replaceAll("(à|á|â|ã|ä|å)", "a").replaceAll("æ", "ae")
                 .replaceAll("(ì|í|î|ï)", "i").replaceAll("(ò|ó|ô|õ|ö|ø)", "o")
                 .replaceAll("(ý|ÿ)", "y").replaceAll("ñ", "n").replaceAll("ç",
-                "c").replaceAll("(À|Á|Â|Ã|Ä|Å)", "A").replaceAll("Æ",
-                "AE").replaceAll("Ç", "C").replaceAll("(È|É|Ê|Ë)", "E")
+                        "c").replaceAll("(À|Á|Â|Ã|Ä|Å)", "A").replaceAll("Æ",
+                        "AE").replaceAll("Ç", "C").replaceAll("(È|É|Ê|Ë)", "E")
                 .replaceAll("(Ì|Í|Î|Ï)", "I").replaceAll("Ñ", "N").replaceAll(
-                "(Ò|Ó|Ô|Õ|Ö|Ø)", "O").replaceAll("(Ù|Ú|Û|Ü)", "U")
+                        "(Ò|Ó|Ô|Õ|Ö|Ø)", "O").replaceAll("(Ù|Ú|Û|Ü)", "U")
                 .replaceAll("Ý", "Y");
     }
 
@@ -194,7 +194,8 @@ public class Utils {
         StringBuffer buf = new StringBuffer();
         while (matcher.find()) {
             String key = matcher.group(0).substring(1);
-            String replaceStr = substitutions.getProperty(key).replaceAll("\\$", "SDLR");
+            String replaceStr = substitutions.getProperty(key).replaceAll(
+                    "\\$", "SDLR");
             matcher.appendReplacement(buf, replaceStr);
         }
         matcher.appendTail(buf);
@@ -244,6 +245,15 @@ public class Utils {
     }
 
     public static boolean isWindows() {
-        return System.getProperty("os.name").toLowerCase().startsWith("windows");
+        return System.getProperty("os.name").toLowerCase()
+                .startsWith("windows");
+    }
+
+    public static boolean isWindowsNT() {
+        return System.getProperty("os.name").equals("Windows NT");
+    }
+
+    public static boolean isWindows95() {
+        return System.getProperty("os.name").equals("Windows 95");
     }
 }
