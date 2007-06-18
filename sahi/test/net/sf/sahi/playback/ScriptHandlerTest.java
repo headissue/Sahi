@@ -50,14 +50,14 @@ public class ScriptHandlerTest extends TestCase {
     }
 
     public void testModifyFunctionNames(){
-        assertEquals("_sahi._setValue ( _sahi._textbox('username') , 'test'+$ix )", script.modifyFunctionNames("_setValue ( _textbox('username') , 'test'+$ix )"));
-        assertEquals("_sahi._setValue(_sahi._textbox('username') , 'test'+$ix )", script.modifyFunctionNames("_setValue(_textbox('username') , 'test'+$ix )"));
-        assertEquals("_sahi._click(_sahi._image(\"Link Quote Application \" + _sahi._getCellText(_sahi._accessor(\"top.content.creditFrameContent.document.getElementById('tblRecentlyAccessedQuotes').rows[3].cells[1]\"))));", script.modifyFunctionNames("_click(_image(\"Link Quote Application \" + _getCellText(_accessor(\"top.content.creditFrameContent.document.getElementById('tblRecentlyAccessedQuotes').rows[3].cells[1]\"))));"));
+        assertEquals("_sahi._setValue ( _sahi._textbox('username') , 'test'+$ix )", SahiScript.modifyFunctionNames("_setValue ( _textbox('username') , 'test'+$ix )"));
+        assertEquals("_sahi._setValue(_sahi._textbox('username') , 'test'+$ix )", SahiScript.modifyFunctionNames("_setValue(_textbox('username') , 'test'+$ix )"));
+        assertEquals("_sahi._click(_sahi._image(\"Link Quote Application \" + _sahi._getCellText(_sahi._accessor(\"top.content.creditFrameContent.document.getElementById('tblRecentlyAccessedQuotes').rows[3].cells[1]\"))));", SahiScript.modifyFunctionNames("_click(_image(\"Link Quote Application \" + _getCellText(_accessor(\"top.content.creditFrameContent.document.getElementById('tblRecentlyAccessedQuotes').rows[3].cells[1]\"))));"));
     }
 
     public void testStripSahiFromFunctionNames(){
-        assertEquals("_setValue ( _textbox('username') , 'test'+$ix )", script.stripSahiFromFunctionNames( "_sahi._setValue ( _sahi._textbox('username') , 'test'+$ix )"  ));
-        assertEquals("_setValue(_textbox('username') , 'test'+$ix )", script.stripSahiFromFunctionNames( "_sahi._setValue(_sahi._textbox('username') , 'test'+$ix )"));
+        assertEquals("_setValue ( _textbox('username') , 'test'+$ix )", SahiScript.stripSahiFromFunctionNames( "_sahi._setValue ( _sahi._textbox('username') , 'test'+$ix )"  ));
+        assertEquals("_setValue(_textbox('username') , 'test'+$ix )", SahiScript.stripSahiFromFunctionNames( "_sahi._setValue(_sahi._textbox('username') , 'test'+$ix )"));
     }
 
     private class MockFileScript extends FileScript{

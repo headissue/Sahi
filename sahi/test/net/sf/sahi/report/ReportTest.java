@@ -1,7 +1,6 @@
 package net.sf.sahi.report;
 
 import junit.framework.TestCase;
-import net.sf.sahi.config.Configuration;
 
 /**
  * @author dlewis

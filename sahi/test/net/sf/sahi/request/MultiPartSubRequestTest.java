@@ -2,8 +2,6 @@ package net.sf.sahi.request;
 
 import junit.framework.TestCase;
 
-import java.util.StringTokenizer;
-
 /**
  * User: nraman
  * Date: May 18, 2005

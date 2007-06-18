@@ -1,13 +1,12 @@
 package net.sf.sahi.issue;
 
-import junit.framework.TestCase;
+import java.util.ArrayList;
+import java.util.List;
+
 import net.sf.sahi.test.TestLauncher;
 
-import java.util.List;
-import java.util.ArrayList;
-
-import org.jmock.MockObjectTestCase;
 import org.jmock.Mock;
+import org.jmock.MockObjectTestCase;
 
 
 /**

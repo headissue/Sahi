@@ -2,11 +2,6 @@ package net.sf.sahi.util;
 
 import junit.framework.TestCase;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-
 public class UtilsTest extends TestCase {
     public UtilsTest(String name) {
         super(name);
@@ -51,4 +46,11 @@ public class UtilsTest extends TestCase {
         if (Utils.isWindows())
             assertEquals("D:\\my\\sahi\\certs\\a.txt", Utils.makePathOSIndependent("D:/my/sahi/certs/a.txt"));
     }
+
+    public void testSplit(){
+        assertEquals("aa", "aa\nbb\r\ncc".replace('\r', '\n').split("[\r\n]")[0]);
+        assertEquals("bb", "aa\nbb\r\ncc".split("[\r\n]")[1]);
+        assertEquals("cc", "aa\nbb\r\ncc".split("[\r\n]")[2]);
+    }
+
 }
