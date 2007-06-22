@@ -10,6 +10,7 @@
                     <http url="http://localhost:10000/demo/index.htm"/>
                 </waitfor>
                 <antcall target="runietests"/>
+                <antcall target="stop-web"/>
             </sequential>
         </parallel>
     </target>

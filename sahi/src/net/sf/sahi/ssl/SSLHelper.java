@@ -112,17 +112,21 @@ public class SSLHelper {
                 "\nIf you find a solution for this on Linux, " +
                 "\nplease mail it to narayanraman@users.sourceforge.net" +
                 "\n\n\n-------COMMAND START-------\n\n" +
-                command.replace('\n', ' ').replaceAll("\r", "") +
+                getPrintableSSLCommand(command) +
                 "\n\n-------COMMAND END-------" +
                 "\n\nThe files in certs can be copied over to other systems to make ssl/https work there." +
                 "\n\n--------------------HTTPS/SSL END--------------------\n\n\n"
                 );
-        Process p = Runtime.getRuntime().exec(command.replaceAll("\"", "").split("[\r\n]"));
+        Process p = Runtime.getRuntime().exec(Utils.getCommandTokens(command));
         p.waitFor();
     }
 
+    String getPrintableSSLCommand(String command) {
+        return command.replace('\n', ' ').replaceAll("\r", "");
+    }
+
     String getSSLCommand(String domain, String keyStoreFilePath, String password, String keytool) {
-        String contents = new String(Utils.readCachedFile(Utils.concatPaths(Configuration.getConfigPath(), "ssl.txt")));
+        String contents = new String(Utils.readCachedFile(Utils.concatPaths(Configuration.getConfigPath(), "ssl.txt"))).trim();
         Properties props = new Properties();
         props.put("domain", domain);
         props.put("keystore", Utils.escapeDoubleQuotesAndBackSlashes(keyStoreFilePath));

@@ -91,7 +91,7 @@ public class SahiTestSuite {
         try {
             Thread.sleep(Configuration.getTimeBetweenTestsInSuite());
         } catch (InterruptedException e) {
-            e.printStackTrace();  
+            e.printStackTrace();
         }
         this.notify();
     }
@@ -140,8 +140,10 @@ public class SahiTestSuite {
         while (currentTestIndex < tests.size()) {
             for (; availableThreads > 0 && currentTestIndex < tests.size(); availableThreads--) {
                 int freeThreadNo = getFreeThreadNo();
-                freeThreads[freeThreadNo] = false;
-                this.executeTest(freeThreadNo);
+                if (freeThreadNo != -1){
+                    freeThreads[freeThreadNo] = false;
+                    this.executeTest(freeThreadNo);
+                }
             }
             try {
                 this.wait();

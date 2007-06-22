@@ -48,7 +48,7 @@ public class CommandInvoker {
         try {
             command = getCommandForOS(command);
             System.out.println("Executing: "+command);
-            Process process = Runtime.getRuntime().exec(command);
+            Process process = Runtime.getRuntime().exec(Utils.getCommandTokens(command));
             return (isSynchronous) ? getExitStatus(process) : SUCCESS;
             /**
              if (isSynchronous){

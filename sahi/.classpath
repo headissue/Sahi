@@ -2,8 +2,21 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="test"/>
+	<classpathentry kind="lib" path="extlib/ant-launcher.jar"/>
+	<classpathentry kind="lib" path="extlib/ant-testutil.jar"/>
+	<classpathentry kind="lib" path="extlib/cglib-nodep-2.1_3.jar"/>
+	<classpathentry kind="lib" path="extlib/jmock-1.1.0.jar"/>
+	<classpathentry kind="lib" path="extlib/jmock-cglib-1.1.0.jar"/>
+	<classpathentry kind="lib" path="extlib/junit.jar"/>
+	<classpathentry kind="lib" path="extlib/log4j.jar"/>
+	<classpathentry kind="lib" path="extlib/mysql.jar"/>
+	<classpathentry kind="lib" path="extlib/mysql-connector-java-5.0.4-bin.jar"/>
+	<classpathentry kind="lib" path="extlib/ojdbc14.jar"/>
+	<classpathentry kind="lib" path="extlib/ws-commons-util-1.0.1.jar"/>
+	<classpathentry kind="lib" path="extlib/xmlrpc-client-3.0.jar"/>
+	<classpathentry kind="lib" path="extlib/xmlrpc-common-3.0.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry sourcepath="ECLIPSE_HOME/plugins/org.eclipse.jdt.source_3.1.0/src/org.junit_3.8.1/junitsrc.zip" kind="var" path="JUNIT_HOME/junit.jar"/>
-	<classpathentry kind="lib" path="C:/my/eclipse/plugins/org.apache.ant_1.6.5/lib/ant.jar"/>
+	<classpathentry kind="lib" path="C:/my/eclipse/plugins/org.apache.ant_1.6.1/lib/ant.jar"/>
+	<classpathentry kind="lib" path="C:/my/eclipse/plugins/org.junit_3.8.1/junit.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

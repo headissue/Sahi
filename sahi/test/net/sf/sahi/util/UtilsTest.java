@@ -1,5 +1,8 @@
 package net.sf.sahi.util;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import junit.framework.TestCase;
 
 public class UtilsTest extends TestCase {
@@ -48,9 +51,22 @@ public class UtilsTest extends TestCase {
     }
 
     public void testSplit(){
-        assertEquals("aa", "aa\nbb\r\ncc".replace('\r', '\n').split("[\r\n]")[0]);
-        assertEquals("bb", "aa\nbb\r\ncc".split("[\r\n]")[1]);
-        assertEquals("cc", "aa\nbb\r\ncc".split("[\r\n]")[2]);
+        assertEquals("aa", "aa\nbb\r\ncc".replaceAll("\r", "").split("[\n]")[0]);
+        assertEquals("bb", "aa\nbb\r\ncc".replaceAll("\r", "").split("[\n]")[1]);
+        assertEquals("cc", "aa\nbb\r\ncc".replaceAll("\r", "").split("[\n]")[2]);
+    }
+
+    public void testInclude(){
+        String inputStr = "_click(_link($linkText));\r\n_include(\"includes/sahi_demo_include.sah\");\r\n//_include(\"http://localhost:9999/_s_/scripts/sahi_demo_include.sah\");";
+        String patternStr = "[^\"']*[.]sah";
+        Pattern pattern = Pattern.compile(patternStr);
+        Matcher matcher = pattern.matcher(inputStr);
+        while (matcher.find()) {
+            String includeStatement = matcher.group(0);
+            System.out.println(includeStatement);
+        }
     }
 
 }
+
+

@@ -1,6 +1,7 @@
 package net.sf.sahi.command;
 
 import net.sf.sahi.playback.SahiScript;
+import net.sf.sahi.report.LogViewer;
 import net.sf.sahi.request.HttpRequest;
 import net.sf.sahi.response.HttpFileResponse;
 import net.sf.sahi.response.HttpResponse;
@@ -38,7 +39,7 @@ public class Script {
         String js = makeIncludeALink(file);
 
         Properties props = new Properties();
-        props.setProperty("name", file);
+        props.setProperty("name", file.replaceAll("\\\\", "/"));
         props.setProperty("js", js);
         props.setProperty("script", js);
         return new HttpFileResponse(net.sf.sahi.config.Configuration.getHtdocsRoot() + "spr/script.htm", props, false, true);
@@ -46,25 +47,24 @@ public class Script {
 
     public static String makeIncludeALink(String baseFile) {
         String inputStr = new String(Utils.readFile(baseFile));
-        String patternStr = "_include\\([\"'](.*)[\"']\\).*[\n]";
+        inputStr = LogViewer.highlight(inputStr, -1);
+        String patternStr = "[^\"']*.sah";
         Pattern pattern = Pattern.compile(patternStr);
         Matcher matcher = pattern.matcher(inputStr);
 
         StringBuffer sb = new StringBuffer();
-        sb.append("\n//--START--" + baseFile.replaceAll("\\\\", "/") + "-----------------\n\n");
         while (matcher.find()) {
-            String includeStatement = matcher.group(0);
-            String includedScriptName = matcher.group(1);
-//            String scriptPath = Utils.concatPaths(baseFile, includedScriptName).replaceAll("\\\\", "/");
-//            String replaceStr = "<a href='/_s_/dyn/Script_view?script="+scriptPath+"'>"+includeStatement+"</a>";
-
-            String scriptPath = Utils.concatPaths(baseFile, includedScriptName);
-            String replaceStr = makeIncludeALink(scriptPath);
-
+            String includedScriptName = matcher.group(0);
+            String scriptPath = Utils.concatPaths(baseFile, includedScriptName).replaceAll("\\\\", "/");
+            String replaceStr = "";
+            if (includedScriptName.startsWith("http://") || includedScriptName.startsWith("https://")){
+                replaceStr = "<a href='"+includedScriptName+"'>"+includedScriptName+"</a>";
+            }else{
+                replaceStr = "<a href='/_s_/dyn/Script_view?script="+scriptPath+"'>"+includedScriptName+"</a>";
+            }
             matcher.appendReplacement(sb, replaceStr);
         }
         matcher.appendTail(sb);
-        sb.append("\n//---END---" + baseFile.replaceAll("\\\\", "/") + "-----------------\n\n");
         return sb.toString();
     }
 

@@ -141,6 +141,9 @@
                 <include name="mouseover.sah"/>
                 <include name="execute.sah"/>
                 <include name="docWrite.sah"/>
+                <include name="link_test.sah"/>
+                <include name="wait_long.sah"/>
+                <include name="wait_for_with_reload.sah"/>
             </fileset>
         </copy>
         <copy todir="temp/sahi/extlib">
@@ -270,15 +273,15 @@
     <!--</target>-->
 
     <target name="deploy">
-        <delete dir="D:/sahitest"/>
-        <mkdir dir="D:/sahitest"/>
-        <unzip src="deploy/sahi_${DSTAMP}.zip" dest="D:/sahitest"></unzip>
+        <delete dir="C:/sahitest"/>
+        <mkdir dir="C:/sahitest"/>
+        <unzip src="deploy/sahi_${DSTAMP}.zip" dest="C:/sahitest"></unzip>
     </target>
 
     <target name="deploy-src">
-        <delete dir="D:/sahitest"/>
-        <mkdir dir="D:/sahitest"/>
-        <unzip src="deploy/sahi-src_${DSTAMP}.zip" dest="D:/sahitest"></unzip>
+        <delete dir="C:/sahitest"/>
+        <mkdir dir="C:/sahitest"/>
+        <unzip src="deploy/sahi-src_${DSTAMP}.zip" dest="C:/sahitest"></unzip>
     </target>
 
 </project>

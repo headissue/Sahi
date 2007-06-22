@@ -21,7 +21,7 @@ function checkOpener() {
     }
 }
 function sahi(){
-    return sahiOpener()._sahi;        
+    return sahiOpener()._sahi;
 }
 function sahiOpener() {
     return top.opener._sahi.top();
@@ -47,7 +47,7 @@ function play() {
 }
 function stepWisePlay() {
     var i = parseInt(document.playform.step.value);
-    if (i==0) i = i+1
+    //i = i+1
     sahi().setCurrentIndex(i);
     sahi().stepWisePlay();
     sahiOpener().eval("_sahi.ex(true)");
@@ -556,7 +556,7 @@ function suggest(){
         selectBox.options.length = 0;
         for (var i in el){
             if (i.indexOf(prop) == 0)
-                selectBox.options[selectBox.options.length] = new Option(i, i);            
+                selectBox.options[selectBox.options.length] = new Option(i, i);
         }
     }
 }
@@ -574,7 +574,7 @@ function appendToAccessor(){
 
 // Suggest List start
 var stripSahi = function (s){
-	return s.replace(/sahi_/g, "_");
+    return s.replace(/sahi_/g, "_");
 }
 function getAccessorProps(str){
     var elStr = "window";
@@ -584,21 +584,21 @@ function getAccessorProps(str){
         dot = str.lastIndexOf('.');
         elStr = str.substring(0, dot);
     }
-	var prop = str.substring(dot + 1);
-	var el = null;
-	try{
+    var prop = str.substring(dot + 1);
+    var el = null;
+    try{
         el = sahi()._eval(addSahi(elStr));
-	}catch(e){}
-	for (var i in el){
-		i = stripSahi(i);
-		if (i.indexOf(prop) == 0 && i != prop)
-			options[options.length] = new Option(i, i);
-	}
+    }catch(e){}
+    for (var i in el){
+        i = stripSahi(i);
+        if (i.indexOf(prop) == 0 && i != prop)
+            options[options.length] = new Option(i, i);
+    }
     return options;
 }
 
 function getAPIs(str){
-    var options = [];                                       
+    var options = [];
     var el = null;
     try{
         el = sahi();
@@ -614,7 +614,7 @@ function getAPIs(str){
             var val = i
             var fnStr = el[i].toString();
             var args = trim(fnStr.substring(fnStr.indexOf(" "), fnStr.indexOf("{")));
-            if (args == "") continue; 
+            if (args == "") continue;
             val = i + args;
             val = stripSahi(val);
             options[options.length] = new Option(val, val);

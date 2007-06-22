@@ -256,4 +256,20 @@ public class Utils {
     public static boolean isWindows95() {
         return System.getProperty("os.name").equals("Windows 95");
     }
+
+    public static String[] getCommandTokens(String commandString){
+        String[] ar = commandString.split("\"");
+        ArrayList tokens = new ArrayList();
+        for (int i=0; i<ar.length; i++){
+            if (commandString.indexOf("\""+ar[i]+"\"") != -1){
+                tokens.add(ar[i]);
+            }else{
+                String[] subtokens = ar[i].split(" ");
+                for (int j=0; j<subtokens.length; j++){
+                    tokens.add(subtokens[j]);
+                }
+            }
+        }
+        return (String[]) tokens.toArray(new String[0]);
+    }
 }

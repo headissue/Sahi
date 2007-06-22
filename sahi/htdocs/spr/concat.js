@@ -2085,7 +2085,7 @@ Sahi.prototype.ex = function (isStep) {
                             }
                         }
                         this.updateControlWinDisplay(cmds[i], i);
-                        this.setCurrentIndex(i + 1);
+                        if (!isStep) this.setCurrentIndex(i + 1);
                         if (cmds[i].indexOf("_sahi._call") != -1 && cmds[i].indexOf("_sahi._callServer") == -1) {
                             var bkup = this.schedule;
                             var exc = null;
@@ -2196,7 +2196,7 @@ Sahi.prototype.updateControlWinDisplay = function (s, i) {
     try {
         var controlWin = this.getController();
         if (controlWin && !controlWin.closed) {
-            if (i) controlWin.main.displayStepNum(i + 1);
+            if (i != null) controlWin.main.displayStepNum(i + 1);
             controlWin.main.displayLogs(s.replace(/_sahi[.]/g, ""));
         }
     } catch(ex) {
