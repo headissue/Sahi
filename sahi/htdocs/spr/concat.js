@@ -2665,13 +2665,20 @@ if (!_sahi.isIE()) {
 }
 // document.write end
 
-//Sahi.prototype.alert = window.alert;
-//Sahi.prototype.confirm = window.confirm;
-//Sahi.prototype.prompt = window.prompt;
-
 Sahi.init = function(e){
     _sahi.init(e);
 }
 Sahi.onBeforeUnLoad = function(e){
     _sahi.onBeforeUnLoad(e);
 }
+// ff xhr start
+if (!_sahi.isIE()){
+    var d = new XMLHttpRequest();
+    d.constructor.prototype.openOld = XMLHttpRequest.prototype.open;
+    d.constructor.prototype.open = function(method, url, async, username, password){
+        //_sahi._alert("XMLHttpRequest "+ method+ " "+ url+ " "+ async);
+        url += (url.indexOf("?") == -1 ? "?" : "&") + "_sahi=false";
+        return this.openOld(method, url, async, username, password);
+    }
+}
+// ff xhr end

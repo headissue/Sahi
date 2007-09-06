@@ -1,5 +1,17 @@
-var db = _getDB("com.mysql.jdbc.Driver", "jdbc:mysql://localhost/database?user=user&password=password", "user", "password");
-var $rs = db.select("select 1 as ID, abc from table limit 10");
-for (var $i=0; $i < $rs.length; $i++){
-	_alert($rs[$i]["ID"]+": "+$rs[$i]["abc"]);
+function getRamusAge(){
+    var $rs = db.select("select id, name, age from user limit 10");
+    if($rs.length == 1){
+        return $rs[$i]["name"];
+    }
+    return 0;
 }
+
+var db = _getDB("com.mysql.jdbc.Driver", "jdbc:mysql://localhost/sahitest?user=user&password=password", "user", "password");
+
+db.update("delete from user where name='ramu' and age=20")
+db.update("insert into user (name, age) values ('ramu', 20)")
+var $rs = db.select("select id, name, age from user limit 10");
+for (var $i=0; $i < $rs.length; $i++){
+    _alert($rs[$i]["name"]+": "+$rs[$i]["age"]);
+}
+
