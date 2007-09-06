@@ -55,6 +55,19 @@
         </java>
     </target>
 
+    <target name="startj" description="starts proxy">
+        <java classname="net.sf.sahi.Proxy" fork="true" dir="bin">
+            <env key="MOZ_NO_REMOTE" value="1"/>
+            <jvmarg
+                line="-Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5099"/>
+            <classpath>
+                <path path="classes"/>
+                <pathelement location="extlib/mysql-connector-java-5.0.4-bin.jar"/>
+            </classpath>
+            <sysproperty key="sahi.mode.dev" value="true"/>
+        </java>
+    </target>
+
 
     <target name="decorate" description="Decorates doc pages">
         <java classname="net.sf.sahi.util.HTMLDecorator" fork="true" dir="bin">
@@ -152,6 +165,7 @@
         <copy todir="temp/sahi/htdocs">
             <fileset dir="htdocs">
                 <exclude name="demo2/**/*.*"/>
+                <exclude name="plain/**/*.*"/>
             </fileset>
         </copy>
         <copy todir="temp/sahi/config">

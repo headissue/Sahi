@@ -1,17 +1,20 @@
 /**
+ * Sahi - Web Automation and Test Tool
+ *
  * Copyright  2006  V Narayan Raman
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 function sahiTrim(s){
     if (s==null) return s;
@@ -56,43 +59,43 @@ function sahiFindInArray(ar, el){
     return -1;
 }
 function sahiIsIE(){
-	var browser = navigator.appName;
-	return browser == "Microsoft Internet Explorer";
+    var browser = navigator.appName;
+    return browser == "Microsoft Internet Explorer";
 }
 function sahiCreateRequestObject(){
-	var obj;
-	if(sahiIsIE()){
-		obj = new ActiveXObject("Microsoft.XMLHTTP");
-	}else{
-		obj = new XMLHttpRequest();
-	}
-	return obj;
+    var obj;
+    if(sahiIsIE()){
+        obj = new ActiveXObject("Microsoft.XMLHTTP");
+    }else{
+        obj = new XMLHttpRequest();
+    }
+    return obj;
 }
 function sahiGetServerVar(name){
-	var v = sahiSendToServer("/_s_/dyn/SessionState_getVar?name="+escape(name));
-	if (v == "null") return null;
-	return v;
+    var v = sahiSendToServer("/_s_/dyn/SessionState_getVar?name="+escape(name));
+    if (v == "null") return null;
+    return v;
 }
 function sahiSetServerVar(name, value){
-	sahiSendToServer("/_s_/dyn/SessionState_setVar?name="+escape(name)+"&value="+escape(value));
+    sahiSendToServer("/_s_/dyn/SessionState_setVar?name="+escape(name)+"&value="+escape(value));
 }
 function sahiSendToServer(url){
-	try{
-	    var rand = (new Date()).getTime() + Math.floor(Math.random()*(10000));
-	    var http = sahiCreateRequestObject();
-	    var url = url + (url.indexOf("?")==-1 ? "?" : "&") + "t=" + rand;
-		http.open("GET", url, false);
-	    http.send(null);
-	    return http.responseText;
+    try{
+        var rand = (new Date()).getTime() + Math.floor(Math.random()*(10000));
+        var http = sahiCreateRequestObject();
+        var url = url + (url.indexOf("?")==-1 ? "?" : "&") + "t=" + rand;
+        http.open("GET", url, false);
+        http.send(null);
+        return http.responseText;
     }catch(ex){sahiHandleException(ex);}
 }
 function sahiLogErr(msg){
     return;
-	sahiSendToServer("/_s_/dyn/Log?msg=" + escape(msg) + "&type=err" );
+    sahiSendToServer("/_s_/dyn/Log?msg=" + escape(msg) + "&type=err" );
 }
 
 function sahiLogPlayBack(msg, st, debugInfo){
-	sahiSendToServer("/_s_/dyn/Log?msg=" + escape(msg) + "&type=" + st + "&debugInfo=" + escape(debugInfo));
+    sahiSendToServer("/_s_/dyn/Log?msg=" + escape(msg) + "&type=" + st + "&debugInfo=" + escape(debugInfo));
 }
 function sahiGetParentNode(el, tagName){
     var parent = el.parentNode;
@@ -109,17 +112,17 @@ function s_v(v){
     else return v;
 }
 function quoted(s){
-	return '"' + s.replace(/"/g, '\\"') + '"';
+    return '"' + s.replace(/"/g, '\\"') + '"';
 }
 function sahiHandleException(e){
 //	alert(e);
 //	throw e;
 }
 function sahiGetText(el){
-	if (el.innerHTML)
-		return sahiGetTextFromHTML(el.innerHTML);
-	return null;
+    if (el.innerHTML)
+        return sahiGetTextFromHTML(el.innerHTML);
+    return null;
 }
 function sahiGetTextFromHTML(s){
-	return s.replace(/<[^>]*>/g, "");
+    return s.replace(/<[^>]*>/g, "");
 }

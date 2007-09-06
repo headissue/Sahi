@@ -1,7 +1,6 @@
+<script src="/_s_/spr/domainfix.js"></script>
 <script src='/_s_/spr/concat.js'></script>
-<script src='http://www.sahidomain.com/_s_/dyn/SessionState/state.js'></script>
-<script src='http://www.sahidomain.com/_s_/dyn/Player_script/script.js'></script>
+<script src='http://localproxy.sahi.co.in/_s_/dyn/SessionState/state.js'></script>
+<script src='http://localproxy.sahi.co.in/_s_/dyn/Player_script/script.js'></script>
 <script src='/_s_/spr/playback.js'></script>
-<script src='/_s_/spr/json.js'></script>
-<!--script src='/_s_/spr/extensions.js'></script-->
 <div id='sahi_pointer_div' style="display:none"></div>

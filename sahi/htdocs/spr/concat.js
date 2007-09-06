@@ -1,17 +1,20 @@
 /**
+ * Sahi - Web Automation and Test Tool
+ *
  * Copyright  2006  V Narayan Raman
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 String.isBlankOrNull = function (s) {
@@ -46,6 +49,14 @@ var Sahi = function(){
     this.execSteps = null; // from SahiScript through script.js
 
     this.sahiBuffer = "";
+
+    this.real_alert = window.alert;
+    this.real_confirm = window.confirm;
+    this.real_prompt = window.prompt;
+
+    window.alert = function (s){return _sahi.alertMock(s)};
+    window.confirm = function (s){return _sahi.confirmMock(s)};
+    window.prompt = function (s){return _sahi.promptMock(s)};
 }
 var _sahi = new Sahi();
 var tried = false;
@@ -243,21 +254,38 @@ var linkClick = function (e) {
         _sahi.navigateLink(this);
     }
 }
-
 Sahi.prototype._dragDrop = function (draggable, droppable) {
-    this.checkNull(draggable);
     this.checkNull(droppable);
-    this.simulateMouseEvent(draggable, "mousedown");
-    draggable.style.left = this.findPosX(droppable) - this.findPosX(draggable) + 2;
-    draggable.style.top = this.findPosY(droppable) - this.findPosY(draggable) + 2;
-    draggable.style.zIndex = 1;
-    this.simulateMouseEvent(droppable, "mousedown");
-
+    var pos = this.findPos(droppable);
+    var x = pos[0];
+    var y = pos[1];
+    this._dragDropXY(draggable, x, y);
+}
+Sahi.prototype.addBorder = function(el){
+    el.style.border = "1px solid red";
+}
+Sahi.prototype._dragDropXY = function (draggable, x, y) {
+    this.checkNull(draggable);
     this.simulateMouseEvent(draggable, "mousemove");
-    this.simulateMouseEvent(droppable, "mousemove");
+    this.simulateMouseEvent(draggable, "mousedown");
+    this.simulateMouseEvent(draggable, "mousemove");
+    var pos = this.findPos(draggable);
 
-    this.simulateMouseEvent(draggable, "mouseup");
-    this.simulateMouseEvent(droppable, "mouseup");
+    var curLeft = draggable.style.left;
+    curLeft = (curLeft != "") ? parseInt(curLeft) : 0;
+    var curTop = draggable.style.top;
+    curTop = (curTop != "") ? parseInt(curTop) : 0;
+
+    var scrollX = document.body.scrollLeft;
+    var scrollY = document.body.scrollTop;
+
+    x = (x - pos[0] + curLeft - scrollX);
+    y = (y - pos[1] + curTop - scrollY);
+
+    this.simulateMouseEventXY(draggable, "mousemove", x, y);
+    this.simulateMouseEventXY(draggable, "mouseup", x, y);
+    this.simulateMouseEventXY(draggable, "click", x, y);
+    this.simulateMouseEventXY(draggable, "mousemove", x, y);
 }
 Sahi.prototype.checkNull = function (el) {
     if (el == null) {
@@ -319,23 +347,22 @@ Sahi.prototype._readFile = function (fileName) {
     return this._callServer("net.sf.sahi.plugin.FileReader_contents", qs)
 }
 Sahi.prototype._getDB = function (driver, jdbcurl, username, password) {
-    return new this.dB(driver, jdbcurl, username, password);
+    return new Sahi.dB(driver, jdbcurl, username, password, this);
 }
-Sahi.prototype.dB = function (driver, jdbcurl, username, password) {
+Sahi.dB = function (driver, jdbcurl, username, password, sahi) {
     this.driver = driver;
     this.jdbcurl = jdbcurl;
     this.username = username;
     this.password = password;
     this.select = function (sql) {
         var qs = "driver=" + this.driver + "&jdbcurl=" + this.jdbcurl + "&username=" + this.username + "&password=" + this.password + "&sql=" + sql;
-        return eval(this._callServer("net.sf.sahi.plugin.DBClient_select", qs));
+        return eval(sahi._callServer("net.sf.sahi.plugin.DBClient_select", qs));
     }
     this.update = function (sql) {
         var qs = "driver=" + this.driver + "&jdbcurl=" + this.jdbcurl + "&username=" + this.username + "&password=" + this.password + "&sql=" + sql;
-        return eval(this._callServer("net.sf.sahi.plugin.DBClient_execute", qs));
+        return eval(sahi._callServer("net.sf.sahi.plugin.DBClient_execute", qs));
     }
 }
-
 Sahi.prototype.simulateClick = function (el, isRight, isDouble) {
     var n = el;
 
@@ -402,6 +429,9 @@ Sahi.prototype.isSafariLike = function () {
 Sahi.prototype.simulateMouseEvent = function (el, type, isRight, isDouble) {
     var x = this.findPosX(el);
     var y = this.findPosY(el);
+    this.simulateMouseEventXY(el, type, x, y, isRight, isDouble);
+}
+Sahi.prototype.simulateMouseEventXY = function (el, type, x, y, isRight, isDouble) {
     if (document.createEvent) {
         if (this.isSafariLike()) {
             var evt = el.ownerDocument.createEvent('HTMLEvents')
@@ -434,78 +464,64 @@ Sahi.prototype.simulateMouseEvent = function (el, type, isRight, isDouble) {
         var evt = el.ownerDocument.createEventObject();
         evt.clientX = x;
         evt.clientY = y;
+        evt.button = isRight ? 2 : 1;
         el.fireEvent("on" + (isDouble ? "dbl" : "") + type, evt);
         evt.cancelBubble = true;
     }
 }
 Sahi.pointTimer = 0;
 Sahi.prototype._highlight = function (el) {
-    var d = this.findElementById(this.top(), "sahi_pointer_div");
-    d.innerHTML = "<span style='color:red;font-family:verdana;font-size:20px;'>&raquo;</span>";
-    d.style.position = "absolute";
-    var x = this.findPosX(el) - 10;
-    var y = this.findPosY(el) - 8;
-    d.style.left = x + "px";
-    d.style.top = y + "px";
-    d.style.zIndex = 10;
-    d.style.display = "block";
-    Sahi.pointTimer = window.setTimeout("_sahi.fade()", 2000);
-    window.scrollTo(x, y);
+    var oldBorder = el.style.border;
+    el.style.border = "1px solid red";
+    window.setTimeout(function(){el.style.border = oldBorder;}, 2000);
 }
-Sahi.prototype.fade = function () {
-    window.clearTimeout(Sahi.pointTimer);
-    var d = this.findElementById(this.top(), "sahi_pointer_div");
-    d.style.position = "absolute";
-    d.style.left = "0px";
-    d.style.top = "0px";
-    d.style.zIndex = 0;
-    d.style.display = "none";
+Sahi.prototype.findPosX = function (obj){
+    return this.findPos(obj)[0];
 }
-Sahi.prototype.findPosX = function (obj)
-{
-    var curleft = 0;
+Sahi.prototype.findPosY = function (obj){
+    return this.findPos(obj)[1];
+}
+Sahi.prototype.findPos = function (obj){
+    var x = 0, y = 0;
     if (obj.offsetParent)
     {
         while (obj.offsetParent)
         {
-            curleft += obj.offsetLeft
+            var wasStatic = null;
+            if (this._style(obj, "position") == "static"){
+                wasStatic = obj.style.position;
+                obj.style.position = "relative";
+            }
+            x += obj.offsetLeft;
+            y += obj.offsetTop;
+            if (wasStatic != null) obj.style.position = wasStatic;
             obj = obj.offsetParent;
         }
     }
-    else if (obj.x)
-        curleft += obj.x;
-    return curleft;
+    else if (obj.x){
+        x = obj.x;
+        y = obj.y;
+    }
+    return [x, y];
 }
 
-Sahi.prototype.findPosY = function (obj)
-{
-    var curtop = 0;
-    if (obj.offsetParent)
-    {
-        while (obj.offsetParent)
-        {
-            curtop += obj.offsetTop
-            obj = obj.offsetParent;
-        }
+Sahi.prototype.getWindow = function(el){
+    var win;
+    if (this.isSafariLike()) {
+        win = this.getWin(el);
+    } else {
+        win = el.ownerDocument.defaultView; //FF
+        if (!win) win = el.ownerDocument.parentWindow; //IE
     }
-    else if (obj.y)
-        curtop += obj.y;
-    return curtop;
+    return win;
 }
 
 Sahi.prototype.navigateLink = function (ln) {
     if (!ln) return;
-    var win;
-    if (this.isSafariLike()) {
-        win = this.getWin(ln);
-    } else {
-        win = ln.ownerDocument.defaultView;
-        //FF
-        if (!win) win = ln.ownerDocument.parentWindow; //IE
-    }
+    var win = this.getWindow(ln);
     if (ln.href.indexOf("javascript:") == 0) {
         var s = ln.href.substring(11);
-        win.eval(unescape(s));
+        win.setTimeout(unescape(s), 0);
     } else {
         var target = ln.target;
         if (ln.target == null || ln.target == "") target = "_self";
@@ -876,13 +892,13 @@ Sahi.prototype.getColIndexWith = function (txt, tableEl) {
     return -1;
 }
 Sahi.prototype._alert = function (s) {
-    return this.real_alert.apply(window, [s]);
+    return this.callFunction(this.real_alert, window, s);
 }
 Sahi.prototype.alertMock = function (s) {
     if (this.isPlaying()) {
         this.setServerVar("lastAlertText", s);
     } else {
-        return this.real_alert.apply(window, [s]);
+        return this._alert(s);
     }
 }
 Sahi.prototype._lastAlert = function () {
@@ -924,9 +940,16 @@ Sahi.prototype.confirmMock = function (s) {
         this.setServerVar("confirm: "+s, null);
         return retVal;
     } else {
-        var retVal = this.real_confirm.apply(window, [s]);
+        var retVal = this.callFunction(this.real_confirm, window, s);
         this.sendToServer('/_s_/dyn/Recorder_record?cmd=' + escape("_expectConfirm(\"" + s + "\", " + retVal + ")"));
         return retVal;
+    }
+}
+Sahi.prototype.callFunction = function(fn, obj, args){
+    if (fn.apply){
+        return fn.apply(window, [args]);
+    }else{
+        return fn(args);
     }
 }
 Sahi.prototype._lastConfirm = function () {
@@ -942,7 +965,7 @@ Sahi.prototype.promptMock = function (s) {
         this.setServerVar("prompt: "+s, null);
         return retVal;
     } else {
-        var retVal = this.real_prompt.apply(window, [s]);
+        var retVal = this.callFunction(this.real_prompt, window, s);
         this.sendToServer('/_s_/dyn/Recorder_record?cmd=' + this.escape("_expectPrompt(\"" + s + "\", \"" + retVal + "\")"));
         return retVal;
     }
@@ -1040,8 +1063,6 @@ Sahi.prototype._enableKeepAlive = function () {
 Sahi.prototype._disableKeepAlive = function () {
     this.sendToServer('/_s_/dyn/Configuration_disableKeepAlive');
 }
-
-// finds document of any element
 Sahi.prototype.getWin = function (el) {
     if (el == null) return self;
     if (el.nodeName.indexOf("document") != -1) return this.getFrame1(this.top(), el);
@@ -1902,12 +1923,14 @@ Sahi.prototype.getWinParams = function (e) {
     return "height=550px,width=460px,resizable=yes,toolbar=no,status=no" + positionParams;
 }
 Sahi.prototype.getController = function () {
-    if (this.controller && !this.controller.closed) return this.controller;
+    var controller = this.top()._sahi.controller;
+    if (controller && !controller.closed) return controller;
 }
 Sahi.openControllerWindow = function (e) {
     if (!e) e = window.event;
     if (!_sahi.isHotKeyPressed(e)) return true;
-    _sahi.openWin(e);
+    _sahi.top()._sahi.openWin(e);
+//    _sahi.openWin(e);
     return true;
 }
 Sahi.prototype.isHotKeyPressed = function (e) {
@@ -2572,16 +2595,14 @@ Sahi.prototype._execute = function (command, sync) {
 
 Sahi.prototype.activateHotKey();
 
-Sahi.prototype._style = function (el, style) {  //http://dhtmlkitchen.com/
-    if (!document.getElementById) return;
-
+Sahi.prototype._style = function (el, style) {
     var value = el.style[this.toCamelCase(style)];
 
     if (!value)
         if (document.defaultView)
             value = document.defaultView.getComputedStyle(el, "").getPropertyValue(style);
         else if (el.currentStyle)
-            value = el.currentStyle[toCamelCase(style)];
+            value = el.currentStyle[this.toCamelCase(style)];
 
     return value;
 }
@@ -2606,8 +2627,8 @@ Sahi.prototype.setWaitConditionTime = function(time) {
 }
 // document.write start
 Sahi.INSERT_TEXT = "<script src='/_s_/spr/concat.js'></scr"+"ipt>"+
-"<script src='http://www.sahidomain.com/_s_/dyn/SessionState/state.js'></scr"+"ipt>"+
-"<script src='http://www.sahidomain.com/_s_/dyn/Player_script/script.js'></scr"+"ipt>"+
+"<script src='http://localproxy.sahi.co.in/_s_/dyn/SessionState/state.js'></scr"+"ipt>"+
+"<script src='http://localproxy.sahi.co.in/_s_/dyn/Player_script/script.js'></scr"+"ipt>"+
 "<script src='/_s_/spr/playback.js'></scr"+"ipt>" +
 "";
 
@@ -2621,7 +2642,7 @@ Sahi.prototype.ieDocClose = function(){
 Sahi.prototype.ieDocWrite = function(s){
    this.sahiBuffer += s;
 }
-if (_sahi.isIE()){  // Donot move into method.
+if (false && _sahi.isIE()){  // Donot move into method.
     Sahi.prototype.oldDocWrite = document.write;
     document.write = function (s) {_sahi.ieDocWrite(s);};
     document.close = function () {_sahi.ieDocClose();};
@@ -2644,15 +2665,13 @@ if (!_sahi.isIE()) {
 }
 // document.write end
 
-
-Sahi.prototype.real_alert = window.alert;
-Sahi.prototype.real_confirm = window.confirm;
-Sahi.prototype.real_prompt = window.prompt;
-
 //Sahi.prototype.alert = window.alert;
 //Sahi.prototype.confirm = window.confirm;
 //Sahi.prototype.prompt = window.prompt;
 
-window.alert = function (s){return _sahi.alertMock(s)};
-window.confirm = function (s){return _sahi.confirmMock(s)};
-window.prompt = function (s){return _sahi.promptMock(s)};
+Sahi.init = function(e){
+    _sahi.init(e);
+}
+Sahi.onBeforeUnLoad = function(e){
+    _sahi.onBeforeUnLoad(e);
+}

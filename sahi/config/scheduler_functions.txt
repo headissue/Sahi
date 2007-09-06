@@ -1,5 +1,5 @@
 _alert
-_assertEqual 
+_assertEqual
 _assertNotEqual
 _assertNotNull
 _assertNull
@@ -46,3 +46,4 @@ _execute
 _assertContainsText
 _enableKeepAlive
 _disableKeepAlive
+_dragDropXY

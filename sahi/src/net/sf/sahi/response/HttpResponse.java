@@ -1,17 +1,20 @@
 /**
+ * Sahi - Web Automation and Test Tool
+ *
  * Copyright  2006  V Narayan Raman
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package net.sf.sahi.response;
@@ -28,14 +31,14 @@ import java.util.logging.Logger;
  * Time: 10:25:31 PM
  */
 public class HttpResponse extends StreamHandler {
-	private static final Logger logger = Logger.getLogger("net.sf.sahi.response.HttpResponse");
+    private static final Logger logger = Logger.getLogger("net.sf.sahi.response.HttpResponse");
     protected HttpResponse(){
     }
 
     public HttpResponse(InputStream in) throws IOException {
         populateHeaders(in, true);
         populateData(in);
-		logger.fine("First line:"+firstLine());
+        logger.fine("First line:"+firstLine());
     }
 
     public String contentType() {
@@ -49,6 +52,15 @@ public class HttpResponse extends StreamHandler {
         removeHeader("Connection");
         removeHeader("Accept-ranges");
         setHeader("Connection", keepAliveEnabled ? "Keep-Alive" : "close");
+        resetRawHeaders();
+    }
+
+    public void proxyKeepAlive(boolean keepAliveEnabled) {
+        removeHeader("Content-length");
+        setHeader("Content-Length", "" + data().length);
+        removeHeader("Connection");
+        removeHeader("Accept-ranges");
+        setHeader("Proxy-Connection", keepAliveEnabled ? "Keep-Alive" : "close");
         resetRawHeaders();
     }
 
