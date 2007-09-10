@@ -57,6 +57,8 @@ var Sahi = function(){
     window.alert = function (s){return _sahi.alertMock(s)};
     window.confirm = function (s){return _sahi.confirmMock(s)};
     window.prompt = function (s){return _sahi.promptMock(s)};
+
+    this.XHRs = [];
 }
 var _sahi = new Sahi();
 var tried = false;
@@ -2006,6 +2008,16 @@ Sahi.prototype.play = function () {
     var interval = this.waitInterval > 0 && !this.waitCondition ? this.waitInterval : this.INTERVAL;
     this.execNextStep(false, interval);
 }
+Sahi.prototype.areXHRsDone = function (){
+    var xs = this.XHRs;
+    for (var i=0; i<xs.length; i++){
+        var xsi = xs[i];
+        if (xsi && xsi.readyState!=4){
+            return false;
+        }
+    }
+    return true;
+}
 Sahi.prototype.areWindowsLoaded = function (win) {
     try {
         if (win.location.href == "about:blank") return true;
@@ -2088,7 +2100,7 @@ Sahi.prototype.ex = function (isStep) {
                         return;
                     }
                 }
-                if (!this.areWindowsLoaded(this.top()) && this.waitForLoad > 0) {
+                if ((!this.areWindowsLoaded(this.top()) || !this.areXHRsDone()) && this.waitForLoad > 0) {
                     this.waitForLoad--;
                     this.execNextStep(isStep, this.interval);
                     return;
@@ -2676,9 +2688,11 @@ if (!_sahi.isIE()){
     var d = new XMLHttpRequest();
     d.constructor.prototype.openOld = XMLHttpRequest.prototype.open;
     d.constructor.prototype.open = function(method, url, async, username, password){
-        //_sahi._alert("XMLHttpRequest "+ method+ " "+ url+ " "+ async);
-        url += (url.indexOf("?") == -1 ? "?" : "&") + "_sahi=false";
-        return this.openOld(method, url, async, username, password);
+        var opened = this.openOld(method, url, async, username, password);
+        var xs = _sahi.top()._sahi.XHRs;
+        xs[xs.length] = this;
+        this.setRequestHeader("Sahi-IsXHR", "true");
+        return opened;
     }
 }
 // ff xhr end

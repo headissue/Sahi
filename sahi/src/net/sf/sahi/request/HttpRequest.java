@@ -42,6 +42,7 @@ public class HttpRequest extends StreamHandler {
     private Map cookies = null;
     private static final Logger logger = Logger.getLogger("net.sf.sahi.request.HttpRequest");
     private boolean isSSLSocket;
+    private boolean isAjax;
     private String fileExtension;
     private String hostWithPort;
 
@@ -55,6 +56,7 @@ public class HttpRequest extends StreamHandler {
     public HttpRequest(InputStream in, boolean isSSLSocket) throws IOException {
         this.isSSLSocket = isSSLSocket;
         populateHeaders(in, true);
+        isAjax = headers().containsKey("Sahi-IsXHR");
         if (isPost())
             populateData(in);
         if (isPost() || isGet() || isConnect()) {
@@ -252,6 +254,7 @@ public class HttpRequest extends StreamHandler {
         removeHeader("Proxy-Connection");
         removeHeader("Accept-Encoding");
         removeHeader("Keep-Alive");
+        removeHeader("Sahi-IsXHR");
         // removeHeader("ETag");
         // removeHeader("If-Modified-Since");
         // removeHeader("If-None-Match");
@@ -297,4 +300,18 @@ public class HttpRequest extends StreamHandler {
         String agent = getLastSetValueOfHeader("User-Agent");
         return (agent == null || agent.indexOf("MSIE") != -1);
     }
+
+    public boolean isExcluded() {
+        if (isAjax) return true;
+        String url = url();
+        String[] exclusionList = Configuration.getExclusionList();
+        for (int i = 0; i < exclusionList.length; i++) {
+            String pattern = exclusionList[i];
+            if (url.matches(pattern.trim())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 }

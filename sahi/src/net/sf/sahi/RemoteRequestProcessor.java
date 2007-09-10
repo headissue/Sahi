@@ -96,7 +96,7 @@ public class RemoteRequestProcessor {
             outputStreamToHost.write(request.data());
         outputStreamToHost.flush();
         HttpResponse response;
-        if (modify && !excluded(request)) {
+        if (modify && !request.isExcluded()) {
             response = new HttpModifiedResponse(new HttpResponse(inputStreamFromHost), request
                     .isSSL(), request.fileExtension());
         } else {
@@ -104,18 +104,6 @@ public class RemoteRequestProcessor {
         }
         logger.finest(new String(response.rawHeaders()));
         return response;
-    }
-
-    private boolean excluded(HttpRequest request) {
-        String url = request.url();
-        String[] exclusionList = Configuration.getExclusionList();
-        for (int i = 0; i < exclusionList.length; i++) {
-            String pattern = exclusionList[i];
-            if (url.matches(pattern.trim())) {
-                return true;
-            }
-        }
-        return false;
     }
 
     private Socket getSocketToHost(HttpRequest request) throws IOException {
