@@ -1,20 +1,19 @@
 /**
  * Sahi - Web Automation and Test Tool
- *
+ * 
  * Copyright  2006  V Narayan Raman
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package net.sf.sahi.test;
@@ -25,9 +24,9 @@ import net.sf.sahi.report.SahiReporter;
 import net.sf.sahi.session.Session;
 import net.sf.sahi.session.Status;
 import net.sf.sahi.util.Utils;
+import net.sf.sahi.command.Player;
 import net.sf.sahi.config.Configuration;
 
-import java.io.File;
 import java.util.*;
 
 public class SahiTestSuite {
@@ -45,6 +44,7 @@ public class SahiTestSuite {
     private String browserOption;
     private int availableThreads = 0;
     private volatile boolean[] freeThreads;
+    private boolean killed = false;
     private static HashMap suites = new HashMap();
 
     public SahiTestSuite(String suitePath, String base, String browser, String sessionId, String browseroption) {
@@ -66,7 +66,7 @@ public class SahiTestSuite {
             script.setSessionId(sessionId);
             script.setBrowser(browser);
             script.setBrowserOption(browserOption);
-            testsMap.put(new File(script.getScriptName()).getName(), script);
+            testsMap.put(script.getChildSessionId(), script);
         }
     }
 
@@ -85,8 +85,8 @@ public class SahiTestSuite {
         currentTestIndex++;
     }
 
-    public synchronized void notifyComplete(String scriptName) {
-        TestLauncher test = ((TestLauncher) (testsMap.get(scriptName)));
+    public synchronized void notifyComplete(String childSessionId) {
+        TestLauncher test = ((TestLauncher) (testsMap.get(childSessionId)));
         test.stop();
         finishedTests++;
         availableThreads++;
@@ -130,6 +130,27 @@ public class SahiTestSuite {
         markSuiteStatus();
         generateSuiteReport();
         createIssues();
+        cullInactiveTests();
+    }
+
+    private void cullInactiveTests() {
+        Iterator keys = testsMap.keySet().iterator();
+        long now = System.currentTimeMillis();
+        long inactivityLimit = Configuration.getMaxInactiveTimeForScript();
+        while(keys.hasNext()){
+            String sessionId = (String) keys.next();
+            Session session = Session.getInstance(sessionId);
+            long lastActiveTime = session.lastActiveTime();
+            if (session.getStatus() != Status.SUCCESS
+                    && session.getStatus() != Status.FAILURE
+                    && now - lastActiveTime > inactivityLimit){
+                String message = "Forcefully terminating script. \nNo response from browser within expected time ("+inactivityLimit/1000+" seconds).";
+                System.out.println(message);
+                if (session.getReport() != null)
+                    session.getReport().addResult(message, "ERROR", "", "");
+                new Player().stop(session);
+            }
+        }
     }
 
     private void createIssues() {
@@ -141,6 +162,7 @@ public class SahiTestSuite {
 
     private synchronized void executeSuite() {
         while (currentTestIndex < tests.size()) {
+            if (killed) return;
             for (; availableThreads > 0 && currentTestIndex < tests.size(); availableThreads--) {
                 int freeThreadNo = getFreeThreadNo();
                 if (freeThreadNo != -1){
@@ -164,8 +186,9 @@ public class SahiTestSuite {
     }
 
     private void waitForSuiteCompletion() {
-        while (finishedTests < tests.size()) {
+        while (finishedTests < tests.size() && !killed) {
             synchronized (this) {
+                cullInactiveTests();
                 try {
                     this.wait(2000);
                 } catch (InterruptedException e) {
@@ -201,4 +224,10 @@ public class SahiTestSuite {
         }
         issueReporter.addIssueCreator(issueCreator);
     }
+
+    public void kill() {
+        System.out.println("Kill called");
+        killed = true;
+    }
+
 }

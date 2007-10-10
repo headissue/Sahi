@@ -138,7 +138,7 @@ public class SahiScriptTest extends TestCase {
 		assertTrue("_assertEqual(".matches("^(_assertEqual)\\s*\\("));
 		assertTrue("_assertEqual           (".matches("^(_assertEqual)\\s*\\("));
 	}
-	
+
 	public void testGetActionKeywords() {
 		List keywords = SahiScript.getActionKeyWords();
 		assertTrue(keywords.contains("_alert"));
@@ -247,4 +247,10 @@ public class SahiScriptTest extends TestCase {
         assertEquals("_sahi.schedule(\"_sahi._wait(1000, \\\"_sahi._byId(\\\\\\\"abc\\\\\\\")\\\");\", \"scrName&n=12\");\r\n", testScript.modifyWait("_wait(1000, _byId(\"abc\"))", 12));
         assertEquals("_sahi.schedule(\"_sahi._wait(1000, \\\"_sahi._byId(\\\"+s_v(\"+s_v($abc)+\")+\\\")\\\");\", \"scrName&n=12\");\r\n", testScript.modifyWait("_wait(1000, _byId($abc))", 12));
     }
+
+	public void testProcessSet() {
+		assertEquals("var $sahi_cmdLen = _sahi.cmds.length+1;\r\n_sahi.schedule(\"_sahi.handleSet('abc' + \"+s_v($sahi_cmdLen)+\", document.links);\", \"scrName&n=23\");\r\nabcTemp = _sahi._getGlobal('abc' + _sahi.cmds.length);\r\nif (abcTemp) abc = abcTemp;\r\n", testScript.processSet("_set(abc, document.links)", 23));
+		assertEquals("var $sahi_cmdLen = _sahi.cmds.length+1;\r\n_sahi.schedule(\"_sahi.handleSet('abc' + \"+s_v($sahi_cmdLen)+\", getLinks());\", \"scrName&n=23\");\r\nabcTemp = _sahi._getGlobal('abc' + _sahi.cmds.length);\r\nif (abcTemp) abc = abcTemp;\r\n", testScript.processSet("_set(  	abc, getLinks())", 23));
+	}
+
 }

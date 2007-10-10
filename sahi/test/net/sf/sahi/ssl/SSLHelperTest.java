@@ -1,7 +1,5 @@
 package net.sf.sahi.ssl;
 
-import java.util.ArrayList;
-
 import net.sf.sahi.util.Utils;
 
 import junit.framework.TestCase;

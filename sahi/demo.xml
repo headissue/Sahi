@@ -10,7 +10,7 @@
                     <http url="http://localhost:10000/demo/index.htm"/>
                 </waitfor>
                 <antcall target="runietests"/>
-                <antcall target="stop-web"/>
+            	<antcall target="stop-web"/>
             </sequential>
         </parallel>
     </target>
@@ -42,7 +42,7 @@
     </target>
 
     <target name="runfftests">
-        <sahi suite="../scripts/demo.suite"
+        <sahi suite="../scripts/demo/demo.suite"
               browser="C:\Program Files\Mozilla Firefox\firefox.exe"
               baseurl="http://localhost:10000/demo/"
               sahihost="localhost"
@@ -59,7 +59,7 @@
 
     <target name="runietests">
         <antcall target="proxyon"/>
-        <sahi suite="../scripts/demo.suite"
+        <sahi suite="../scripts/demo/demo.suite"
               browser="C:\\Program Files\\Internet Explorer\\iexplore.exe"
               baseurl="http://localhost:10000/demo/"
               sahihost="localhost"
@@ -76,6 +76,7 @@
     </target>
 
     <target name="failsahi" if="sahi.failed">
+    	<antcall target="stop-web"/>
         <fail message="Sahi tests failed!"/>
     </target>
 

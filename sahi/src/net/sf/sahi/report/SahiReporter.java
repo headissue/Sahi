@@ -54,13 +54,18 @@ public abstract class SahiReporter {
 
     protected void writeTestSummary(List tests) throws IOException {
         for (Iterator iter = tests.iterator(); iter.hasNext();) {
-            TestLauncher test = (TestLauncher) iter.next();
-            Session session = Session.getInstance(test.getChildSessionId());
-            Report report = session.getReport();
-            TestSummary summary = report.getTestSummary();
-            if (summary != null) {
-                summary.setAddLink(true);
-                writer.write(formatter.getSummaryData(summary));
+            try{
+                TestLauncher test = (TestLauncher) iter.next();
+                Session session = Session.getInstance(test.getChildSessionId());
+                Report report = session.getReport();
+                if (report == null) continue;
+                TestSummary summary = report.getTestSummary();
+                if (summary != null) {
+                    summary.setAddLink(true);
+                    writer.write(formatter.getSummaryData(summary));
+                }
+            }catch (Exception e) {
+                e.printStackTrace();
             }
         }
     }

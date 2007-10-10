@@ -1,20 +1,19 @@
 /**
  * Sahi - Web Automation and Test Tool
- *
+ * 
  * Copyright  2006  V Narayan Raman
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package net.sf.sahi.playback;
@@ -116,6 +115,8 @@ public abstract class SahiScript {
                 sb.append(modifyWait(line, lineNumber));
             } else if (line.startsWith("_") && lineStartsWithActionKeyword(line)) {
                 sb.append(scheduleLine(line, lineNumber));
+            } else if (line.startsWith("_set")) {
+                sb.append(processSet(line, lineNumber));
             } else {
                 sb.append(modifyLine(line));
             }
@@ -125,7 +126,28 @@ public abstract class SahiScript {
         return toString;
     }
 
-    String modifyWait(String line, int lineNumber) {
+    String processSet(String line, int lineNumber) {
+        String patternStr = "_set\\s*\\(\\s*([^,]*),\\s*(.*)\\)";
+
+        Pattern pattern = Pattern.compile(patternStr);
+        Matcher matcher = pattern.matcher(line);
+        boolean matchFound = matcher.find();
+
+        if (!matchFound){
+        	return modifyLine(line);
+    	} else {
+    		String varName = matcher.group(1);
+    		String varValue = matcher.group(2);
+    		StringBuffer sb = new StringBuffer();
+    		sb.append("var $sahi_cmdLen = _sahi.cmds.length+1;\r\n");
+    		sb.append(scheduleLine("_sahi.handleSet('" + varName + "' + $sahi_cmdLen, " + varValue + ");", lineNumber));
+    		sb.append(modifyLine(varName + "Temp = _getGlobal('" + varName + "' + _sahi.cmds.length);"));
+    		sb.append(modifyLine("if (" + varName + "Temp) "+ varName +" = "+varName+ "Temp;"));
+    		return sb.toString();
+        }
+	}
+
+	String modifyWait(String line, int lineNumber) {
         int comma = line.indexOf(",");
         if (comma == -1) return scheduleLine(line, lineNumber);
         StringBuffer sb = new StringBuffer();

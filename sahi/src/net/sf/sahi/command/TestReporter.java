@@ -11,7 +11,8 @@ import net.sf.sahi.session.Session;
 public class TestReporter {
     public void logTestResult(HttpRequest request) {
         Session session = request.session();
-        new SessionState().setVar("sahi_retries", "0", session);  // Needed for 
+        new SessionState().setVar("sahi_retries", "0", session);
+        session.touch();
         Report report = session.getReport();
         if (report != null)
             report.addResult(SahiScript.stripSahiFromFunctionNames(request

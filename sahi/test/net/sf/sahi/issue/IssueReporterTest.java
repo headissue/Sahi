@@ -1,10 +1,5 @@
 package net.sf.sahi.issue;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import net.sf.sahi.test.TestLauncher;
-
 import org.jmock.Mock;
 import org.jmock.MockObjectTestCase;
 
@@ -25,12 +20,5 @@ public class IssueReporterTest extends MockObjectTestCase {
         mockIssueCreator.expects(once()).method("createIssue").with(isA(Issue.class)).after("login");
         mockIssueCreator.expects(once()).method("logout").withNoArguments().after("createIssue");
         issueReporter.createIssue(new Issue("",""));
-    }
-
-    private List createTestList() {
-        List listTest = new ArrayList();
-        listTest.add(new TestLauncher("t1.sah","blah"));
-        listTest.add(new TestLauncher("t2.sah","blah"));
-        return listTest;
     }
 }

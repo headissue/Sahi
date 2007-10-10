@@ -3,18 +3,17 @@
  *
  * Copyright  2006  V Narayan Raman
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package net.sf.sahi.util;
@@ -32,16 +31,16 @@ public class LicenseChanger {
                 changeLicense(file);
             }
         }
-        else if (f.getName().endsWith(".java") || f.getName().endsWith(".htm")) {
+        else if (f.getName().endsWith(".java") || f.getName().endsWith(".js")) {
             String s = new String(Utils.readFile(f));
             if (s.indexOf("Copyright  2006  V Narayan Raman") != -1 && s.indexOf("LicenseChanger") == -1){
                 System.out.println(f.getName());
-                int startIx = s.indexOf("<!--");
+                int startIx = s.indexOf("/**");
                 if (startIx == -1) return;
-                int endIx = s.indexOf("-->");
+                int endIx = s.indexOf("*/");
                 StringBuffer sb = new StringBuffer();
                 sb.append(s.substring(0, startIx));
-                sb.append(new String(Utils.readFile("C:\\my\\sahi\\config\\gpl_inc_html.txt")));
+                sb.append(new String(Utils.readFile("D:\\kamlesh\\sahi\\trunk\\config\\license.txt")));
                 sb.append(s.substring(endIx + 2));
                 //String newS = s.replaceAll("[$]GPL_License[$]", new String(Utils.readFile("C:\\my\\sahi\\config\\gpl_inc.txt")));
                 FileOutputStream fos = new FileOutputStream(f);
@@ -53,6 +52,6 @@ public class LicenseChanger {
 
 
     public static void main(String[] args) throws IOException {
-        LicenseChanger.changeLicense(new File("c:\\my\\sahi\\htdocs"));
+        LicenseChanger.changeLicense(new File("D:\\kamlesh\\sahi\\trunk\\htdocs"));
     }
 }

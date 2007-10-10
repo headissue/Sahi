@@ -1,20 +1,19 @@
 /**
  * Sahi - Web Automation and Test Tool
- *
+ * 
  * Copyright  2006  V Narayan Raman
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package net.sf.sahi.test;
@@ -25,6 +24,7 @@ import net.sf.sahi.ant.Report;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.ConnectException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -65,29 +65,35 @@ public class TestRunner {
             String port = args[5];
             String threads = args[6];
             String browserOption = "";
-            if (args.length == 9)
-                browserOption = args[8];
+            if (args.length == 8)
+                browserOption = args[7];
             TestRunner testRunner = new TestRunner(suiteName, browser, base, sahiHost, port, threads, browserOption);
             testRunner.addReport(new Report("html", logDir));
             String status = testRunner.execute();
             System.out.println("Status:" + status);
+        } catch (ConnectException ce) {
+            System.err.println(ce.getMessage());
+            System.err.println("Could not connect to Sahi Proxy.\nVerify that the Sahi Proxy is running on the specified host and port.");
+            help();
         } catch (Exception e) {
             e.printStackTrace();
             help();
         }
     }
 
-	private static void help() {
-		System.out
-		        .println("Usage: java TestRunner <suite_name> <browser_executable> <start_url> <log_dir> <sahi_host> <sahi_port> <number_of_threads>  optional<browser_option>");
-		System.out
-		        .println("Set log_dir to \"default\" if you want to log to the default log dir");
-		System.out
-		        .println("Set number_of_threads to a number less than 5 for Internet Explorer");
-		System.out.println("Set number_of_threads to 1 for FireFox");
-		System.out.println("Set browser_option to the profile dir to open FireFox with the given profile ");
-		System.exit(-1);
-	}
+    private static void help() {
+        System.out.println("------------------------");
+        System.out
+                .println("Usage: java TestRunner <suite_name> <browser_executable> <start_url> <log_dir> <sahi_host> <sahi_port> <number_of_threads>  [<browser_option>]");
+        System.out
+                .println("Set log_dir to \"default\" if you want to log to the default log dir");
+        System.out
+                .println("Set number_of_threads to a number less than 5 for Internet Explorer");
+        //System.out.println("Set number_of_threads to 1 for FireFox");
+        System.out.println("Set browser_option to \"-profile <sahi_base>/browser/ff/profiles/sahi$threadNo\" for Firefox.");
+        System.out.println("------------------------");
+        System.exit(-1);
+    }
 
     private void addReport(Report report) {
         if (listReport == null) {
@@ -142,6 +148,14 @@ public class TestRunner {
 
         if (browserOption != null) {
             urlStr.append("&browserOption=").append(encode(browserOption));
+        }
+
+        try{
+            Thread thread = new Thread(new ShutDownHook(sahiHost, port, sessionId));
+            Runtime.getRuntime().addShutdownHook(thread);
+            System.out.println("Added shutdown hook.");
+        }catch (Exception e) {
+            e.printStackTrace();
         }
 
         URL url = new URL(urlStr.toString());
@@ -211,16 +225,15 @@ public class TestRunner {
     }
 
     public String toString(){
-    	StringBuffer sb = new StringBuffer();
-    	sb.append("\nsuiteName = "+suiteName);
-    	sb.append("\nbrowser = "+browser);
-    	sb.append("\nbase = "+base);
-    	sb.append("\nsahiHost = "+sahiHost);
-    	sb.append("\nport = "+port);
-    	sb.append("\nthreads = "+threads);
-    	sb.append("\nbrowserOption = "+browserOption);
-    	return sb.toString();
+        StringBuffer sb = new StringBuffer();
+        sb.append("\nsuiteName = "+suiteName);
+        sb.append("\nbrowser = "+browser);
+        sb.append("\nbase = "+base);
+        sb.append("\nsahiHost = "+sahiHost);
+        sb.append("\nport = "+port);
+        sb.append("\nthreads = "+threads);
+        sb.append("\nbrowserOption = "+browserOption);
+        return sb.toString();
 
     }
-
 }

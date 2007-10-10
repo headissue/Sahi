@@ -21,7 +21,7 @@ public class HttpRequestTest extends TestCase {
 
 
     public void testUnicode() throws UnsupportedEncodingException {
-        String s = URLDecoder.decode("abc", "sadalkdjlaksjdfl");
+       URLDecoder.decode("abc", "sadalkdjlaksjdfl");
     }
 
     public void testSetUri(){
