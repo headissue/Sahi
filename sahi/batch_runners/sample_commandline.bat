@@ -1,0 +1,1 @@
+java -cp lib\sahi.jar;lib\ant-sahi.jar net.sf.sahi.test.TestRunner C:/my/sahi/scripts/my_app.suite "C:\Program Files\Internet Explorer\IEXPLORE.EXE" http://www.myapp.com:port/ default localhost 9999 1
