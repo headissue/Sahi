@@ -1,0 +1,25 @@
+function getLinks(){
+	var retVal = [];
+	var links = document.links;
+	for (var i=0; i<2; i++){
+		retVal[i] = links[i].innerHTML;
+	}
+	return retVal;
+}
+
+function f1(){
+	var links = [];
+	_set(links, getLinks());
+	for (var i=0; i<links.length; i++){
+		var $linkText = links[i];
+		_click(_link($linkText));
+		if (_condition(_link('Back') != null)){
+			_click(_link('Back'));
+		}else{
+			_navigateTo("index.htm");
+		}
+	}
+}
+
+f1();
+f1();

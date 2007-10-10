@@ -1,8 +1,0 @@
-_click(_link("Language Tools"));
-_click(_link("French"));
-_click(_link("Outils linguistiques"));
-_click(_link("Tamul"));
-_click(_link("\u0bb5\u0bbf\u0bb0\u0bc1\u0baa\u0bcd\u0baa\u0b99\u0bcd\u0b95\u0bb3\u0bcd"));
-_assertNotNull(_select("hl"));
-_assertEqual("\u0ba4\u0bae\u0bbf\u0bb4\u0bcd", _getSelectedText(_select("hl")));
-_setSelected(_select("hl"), "\u0b9c\u0bc6\u0bb0\u0bcd\u0bae\u0ba9\u0bcd");

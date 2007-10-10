@@ -1,5 +1,5 @@
 function getRamusAge(){
-    var $rs = db.select("select id, name, age from user limit 10");
+    var $rs = db.select("select id, name, age from user where name='ramu' limit 10");
     if($rs.length == 1){
         return $rs[$i]["name"];
     }

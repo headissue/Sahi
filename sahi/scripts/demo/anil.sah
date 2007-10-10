@@ -1,0 +1,12 @@
+_setValue(_textbox("UserName"), "ResAdmin");
+_click(_submit("Log On"));
+_click(_link("Task Mgt"));
+_click(_button("Get Data"));
+_click(_image("This task has checklist items"));
+_popup("CHECKLISTIFRAME")._click(_checkbox("selectItem3"));
+_popup("CHECKLISTIFRAME")._assertNotNull(_checkbox("selectItem3"));
+_popup("CHECKLISTIFRAME")._assertTrue(_checkbox("selectItem3").checked);
+_popup("CHECKLISTIFRAME")._assertNotNull(_checkbox("selectItem0"));
+_popup("CHECKLISTIFRAME")._assertNotTrue(_checkbox("selectItem0").checked);
+_popup("CHECKLISTIFRAME")._click(_link("Close Window"));
+_click(_link("Log Off"));
