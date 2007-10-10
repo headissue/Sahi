@@ -1,20 +1,19 @@
 /**
  * Sahi - Web Automation and Test Tool
- *
+ * 
  * Copyright  2006  V Narayan Raman
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 String.isBlankOrNull = function (s) {
@@ -59,6 +58,15 @@ var Sahi = function(){
     window.prompt = function (s){return _sahi.promptMock(s)};
 
     this.XHRs = [];
+	this.escapeMap = {
+		'\b': '\\b',
+		'\t': '\\t',
+		'\n': '\\n',
+		'\f': '\\f',
+		'\r': '\\r',
+		'"' : '\\"',
+		'\\': '\\\\'
+	};
 }
 var _sahi = new Sahi();
 var tried = false;
@@ -86,7 +94,7 @@ Sahi.prototype.getKnownTags = function (src) {
         if (tag == "a" || tag == "select" || tag == "img" || tag == "form"
                 || tag == "input" || tag == "button" || tag == "textarea"
                 || tag == "textarea" || tag == "td" || tag == "table"
-                || ((tag == "div" || tag == "span") && (el.id && el.id != ""))) return el;
+                || ((tag == "div" || tag == "span"))) return el;
         el = el.parentNode;
     }
 }
@@ -121,6 +129,9 @@ Sahi.prototype.getPartialAccessor = function (src) {
     }
     else if (tag == "table") {
         return this.getTable(src);
+    }
+    else if (tag == "div" || tag == "span"){
+        return this.getByTagName(src);
     }
     return null;
 }
@@ -429,9 +440,10 @@ Sahi.prototype.isSafariLike = function () {
     return /Konqueror|Safari|KHTML/.test(navigator.userAgent);
 }
 Sahi.prototype.simulateMouseEvent = function (el, type, isRight, isDouble) {
-    var x = this.findPosX(el);
-    var y = this.findPosY(el);
-    this.simulateMouseEventXY(el, type, x, y, isRight, isDouble);
+    var xy = this.findPos(el);
+    var x = xy[0]
+    var y = xy[1];
+    this.simulateMouseEventXY(el, type, xy[0], xy[1], isRight, isDouble);
 }
 Sahi.prototype.simulateMouseEventXY = function (el, type, x, y, isRight, isDouble) {
     if (document.createEvent) {
@@ -565,8 +577,9 @@ Sahi.prototype._setValue = function (el, val) {
         if (typeof val == "string") {
             for (var i = 0; i < val.length; i++) {
                 var c = val.charAt(i);
-                this.simulateKeyEvent(c.charCodeAt(0), el, "keydown");
-                this.simulateKeyEvent(c.charCodeAt(0), el, "keypress");
+                var ccode = c.charCodeAt(0);
+                this.simulateKeyEvent(ccode, el, "keydown");
+                this.simulateKeyEvent(ccode, el, "keypress");
                 if (i == 0 && el.value != c) {
                     append = true;
                 }
@@ -574,25 +587,35 @@ Sahi.prototype._setValue = function (el, val) {
                     //                    if (!el.maxLength || el.value.length < el.maxLength)
                     el.value += c;
                 }
-                this.simulateKeyEvent(c.charCodeAt(0), el, "keyup");
+                this.simulateKeyEvent(ccode, el, "keyup");
             }
         }
     }
-    if (prevVal != val && el.onchange) {
+    if (!this.isIE()) this.simulateEvent(el, "blur");
+    if (prevVal != val) {
         this.simulateEvent(el, "change");
     }
+    if (this.isIE()) this.simulateEvent(el, "blur");
     if (el && el.form){
         try{
             this.simulateEvent(el.form, "change");
         }catch(e){}
     }
 }
-
 Sahi.prototype._setFile = function (el, v, url) {
     //    this._debug(el.ownerDocument.defaultView.location.href)
     if (!url) url = (String.isBlankOrNull(el.form.action) || (typeof el.form.action != "string")) ? el.ownerDocument.defaultView.location.href : el.form.action;
-    if (url && (q = url.indexOf("?")) != -1) url = url.substring(0, q)
-    this._callServer("FileUpload_setFile", "n=" + el.name + "&v=" + v + "&action=" + escape(url));
+    if (url && (q = url.indexOf("?")) != -1) url = url.substring(0, q);
+    if (url.indexOf("http") == -1) {
+        var loc = window.location;
+        if (url.indexOf("/") == 0){
+            url = loc.protocol+ "//" +  loc.hostname + (loc.port ? (':'+loc.port) : '') + url;
+        }else{
+            var winUrl = loc.href;
+            url = winUrl.substring(0, winUrl.lastIndexOf ('/') + 1) + url;
+        }
+    }
+    this._callServer("FileUpload_setFile", "n=" + el.name + "&v=" + escape(v) + "&action=" + escape(url));
 }
 
 Sahi.prototype.simulateEvent = function (target, evType) {
@@ -616,9 +639,6 @@ Sahi.prototype.simulateEvent = function (target, evType) {
 }
 
 Sahi.prototype.simulateKeyEvent = function (charCode, target, evType, combo) {
-    var x = this.findPosX(target);
-    var y = this.findPosY(target);
-
     var c = String.fromCharCode(charCode);
     var isShift = combo == "SHIFT" || (charCode >= 65 && charCode <= 122 && c.toUpperCase() == c);
 
@@ -655,8 +675,9 @@ Sahi.prototype.simulateKeyEvent = function (charCode, target, evType, combo) {
         evt.type = evType;
         evt.bubbles = true;
         evt.cancelable = true;
-        evt.clientX = x;
-        evt.clientY = y;
+        var xy = this.findPos(target);
+        evt.clientX = xy[0];
+        evt.clientY = xy[1];
         evt.ctrlKey = combo == "CTRL";
         evt.altKey = combo == "ALT";
         evt.metaKey = combo == "META";
@@ -718,8 +739,8 @@ Sahi.prototype._wait = function (i, condn) {
 Sahi.prototype.cancelWaitCondition = function (){
     this.waitCondition=null;
     this.waitInterval=this.INTERVAL;
-    this.setServerVar("waitCondition", "");
-    this.setServerVar("waitConditionTime", "-1");
+    this.setServerVar("waitCondition", null);
+    this.setServerVar("waitConditionTime", -1);
 }
 
 Sahi.prototype._file = function (n) {
@@ -742,6 +763,9 @@ Sahi.prototype._accessor = function (n) {
 }
 Sahi.prototype._byId = function (id) {
     return this.findElementById(this.top(), id);
+}
+Sahi.prototype._byText = function (text, tag) {
+    return this.divSpanByText(this.top(), text, tag);
 }
 Sahi.prototype._select = function (n) {
     var el = this.findElement(n, "select", "select");
@@ -766,8 +790,12 @@ Sahi.prototype.divSpanByText = function (win, id, tagName) {
     var res = null;
     var els = win.document.getElementsByTagName(tagName);
     for (var i = 0; i < els.length; i++) {
-        if (this._getText(els[i]) == id) {
-            return els[i];
+        var el = els[i];
+        var text = this._getText(el);
+        if (text == id){
+            return el;
+        }else if (id instanceof RegExp && text.match(id)){
+            return this.innerMost(el, id, tagName.toUpperCase());
         }
     }
     var frs = win.frames;
@@ -778,6 +806,17 @@ Sahi.prototype.divSpanByText = function (win, id, tagName) {
         }
     }
     return res;
+}
+Sahi.prototype.innerMost = function(el, re, tagName){
+    for (var i=0; i < el.childNodes.length; i++){
+        var child = el.childNodes[i];
+        var text = this._getText(child);
+        if (text.match(re)){
+            var inner = this.innerMost(child, re, tagName);
+            if (inner.nodeName == tagName) return inner;
+        }
+    }
+    return el;
 }
 Sahi.prototype._image = function (n) {
     return this.findImage(n, this.top(), "img");
@@ -799,12 +838,12 @@ Sahi.prototype._simulateEvent = function (el, ev) {
     }
 }
 Sahi.prototype._setGlobal = function (name, value) {
-    //    this._debug("*** name="+name+" value="+value);
+    //this._debug("SET name="+name+" value="+value);
     this.setServerVar(name, value);
 }
 Sahi.prototype._getGlobal = function (name) {
     var value = this.getServerVar(name);
-    //    this._debug("GET name="+name+" value="+value);
+    //this._debug("GET name="+name+" value="+value);
     return value;
 }
 Sahi.prototype._set = function (name, value) {
@@ -826,6 +865,7 @@ Sahi.prototype._assertTrue = function (n, s) {
     if (n != true) throw new SahiAssertionException(5, s);
     return true;
 }
+Sahi.prototype._assert = Sahi.prototype._assertTrue;
 Sahi.prototype._assertNotTrue = function (n, s) {
     if (n) throw new SahiAssertionException(6, s);
     return true;
@@ -1241,7 +1281,10 @@ Sahi.prototype.findElementById = function (win, id) {
 Sahi.prototype.findElement = function (id, type, tagName) {
     var res = this.getBlankResult();
     var retVal = null;
-    if (type == "button" || type == "reset" || type == "submit") {
+    if (tagName == "button"){
+        retVal = this.findElementHelper(id, this.top(), type, res, (this.isIE() ? "innerText" : "textContent") , tagName).element;
+        if (retVal != null) return retVal;
+    } else if (type == "button" || type == "reset" || type == "submit") {
         retVal = this.findElementHelper(id, this.top(), type, res, "value", tagName).element;
         if (retVal != null) return retVal;
     }
@@ -1523,7 +1566,7 @@ Sahi.prototype.canSimulateClick = function (el) {
 
 Sahi.prototype.isRecording = function () {
     if (this.top().Sahi._isRecording == null)
-        this.top().Sahi._isRecording = this.getServerVar("sahi_record") == "1";
+        this.top().Sahi._isRecording = this.getServerVar("sahi_record") == 1;
     return this.top().Sahi._isRecording;
 }
 Sahi.prototype.createCookie = function (name, value, days)
@@ -1536,7 +1579,7 @@ Sahi.prototype.createCookie = function (name, value, days)
     }
     document.cookie = name + "=" + value + expires + "; path=/";
 }
-
+Sahi.prototype._createCookie = Sahi.prototype.createCookie;
 Sahi.prototype.readCookie = function (name)
 {
     var nameEQ = name + "=";
@@ -1549,11 +1592,12 @@ Sahi.prototype.readCookie = function (name)
     }
     return null;
 }
-
+Sahi.prototype._cookie = Sahi.prototype.readCookie;
 Sahi.prototype.eraseCookie = function (name)
 {
     this.createCookie(name, "", -1);
 }
+Sahi.prototype._deleteCookie = Sahi.prototype.eraseCookie;
 Sahi.prototype._event = function (type, keyCode) {
     this.type = type;
     this.keyCode = keyCode;
@@ -1571,7 +1615,7 @@ var lastQs = "";
 var lastTime = 0;
 Sahi.prototype.onEv = function (e) {
     if (e.handled == true) return true; //FF
-    if (_sahi.getServerVar("this.evaluateExpr") == "true") return true;
+    if (_sahi.getServerVar("this.evaluateExpr") == true) return true;
     var targ = _sahi.getTarget(e);
     if (e.type == "click") {
         if (targ.form && targ.type) {
@@ -1633,9 +1677,10 @@ Sahi.prototype.mark = function (s) {
 }
 Sahi.prototype.doAssert = function (e) {
     try {
-        if (!this.lastAccessedInfo) return;
-        this.lastAccessedInfo.event = "assert";
-        this.showInController(this.lastAccessedInfo);
+        var lastAccessedInfo = this.top()._sahi.lastAccessedInfo;
+        if (!lastAccessedInfo) return;
+        lastAccessedInfo.event = "assert";
+        this.showInController(lastAccessedInfo);
         //      this.sendToServer('/_s_/dyn/Recorder_record?'+getSahiPopUpQS()+this.getAccessorInfoQS(this.top()._lastAccessedInfo, true));
     } catch(ex) {
         this.handleException(ex);
@@ -1659,13 +1704,14 @@ Sahi.prototype.getAccessorInfo = function (el) {
     var accessor = this.getAccessor(el);
     var shortHand = this.getShortHand(el, accessor);
     //    alert(type+" -- "+accessor+" --- "+shortHand);
-    if (el.tagName.toLowerCase() == "img") {
+    var tagLC = el.tagName.toLowerCase();
+    if (tagLC == "img") {
         return new AccessorInfo(accessor, shortHand, "img", "click");
     } else if (type == "text" || type == "textarea" || type == "password") {
         return new AccessorInfo(accessor, shortHand, type, "setvalue", el.value);
     } else if (type == "select-one" || type == "select-multiple") {
         return new AccessorInfo(accessor, shortHand, type, "setselected", this.getOptionText(el, el.value));
-    } else if (el.tagName.toLowerCase() == "a") {
+    } else if (tagLC == "a") {
         return new AccessorInfo(accessor, shortHand, "link", "click");
     } else if (type == "button" || type == "reset" || type == "submit" || type == "image") {
         return new AccessorInfo(accessor, shortHand, type, "click");
@@ -1673,10 +1719,13 @@ Sahi.prototype.getAccessorInfo = function (el) {
         return new AccessorInfo(accessor, shortHand, type, "click", el.checked);
     } else if (type == "file") {
         return new AccessorInfo(accessor, shortHand, type, "setFile", el.value);
-    } else if (el.tagName.toLowerCase() == "td") {
-        return new AccessorInfo(accessor, shortHand, "cell", "click", this.isIE() ? el.innerText : el.textContent);
-    } else if (el.tagName.toLowerCase() == "div" || el.tagName.toLowerCase() == "span") {
-        return new AccessorInfo(accessor, shortHand, "byId", "click", this.isIE() ? el.innerText : el.textContent);
+    } else if (tagLC == "td") {
+        return new AccessorInfo(accessor, shortHand, "cell", "click", this.getText(el));
+    } else if (tagLC == "div" || tagLC == "span") {
+        if (this.getText(el) == shortHand){
+            return new AccessorInfo(accessor, shortHand, "spandiv", "click", this.getText(el));
+        } else
+            return new AccessorInfo(accessor, shortHand, "byId", "click", this.getText(el));
     }
 }
 
@@ -1685,8 +1734,9 @@ Sahi.prototype.getShortHand = function (el, accessor) {
     try {
         var tagLC = el.tagName.toLowerCase();
         if (tagLC == "img") {
-            shortHand = el.alt;
-            if (!shortHand || shortHand == "") shortHand = el.id;
+            shortHand = el.title;
+            if (!shortHand) shortHand = el.alt;
+            if ((!shortHand || shortHand == "") && !this.isIgnorableId(el.id))  shortHand = el.id;
             if (shortHand && shortHand != "") {
                 if (this.findImage(shortHand) != el) {
                     var ix = this.findImageIx(shortHand, el);
@@ -1702,7 +1752,7 @@ Sahi.prototype.getShortHand = function (el, accessor) {
             shortHand = this.getText(el);
             //(el.innerText) ? el.innerText : el.text;
             shortHand = this.trim(shortHand);
-            if (!shortHand || shortHand == "") shortHand = el.id;
+            if ((!shortHand || shortHand == "") && !this.isIgnorableId(el.id))  shortHand = el.id;
             if (shortHand && shortHand != "") {
                 if (this.findLink(shortHand) != el) {
                     var ix = this.findLinkIx(shortHand, el);
@@ -1716,10 +1766,13 @@ Sahi.prototype.getShortHand = function (el, accessor) {
             if (el.type == "image") {
                 shortHand = el.title;
                 if (!shortHand) shortHand = el.alt;
+            } else if (tagLC == "button"){
+                shortHand = el.value;
+                if (!this.isIE()) shortHand = this._getText(el);
             }
-            else if (!shortHand || shortHand == "") shortHand = el.name;
-            if (!shortHand || shortHand == "") shortHand = el.id;
-            if (shortHand && shortHand != "") {
+            else if (shortHand == null || shortHand == "") shortHand = el.name;
+            if ((shortHand == null || shortHand == "") && !this.isIgnorableId(el.id))  shortHand = el.id;
+            if (shortHand != null && shortHand != "") {
                 if (this.findElement(shortHand, el.type, tagLC) != el) {
                     var ix = this.findElementIx(shortHand, el, el.type, tagLC);
                     if (ix == -1) return "";
@@ -1731,8 +1784,8 @@ Sahi.prototype.getShortHand = function (el, accessor) {
             }
             return shortHand;
         } else if (el.tagName.toLowerCase() == "td") {
-            shortHand = el.id;
-            if (shortHand && shortHand != "") {
+            if (!this.isIgnorableId(el.id)) shortHand = el.id;
+            if (shortHand != null && shortHand != "") {
                 if (this.findCell(shortHand) != el) {
                     var ix = this.findCellIx(shortHand, el);
                     if (ix != -1) return this.quoted(shortHand + "[" + ix + "]");
@@ -1744,7 +1797,11 @@ Sahi.prototype.getShortHand = function (el, accessor) {
             shortHand += ", " + this.getRow(el).rowIndex;
             shortHand += ", " + el.cellIndex;
         } else if (el.tagName.toLowerCase() == "span" || el.tagName.toLowerCase() == "div") {
-            shortHand = el.id;
+            if (el.id && !this.isIgnorableId(el.id)) shortHand = el.id;
+            else {
+                shortHand = this.getText(el);
+                //if (shortHand.length > 50) shortHand = "/"+shortHand.substring(0, 50).replace(/\//g, '\\/')+"/";
+            }
         }
     } catch(ex) {
         this.handleException(ex);
@@ -1753,7 +1810,7 @@ Sahi.prototype.getShortHand = function (el, accessor) {
 }
 Sahi.prototype.getTableShortHand = function (el) {
     var shortHand = el.id;
-    if (shortHand && shortHand != "") {
+    if (shortHand && shortHand != "" && !this.isIgnorableId(el.id)) {
         if (this.findTable(shortHand) != el) {
             var ix = this.findTableIx(shortHand, el);
             if (ix != -1) return "_table(" + this.quoted(shortHand + "[" + ix + "]") + ")";
@@ -1947,13 +2004,14 @@ Sahi.prototype.mouseOver = function (e) {
         if (!e.ctrlKey) return;
         var controlWin = _sahi.getController();
         if (controlWin) {
-            var acc = _sahi.getAccessorInfo(_sahi.getKnownTags(_sahi.getTarget(e)));
+            var el = _sahi.getTarget(e);
+            var acc = _sahi.getAccessorInfo(_sahi.getKnownTags(el));
             try {
                 if (acc) controlWin.main.displayInfo(acc, _sahi.escapeDollar(_sahi.getAccessor1(acc)), _sahi.escapeValue(acc.value));
             } catch(ex2) {
                 throw ex2;
             }
-            _sahi.lastAccessedInfo = acc ? acc : _sahi.lastAccessedInfo;
+            if (acc) _sahi.top()._sahi.lastAccessedInfo = acc;
         }
     } catch(ex) {
         throw ex;
@@ -1965,7 +2023,7 @@ Sahi.prototype.escapeDollar = function (s) {
 }
 Sahi.prototype.getAccessor1 = function (info) {
     if (info == null) return null;
-    if ("" == info.shortHand || info.shortHand == null) {
+    if ("" == (""+info.shortHand) || info.shortHand == null) {
         return info.accessor;
     } else {
         if ("image" == info.type) {
@@ -2059,10 +2117,10 @@ Sahi.prototype.execNextStep = function (isStep, interval) {
     Sahi._timer = window.setTimeout("try{_sahi.ex();}catch(ex){}", interval);
 }
 Sahi.prototype.gotErrors = function (b) {
-    this.setServerVar("sahi_has_errors", b ? "1" : "0");
+    this.setServerVar("sahi_has_errors", b ? 1 : 0);
 }
 Sahi.prototype.hadErrors = function () {
-    return this.getServerVar("sahi_has_errors") == "1";
+    return this.getServerVar("sahi_has_errors") == 1;
 }
 Sahi.prototype.ex = function (isStep) {
     var cmds = this.cmds;
@@ -2186,7 +2244,7 @@ Sahi.prototype.ex = function (isStep) {
             }
             else {
                 var debugInfo = "" + debugs[i];
-                if (this.getServerVar("sahi_play") == "1") {
+                if (this.getServerVar("sahi_play") == 1) {
                     this.logPlayBack(cmds[i], "error", debugInfo, this.getExceptionString(ex));
                 }
                 this.gotErrors(true);
@@ -2224,7 +2282,7 @@ Sahi.prototype.unpause = function () {
 }
 Sahi.prototype.isPaused = function () {
     if (this._isPaused == null)
-        this._isPaused = this.getServerVar("sahi_paused") == "1";
+        this._isPaused = this.getServerVar("sahi_paused") == 1;
     return this._isPaused;
 }
 Sahi.prototype.updateControlWinDisplay = function (s, i) {
@@ -2260,7 +2318,7 @@ Sahi.prototype.getCurrentIndex = function () {
 }
 Sahi.prototype.isPlaying = function () {
     if (this._isPlaying == null)
-        this._isPlaying = this.getServerVar("sahi_play") == "1";
+        this._isPlaying = this.getServerVar("sahi_play") == 1;
     return this._isPlaying;
 }
 Sahi.prototype.playManual = function (ix) {
@@ -2378,11 +2436,10 @@ Sahi.prototype.onreadystatechange = function(){
 //---XMLHttpObject Wrap End---
 Sahi.prototype.getServerVar = function (name) {
     var v = this.sendToServer("/_s_/dyn/SessionState_getVar?name=" + this.escape(name));
-    if (v == "null") return null;
-    return v;
+    return eval("(" + v + ")");
 }
 Sahi.prototype.setServerVar = function (name, value) {
-    this.sendToServer("/_s_/dyn/SessionState_setVar?name=" + this.escape(name) + "&value=" + this.escape(value));
+    this.sendToServer("/_s_/dyn/SessionState_setVar?name=" + this.escape(name) + "&value=" + this.escape(this.toJSON(value)));
 }
 Sahi.prototype.logErr = function (msg) {
     //    return;
@@ -2414,7 +2471,7 @@ Sahi.prototype.sendToServer = function (url) {
 var s_v = function (v) {
     var type = typeof v;
     if (type == "number") return v;
-    else if (type == "string") return "\"" + v + "\"";
+    else if (type == "string") return "\"" + v.replace(/\r/g, '\\r').replace(/\n/g, '\\n').replace(/"/g, '\\"') + "\"";
     else return v;
 }
 Sahi.prototype.quoted = function (s) {
@@ -2585,12 +2642,17 @@ Sahi.prototype.escape = function (s) {
 
 Sahi.prototype.saveCondition = function (a) {
     this._setGlobal("condn" + this.getCurrentIndex(), a ? "true" : "false");
+	this.resetCmds();
+}
+Sahi.prototype.resetCmds = function(){
     this.cmds = new Array();
     this.cmdDebugInfo = new Array();
     this.scriptScope();
-    //eval(_sahi.execSteps);
 }
-
+Sahi.prototype.handleSet = function(varName, value){
+	this._setGlobal(varName, value);
+	this.resetCmds();
+}
 Sahi.prototype.quoteIfString = function (shortHand) {
     if (("" + shortHand).match(/^[0-9]+$/)) return shortHand;
     return this.quotedEscapeValue(shortHand);
@@ -2639,8 +2701,8 @@ Sahi.prototype.setWaitConditionTime = function(time) {
 }
 // document.write start
 Sahi.INSERT_TEXT = "<script src='/_s_/spr/concat.js'></scr"+"ipt>"+
-"<script src='http://localproxy.sahi.co.in/_s_/dyn/SessionState/state.js'></scr"+"ipt>"+
-"<script src='http://localproxy.sahi.co.in/_s_/dyn/Player_script/script.js'></scr"+"ipt>"+
+"<script src='http://sahi.example.com/_s_/dyn/SessionState/state.js'></scr"+"ipt>"+
+"<script src='http://sahi.example.com/_s_/dyn/Player_script/script.js'></scr"+"ipt>"+
 "<script src='/_s_/spr/playback.js'></scr"+"ipt>" +
 "";
 
@@ -2691,8 +2753,104 @@ if (!_sahi.isIE()){
         var opened = this.openOld(method, url, async, username, password);
         var xs = _sahi.top()._sahi.XHRs;
         xs[xs.length] = this;
-        this.setRequestHeader("Sahi-IsXHR", "true");
+        this.setRequestHeader("sahi-isxhr", "true");
         return opened;
+    }
+}else{
+    new_ActiveXObject = function(s){
+        var lower = s.toLowerCase();
+        if (lower.indexOf("microsoft.xmlhttp")!=-1 || lower.indexOf("msxml2.xmlhttp")!=-1){
+            return new SahiActiveXObject(s);
+        }else{
+            return new ActiveXObject(s);
+        }
     }
 }
 // ff xhr end
+SahiActiveXObject = function (s){
+    //alert("inside SahiActiveXObject");
+    this.xhr = new ActiveXObject(s);
+    var xs = _sahi.top()._sahi.XHRs;
+    xs[xs.length] = this;
+    this._async = false;
+}
+SahiActiveXObject.prototype.open = function(method, url, async, username, password){
+    this._async = async;
+    var opened = this.xhr.open(method, url, async, username, password);
+    this.xhr.setRequestHeader("sahi-isxhr", "true");
+    var fn = this.stateChange;
+    var obj = this;
+    this.xhr.onreadystatechange = function(){fn.apply(obj, arguments);}
+    return opened;
+}
+SahiActiveXObject.prototype.getAllResponseHeaders = function(){
+    return this.xhr.getAllResponseHeaders();
+}
+SahiActiveXObject.prototype.getResponseHeader = function(s){
+    return this.xhr.getResponseHeader(s);
+}
+SahiActiveXObject.prototype.setRequestHeader = function(k, v){
+    return this.xhr.setRequestHeader(k, v);
+}
+SahiActiveXObject.prototype.send = function(s){
+    var sent = this.xhr.send(s);
+    if (!this._async) this.populateProps();
+    return sent;
+}
+SahiActiveXObject.prototype.stateChange = function(){
+    this.readyState = this.xhr.readyState;
+    if (this.readyState==4){
+        this.populateProps();
+    }
+    if (this.onreadystatechange) this.onreadystatechange();
+}
+SahiActiveXObject.prototype.populateProps = function(){
+    this.responseText = this.xhr.responseText;
+    this.responseXML = this.xhr.responseXML;
+    this.status = this.xhr.status;
+    this.statusText = this.xhr.statusText;
+}
+Sahi.prototype.toJSON = function(el){
+	if (el == null || el == undefined) return 'null';
+	if (el instanceof Date){
+		return String(el);
+	}else if (typeof el == 'string'){
+		if (/["\\\x00-\x1f]/.test(el)) {
+			return '"' + el.replace(/([\x00-\x1f\\"])/g, function (a, b) {
+				var c = _sahi.escapeMap[b];
+				if (c) {
+					return c;
+				}
+				c = b.charCodeAt();
+				return '\\u00' +
+					Math.floor(c / 16).toString(16) +
+					(c % 16).toString(16);
+			}) + '"';
+		}
+		return '"' + el + '"';
+	}else if (el instanceof Array){
+		var ar = [];
+		for (var i=0; i<el.length; i++){
+			ar[i] = this.toJSON(el[i]);
+		}
+		return '[' + ar.join(',') + ']';
+	}else if (typeof el == 'number'){
+		return new String(el);
+	}else if (typeof el == 'boolean'){
+		return String(el);
+	}else if (el instanceof Object){
+		var ar = [];
+		for (var k in el){
+			var v = el[k];
+			if (typeof v != 'function'){
+				ar[ar.length] = this.toJSON(k) + ':' + this.toJSON(v);
+			}
+		}
+		return '{' + ar.join(',') + '}';
+	}
+}
+
+
+Sahi.prototype.isIgnorableId = function(id){
+    return id.match(/^z_/);
+}
