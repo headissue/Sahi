@@ -36,3 +36,5 @@ _lastPrompt
 _lastAlert
 _get
 _style
+_byText
+_cookie

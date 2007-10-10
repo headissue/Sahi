@@ -4,6 +4,7 @@ _assertNotEqual
 _assertNotNull
 _assertNull
 _assertTrue
+_assert
 _assertNotTrue
 _assertFalse
 _callServer
@@ -36,7 +37,6 @@ _debug
 _debugToErr
 _debugToFile
 _mouseOver
-_set
 _keyPress
 _focus
 _keyDown
@@ -47,3 +47,5 @@ _assertContainsText
 _enableKeepAlive
 _disableKeepAlive
 _dragDropXY
+_deleteCookie
+_createCookie
