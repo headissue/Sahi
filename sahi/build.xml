@@ -202,6 +202,9 @@
         <copy todir="temp/sahi/test">
             <fileset dir="test"/>
         </copy>
+        <copy todir="temp/sahi/batch_runners">
+            <fileset dir="batch_runners"/>
+        </copy>
         <copy todir="temp/sahi/docs">
             <fileset dir="docs">
                 <include name="src/**/*.*"/>
