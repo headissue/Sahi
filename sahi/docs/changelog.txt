@@ -19,9 +19,11 @@
 	_prompt
     Some problems around _button
 	Proxy-Connection header used instead of Connection header.
+	Changed www.sahidomain.com to sahi.example.com
 
 Known issues
 * Firefox has problems with multithreaded playback due to not being able to kill browsers properly.
 (Workaround: Do not add the 'threads=n' clause to sahi target)
-* Calls to non existent functions in script does not fail script
 * Turn off keep-alive in sahi.properties if browser hangs
+* IE7 will always bypass proxy for http://localhost. Use http://machine_name/ instead
+* Framesets with frames from different domains will not work with Sahi
