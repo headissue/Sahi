@@ -1,14 +1,27 @@
 * Features added
-    Some basic support for identifying script errors in script using "View Script" link on the controller.
+	Calls to non existent functions in script will fail script.
+	Hooking into XHR requests so that _wait statements are not required for AJAX.
+	_set added which takes away the confusion from _getGlobal, _setGlobal etc.
+	While running suites, the browser will be killed if no request is received from the browser in 20 seconds.
+	Further tests will be stopped if the ant target/command to run suites is killed.
+	Added sample rake scripts, ant project files and a commandline batch file for easy kickstart to running suites.
+	_dragDrop improved. (Not yet perfect though)
+	_dragDropXY(el, x, y) added
+	_createCookie(name, value) added
+	_deleteCookie(name) added
+	_byText(text, tagName) added
+	_cookie(name) added
 
 * Bugfixes
-    HTTPS was not working because of a couple of problems:
-    Keep-alive needed to be disabled for proxying ssl requests.
-    including java.ext.dirs in sahi.bat/sh was causing ssl libraries to not be included.
-    So: Excluded ssl from keep-alive and removed java.ext.dirs.
-    Not sure if this fixes SSL support in Mac.
-        
+	_setFile on IE
+	_wait
+	_confirm
+	_prompt
+    Some problems around _button
+	Proxy-Connection header used instead of Connection header.
+
 Known issues
-* Firefox has problems with multithreaded playback due to session sharing across windows. 
+* Firefox has problems with multithreaded playback due to not being able to kill browsers properly.
 (Workaround: Do not add the 'threads=n' clause to sahi target)
 * Calls to non existent functions in script does not fail script
+* Turn off keep-alive in sahi.properties if browser hangs
