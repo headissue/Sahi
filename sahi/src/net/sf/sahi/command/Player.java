@@ -1,6 +1,6 @@
 /**
  * Sahi - Web Automation and Test Tool
- * 
+ *
  * Copyright  2006  V Narayan Raman
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -80,11 +80,11 @@ public class Player {
     }
 
     private void startPlayback(Session session, boolean resetConditions) {
+        if (resetConditions)
+            session.removeVariables(".*");
         session.setStatus(Status.RUNNING);
         session.setVariable("sahi_play", "1");
         session.setVariable("sahi_paused", "1");
-        if (resetConditions)
-            session.removeVariables("condn.*");
     }
 
     public HttpResponse currentScript(HttpRequest request) {

@@ -1,6 +1,6 @@
 /**
  * Sahi - Web Automation and Test Tool
- * 
+ *
  * Copyright  2006  V Narayan Raman
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -140,7 +140,8 @@ public abstract class SahiScript {
     		String varValue = matcher.group(2);
     		StringBuffer sb = new StringBuffer();
     		sb.append("var $sahi_cmdLen = _sahi.cmds.length+1;\r\n");
-    		sb.append(scheduleLine("_sahi.handleSet('" + varName + "' + $sahi_cmdLen, " + varValue + ");", lineNumber));
+    		String dollarVarName = varName.startsWith("$") ? "\\" + varName : varName;
+    		sb.append(scheduleLine("_sahi.handleSet('" + dollarVarName + "' + $sahi_cmdLen, " + varValue + ");", lineNumber, true));
     		sb.append(modifyLine(varName + "Temp = _getGlobal('" + varName + "' + _sahi.cmds.length);"));
     		sb.append(modifyLine("if (" + varName + "Temp) "+ varName +" = "+varName+ "Temp;"));
     		return sb.toString();
@@ -169,9 +170,13 @@ public abstract class SahiScript {
     }
 
     private String scheduleLine(String line, int lineNumber) {
+    	return scheduleLine(line, lineNumber, true);
+    }
+    private String scheduleLine(String line, int lineNumber, boolean separate) {
         StringBuffer sb = new StringBuffer();
         sb.append(PREFIX);
-        sb.append(modifyFunctionNames(separateVariables(line)));
+        if (separate) line = separateVariables(line);
+        sb.append(modifyFunctionNames(line));
         sb.append(CONJUNCTION);
         sb.append(Utils.escapeDoubleQuotesAndBackSlashes(filePath));
         sb.append("&n=");

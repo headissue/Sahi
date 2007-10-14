@@ -1,6 +1,6 @@
 /**
  * Sahi - Web Automation and Test Tool
- * 
+ *
  * Copyright  2006  V Narayan Raman
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -1008,7 +1008,7 @@ Sahi.prototype.promptMock = function (s) {
         return retVal;
     } else {
         var retVal = this.callFunction(this.real_prompt, window, s);
-        this.sendToServer('/_s_/dyn/Recorder_record?cmd=' + this.escape("_expectPrompt(\"" + s + "\", \"" + retVal + "\")"));
+        this.sendToServer('/_s_/dyn/Recorder_record?cmd=' + encodeURIComponent("_expectPrompt(\"" + s + "\", \"" + retVal + "\")"));
         return retVal;
     }
 }
@@ -1090,14 +1090,14 @@ Sahi.prototype._mockImage = function (pattern, clazz) {
     return this._callServer("MockResponder_add", "pattern=" + pattern + "&class=" + clazz);
 }
 Sahi.prototype._debug = function (s) {
-    return this._callServer("Debug_toOut", "msg=" + this.escape(s));
+    return this._callServer("Debug_toOut", "msg=" + encodeURIComponent(s));
 }
 Sahi.prototype._debugToErr = function (s) {
-    return this._callServer("Debug_toErr", "msg=" + this.escape(s));
+    return this._callServer("Debug_toErr", "msg=" + encodeURIComponent(s));
 }
 Sahi.prototype._debugToFile = function (s, file) {
     if (file == null) return;
-    return this._callServer("Debug_toFile", "msg=" + this.escape(s) + "&file=" + this.escape(file));
+    return this._callServer("Debug_toFile", "msg=" + encodeURIComponent(s) + "&file=" + encodeURIComponent(file));
 }
 Sahi.prototype._enableKeepAlive = function () {
     this.sendToServer('/_s_/dyn/Configuration_enableKeepAlive');
@@ -1831,11 +1831,11 @@ var AccessorInfo = function (accessor, shortHand, type, event, value) {
 Sahi.prototype.getAccessorInfoQS = function (ai, isAssert) {
     if (ai == null || ai.event == null) return;
     var s = "event=" + (isAssert ? "assert" : ai.event);
-    s += "&accessor=" + this.escape(this.convertUnicode(ai.accessor));
-    s += "&shorthand=" + this.escape(this.convertUnicode(ai.shortHand));
+    s += "&accessor=" + encodeURIComponent(this.convertUnicode(ai.accessor));
+    s += "&shorthand=" + encodeURIComponent(this.convertUnicode(ai.shortHand));
     s += "&type=" + ai.type;
     if (ai.value) {
-        s += "&value=" + this.escape(this.convertUnicode(ai.value));
+        s += "&value=" + encodeURIComponent(this.convertUnicode(ai.value));
     }
     return s;
 }
@@ -2353,13 +2353,13 @@ Sahi.prototype.stopRecording = function () {
 }
 Sahi.prototype.reportSuccess = function (msg, debugInfo) {
     var type = (msg.indexOf("_sahi._assert") == 0) ? "success" : "info";
-    //this.sendToServer("/_s_/dyn/Player_success?msg=" + this.escape(msg) + "&type=" + type + "&debugInfo=" + (debugInfo?this.escape(debugInfo):""));
+    //this.sendToServer("/_s_/dyn/Player_success?msg=" + encodeURIComponent(msg) + "&type=" + type + "&debugInfo=" + (debugInfo?encodeURIComponent(debugInfo):""));
     this.logPlayBack(msg, type, debugInfo);
 }
 Sahi.prototype.logPlayBack = function (msg, type, debugInfo, failureMsg) {
-    //this.sendToServer("/_s_/dyn/Log?msg=" + this.escape(msg) + "&type=" + type + "&debugInfo=" + (debugInfo?this.escape(debugInfo):""));
-    this.sendToServer("/_s_/dyn/TestReporter_logTestResult?msg=" + this.escape(msg) + "&type=" + type
-            + "&debugInfo=" + (debugInfo ? this.escape(debugInfo) : "") + (failureMsg ? "&failureMsg=" + this.escape(failureMsg) : ""));
+    //this.sendToServer("/_s_/dyn/Log?msg=" + encodeURIComponent(msg) + "&type=" + type + "&debugInfo=" + (debugInfo?encodeURIComponent(debugInfo):""));
+    this.sendToServer("/_s_/dyn/TestReporter_logTestResult?msg=" + encodeURIComponent(msg) + "&type=" + type
+            + "&debugInfo=" + (debugInfo ? encodeURIComponent(debugInfo) : "") + (failureMsg ? "&failureMsg=" + encodeURIComponent(failureMsg) : ""));
 }
 Sahi.prototype.trim = function (s) {
     if (s == null) return s;
@@ -2435,15 +2435,15 @@ Sahi.prototype.onreadystatechange = function(){
 */
 //---XMLHttpObject Wrap End---
 Sahi.prototype.getServerVar = function (name) {
-    var v = this.sendToServer("/_s_/dyn/SessionState_getVar?name=" + this.escape(name));
+    var v = this.sendToServer("/_s_/dyn/SessionState_getVar?name=" + encodeURIComponent(name));
     return eval("(" + v + ")");
 }
 Sahi.prototype.setServerVar = function (name, value) {
-    this.sendToServer("/_s_/dyn/SessionState_setVar?name=" + this.escape(name) + "&value=" + this.escape(this.toJSON(value)));
+    this.sendToServer("/_s_/dyn/SessionState_setVar?name=" + encodeURIComponent(name) + "&value=" + encodeURIComponent(this.toJSON(value)));
 }
 Sahi.prototype.logErr = function (msg) {
     //    return;
-    this.sendToServer("/_s_/dyn/Log?msg=" + this.escape(msg) + "&type=err");
+    this.sendToServer("/_s_/dyn/Log?msg=" + encodeURIComponent(msg) + "&type=err");
 }
 
 Sahi.prototype.getParentNode = function (el, tagName) {
