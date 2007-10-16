@@ -1,6 +1,6 @@
 /**
  * Sahi - Web Automation and Test Tool
- * 
+ *
  * Copyright  2006  V Narayan Raman
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -55,7 +55,6 @@ public class HttpResponse extends StreamHandler {
     }
 
     public void proxyKeepAlive(boolean keepAliveEnabled) {
-        setFirstLine(firstLine().replaceAll("HTTP/1.0", "HTTP/1.1"));
         removeHeader("Content-length");
         setHeader("Content-Length", "" + data().length);
         removeHeader("Connection");

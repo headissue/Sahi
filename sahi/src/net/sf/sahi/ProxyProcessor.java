@@ -1,6 +1,6 @@
 /**
  * Sahi - Web Automation and Test Tool
- * 
+ *
  * Copyright  2006  V Narayan Raman
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -71,15 +71,15 @@ public class ProxyProcessor implements Runnable {
                         processLocally(uri, requestFromBrowser);
                     } else if (uri.indexOf("favicon.ico") != -1) {
                         sendResponseToBrowser(new HttpFileResponse(Configuration.getHtdocsRoot()
-                                + "spr/favicon.ico"), true, false);
+                                + "spr/favicon.ico"));
                     } else {
                         processAsProxy(requestFromBrowser);
                     }
                 }
-                if (isKeepAlive() && !client.isClosed()) new Thread(new ProxyProcessor(client)).start();
             } else {
-                sendResponseToBrowser(new SimpleHttpResponse(""), true, false);
+                sendResponseToBrowser(new SimpleHttpResponse(""));
             }
+            if (isKeepAlive() && !client.isClosed()) new Thread(new ProxyProcessor(client)).start();
         } catch (Exception e) {
             logger.fine(e.getMessage());
             try {
@@ -151,13 +151,8 @@ public class ProxyProcessor implements Runnable {
     }
 
     protected void sendResponseToBrowser(HttpResponse responseFromHost) throws IOException {
-    	sendResponseToBrowser(responseFromHost, false, false);
-    }
-    protected void sendResponseToBrowser(HttpResponse responseFromHost, boolean force, boolean forcedKeepAlive) throws IOException {
-    	boolean keepAlive = force ? forcedKeepAlive : isKeepAlive();
-
         OutputStream outputStreamToBrowser = new BufferedOutputStream(client.getOutputStream());
-        responseFromHost.proxyKeepAlive(keepAlive);
+        responseFromHost.proxyKeepAlive(isKeepAlive());
         logger.fine("---------START----------");
         logger.fine(new String(responseFromHost.rawHeaders()));
         logger.fine("---------END----------");
@@ -166,7 +161,7 @@ public class ProxyProcessor implements Runnable {
         final byte[] data = responseFromHost.data();
         outputStreamToBrowser.write(data);
         outputStreamToBrowser.flush();
-        if (!keepAlive){
+        if (!isKeepAlive()){
             outputStreamToBrowser.close();
             client.close();
         }

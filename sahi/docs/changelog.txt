@@ -1,3 +1,12 @@
+15 Oct 2007
+-----------
+
+_set modified to handle $variables properly.
+fixed json encodeuricomponent bug.
+
+
+11 Oct 2007
+-----------
 * Features added
 	Calls to non existent functions in script will fail script.
 	Hooking into XHR requests so that _wait statements are not required for AJAX.

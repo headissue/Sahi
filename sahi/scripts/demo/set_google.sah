@@ -20,4 +20,5 @@ function f($like){
 }
 
 f("sahi");
+_alert("111");
 f("dahi");
