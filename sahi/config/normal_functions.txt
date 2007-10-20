@@ -38,3 +38,4 @@ _get
 _style
 _byText
 _cookie
+_position

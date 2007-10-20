@@ -277,23 +277,25 @@ Sahi.prototype._dragDrop = function (draggable, droppable) {
 Sahi.prototype.addBorder = function(el){
     el.style.border = "1px solid red";
 }
-Sahi.prototype._dragDropXY = function (draggable, x, y) {
+Sahi.prototype._dragDropXY = function (draggable, x, y, isRelative) {
     this.checkNull(draggable);
     this.simulateMouseEvent(draggable, "mousemove");
     this.simulateMouseEvent(draggable, "mousedown");
     this.simulateMouseEvent(draggable, "mousemove");
-    var pos = this.findPos(draggable);
 
-    var curLeft = draggable.style.left;
-    curLeft = (curLeft != "") ? parseInt(curLeft) : 0;
-    var curTop = draggable.style.top;
-    curTop = (curTop != "") ? parseInt(curTop) : 0;
-
-    var scrollX = document.body.scrollLeft;
-    var scrollY = document.body.scrollTop;
-
-    x = (x - pos[0] + curLeft - scrollX);
-    y = (y - pos[1] + curTop - scrollY);
+	var addX = 0, addY = 0;
+	if (isRelative){
+		var pos = this.findPos(draggable);
+		addX = pos[0];
+		addY = pos[1];
+		if (!x) x = 0;
+		if (!y) y = 0;
+		x += addX;
+		y += addY;
+	}else{
+		if (!x) x = this.findPos(draggable)[0];
+		if (!y) y = this.findPos(draggable)[1];
+	}
 
     this.simulateMouseEventXY(draggable, "mousemove", x, y);
     this.simulateMouseEventXY(draggable, "mouseup", x, y);
@@ -488,6 +490,9 @@ Sahi.prototype._highlight = function (el) {
     var oldBorder = el.style.border;
     el.style.border = "1px solid red";
     window.setTimeout(function(){el.style.border = oldBorder;}, 2000);
+}
+Sahi.prototype._position = function (el){
+    return this.findPos(el);
 }
 Sahi.prototype.findPosX = function (obj){
     return this.findPos(obj)[0];
