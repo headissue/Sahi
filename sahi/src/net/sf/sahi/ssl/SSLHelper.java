@@ -1,6 +1,6 @@
 /**
  * Sahi - Web Automation and Test Tool
- * 
+ *
  * Copyright  2006  V Narayan Raman
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -41,7 +41,7 @@ import net.sf.sahi.util.Utils;
 
 public class SSLHelper {
 
-    private String defaultFilePath = "../certs/localproxy_sahi_co_in";
+    private String defaultFilePath = "../certs/sahi_example_com";
     static HashMap sslSocketFactories = new HashMap();
     private SSLSocketFactory getSSLClientSocketFactory(String domain) throws IOException {
         if (domain == null)
