@@ -1,6 +1,6 @@
 /**
  * Sahi - Web Automation and Test Tool
- * 
+ *
  * Copyright  2006  V Narayan Raman
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -52,8 +52,8 @@ public class FileUpload {
             for (Iterator iterator = parts.iterator(); iterator.hasNext();) {
                 MultiPartSubRequest part = (MultiPartSubRequest) iterator.next();
                 String fileName = session.getVariable("file:" + part.name());
-                System.out.println("Uploading: fileName = "+fileName);
                 if (Utils.isBlankOrNull(fileName)) continue;
+                System.out.println("Uploading: fileName = "+fileName);
                 part.setHeader("Content-Type", MimeType.getMimeTypeOfFile(fileName, "application/octet-stream"));
                 byte[] fileContent = Utils.readFile(fileName);
                 part.setData(fileContent);

@@ -507,10 +507,12 @@ Sahi.prototype.findPos = function (obj){
         while (obj.offsetParent)
         {
             var wasStatic = null;
+            /*
             if (this._style(obj, "position") == "static"){
                 wasStatic = obj.style.position;
                 obj.style.position = "relative";
             }
+            */
             x += obj.offsetLeft;
             y += obj.offsetTop;
             if (wasStatic != null) obj.style.position = wasStatic;
