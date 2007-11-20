@@ -39,3 +39,6 @@ _style
 _byText
 _cookie
 _position
+_print
+_printCalled
+

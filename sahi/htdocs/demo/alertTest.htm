@@ -11,10 +11,14 @@
 function showAlert(){
     alert(document.f1.t1.value);
 }
+function showMultilineAlert(){
+    alert("You must correct the following Errors:\nYou must select a messaging price plan.\nYou must select an international messaging price plan.\nYou must enter a value for the Network Lookup Charge");
+}
 </script>
 <form name="f1">
     <input type="text" name="t1" value="Alert Message"><br><br>
     <input type="button" name="b1" value="Click For Alert" onclick="showAlert()"><br>
+    <input type="button" name="b1" value="Click For Multiline Alert" onclick="showMultilineAlert()"><br>
 </form>
 <br>
 <a href="index.htm">Back</a>

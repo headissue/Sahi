@@ -52,10 +52,12 @@ var Sahi = function(){
     this.real_alert = window.alert;
     this.real_confirm = window.confirm;
     this.real_prompt = window.prompt;
+    this.real_print = window.print;
 
     window.alert = function (s){return _sahi.alertMock(s)};
     window.confirm = function (s){return _sahi.confirmMock(s)};
     window.prompt = function (s){return _sahi.promptMock(s)};
+    window.print = function (s){return _sahi.printMock(s)};
 
     this.XHRs = [];
 	this.escapeMap = {
@@ -443,7 +445,7 @@ Sahi.prototype.isSafariLike = function () {
 }
 Sahi.prototype.simulateMouseEvent = function (el, type, isRight, isDouble) {
     var xy = this.findPos(el);
-    var x = xy[0]
+    var x = xy[0];
     var y = xy[1];
     this.simulateMouseEventXY(el, type, xy[0], xy[1], isRight, isDouble);
 }
@@ -1028,7 +1030,24 @@ Sahi.prototype._expectPrompt = function (text, value) {
     this.setServerVar("prompt: "+text, value);
 }
 Sahi.prototype._prompt = function (s) {
-    return this.real_prompt(s);
+    return this.callFunction(this.real_prompt, window, s);
+}
+
+Sahi.prototype._print = function (s){
+    return this.callFunction(this.real_print, window, s);
+}
+Sahi.prototype.printMock = function () {
+    if (this.isPlaying()) {
+        this.setServerVar("printCalled", true);
+    } else {
+        return this.callFunction(this.real_print, window);
+    }
+}
+Sahi.prototype._printCalled = function (){
+	return this.getServerVar("printCalled");
+}
+Sahi.prototype._clearPrintCalled = function (){
+	return this.setServerVar("printCalled", null);
 }
 
 Sahi.prototype._cell = function (id, row, col) {

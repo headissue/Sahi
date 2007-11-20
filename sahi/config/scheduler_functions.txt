@@ -49,3 +49,4 @@ _disableKeepAlive
 _dragDropXY
 _deleteCookie
 _createCookie
+_clearPrintCalled
