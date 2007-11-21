@@ -774,7 +774,8 @@ Sahi.prototype._byId = function (id) {
     return this.findElementById(this.top(), id);
 }
 Sahi.prototype._byText = function (text, tag) {
-    return this.divSpanByText(this.top(), text, tag);
+	var res = this.getBlankResult();
+    return this.divSpanByText(this.top(), text, tag, res).element;
 }
 Sahi.prototype._select = function (n) {
     var el = this.findElement(n, "select", "select");
@@ -785,36 +786,49 @@ Sahi.prototype._radio = function (n) {
     return this.findElement(n, "radio", "input");
 }
 Sahi.prototype._div = function (id) {
-    return this.divSpanByText(this.top(), id, "div");
+	var res = this.getBlankResult();
+    return this.divSpanByText(this.top(), id, "div", res).element;
 }
 Sahi.prototype._span = function (id) {
-    return this.divSpanByText(this.top(), id, "span");
+	var res = this.getBlankResult();
+    return this.divSpanByText(this.top(), id, "span", res).element;
 }
 Sahi.prototype._spandiv = function (id) {
-    var el = this.divSpanByText(this.top(), id, "span");
-    if (el == null) el = this.divSpanByText(this.top(), id, "div");
+    var el = this._span(id);
+    if (el == null) el = this._div(id);
     return el;
 }
-Sahi.prototype.divSpanByText = function (win, id, tagName) {
-    var res = null;
+Sahi.prototype.divSpanByText = function (win, id, tagName, res) {
+	var o = this.getArrayNameAndIndex(id);
+	var ix = o.index;
+	var fetch = o.name;
     var els = win.document.getElementsByTagName(tagName);
     for (var i = 0; i < els.length; i++) {
         var el = els[i];
         var text = this._getText(el);
-        if (text == id){
-            return el;
-        }else if (id instanceof RegExp && text.match(id)){
-            return this.innerMost(el, id, tagName.toUpperCase());
+
+        if (this.isTextMatch(text, fetch)) {
+            res.cnt++;
+            if (res.cnt == ix || ix == -1) {
+                res.element = this.innerMost(el, id, tagName.toUpperCase());
+                res.found = true;
+                return res;
+            }
         }
     }
     var frs = win.frames;
     if (frs) {
         for (var j = 0; j < frs.length; j++) {
-            res = this.divSpanByText(frs[j], id, tagName);
-            if (res) return res;
+            res = this.divSpanByText(frs[j], id, tagName, res);
+            if (res && res.found) return res;
         }
     }
     return res;
+}
+Sahi.prototype.isTextMatch = function(sample, pattern){
+	if (pattern instanceof RegExp)
+		return sample.match(pattern)
+    return (sample == pattern)
 }
 Sahi.prototype.innerMost = function(el, re, tagName){
     for (var i=0; i < el.childNodes.length; i++){
