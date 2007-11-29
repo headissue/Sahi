@@ -1,6 +1,6 @@
 /**
  * Sahi - Web Automation and Test Tool
- * 
+ *
  * Copyright  2006  V Narayan Raman
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -153,7 +153,7 @@ public class Configuration {
 
     public static boolean isKeepAliveEnabled() {
         return (enableKeepAlive > 0) ||
-                (enableKeepAlive == 0 && "true".equalsIgnoreCase(properties.getProperty("http.keep_alive")));
+                (enableKeepAlive <= 0 && "true".equalsIgnoreCase(properties.getProperty("http.keep_alive")));
     }
 
     public static String getExternalProxyHost() {
