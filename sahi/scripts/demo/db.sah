@@ -5,13 +5,25 @@ function getRamusAge(){
     }
     return 0;
 }
-
 var db = _getDB("com.mysql.jdbc.Driver", "jdbc:mysql://localhost/sahitest?user=user&password=password", "user", "password");
 
-db.update("delete from user where name='ramu' and age=20")
-db.update("insert into user (name, age) values ('ramu', 20)")
-var $rs = db.select("select id, name, age from user limit 10");
+function init(){
+	db.update("delete from user where name='ramu' and age=20")
+	db.update("delete from user where name='raju' and age=30")
+
+	db.update("insert into user (name, age) values ('ramu', 20)");
+	db.update("insert into user (name, age) values ('raju', 30)");
+}
+
+
+_call(init());
+var $rs = [];
+_set($rs, db.select("select id, name, age from user limit 10"));
+//$rs = db.select("select id, name, age from user limit 10");
 for (var $i=0; $i < $rs.length; $i++){
     _alert($rs[$i]["name"]+": "+$rs[$i]["age"]);
+	_call(db.update("delete from user where name='raju' and age=30"));
+	_click(_link("Link Test"));
+    _click(_link("Back"));
 }
 
