@@ -1,6 +1,6 @@
 /**
  * Sahi - Web Automation and Test Tool
- * 
+ *
  * Copyright  2006  V Narayan Raman
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -40,7 +40,11 @@ public class DBClient {
             ClassLoadHelper.getClass(driverName);
             Connection connection = DriverManager.getConnection(jdbcurl, username, password);
             Statement stmt = connection.createStatement();
-            stmt.executeUpdate(sql);
+            try {
+            	stmt.executeUpdate(sql);
+            } catch (Exception e) {
+            	stmt.close();
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -62,25 +66,30 @@ public class DBClient {
         ClassLoadHelper.getClass(driverName);
         Connection connection = DriverManager.getConnection(jdbcurl, username, password);
         Statement stmt = connection.createStatement();
-        ResultSet rs = stmt.executeQuery(sql);
-
-        ArrayList columnNames = new ArrayList();
-        ResultSetMetaData rsmd = rs.getMetaData();
-        int numColumns = rsmd.getColumnCount();
-        for (int i = 1; i < numColumns + 1; i++) {
-            String columnName = rsmd.getColumnName(i);
-            columnNames.add(columnName);
-        }
         ArrayList list = new ArrayList();
-        while (rs.next()) {
-            HashMap map = new LinkedHashMap();
-            for (Iterator iterator = columnNames.iterator(); iterator.hasNext();) {
-                String columnName = (String) iterator.next();
-                String value = rs.getString(columnName);
-                map.put(columnName, value);
-            }
-            list.add(map);
-        }
+		try {
+			ResultSet rs = stmt.executeQuery(sql);
+
+			ArrayList columnNames = new ArrayList();
+			ResultSetMetaData rsmd = rs.getMetaData();
+			int numColumns = rsmd.getColumnCount();
+			for (int i = 1; i < numColumns + 1; i++) {
+			    String columnName = rsmd.getColumnName(i);
+			    columnNames.add(columnName);
+			}
+			list = new ArrayList();
+			while (rs.next()) {
+			    HashMap map = new LinkedHashMap();
+			    for (Iterator iterator = columnNames.iterator(); iterator.hasNext();) {
+			        String columnName = (String) iterator.next();
+			        String value = rs.getString(columnName);
+			        map.put(columnName, value);
+			    }
+			    list.add(map);
+			}
+		} catch (SQLException e) {
+	        stmt.close();
+		}
         return list;
     }
 
