@@ -1,3 +1,4 @@
+#if this does not work, try to run dos2unix on this file, or delete and reintroduce newlines.
 SET EXT_CLASS_PATH=;
 #SET EXT_CLASS_PATH=%EXT_CLASS_PATH%:..\extlib\mysql-connector-java-5.0.4-bin.jar
 SET SAHI_CLASS_PATH=..\lib\sahi.jar
