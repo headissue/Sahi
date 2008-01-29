@@ -69,6 +69,7 @@ var Sahi = function(){
 		'"' : '\\"',
 		'\\': '\\\\'
 	};
+	this.stopOnError = true;
 }
 var _sahi = new Sahi();
 var tried = false;
@@ -2288,7 +2289,7 @@ Sahi.prototype.ex = function (isStep) {
                     this.logPlayBack(cmds[i], "error", debugInfo, this.getExceptionString(ex));
                 }
                 this.gotErrors(true);
-                this.stopPlaying();
+                if (this.stopOnError) this.stopPlaying();
             }
         }
         this.execNextStep(isStep, this.interval);
@@ -2889,8 +2890,12 @@ Sahi.prototype.toJSON = function(el){
 		return '{' + ar.join(',') + '}';
 	}
 }
-
-
+Sahi.prototype._stopOnError = function(){
+	this.stopOnError = true;
+}
+Sahi.prototype._continueOnError = function(){
+	this.stopOnError = false;
+}
 Sahi.prototype.isIgnorableId = function(id){
     return id.match(/^z_/);
 }
