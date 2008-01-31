@@ -835,7 +835,7 @@ Sahi.prototype.innerMost = function(el, re, tagName){
     for (var i=0; i < el.childNodes.length; i++){
         var child = el.childNodes[i];
         var text = this._getText(child);
-        if (text.match(re)){
+        if (text && text.match(re)){
             var inner = this.innerMost(child, re, tagName);
             if (inner.nodeName == tagName) return inner;
         }
