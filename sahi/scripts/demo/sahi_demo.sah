@@ -53,6 +53,12 @@ function testAccessors(){
 }
 
 function testClicks(){
+	_log("custom", 'custom');
+	_log("custom1", 'custom1');
+	_log("custom2", 'custom2');
+	_log("custom3", 'custom3');
+	_log("custom4", 'custom4');
+	_log("custom5", 'custom5');
     _click(_checkbox("c1"));
     _assertNotNull(_checkbox("c1"));
     _assertTrue(_checkbox("c1").checked);

@@ -2290,6 +2290,7 @@ Sahi.prototype.ex = function (isStep) {
                 }
                 this.gotErrors(true);
                 if (this.stopOnError) this.stopPlaying();
+                else this.setCurrentIndex(i + 1);
             }
         }
         this.execNextStep(isStep, this.interval);

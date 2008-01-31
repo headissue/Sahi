@@ -50,3 +50,5 @@ _dragDropXY
 _deleteCookie
 _createCookie
 _clearPrintCalled
+_stopOnError
+_continueOnError

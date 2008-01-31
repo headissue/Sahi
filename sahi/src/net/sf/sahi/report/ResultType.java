@@ -31,4 +31,16 @@ public class ResultType {
     public static final ResultType INFO = new ResultType("INFO");
 
     public static final ResultType SUCCESS = new ResultType("SUCCESS");
+
+    public static final ResultType CUSTOM = new ResultType("CUSTOM");
+
+    public static final ResultType CUSTOM1 = new ResultType("CUSTOM1");
+
+    public static final ResultType CUSTOM2 = new ResultType("CUSTOM2");
+
+    public static final ResultType CUSTOM3 = new ResultType("CUSTOM3");
+
+    public static final ResultType CUSTOM4 = new ResultType("CUSTOM4");
+
+    public static final ResultType CUSTOM5 = new ResultType("CUSTOM5");
 }

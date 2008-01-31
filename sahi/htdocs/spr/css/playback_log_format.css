@@ -5,4 +5,11 @@ a.START,a.STOP{color:black;font-weight:bold;}
 div.INFO{background-color:white}
 div.SUCCESS{background-color:green;color:white}
 div.FAILURE,div.ERROR{background-color:red;color:white}
+a.CUSTOM, a.CUSTOM4{color:black}
+div.CUSTOM{background-color:yellow;}
+div.CUSTOM1{background-color:orange;}
+div.CUSTOM2{background-color:blue;}
+div.CUSTOM3{background-color:green;}
+div.CUSTOM4{background-color:violet;}
+div.CUSTOM5{background-color:indigo;}
 a.SCRIPT{text-decoration:underline;}
