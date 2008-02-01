@@ -616,7 +616,7 @@ Sahi.prototype._setFile = function (el, v, url) {
     //    this._debug(el.ownerDocument.defaultView.location.href)
     if (!url) url = (String.isBlankOrNull(el.form.action) || (typeof el.form.action != "string")) ? el.ownerDocument.defaultView.location.href : el.form.action;
     if (url && (q = url.indexOf("?")) != -1) url = url.substring(0, q);
-    if (url.indexOf("http") == -1) {
+    if (url.indexOf("http") != 0) {
         var loc = window.location;
         if (url.indexOf("/") == 0){
             url = loc.protocol+ "//" +  loc.hostname + (loc.port ? (':'+loc.port) : '') + url;
@@ -625,7 +625,7 @@ Sahi.prototype._setFile = function (el, v, url) {
             url = winUrl.substring(0, winUrl.lastIndexOf ('/') + 1) + url;
         }
     }
-    this._callServer("FileUpload_setFile", "n=" + el.name + "&v=" + escape(v) + "&action=" + escape(url));
+    this._callServer("FileUpload_setFile", "n=" + el.name + "&v=" + encodeURIComponent(v) + "&action=" + encodeURIComponent(url));
 }
 
 Sahi.prototype.simulateEvent = function (target, evType) {
@@ -1007,7 +1007,7 @@ Sahi.prototype.confirmMock = function (s) {
         return retVal;
     } else {
         var retVal = this.callFunction(this.real_confirm, window, s);
-        this.sendToServer('/_s_/dyn/Recorder_record?cmd=' + escape("_expectConfirm(\"" + s + "\", " + retVal + ")"));
+        this.sendToServer('/_s_/dyn/Recorder_record?cmd=' + encodeURIComponent("_expectConfirm(\"" + s + "\", " + retVal + ")"));
         return retVal;
     }
 }
@@ -1669,7 +1669,7 @@ Sahi.prototype.onEv = function (e) {
     var cmd = _sahi.getScript(info);
     if (cmd == null) return true;
     if (_sahi.hasEventBeenRecorded(cmd)) return true; //IE
-    _sahi.sendToServer('/_s_/dyn/Recorder_record?cmd=' + _sahi.escape(cmd));
+    _sahi.sendToServer('/_s_/dyn/Recorder_record?cmd=' + encodeURIComponent(cmd));
     e.handled = true;
     //FF
     _sahi.showInController(info);
@@ -2703,7 +2703,7 @@ Sahi.prototype.quoteIfString = function (shortHand) {
 
 Sahi.prototype._execute = function (command, sync) {
     var is_sync = sync ? "true" : "false";
-    var status = this._callServer("CommandInvoker_execute", "command=" + escape(command) + "&sync=" + is_sync);
+    var status = this._callServer("CommandInvoker_execute", "command=" + encodeURIComponent(command) + "&sync=" + is_sync);
     if ("success" != status) {
         throw new Error("Execute Command Failed!");
     }
