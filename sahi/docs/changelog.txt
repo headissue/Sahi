@@ -1,3 +1,25 @@
+05 Mar 2008
+-----------
+* Features added
+	_log(message, customLevel) for logging in different colors without affecting test stats,
+		customLevel can be 'custom1', 'custom2', 'custom3', 'custom4', 'custom5'
+	_stopOnError and _continueOnError added to continue inspite of errors during execution.
+	sahi.bat, sahi.sh modified to work with external classpaths
+	_printCalled() and _clearPrintCalled() added.
+		If window.print() was called, you can assert by
+		_assertTrue(_printCalled());
+		_clearPrintCalled();
+	Firefox "already running, but is not responding" errors during suite run handled.
+		This will happen only once now when the suite uses a freshly created profile.
+
+
+* Bugfixes
+	Some changes related to fileupload
+	_spandiv on IE would be recorded with ID rather than text
+	bugfix for multiline alert
+	some changes to _getDB. Uses _set now.
+
+
 21 Oct 2007
 -----------
 
