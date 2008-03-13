@@ -59,8 +59,15 @@ public class Configuration {
         String prefix = properties.getProperty("ff.profiles.prefix");
         int maxProfiles = Integer.parseInt(properties.getProperty("ff.profiles.max_number", "10"));
         for (int i = 0; i < maxProfiles; i++) {
-            FileUtils.copyDir(templateDir, new File(Utils.concatPaths(profileDir.getCanonicalPath(), prefix + i)));
+            File profileN = new File(Utils.concatPaths(profileDir.getCanonicalPath(), prefix + i));
+            if (profileN.exists()) continue;
+        	System.out.println("Copying profile to " + profileN);
+			FileUtils.copyDir(templateDir, profileN);
         }
+    	System.out.println("\n\n--------NOTE-------- \n" +
+    			"When running a suite, if you get an 'already running, but is not responding' error alert on firefox, \n" +
+		"don't worry, just click OK on the alerts and the next time you run the suite things will work fine.\n" +
+		"--------------------\n\n");
     }
 
     public static void createFolders(File file) {

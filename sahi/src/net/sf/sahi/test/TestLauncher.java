@@ -1,6 +1,6 @@
 /**
  * Sahi - Web Automation and Test Tool
- * 
+ *
  * Copyright  2006  V Narayan Raman
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -137,6 +137,7 @@ public class TestLauncher {
     }
 
     public void stop() {
+        System.out.println("Killing " + scriptName);
         logger.fine("Killing " + scriptName);
         try{
             if (process != null) {
