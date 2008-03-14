@@ -1,6 +1,6 @@
 /**
  * Sahi - Web Automation and Test Tool
- * 
+ *
  * Copyright  2006  V Narayan Raman
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -81,7 +81,7 @@ public class TestRunner {
         }
     }
 
-    private static void help() {
+    protected static void help() {
         System.out.println("------------------------");
         System.out
                 .println("Usage: java TestRunner <suite_name> <browser_executable> <start_url> <log_dir> <sahi_host> <sahi_port> <number_of_threads>  [<browser_option>]");
@@ -95,7 +95,7 @@ public class TestRunner {
         System.exit(-1);
     }
 
-    private void addReport(Report report) {
+    protected void addReport(Report report) {
         if (listReport == null) {
             listReport = new ArrayList();
         }
@@ -157,7 +157,7 @@ public class TestRunner {
         }catch (Exception e) {
             e.printStackTrace();
         }
-
+        System.out.println(urlStr);
         URL url = new URL(urlStr.toString());
         InputStream in = url.openStream();
         in.close();
@@ -206,7 +206,7 @@ public class TestRunner {
         return URLEncoder.encode(s, "UTF8");
     }
 
-    private static String getBase(String[] args) {
+    protected static String getBase(String[] args) {
         String base = "";
         try {
             base = args[2];
@@ -215,7 +215,7 @@ public class TestRunner {
         return base;
     }
 
-    private static String getBrowser(String[] args) {
+    protected static String getBrowser(String[] args) {
         String browser = "";
         try {
             browser = args[1];
