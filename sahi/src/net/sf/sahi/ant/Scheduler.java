@@ -1,84 +1,96 @@
 package net.sf.sahi.ant;
 
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.net.ConnectException;
-import java.util.List;
+import java.util.Properties;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
 
 import net.sf.sahi.test.TestRunner;
 
-public class Scheduler extends TestRunner{
+public class Scheduler{
+	private Properties properties;
+	private TestRunner runner;
+	private int successiveFailureCount;
+	private int repeatCount;
+	private int repeatInterval;
+	private int failureRepeatInterval;
 
-    public static void main(String[] args) {
+	public static void main(String[] args) throws IOException, InterruptedException{
+		String filePath = "";
+		if (args.length == 0) {
+			System.out.println("Usage: java net.sf.sahi.ant.Scheduler [path to scheduler.properties]");
+			System.out.println("No scheduler.properties specified. Using ../config/scheduler.properties");
+            filePath = "../config/scheduler.properties";
+        }else
+        	filePath = args[1];
+        Properties properties = new Properties();
         try {
-            if (args.length == 0) {
-                help();
-            }
-            String suiteName = args[0];
-            String base = getBase(args);
-            String browser = getBrowser(args);
-            String logDir = args[3];
-            if ("default".equalsIgnoreCase(logDir))
-                logDir = "";
-            String sahiHost = args[4];
-            String port = args[5];
-            String threads = args[6];
-            String browserOption = "";
-            if (args.length == 8)
-                browserOption = args[7];
-            TestRunner testRunner = new Scheduler(suiteName, browser, base, sahiHost, port, threads, browserOption);
-            //testRunner.addReport(new Report("html", logDir));
-            String status = testRunner.execute();
-            System.out.println("Status:" + status);
-        } catch (ConnectException ce) {
-            System.err.println(ce.getMessage());
-            System.err.println("Could not connect to Sahi Proxy.\nVerify that the Sahi Proxy is running on the specified host and port.");
-            help();
-        } catch (Exception e) {
-            e.printStackTrace();
-            help();
-        }
+			properties.load(new FileInputStream(filePath));
+		} catch (Exception e) {
+			e.printStackTrace();
+			return;
+		}
+		Scheduler scheduler = new Scheduler(properties);
+		scheduler.execute();
+	}
+
+	public String g(String key){
+		String value = properties.getProperty(key);
+		System.out.println(key+" "+value);
+		return value;
+	}
+
+    public Scheduler(Properties properties) {
+    	this.properties = properties;
+    	this.runner = new TestRunner(g("suite_path"), g("browser_exe"), g("base_url"), g("sahi_host"), g("sahi_port"), g("threads"), g("browser_option"));
+    	this.repeatCount = i("retry_count_on_failure");
+    	this.successiveFailureCount = i("successive_failures");
+		this.repeatInterval = i("repeat_interval_in_minutes") * 60000;
+		this.failureRepeatInterval = i("repeat_interval_on_failure_in_seconds") * 1000;
     }
 
-    public Scheduler(String suiteName, String browser, String base, String sahiHost, String port, String threads, String browserOption) {
-        super(suiteName, browser, base, sahiHost, port, threads, browserOption);
-    }
+	private int i(String key) {
+		return Integer.parseInt(g(key));
+	}
 
-    public Scheduler(String suiteName, String browser, String base, String sahiHost, String port, String threads, String browserOption, List listReporter, CreateIssue createIssue) {
-        super(suiteName, browser, base, sahiHost, port, threads, browserOption,
-                listReporter, createIssue);
-    }
-
-    public String execute() throws IOException, InterruptedException {
+    public String execute() throws InterruptedException{
         while(true){
-            String status = super.execute();
-            System.out.println(status);
-            if (status != "SUCCESS"){
-                rapidTest();
-            }
-            Thread.sleep(10 * 60 * 1000);
+			try {
+				String status = "FAILURE";
+				status = runner.execute();
+	            System.out.println(status);
+	            if (!status.trim().equals("SUCCESS")){
+	                rapidTest();
+	            }
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+        	System.out.println("Retrying in " + repeatInterval + " milliseconds");
+            Thread.sleep(repeatInterval);
         }
     }
 
     public void rapidTest() throws InterruptedException{
         int consecutiveFailures = 1;
-        for (int i=1; i<5; i++){
-            Thread.sleep(30 * 1000);
+        for (int i=1; i<repeatCount; i++){
+        	System.out.println("Retrying in " + failureRepeatInterval + " milliseconds");
+            Thread.sleep(failureRepeatInterval);
             try {
-                String status = super.execute();
-                if (status == "SUCCESS"){
+                String status = runner.execute();
+	            System.out.println(status);
+                if (status.trim().equals("SUCCESS")){
                     consecutiveFailures = 0;
                 }else{
                     consecutiveFailures++;
-                    if (consecutiveFailures == 3) break;
+                    if (consecutiveFailures == successiveFailureCount) break;
                 }
-            } catch (IOException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
-        if (consecutiveFailures >= 3){
+        if (consecutiveFailures >= successiveFailureCount){
             onError();
         }
     }
@@ -92,7 +104,10 @@ public class Scheduler extends TestRunner{
     }
 
     private void sendMail() throws AddressException, MessagingException{
-        Mailer.send("localhost", 25, "kamlesh@localhost.com", "rohit@localhost.com", "re: dinner", "How about at 7?");
+    	System.out.println("Sending out email ...");
+        Mailer.send(g("smtp_host"), i("smtp_port"),
+        		g("email_from"), g("email_to"),
+        		g("email_subject"), g("email_content"));
     }
 
 }

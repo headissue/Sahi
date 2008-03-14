@@ -1,0 +1,1 @@
+java -cp ..\extlib\mail.jar;..\extlib\activation.jar;..\lib\ant-sahi.jar; net.sf.sahi.ant.Mailer

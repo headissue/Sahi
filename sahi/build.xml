@@ -17,8 +17,10 @@
         <javac destdir="${sahi.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}"
                memoryMaximumSize="${compiler.max.memory}" fork="true" srcdir="src">
             <classpath>
-                <pathelement location="extlib/xmlrpc-client-3.0.jar"/>
-                <pathelement location="extlib/xmlrpc-common-3.0.jar"/>
+                <pathelement location="extlib/xmlrpc/xmlrpc-client-3.0.jar"/>
+                <pathelement location="extlib/xmlrpc/xmlrpc-common-3.0.jar"/>
+                <pathelement location="extlib/mail/activation.jar"/>
+                <pathelement location="extlib/mail/mail.jar"/>
             </classpath>
         </javac>
     </target>
@@ -28,16 +30,16 @@
         <javac destdir="${sahi.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}"
                memoryMaximumSize="${compiler.max.memory}" fork="true" srcdir="test">
             <classpath>
-                <pathelement location="extlib/ant-launcher.jar"/>
-                <pathelement location="extlib/jmock-1.1.0.jar"/>
-                <pathelement location="extlib/ant-testutil.jar"/>
-                <pathelement location="extlib/jmock-cglib-1.1.0.jar"/>
-                <pathelement location="extlib/xmlrpc-common-3.0.jar"/>
-                <pathelement location="extlib/xmlrpc-client-3.0.jar"/>
-                <pathelement location="extlib/ws-commons-util-1.0.1.jar"/>
-                <pathelement location="extlib/cglib-nodep-2.1_3.jar"/>
-                <pathelement location="extlib/junit.jar"/>
-                <pathelement location="extlib/log4j.jar"/>
+                <pathelement location="extlib/test/ant-launcher.jar"/>
+                <pathelement location="extlib/test/jmock-1.1.0.jar"/>
+                <pathelement location="extlib/test/ant-testutil.jar"/>
+                <pathelement location="extlib/test/jmock-cglib-1.1.0.jar"/>
+                <pathelement location="extlib/xmlrpc/xmlrpc-common-3.0.jar"/>
+                <pathelement location="extlib/xmlrpc/xmlrpc-client-3.0.jar"/>
+                <pathelement location="extlib/xmlrpc/ws-commons-util-1.0.1.jar"/>
+                <pathelement location="extlib/test/cglib-nodep-2.1_3.jar"/>
+                <pathelement location="extlib/test/junit.jar"/>
+                <pathelement location="extlib/test/log4j.jar"/>
             </classpath>
         </javac>
         <copy todir="${sahi.output.dir}">
@@ -165,7 +167,7 @@
         </copy>
         <copy todir="temp/sahi/htdocs">
             <fileset dir="htdocs">
-                <exclude name="demo2/**/*.*"/>
+                <exclude name="**/demo2/"/>
             </fileset>
         </copy>
         <copy todir="temp/sahi/config">
@@ -179,7 +181,8 @@
         </copy>
         <copy todir="temp/sahi/docs">
             <fileset dir="docs">
-                <exclude name="src/**/*.*"/>
+                <exclude name="**/src/"/>
+                <exclude name="**/manual/"/>
                 <exclude name="sahi_tutorial.*"/>
             </fileset>
         </copy>
@@ -260,17 +263,16 @@
         <junit dir="bin" printsummary="false" fork="true" maxMemory="128M">
             <classpath>
                 <path path="classes"/>
-
-                <pathelement location="extlib/ant-launcher.jar"/>
-                <pathelement location="extlib/jmock-1.1.0.jar"/>
-                <pathelement location="extlib/ant-testutil.jar"/>
-                <pathelement location="extlib/jmock-cglib-1.1.0.jar"/>
-                <pathelement location="extlib/xmlrpc-common-3.0.jar"/>
-                <pathelement location="extlib/xmlrpc-client-3.0.jar"/>
-                <pathelement location="extlib/ws-commons-util-1.0.1.jar"/>
-                <pathelement location="extlib/cglib-nodep-2.1_3.jar"/>
-                <pathelement location="extlib/junit.jar"/>
-                <pathelement location="extlib/log4j.jar"/>
+                <pathelement location="extlib/test/ant-launcher.jar"/>
+                <pathelement location="extlib/test/jmock-1.1.0.jar"/>
+                <pathelement location="extlib/test/ant-testutil.jar"/>
+                <pathelement location="extlib/test/jmock-cglib-1.1.0.jar"/>
+                <pathelement location="extlib/xmlrpc/xmlrpc-common-3.0.jar"/>
+                <pathelement location="extlib/xmlrpc/xmlrpc-client-3.0.jar"/>
+                <pathelement location="extlib/xmlrpc/ws-commons-util-1.0.1.jar"/>
+                <pathelement location="extlib/test/cglib-nodep-2.1_3.jar"/>
+                <pathelement location="extlib/test/junit.jar"/>
+                <pathelement location="extlib/test/log4j.jar"/>
             </classpath>
             <formatter type="brief" usefile="file"/>
             <batchtest fork="yes" failureProperty="junit.failed">

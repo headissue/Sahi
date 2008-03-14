@@ -1,0 +1,1 @@
+java -cp ..\lib\ant-sahi.jar net.sf.sahi.test.TestRunner D:/kamlesh/sahi/scripts/demo/demo.suite "C:\Program Files\Mozilla Firefox\firefox.exe" http://rashmi:10000/demo/ default localhost 9999 3 "-profile D:/kamlesh/sahi/browser/ff/profiles/sahi$threadNo"
