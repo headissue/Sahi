@@ -26,6 +26,13 @@ public class Mailer {
 
     public static void main(String[] args) throws Exception {
         // Send a test message
-        send("localhost", 25, "kamlesh@localhost.com", "rohit@localhost.com", "re: dinner", "How about at 7?");
+        try{
+            send(args[0], Integer.parseInt(args[1]), args[2], args[3], args[4], args[5]);
+        }catch(Exception e){
+            System.out.println("-------------------------------------------------");
+            System.out.println("Mailer <host> <port> <from> <to> <subject> <body>");
+            System.out.println("-------------------------------------------------");
+            e.printStackTrace();
+        }
     }
 }

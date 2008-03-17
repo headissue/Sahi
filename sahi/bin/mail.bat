@@ -1,1 +1,1 @@
-java -cp ..\extlib\mail.jar;..\extlib\activation.jar;..\lib\ant-sahi.jar; net.sf.sahi.ant.Mailer
+java -cp ..\extlib\mail\mail.jar;..\extlib\mail\activation.jar;..\lib\ant-sahi.jar; net.sf.sahi.ant.Mailer localhost.com 25 "test@localhost.com" "narayan@sahi.co.in" "Sahi Tests Failed" "Sahi Tests Failed"
