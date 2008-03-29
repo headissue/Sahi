@@ -105,8 +105,8 @@ public class Scheduler{
 
     private void sendMail() throws AddressException, MessagingException{
     	System.out.println("Sending out email ...");
-        Mailer.send(g("smtp_host"), i("smtp_port"),
-        		g("email_from"), g("email_to"),
+    	Mailer mailer = new Mailer(g("smtp_host"), i("smtp_port"), g("smtp_user"), g("smtp_password"));
+        mailer.send(g("email_from"), g("email_to"),
         		g("email_subject"), g("email_content"));
     }
 
