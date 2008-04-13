@@ -2,9 +2,13 @@ _click(_link("Window Open Test"));
 _click(_link("Window Open Test With Title"));
 _click(_link("Table Test"));
 _popup("popWin")._click(_link("Link Test"));
+_click(_link("Back"));
 _popup("With Title")._click(_link("Form Test"));
+_click(_link("Table Test"));
 _popup("With Title")._setValue(_textbox("t1"), "d");
+_click(_link("Back"));
 _popup("With Title")._setValue(_textbox(1), "e");
+_click(_link("Table Test"));
 _popup("With Title")._setValue(_textbox("name"), "f");
 _popup("popWin")._assertNotNull(_link("linkByHtml"));
 

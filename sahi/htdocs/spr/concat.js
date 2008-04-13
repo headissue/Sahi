@@ -1100,7 +1100,7 @@ Sahi.prototype._popup = function (n) {
     if (this.top().name == n || this.top().document.title == n) {
         return this.top();
     }
-    throw new SahiNotMyWindowException();
+    throw new SahiNotMyWindowException(n);
 }
 Sahi.prototype._log = function (s, type) {
     if (!type) type = "info";
@@ -1643,9 +1643,13 @@ var SahiAssertionException = function (msgNum, msgText) {
     this.messageText = msgText;
     this.exceptionType = "SahiAssertionException";
 }
-var SahiNotMyWindowException = function () {
+var SahiNotMyWindowException = function (n) {
     this.name = "SahiNotMyWindowException";
-    this.message = "SahiNotMyWindowException";
+    if (n){
+    	this.message = "Window with name ["+n+"] not found";
+    }else{
+    	this.message = "Base window not found";
+    }
 }
 var lastQs = "";
 var lastTime = 0;
@@ -1971,6 +1975,13 @@ Sahi.prototype.getRetries = function () {
     var i = parseInt(this.getServerVar("sahi_retries"));
     return ("" + i != "NaN") ? i : 0;
 }
+Sahi.prototype.setNotMyWinRetries = function (i) {
+    this.setServerVar("sahi_not_my_win_retries", i);
+}
+Sahi.prototype.getNotMyWinRetries = function () {
+    var i = parseInt(this.getServerVar("sahi_not_my_win_retries"));
+    return ("" + i != "NaN") ? i : 0;
+}
 Sahi.prototype.getExceptionString = function (e)
 {
     var stack = e.stack ? e.stack : "No trace available";
@@ -2275,12 +2286,21 @@ Sahi.prototype.ex = function (isStep) {
                 return;
             }
         } catch(ex) {
-            var retries = this.getRetries();
-            if (retries < this.MAX_RETRIES) {
-                this.setRetries(retries + 1);
-                this.interval = this.ONERROR_INTERVAL;
+        	var terminate = false;
+        	if (ex instanceof SahiNotMyWindowException){
+	            var notMyWinRetries = this.getNotMyWinRetries();
+	            if (notMyWinRetries < this.MAX_NOT_MY_WINDOW_RETRIES) {
+					this.setNotMyWinRetries(notMyWinRetries + 1);
+					this.interval = this.ONERROR_INTERVAL;
+				}else terminate = true;
+        	}else{
+	            var retries = this.getRetries();
+	            if (retries < this.MAX_RETRIES) {
+	                this.setRetries(retries + 1);
+	                this.interval = this.ONERROR_INTERVAL;
+	            }else terminate = true;
             }
-            else {
+            if (terminate) {
                 var debugInfo = "" + debugs[i];
                 if (this.getServerVar("sahi_play") == 1) {
                     this.logPlayBack(cmds[i], "error", debugInfo, this.getExceptionString(ex));
@@ -2288,7 +2308,7 @@ Sahi.prototype.ex = function (isStep) {
                 this.gotErrors(true);
                 if (this.stopOnError) this.stopPlaying();
                 else this.setCurrentIndex(i + 1);
-            }
+	        }
         }
         this.execNextStep(isStep, this.interval);
     } catch(ex2) {

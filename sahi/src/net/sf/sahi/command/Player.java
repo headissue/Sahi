@@ -137,7 +137,9 @@ public class Player {
 
     public void success(HttpRequest request) {
         Session session = request.session();
-        new SessionState().setVar("sahi_retries", "0", session);
+        SessionState state = new SessionState();
+        state.setVar("sahi_retries", "0", session);
+        state.setVar("sahi_not_my_win_retries", "0", session);
     }
 
     private HttpFileResponse proxyAutoResponse(String startUrl, String sessionId) {

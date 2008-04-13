@@ -1,6 +1,6 @@
 /**
  * Sahi - Web Automation and Test Tool
- * 
+ *
  * Copyright  2006  V Narayan Raman
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -44,6 +44,7 @@ public class SessionState {
         props.setProperty("interval", "" + Configuration.getTimeBetweenSteps());
         props.setProperty("onErrorInterval", "" + Configuration.getTimeBetweenStepsOnError());
         props.setProperty("maxRetries", "" + Configuration.getMaxReAttemptsOnError());
+        props.setProperty("maxNotMyWindowRetries", "" + Configuration.getMaxReAttemptsOnNotMyWindowError());
         props.setProperty("maxWaitForLoad", "" + Configuration.getMaxCyclesForPageLoad());
 
         String waitCondition = session.getVariable("waitCondition");

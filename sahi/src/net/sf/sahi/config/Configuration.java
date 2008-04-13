@@ -291,4 +291,12 @@ public class Configuration {
     public static boolean modifyActiveX() {
         return "true".equals(properties.getProperty("response.modify_activex"));
     }
+
+	public static int getMaxReAttemptsOnNotMyWindowError() {
+        try {
+            return Integer.parseInt(properties.getProperty("script.max_reattempts_on_window_not_found_error"));
+        } catch (Exception e) {
+            return 30;
+        }
+	}
 }

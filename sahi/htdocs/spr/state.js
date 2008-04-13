@@ -1,6 +1,6 @@
 /**
  * Sahi - Web Automation and Test Tool
- * 
+ *
  * Copyright  2006  V Narayan Raman
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -27,6 +27,7 @@ try {
     _sahi.INTERVAL = $interval;
     _sahi.ONERROR_INTERVAL = $onErrorInterval;
     _sahi.MAX_RETRIES = $maxRetries;
+    _sahi.MAX_NOT_MY_WINDOW_RETRIES = $maxNotMyWindowRetries;
     _sahi.SAHI_MAX_WAIT_FOR_LOAD = $maxWaitForLoad;
 
     _sahi.waitForLoad = _sahi.SAHI_MAX_WAIT_FOR_LOAD;
