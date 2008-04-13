@@ -2,6 +2,7 @@ sahi_demo.sah index.htm
 link_test.sah index.htm
 sahi_demo_frames.sah framesTest.htm
 blank.sah index.htm
+label.sah
 onchange.sah onchange.htm
 confirm.sah confirmTest.htm
 prompt.sah promptTest.htm
@@ -18,4 +19,3 @@ keypress.sah
 execute.sah
 set.sah
 popup_title_name_mix.sah
-label.sah
