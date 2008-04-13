@@ -97,7 +97,7 @@ Sahi.prototype.getKnownTags = function (src) {
         if (tag == "a" || tag == "select" || tag == "img" || tag == "form"
                 || tag == "input" || tag == "button" || tag == "textarea"
                 || tag == "textarea" || tag == "td" || tag == "table"
-                || ((tag == "div" || tag == "span"))) return el;
+                || ((tag == "div" || tag == "span")) || tag == "label" ) return el;
         el = el.parentNode;
     }
 }
@@ -134,6 +134,9 @@ Sahi.prototype.getPartialAccessor = function (src) {
         return this.getTable(src);
     }
     else if (tag == "div" || tag == "span"){
+        return this.getByTagName(src);
+    }
+    else if (tag == "label"){
         return this.getByTagName(src);
     }
     return null;
@@ -174,20 +177,6 @@ Sahi.prototype.nameNotAnInputElement = function (src) {
 }
 Sahi.prototype.getFormElement = function (src) {
     return this.getByTagName(src);
-    /*
-    if (!String.isBlankOrNull(src.name)){
-        n = 'elements["'+src.name+'"]';
-    }else {
-        var els = src.form.elements;
-        for (var j=0; j<els.length; j++){
-            if (els[j] == src){
-                n = "elements["+j+"]";
-            }
-        }
-    }
-    var f = this.getForm(src.form);
-    return (n == "") ? f : f+"."+n;
-    */
 }
 
 Sahi.prototype.getByTagName = function (src) {
@@ -776,7 +765,7 @@ Sahi.prototype._byId = function (id) {
 }
 Sahi.prototype._byText = function (text, tag) {
 	var res = this.getBlankResult();
-    return this.divSpanByText(this.top(), text, tag, res).element;
+    return this.tagByText(this.top(), text, tag, res).element;
 }
 Sahi.prototype._select = function (n) {
     var el = this.findElement(n, "select", "select");
@@ -788,18 +777,24 @@ Sahi.prototype._radio = function (n) {
 }
 Sahi.prototype._div = function (id) {
 	var res = this.getBlankResult();
-    return this.divSpanByText(this.top(), id, "div", res).element;
+    return this.tagByText(this.top(), id, "div", res).element;
 }
 Sahi.prototype._span = function (id) {
 	var res = this.getBlankResult();
-    return this.divSpanByText(this.top(), id, "span", res).element;
+    return this.tagByText(this.top(), id, "span", res).element;
 }
 Sahi.prototype._spandiv = function (id) {
     var el = this._span(id);
     if (el == null) el = this._div(id);
     return el;
 }
-Sahi.prototype.divSpanByText = function (win, id, tagName, res) {
+Sahi.prototype._label = function (id) {
+	var res = this.getBlankResult();
+	var el = this.findTagHelper(id, this.top(), "label", res, "id").element;
+    if (el == null) el = this.tagByText(this.top(), id, "label", res).element;
+    return el;
+}
+Sahi.prototype.tagByText = function (win, id, tagName, res) {
 	var o = this.getArrayNameAndIndex(id);
 	var ix = o.index;
 	var fetch = o.name;
@@ -820,7 +815,7 @@ Sahi.prototype.divSpanByText = function (win, id, tagName, res) {
     var frs = win.frames;
     if (frs) {
         for (var j = 0; j < frs.length; j++) {
-            res = this.divSpanByText(frs[j], id, tagName, res);
+            res = this.tagByText(frs[j], id, tagName, res);
             if (res && res.found) return res;
         }
     }
@@ -1767,6 +1762,8 @@ Sahi.prototype.getAccessorInfo = function (el) {
             return new AccessorInfo(accessor, shortHand, "spandiv", "click", this.getText(el));
         } else
             return new AccessorInfo(accessor, shortHand, "byId", "click", this.getText(el));
+    } else if (tagLC == "label") {
+        return new AccessorInfo(accessor, shortHand, "label", "click", this.getText(el));
     }
 }
 
@@ -1824,7 +1821,7 @@ Sahi.prototype.getShortHand = function (el, accessor) {
                 if (ix != -1) shortHand = ix;
             }
             return shortHand;
-        } else if (el.tagName.toLowerCase() == "td") {
+        } else if (tagLC == "td") {
             if (!this.isIgnorableId(el.id)) shortHand = el.id;
             if (shortHand != null && shortHand != "") {
                 if (this.findCell(shortHand) != el) {
@@ -1837,7 +1834,7 @@ Sahi.prototype.getShortHand = function (el, accessor) {
             //"_table(\""+tabId+"\")";
             shortHand += ", " + this.getRow(el).rowIndex;
             shortHand += ", " + el.cellIndex;
-        } else if (el.tagName.toLowerCase() == "span" || el.tagName.toLowerCase() == "div") {
+        } else if (tagLC == "span" || tagLC == "div" || tagLC == "label") {
             if (el.id && !this.isIgnorableId(el.id)) shortHand = el.id;
             else {
                 shortHand = this.getText(el);
