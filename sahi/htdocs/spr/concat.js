@@ -993,6 +993,9 @@ Sahi.prototype._resetSavedRandom = function (id) {
 Sahi.prototype._expectConfirm = function (text, value) {
     this.setServerVar("confirm: "+text, value);
 }
+Sahi.prototype._expectSaveAs = function(urlPattern, filePath){
+    this._callServer("SaveAs_expect", "urlPattern=" + encodeURIComponent(urlPattern) + "&filePath=" + encodeURIComponent(filePath));
+}
 Sahi.prototype.confirmMock = function (s) {
     if (this.isPlaying()) {
         var retVal = eval(this.getServerVar("confirm: "+s));
@@ -2254,7 +2257,7 @@ Sahi.prototype.ex = function (isStep) {
                             this.reportSuccess(cmds[i], debugInfo);
                         }
                     } catch(e) {
-                        this.setCurrentIndex(i);
+	                    if (!ex1 instanceof SahiNotMyWindowException) this.setCurrentIndex(i);
                         throw e;
                     }
                 } catch (ex1) {
@@ -2819,21 +2822,21 @@ if (!_sahi.isIE()){
     new_ActiveXObject = function(s){
         var lower = s.toLowerCase();
         if (lower.indexOf("microsoft.xmlhttp")!=-1 || lower.indexOf("msxml2.xmlhttp")!=-1){
-            return new SahiActiveXObject(s);
+            return new SahiXHRWrapper(s);
         }else{
             return new ActiveXObject(s);
         }
     }
 }
 // ff xhr end
-SahiActiveXObject = function (s){
-    //alert("inside SahiActiveXObject");
-    this.xhr = new ActiveXObject(s);
+SahiXHRWrapper = function (s, isActiveX){
+    //_sahi.real_alert("inside SahiXHRWrapper");
+    this.xhr = isActiveX ? new ActiveXObject(s) : new real_XMLHttpRequest();
     var xs = _sahi.top()._sahi.XHRs;
     xs[xs.length] = this;
     this._async = false;
 }
-SahiActiveXObject.prototype.open = function(method, url, async, username, password){
+SahiXHRWrapper.prototype.open = function(method, url, async, username, password){
     this._async = async;
     var opened = this.xhr.open(method, url, async, username, password);
     this.xhr.setRequestHeader("sahi-isxhr", "true");
@@ -2842,32 +2845,36 @@ SahiActiveXObject.prototype.open = function(method, url, async, username, passwo
     this.xhr.onreadystatechange = function(){fn.apply(obj, arguments);}
     return opened;
 }
-SahiActiveXObject.prototype.getAllResponseHeaders = function(){
+SahiXHRWrapper.prototype.getAllResponseHeaders = function(){
     return this.xhr.getAllResponseHeaders();
 }
-SahiActiveXObject.prototype.getResponseHeader = function(s){
+SahiXHRWrapper.prototype.getResponseHeader = function(s){
     return this.xhr.getResponseHeader(s);
 }
-SahiActiveXObject.prototype.setRequestHeader = function(k, v){
+SahiXHRWrapper.prototype.setRequestHeader = function(k, v){
     return this.xhr.setRequestHeader(k, v);
 }
-SahiActiveXObject.prototype.send = function(s){
+SahiXHRWrapper.prototype.send = function(s){
     var sent = this.xhr.send(s);
     if (!this._async) this.populateProps();
     return sent;
 }
-SahiActiveXObject.prototype.stateChange = function(){
+SahiXHRWrapper.prototype.stateChange = function(){
     this.readyState = this.xhr.readyState;
     if (this.readyState==4){
         this.populateProps();
     }
     if (this.onreadystatechange) this.onreadystatechange();
 }
-SahiActiveXObject.prototype.populateProps = function(){
+SahiXHRWrapper.prototype.populateProps = function(){
     this.responseText = this.xhr.responseText;
     this.responseXML = this.xhr.responseXML;
     this.status = this.xhr.status;
     this.statusText = this.xhr.statusText;
+}
+if (_sahi.isIE()){
+    if (typeof XMLHttpRequest != "undefined") window.real_XMLHttpRequest = XMLHttpRequest;
+    XMLHttpRequest = SahiXHRWrapper;
 }
 Sahi.prototype.toJSON = function(el){
 	if (el == null || el == undefined) return 'null';

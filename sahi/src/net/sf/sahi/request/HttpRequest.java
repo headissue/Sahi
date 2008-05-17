@@ -1,6 +1,6 @@
 /**
  * Sahi - Web Automation and Test Tool
- * 
+ *
  * Copyright  2006  V Narayan Raman
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -44,6 +44,7 @@ public class HttpRequest extends StreamHandler {
     private boolean isAjax;
     private String fileExtension;
     private String hostWithPort;
+	private String fileName;
 
     HttpRequest() {
     }
@@ -156,6 +157,10 @@ public class HttpRequest extends StreamHandler {
         int dotIx = uriWithoutQueryString.indexOf(".");
         if (dotIx != -1) {
             fileExtension = uriWithoutQueryString.substring(dotIx + 1);
+        }
+        int lastSlashIx = uriWithoutQueryString.lastIndexOf("/");
+        if (lastSlashIx != -1){
+        	fileName = uriWithoutQueryString.substring(lastSlashIx);
         }
     }
 
@@ -280,6 +285,10 @@ public class HttpRequest extends StreamHandler {
 
     public String fileExtension() {
         return fileExtension;
+    }
+
+    public String fileName() {
+        return fileName;
     }
 
     public String url() {

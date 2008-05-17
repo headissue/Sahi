@@ -81,6 +81,7 @@ public class ProxyProcessor implements Runnable {
             }
             if (isKeepAlive() && !client.isClosed()) new Thread(new ProxyProcessor(client)).start();
         } catch (Exception e) {
+        	//e.printStackTrace();
             logger.fine(e.getMessage());
             try {
                 client.close();
@@ -159,8 +160,10 @@ public class ProxyProcessor implements Runnable {
         outputStreamToBrowser.write(responseFromHost.rawHeaders());
         outputStreamToBrowser.flush();
         final byte[] data = responseFromHost.data();
-        outputStreamToBrowser.write(data);
-        outputStreamToBrowser.flush();
+        if (data != null){
+	        outputStreamToBrowser.write(data);
+	        outputStreamToBrowser.flush();
+        }
         if (!isKeepAlive()){
             outputStreamToBrowser.close();
             client.close();

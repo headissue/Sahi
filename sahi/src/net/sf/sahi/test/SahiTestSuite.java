@@ -1,6 +1,6 @@
 /**
  * Sahi - Web Automation and Test Tool
- * 
+ *
  * Copyright  2006  V Narayan Raman
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -88,14 +88,14 @@ public class SahiTestSuite {
     public synchronized void notifyComplete(String childSessionId) {
         TestLauncher test = ((TestLauncher) (testsMap.get(childSessionId)));
         test.stop();
-        finishedTests++;
-        availableThreads++;
-        freeThreads[test.getThreadNo()] = true;
         try {
             Thread.sleep(Configuration.getTimeBetweenTestsInSuite());
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+        finishedTests++;
+        availableThreads++;
+        freeThreads[test.getThreadNo()] = true;
         this.notify();
     }
 
