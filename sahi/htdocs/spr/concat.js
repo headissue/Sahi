@@ -993,8 +993,17 @@ Sahi.prototype._resetSavedRandom = function (id) {
 Sahi.prototype._expectConfirm = function (text, value) {
     this.setServerVar("confirm: "+text, value);
 }
-Sahi.prototype._expectSaveAs = function(urlPattern, filePath){
-    this._callServer("SaveAs_expect", "urlPattern=" + encodeURIComponent(urlPattern) + "&filePath=" + encodeURIComponent(filePath));
+Sahi.prototype._saveDownloadedAs = function(filePath){
+    this._callServer("SaveAs_saveLastDownloadedAs", "destination="+encodeURIComponent(filePath));
+}
+Sahi.prototype._lastDownloadedFileName = function(){
+    return this.getServerVar("download_lastFile");
+}
+Sahi.prototype._clearLastDownloadedFileName = function(){
+    this._callServer("SaveAs_clearLastDownloadedFileName");
+}
+Sahi.prototype._saveFileAs = function(filePath){
+    this._callServer("SaveAs_saveTo", filePath);
 }
 Sahi.prototype.confirmMock = function (s) {
     if (this.isPlaying()) {
@@ -2257,7 +2266,7 @@ Sahi.prototype.ex = function (isStep) {
                             this.reportSuccess(cmds[i], debugInfo);
                         }
                     } catch(e) {
-	                    if (!ex1 instanceof SahiNotMyWindowException) this.setCurrentIndex(i);
+	                    if (!(e instanceof SahiNotMyWindowException)) this.setCurrentIndex(i);
                         throw e;
                     }
                 } catch (ex1) {

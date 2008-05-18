@@ -46,6 +46,7 @@ public class Configuration {
                     "../config/log.properties");
             createFolders(new File(getPlayBackLogsRoot()));
             createFolders(new File(getCertsPath()));
+            createFolders(new File(tempDownloadDir()));
             copyProfiles();
         } catch (IOException e) {
             e.printStackTrace();
@@ -298,5 +299,14 @@ public class Configuration {
         } catch (Exception e) {
             return 30;
         }
+	}
+
+	public static String[] getRenderableContentTypes() {
+        String s = new String(Utils.readFile("../config/renderable_contenttypes.txt")).trim().replaceAll("\\\r", "");
+        return s.split("\n");
+	}
+
+	public static String tempDownloadDir() {
+		return "../temp/download";
 	}
 }

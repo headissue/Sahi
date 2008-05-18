@@ -1,6 +1,6 @@
 /**
  * Sahi - Web Automation and Test Tool
- * 
+ *
  * Copyright  2006  V Narayan Raman
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -93,6 +93,8 @@ public class Session {
     }
 
     public String getVariable(String name) {
+//    	System.out.println("get name="+name);
+//    	System.out.println("get value="+(String) (variables.get(name)));
         return (String) (variables.get(name));
     }
 
@@ -107,6 +109,8 @@ public class Session {
     }
 
     public void setVariable(String name, String value) {
+//    	System.out.println("set name="+name);
+//    	System.out.println("set value="+value);
         variables.put(name, value);
     }
 

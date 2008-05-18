@@ -23,11 +23,15 @@ import net.sf.sahi.config.Configuration;
 import net.sf.sahi.request.HttpRequest;
 import net.sf.sahi.response.HttpFileResponse;
 import net.sf.sahi.response.HttpResponse;
+import net.sf.sahi.response.NoContentResponse;
 import net.sf.sahi.response.SimpleHttpResponse;
+import net.sf.sahi.session.Session;
 import net.sf.sahi.ssl.SSLHelper;
 
 import javax.net.ssl.SSLSocket;
 import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -108,7 +112,14 @@ public class ProxyProcessor implements Runnable {
             if (handleDifferently(requestFromBrowser)) return;
             HttpResponse responseFromHost = null;
             try {
+            	Session session = requestFromBrowser.session();
                 responseFromHost = remoteRequestProcessor.processHttp(requestFromBrowser);
+                if (responseFromHost.status().indexOf("200") != -1 && isDownloadable(responseFromHost.contentType())){
+            		String fileName = requestFromBrowser.fileName();
+					save(responseFromHost, fileName);
+            		session.setVariable("download_lastFile", fileName);
+            		responseFromHost = new NoContentResponse();
+                }
             } catch (Exception e) {
                 e.printStackTrace();
                 responseFromHost = new SimpleHttpResponse("");
@@ -118,7 +129,38 @@ public class ProxyProcessor implements Runnable {
         }
     }
 
-    private boolean handleDifferently(HttpRequest request) throws IOException {
+    public void save(HttpResponse response, String fileName) {
+    	System.out.println("Downloading "+fileName+" to temp directory: "+ Configuration.tempDownloadDir());
+    	byte[] data = response.data();
+        try {
+            File file = new File(Configuration.tempDownloadDir(), fileName);
+            if (file.exists()) {
+            	file.delete();
+            }
+            file.createNewFile();
+            FileOutputStream out;
+            out = new FileOutputStream(file, true);
+            out.write(data);
+            out.close();
+        } catch (IOException e) {
+            System.out.println("Could not write to file");
+        }
+    }
+
+
+    private boolean isDownloadable(String contentType) {
+    	if (contentType == null) return true;
+    	contentType = contentType.toLowerCase();
+		String[] renderables = Configuration.getRenderableContentTypes();
+		for (int i=0; i<renderables.length; i++){
+			if (contentType.indexOf(renderables[i]) != -1){
+				return false;
+			}
+		}
+		return true;
+	}
+
+	private boolean handleDifferently(HttpRequest request) throws IOException {
         final MockResponder mockResponder = request.session().mockResponder();
         HttpResponse response = mockResponder.getResponse(request);
         if (response == null) return false;

@@ -160,7 +160,9 @@ public class HttpRequest extends StreamHandler {
         }
         int lastSlashIx = uriWithoutQueryString.lastIndexOf("/");
         if (lastSlashIx != -1){
-        	fileName = uriWithoutQueryString.substring(lastSlashIx);
+        	if (lastSlashIx+1 < uriWithoutQueryString.length())
+        		fileName = uriWithoutQueryString.substring(lastSlashIx+1);
+        	else fileName = "no_filename";
         }
     }
 
@@ -275,11 +277,13 @@ public class HttpRequest extends StreamHandler {
         String sessionId;
         sessionId = getParameter("sahisid");
 //        System.out.println("1:" + sessionId);
-        if (Utils.isBlankOrNull(sessionId))
+        if (Utils.isBlankOrNull(sessionId)){
             sessionId = getCookie("sahisid");
+//            System.out.println("2:" + sessionId);
+        }
         if (Utils.isBlankOrNull(sessionId))
             sessionId = "sahi_" + System.currentTimeMillis();
-//        System.out.println("2:" + sessionId);
+//        System.out.println("3:" + sessionId);
         return Session.getInstance(sessionId);
     }
 

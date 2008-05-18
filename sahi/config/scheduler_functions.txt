@@ -52,4 +52,5 @@ _createCookie
 _clearPrintCalled
 _stopOnError
 _continueOnError
-_expectSaveAs
+_saveDownloadedAs
+_clearLastDownloadedFileName

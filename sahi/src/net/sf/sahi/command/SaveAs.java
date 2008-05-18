@@ -1,16 +1,15 @@
 package net.sf.sahi.command;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 
-import net.sf.sahi.RemoteRequestProcessor;
 import net.sf.sahi.request.HttpRequest;
 import net.sf.sahi.response.HttpResponse;
-import net.sf.sahi.response.NoContentResponse;
+import net.sf.sahi.response.SimpleHttpResponse;
+import net.sf.sahi.util.FileUtils;
+import net.sf.sahi.util.Utils;
 
 public class SaveAs {
-    public void expect(HttpRequest request) {
+    public void xexpect(HttpRequest request) {
     	String pattern = request.getParameter("urlPattern");
     	if (pattern.indexOf("[.]") == -1){
     		pattern = pattern.replaceAll("[.]", "[.]");
@@ -18,22 +17,23 @@ public class SaveAs {
         request.session().mockResponder().add(pattern, "SaveAs_save");
     }
 
-    public HttpResponse save(HttpRequest request) {
-    	HttpResponse response = new RemoteRequestProcessor().processHttp(request);
-    	byte[] data = response.data();
-        try {
-            File file = new File(request.fileName());
-            if (file.exists()) {
-            	file.delete();
-            }
-            file.createNewFile();
-            FileOutputStream out;
-            out = new FileOutputStream(file, true);
-            out.write(data);
-            out.close();
-        } catch (IOException e) {
-            System.out.println("Could not write to file");
-        }
-        return new NoContentResponse();
+    public void saveLastDownloadedAs(HttpRequest request) {
+    	String tempFileName = request.session().getVariable("download_lastFile");
+    	String destination = request.getParameter("destination");
+    	try {
+    		System.out.println("tempDownloadDir " + net.sf.sahi.config.Configuration.tempDownloadDir());
+    		System.out.println("tempFileName " + tempFileName);
+			FileUtils.copyFile(Utils.concatPaths(net.sf.sahi.config.Configuration.tempDownloadDir(), tempFileName), destination);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+    }
+
+    public HttpResponse xgetLastDownloadedFileName(HttpRequest request){
+    	return new SimpleHttpResponse(request.session().getVariable("download_lastFile"));
+    }
+
+    public void clearLastDownloadedFileName(HttpRequest request){
+    	request.session().removeVariables("download_lastFile");
     }
 }

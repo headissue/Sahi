@@ -42,3 +42,4 @@ _position
 _print
 _printCalled
 _label
+_lastDownloadedFileName
