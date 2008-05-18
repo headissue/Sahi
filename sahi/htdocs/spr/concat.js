@@ -997,7 +997,9 @@ Sahi.prototype._saveDownloadedAs = function(filePath){
     this._callServer("SaveAs_saveLastDownloadedAs", "destination="+encodeURIComponent(filePath));
 }
 Sahi.prototype._lastDownloadedFileName = function(){
-    return this.getServerVar("download_lastFile");
+	var	fileName = this._callServer("SaveAs_getLastDownloadedFileName");
+	if (fileName == "-1") return null;
+	return fileName;
 }
 Sahi.prototype._clearLastDownloadedFileName = function(){
     this._callServer("SaveAs_clearLastDownloadedFileName");
@@ -2163,8 +2165,8 @@ Sahi.prototype.areWindowsLoaded = function (win) {
         }
     }
     catch(ex) {
-        this.logErr("2 to " + typeof ex);
-        this.logErr("3 pr " + ex.prototype);
+        //this._debugToErr("2 to " + typeof ex);
+        //this._debugToErr("3 pr " + ex.prototype);
         return true;
         //for diff domains.
     }

@@ -29,8 +29,10 @@ public class SaveAs {
 		}
     }
 
-    public HttpResponse xgetLastDownloadedFileName(HttpRequest request){
-    	return new SimpleHttpResponse(request.session().getVariable("download_lastFile"));
+    public HttpResponse getLastDownloadedFileName(HttpRequest request){
+    	String fileName = request.session().getVariable("download_lastFile");
+    	if (fileName == null) fileName = "-1";
+		return new SimpleHttpResponse(fileName);
     }
 
     public void clearLastDownloadedFileName(HttpRequest request){
