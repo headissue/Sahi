@@ -2223,6 +2223,9 @@ Sahi.prototype.ex = function (isStep) {
                 }
                 if ((!this.areWindowsLoaded(this.top()) || !this.areXHRsDone()) && this.waitForLoad > 0) {
                     this.waitForLoad--;
+                    if (!this.isIE() && this.waitForLoad % 20 == 0){
+                    	this.check204Response();
+                    }
                     this.execNextStep(isStep, this.interval);
                     return;
                 }
@@ -2330,6 +2333,13 @@ Sahi.prototype.ex = function (isStep) {
             this.execNextStep(isStep, this.interval);
         }
     }
+}
+Sahi.prototype.check204Response = function(){
+	var last = this._lastDownloadedFileName()
+	if (last != null && last != this.lastDownloaded){
+		this.lastDownloaded = last;
+		this.loaded = true;
+	}
 }
 Sahi.prototype.canEvalInBase = function (cmd) {
     return  (this.top().opener == null && !this.isForPopup(cmd)) || (this.top().opener && this.top().opener._sahi.top() == this.top());
