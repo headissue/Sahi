@@ -1,0 +1,5 @@
+_click(_link("dishtv.txt"));
+_assertEqual("dishtv.txt", _lastDownloadedFileName());
+_saveDownloadedAs("c:/distv22.txt");
+_clearLastDownloadedFileName();
+_assertNotEqual("dishtv.txt", _lastDownloadedFileName());
