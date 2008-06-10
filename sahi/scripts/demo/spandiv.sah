@@ -1,0 +1,4 @@
+_click(_link("Span and Div Page"));
+_assertNotNull(_spandiv("span with newline"));
+_assertContainsText("span with newline", _spandiv("span with newline"));
+_navigateTo("/demo/index.htm");

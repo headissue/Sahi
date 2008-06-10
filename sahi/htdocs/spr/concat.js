@@ -876,10 +876,12 @@ Sahi.prototype._assertNotNull = function (n, s) {
     if (n == null) throw new SahiAssertionException(1, s);
     return true;
 }
+Sahi.prototype._assertExists = Sahi.prototype._assertNotNull
 Sahi.prototype._assertNull = function (n, s) {
     if (n != null) throw new SahiAssertionException(2, s);
     return true;
 }
+Sahi.prototype._assertNotExists = Sahi.prototype._assertNull
 Sahi.prototype._assertTrue = function (n, s) {
     if (n != true) throw new SahiAssertionException(5, s);
     return true;
@@ -1108,7 +1110,7 @@ Sahi.prototype._containsHTML = function (el, htm) {
     return el && el.innerHTML && el.innerHTML.indexOf(htm) != -1;
 }
 Sahi.prototype._containsText = function (el, txt) {
-    return el && this.getText(el).indexOf(txt) != -1;
+    return el && this._getText(el).indexOf(txt) != -1;
 }
 Sahi.prototype._popup = function (n) {
     if (this.top().name == n || this.top().document.title == n) {
@@ -1184,7 +1186,7 @@ Sahi.prototype.simulateChange = function (el) {
 }
 Sahi.prototype.areEqual = function (el, param, value) {
     if (param == "linkText") {
-        var str = this.getText(el);
+        var str = this._getText(el);
         if (value instanceof RegExp)
             return str != null && str.match(value) != null
         return (this.trim(str) == this.trim(value));
@@ -1774,14 +1776,14 @@ Sahi.prototype.getAccessorInfo = function (el) {
     } else if (type == "file") {
         return new AccessorInfo(accessor, shortHand, type, "setFile", el.value);
     } else if (tagLC == "td") {
-        return new AccessorInfo(accessor, shortHand, "cell", "click", this.getText(el));
+        return new AccessorInfo(accessor, shortHand, "cell", "click", this._getText(el));
     } else if (tagLC == "div" || tagLC == "span") {
-        if (this.getText(el) == shortHand){
-            return new AccessorInfo(accessor, shortHand, "spandiv", "click", this.getText(el));
+        if (this._getText(el) == shortHand){
+            return new AccessorInfo(accessor, shortHand, "spandiv", "click", this._getText(el));
         } else
-            return new AccessorInfo(accessor, shortHand, "byId", "click", this.getText(el));
+            return new AccessorInfo(accessor, shortHand, "byId", "click", this._getText(el));
     } else if (tagLC == "label") {
-        return new AccessorInfo(accessor, shortHand, "label", "click", this.getText(el));
+        return new AccessorInfo(accessor, shortHand, "label", "click", this._getText(el));
     }
 }
 
@@ -1805,7 +1807,7 @@ Sahi.prototype.getShortHand = function (el, accessor) {
             }
             return shortHand;
         } else if (tagLC == "a") {
-            shortHand = this.getText(el);
+            shortHand = this._getText(el);
             //(el.innerText) ? el.innerText : el.text;
             shortHand = this.trim(shortHand);
             if ((!shortHand || shortHand == "") && !this.isIgnorableId(el.id))  shortHand = el.id;
@@ -1855,7 +1857,7 @@ Sahi.prototype.getShortHand = function (el, accessor) {
         } else if (tagLC == "span" || tagLC == "div" || tagLC == "label") {
             if (el.id && !this.isIgnorableId(el.id)) shortHand = el.id;
             else {
-                shortHand = this.getText(el);
+                shortHand = this._getText(el);
                 //if (shortHand.length > 50) shortHand = "/"+shortHand.substring(0, 50).replace(/\//g, '\\/')+"/";
             }
         }
@@ -2530,19 +2532,6 @@ Sahi.prototype.quoted = function (s) {
 Sahi.prototype.handleException = function (e) {
     //	alert(e);
     //	throw e;
-}
-Sahi.prototype.getText = function (el) {
-    if (el.innerHTML)
-        return this.getTextFromHTML(el.innerHTML);
-    return null;
-}
-Sahi.prototype.getTextFromHTML = function (s) {
-    s = s.replace(/<[^>]*>/g, "");
-    s = s.replace(/&amp;/g, "&");
-    s = s.replace(/&lt;/g, "<");
-    s = s.replace(/&gt;/g, ">");
-    s = s.replace(/&nbsp;/g, " ");
-    return s;
 }
 Sahi.prototype.convertUnicode = function (source) {
     if (source == null) return null;
