@@ -1,6 +1,6 @@
 /**
  * Sahi - Web Automation and Test Tool
- * 
+ *
  * Copyright  2006  V Narayan Raman
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -70,8 +70,10 @@ public class SocketPool {
     public Socket get(String host, int port) throws IOException {
         Socket socket = get();
         try {
+//        	System.out.println("Trying: " + socket.getLocalPort());
             socket.connect(new InetSocketAddress(host, port));
         } catch (Exception e) {
+//        	e.printStackTrace();
             lastPort++;
             System.out.println("### Creating New Socket : "+lastPort);
             socket = createSocket(lastPort);
@@ -81,16 +83,16 @@ public class SocketPool {
     }
 
     public void release(Socket socket) {
-        returnToPool(socket.getLocalPort());
         try {
             socket.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
+        returnToPool(socket.getLocalPort());
     }
 
     void returnToPool(int port) {
-//		System.out.println("Added to Pool " + port);
+//		System.out.println("returned to Pool " + port);
         synchronized (unused) {
             unused.add(unused.size(), new Integer(port));
             unused.notifyAll();

@@ -114,7 +114,10 @@ public class ProxyProcessor implements Runnable {
             try {
             	Session session = requestFromBrowser.session();
                 responseFromHost = remoteRequestProcessor.processHttp(requestFromBrowser);
-                if (responseFromHost.status().indexOf("200") != -1 && isDownloadable(responseFromHost.contentType())){
+                if (responseFromHost.status().indexOf("200") != -1 &&
+                		(isDownloadContentType(responseFromHost.contentType()) ||
+                		isDownloadURL(requestFromBrowser.url()))
+                		){
             		String fileName = requestFromBrowser.fileName();
 					save(responseFromHost, fileName);
             		session.setVariable("download_lastFile", fileName);
@@ -148,16 +151,27 @@ public class ProxyProcessor implements Runnable {
     }
 
 
-    private boolean isDownloadable(String contentType) {
-    	if (contentType == null) return true;
+    private boolean isDownloadURL(String url) {
+        String[] list = Configuration.getDownloadURLList();
+        for (int i = 0; i < list.length; i++) {
+            String pattern = list[i];
+            if (url.matches(pattern.trim())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean isDownloadContentType(String contentType) {
+    	if (contentType == null || contentType.equals("")) return true;
     	contentType = contentType.toLowerCase();
-		String[] renderables = Configuration.getRenderableContentTypes();
-		for (int i=0; i<renderables.length; i++){
-			if (contentType.indexOf(renderables[i]) != -1){
-				return false;
+		String[] downloadables = Configuration.getDownloadContentTypes();
+		for (int i=0; i<downloadables.length; i++){
+			if (contentType.indexOf(downloadables[i]) != -1){
+				return true;
 			}
 		}
-		return true;
+		return false;
 	}
 
 	private boolean handleDifferently(HttpRequest request) throws IOException {

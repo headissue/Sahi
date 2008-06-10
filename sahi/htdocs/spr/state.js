@@ -27,7 +27,6 @@ try {
     _sahi.INTERVAL = $interval;
     _sahi.ONERROR_INTERVAL = $onErrorInterval;
     _sahi.MAX_RETRIES = $maxRetries;
-    _sahi.MAX_NOT_MY_WINDOW_RETRIES = $maxNotMyWindowRetries;
     _sahi.SAHI_MAX_WAIT_FOR_LOAD = $maxWaitForLoad;
 
     _sahi.waitForLoad = _sahi.SAHI_MAX_WAIT_FOR_LOAD;

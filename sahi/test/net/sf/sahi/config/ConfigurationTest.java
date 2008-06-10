@@ -8,4 +8,12 @@ public class ConfigurationTest extends TestCase {
         assertEquals("b", "a\nb\nc".split("\n")[1]);
         assertEquals("c", "a\nb\nc".split("\n")[2]);
     }
+
+    public void testGetRenderableContentTypes(){
+    	assertEquals("a\nb", "a\r\nb".replaceAll("\\\r", ""));
+    }
+
+    public void testGetNonBlankLines(){
+        assertEquals("a", Configuration.getNonBlankLines(" \r\n a \r\n")[0]);
+    }
 }

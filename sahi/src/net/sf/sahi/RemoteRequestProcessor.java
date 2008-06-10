@@ -1,6 +1,6 @@
 /**
  * Sahi - Web Automation and Test Tool
- * 
+ *
  * Copyright  2006  V Narayan Raman
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -31,6 +31,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.Properties;
 import java.util.logging.Logger;
 
@@ -63,7 +64,7 @@ public class RemoteRequestProcessor {
     }
 
     public HttpResponse processHttp(HttpRequest requestFromBrowser, boolean modify) {
-        Socket socketToHost;
+        Socket socketToHost = null;
         try {
             try {
                 socketToHost = getSocketToHost(requestFromBrowser);
@@ -76,9 +77,12 @@ public class RemoteRequestProcessor {
             InputStream inputStreamFromHost = socketToHost.getInputStream();
             HttpResponse responseFromHost = getResponseFromHost(inputStreamFromHost,
                     outputStreamToHost, requestFromBrowser, modify);
-            socketPool.release(socketToHost);
             return responseFromHost;
         } catch (Exception ioe) {
+        } finally {
+        	if (socketToHost != null && !requestFromBrowser.isSSL()){
+				socketPool.release(socketToHost);
+			}
         }
         return null;
     }

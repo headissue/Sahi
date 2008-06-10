@@ -24,6 +24,7 @@ import net.sf.sahi.util.FileUtils;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Properties;
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
@@ -267,8 +268,7 @@ public class Configuration {
     }
 
     public static String[] getExclusionList() {
-        String s = new String(Utils.readFile("../config/exclude_inject.txt")).trim();
-        return s.split("\n");
+        return getNonBlankLines(Utils.readCachedFile("../config/exclude_inject.txt"));
     }
 
     static int enableKeepAlive = 0;
@@ -301,12 +301,30 @@ public class Configuration {
         }
 	}
 
-	public static String[] getRenderableContentTypes() {
-        String s = new String(Utils.readFile("../config/renderable_contenttypes.txt")).trim().replaceAll("\\\r", "");
-        return s.split("\n");
+	public static String[] getDownloadContentTypes() {
+        return getNonBlankLines(Utils.readCachedFile("../config/download_contenttypes.txt"));
 	}
 
-	public static String tempDownloadDir() {
+    public static String[] getDownloadURLList() {
+        return getNonBlankLines(Utils.readCachedFile("../config/download_urls.txt"));
+    }
+
+    protected static String[] getNonBlankLines(byte[] b){
+    	return getNonBlankLines(new String(b));
+    }
+
+    protected static String[] getNonBlankLines(String s){
+        s = s.trim().replaceAll("\\\r", "");
+        String[] tokens = s.split("\n");
+        ArrayList l = new ArrayList();
+        for (int i=0; i<tokens.length; i++){
+        	String token = tokens[i].trim();
+        	if (!token.equals("")) l.add(token);
+        }
+    	return (String[]) l.toArray(new String[]{});
+    }
+
+    public static String tempDownloadDir() {
 		return "../temp/download";
 	}
 }

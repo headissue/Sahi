@@ -44,7 +44,6 @@ public class SessionState {
         props.setProperty("interval", "" + Configuration.getTimeBetweenSteps());
         props.setProperty("onErrorInterval", "" + Configuration.getTimeBetweenStepsOnError());
         props.setProperty("maxRetries", "" + Configuration.getMaxReAttemptsOnError());
-        props.setProperty("maxNotMyWindowRetries", "" + Configuration.getMaxReAttemptsOnNotMyWindowError());
         props.setProperty("maxWaitForLoad", "" + Configuration.getMaxCyclesForPageLoad());
 
         String waitCondition = session.getVariable("waitCondition");

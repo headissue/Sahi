@@ -1989,13 +1989,6 @@ Sahi.prototype.getRetries = function () {
     var i = parseInt(this.getServerVar("sahi_retries"));
     return ("" + i != "NaN") ? i : 0;
 }
-Sahi.prototype.setNotMyWinRetries = function (i) {
-    this.setServerVar("sahi_not_my_win_retries", i);
-}
-Sahi.prototype.getNotMyWinRetries = function () {
-    var i = parseInt(this.getServerVar("sahi_not_my_win_retries"));
-    return ("" + i != "NaN") ? i : 0;
-}
 Sahi.prototype.getExceptionString = function (e)
 {
     var stack = e.stack ? e.stack : "No trace available";
@@ -2240,7 +2233,7 @@ Sahi.prototype.ex = function (isStep) {
                             // don't need popup, so if I am popup, throw error.
                             var popup = this.getPopupName();
                             if (popup != null && popup != "") {
-                                throw new SahiNotMyWindowException();
+                                throw new SahiNotMyWindowException(popup);
                             }
                         }
                         this.updateControlWinDisplay(cmds[i], i);
@@ -2277,7 +2270,7 @@ Sahi.prototype.ex = function (isStep) {
                 } catch (ex1) {
                     if (ex1 instanceof SahiAssertionException) {
                         var retries = this.getRetries();
-                        if (retries < this.MAX_RETRIES / 2) {
+                        if (retries < this.MAX_RETRIES) {
                             this.setRetries(retries + 1);
                             this.interval = this.ONERROR_INTERVAL;
                             this.execNextStep(isStep, this.interval);
@@ -2303,21 +2296,11 @@ Sahi.prototype.ex = function (isStep) {
                 return;
             }
         } catch(ex) {
-        	var terminate = false;
-        	if (ex instanceof SahiNotMyWindowException){
-	            var notMyWinRetries = this.getNotMyWinRetries();
-	            if (notMyWinRetries < this.MAX_NOT_MY_WINDOW_RETRIES) {
-					this.setNotMyWinRetries(notMyWinRetries + 1);
-					this.interval = this.ONERROR_INTERVAL;
-				}else terminate = true;
-        	}else{
-	            var retries = this.getRetries();
-	            if (retries < this.MAX_RETRIES) {
-	                this.setRetries(retries + 1);
-	                this.interval = this.ONERROR_INTERVAL;
-	            }else terminate = true;
-            }
-            if (terminate) {
+            var retries = this.getRetries();
+            if (retries < this.MAX_RETRIES) {
+                this.setRetries(retries + 1);
+                this.interval = this.ONERROR_INTERVAL;
+            }else {
                 var debugInfo = "" + debugs[i];
                 if (this.getServerVar("sahi_play") == 1) {
                     this.logPlayBack(cmds[i], "error", debugInfo, this.getExceptionString(ex));
@@ -2501,22 +2484,6 @@ Sahi.prototype.createRequestObject = function () {
     }
     return obj;
 }
-//---XMLHttpObject Wrap Start---
-/*
-if (typeof ActiveXObject != "undefined") Sahi.prototype.real_ActiveXObject = ActiveXObject;
-if (typeof XMLHttpRequest != "undefined") window.real_XMLHttpRequest = XMLHttpRequest;
-
-XMLHttpRequest = function(){
-    _sahi._alert("Called");
-    var obj = new real_XMLHttpRequest(arguments);
-    obj.onreadystatechange = _sahi.onreadystatechange;
-    return obj;
-}
-Sahi.prototype.onreadystatechange = function(){
-    _sahi._alert(_sahi.list(arguments));
-}
-*/
-//---XMLHttpObject Wrap End---
 Sahi.prototype.getServerVar = function (name) {
     var v = this.sendToServer("/_s_/dyn/SessionState_getVar?name=" + encodeURIComponent(name));
     return eval("(" + v + ")");
@@ -2834,16 +2801,18 @@ if (!_sahi.isIE()){
     d.constructor.prototype.openOld = XMLHttpRequest.prototype.open;
     d.constructor.prototype.open = function(method, url, async, username, password){
         var opened = this.openOld(method, url, async, username, password);
-        var xs = _sahi.top()._sahi.XHRs;
-        xs[xs.length] = this;
-        this.setRequestHeader("sahi-isxhr", "true");
+        if (url.indexOf("/_s_/") == -1){
+	        var xs = _sahi.top()._sahi.XHRs;
+	        xs[xs.length] = this;
+	        this.setRequestHeader("sahi-isxhr", "true");
+	    }
         return opened;
     }
 }else{
     new_ActiveXObject = function(s){
         var lower = s.toLowerCase();
         if (lower.indexOf("microsoft.xmlhttp")!=-1 || lower.indexOf("msxml2.xmlhttp")!=-1){
-            return new SahiXHRWrapper(s);
+            return new SahiXHRWrapper(s, true);
         }else{
             return new ActiveXObject(s);
         }
@@ -2860,7 +2829,11 @@ SahiXHRWrapper = function (s, isActiveX){
 SahiXHRWrapper.prototype.open = function(method, url, async, username, password){
     this._async = async;
     var opened = this.xhr.open(method, url, async, username, password);
-    this.xhr.setRequestHeader("sahi-isxhr", "true");
+    if (url.indexOf("/_s_/") == -1){
+        var xs = _sahi.top()._sahi.XHRs;
+        xs[xs.length] = this;
+    	this.xhr.setRequestHeader("sahi-isxhr", "true");
+   	}
     var fn = this.stateChange;
     var obj = this;
     this.xhr.onreadystatechange = function(){fn.apply(obj, arguments);}

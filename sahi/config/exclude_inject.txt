@@ -1,3 +1,4 @@
 .*_sahi=false.*
-.*/mail/channel/.*
+.*google.*/mail/channel/.*
+.*google.*/channel/test.*
 .*arcwebservices.*
