@@ -102,15 +102,15 @@ public class SSLHelper {
         String command = getSSLCommand(domain, keyStoreFilePath, Configuration.getSSLPassword(), Configuration.getKeytoolPath());
         System.out.println("\n\n\n--------------------HTTPS/SSL START--------------------" +
                 "\n\nSahi is trying to create a certificate for domain: \n"+domain+
-                "\nIf you are unable to connect to this https site, do the following:" +
+                "\n\nIf you are unable to connect to this HTTPS site, do the following:" +
                 "\nCheck on your filesystem to see if a file like " +
                 "\n" + keyStoreFilePath +
                 "\nhas been created." +
-                "\nIf not, then create it by running the command below on a command prompt." +
+                "\n\nIf not, then create it by running the command below on a command prompt." +
                 "\nNote that you need 'keytool' to be in your path. " +
                 "\nkeytool comes with the JDK by default and is present in <JAVA_HOME>/bin." +
-                "\nOnce you create that file, ssl/https should work properly for that site." +
-                "\nYou may encounter this problem mostly on Linux." +
+                "\n\nOnce you create that file, SSL/HTTPS should work properly for that site." +
+                "\n\nYou may encounter this problem mostly on Linux." +
                 "\nIf you find a solution for this on Linux, " +
                 "\nplease mail it to narayanraman@users.sourceforge.net" +
                 "\n\n\n-------COMMAND START-------\n\n" +
