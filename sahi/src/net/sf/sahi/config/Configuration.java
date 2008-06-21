@@ -35,16 +35,20 @@ import java.util.logging.Logger;
 public class Configuration {
     private static Properties properties;
     private static final String LOG_PATTERN = "sahi.log";
-    public static final String PLAYBACK_LOG_ROOT = "playback";
     private static final String HTDOCS_ROOT = "../htdocs/";
+    private static final String SAHI_PROPERTIES = "../config/sahi.properties";
+    private static final String LOG_PROPERITES = "../config/log.properties";
+    private static final String TMP_DOWNLOAD_DIR = "../temp/download";
+    
+    public static final String PLAYBACK_LOG_ROOT = "playback";
     public static FileHandler handler;
 
     static {
         properties = new Properties();
         try {
-            properties.load(new FileInputStream("../config/sahi.properties"));
+            properties.load(new FileInputStream(SAHI_PROPERTIES));
             System.setProperty("java.util.logging.config.file",
-                    "../config/log.properties");
+                    LOG_PROPERITES);
             createFolders(new File(getPlayBackLogsRoot()));
             createFolders(new File(getCertsPath()));
             createFolders(new File(tempDownloadDir()));
@@ -62,17 +66,17 @@ public class Configuration {
         int maxProfiles = Integer.parseInt(properties.getProperty("ff.profiles.max_number", "10"));
         for (int i = 0; i < maxProfiles; i++) {
             File profileN = new File(Utils.concatPaths(profileDir.getCanonicalPath(), prefix + i));
-            if (profileN.exists()) continue;
+            if (profileN.exists()) {continue;}
         	System.out.println("Copying profile to " + profileN);
 			FileUtils.copyDir(templateDir, profileN);
         }
     	System.out.println("\n\n--------NOTE-------- \n" +
-    			"When running a suite, if you get an 'already running, but is not responding' error alert on firefox, \n" +
-		"don't worry, just click OK on the alerts and the next time you run the suite things will work fine.\n" +
-		"--------------------\n\n");
+                 "When running a suite, if you get an 'already running, but is not responding' error alert on firefox, \n" +
+		 "don't worry, just click OK on the alerts and the next time you run the suite things will work fine.\n"   +
+		 "--------------------\n\n");
     }
 
-    public static void createFolders(File file) {
+    public static void createFolders(final File file) {
         if (!file.exists()) {
             file.mkdirs();
         }
@@ -86,7 +90,7 @@ public class Configuration {
         }
     }
 
-    public static Logger getLogger(String name) {
+    public static Logger getLogger(final String name) {
         if (handler == null) {
             try {
                 handler = new FileHandler(Utils.concatPaths(getLogsRoot(), LOG_PATTERN).replaceAll("\\\\", "/"));
@@ -95,15 +99,16 @@ public class Configuration {
             }
         }
         Logger logger = Logger.getLogger(name);
-        if (handler != null)
+        if (handler != null) {
             logger.addHandler(handler);
+        }
         return logger;
     }
 
     public static String getLogsRoot() {
         String fileName = properties.getProperty("logs.dir");
         File file = new File(fileName);
-        if (!file.exists()) file.mkdirs();
+        if (!file.exists()) {file.mkdirs();}
         return fileName;
     }
 
@@ -123,7 +128,7 @@ public class Configuration {
         return getPropertyArray("script.extension");
     }
 
-    private static String[] getPropertyArray(String key) {
+    private static String[] getPropertyArray(final String key) {
         String property = properties.getProperty(key);
         String[] tokens = property.split(";");
         for (int i = 0; i < tokens.length; i++) {
@@ -144,13 +149,13 @@ public class Configuration {
         return HTDOCS_ROOT;
     }
 
-    public static String getPlaybackLogCSSFileName(boolean addHtdocsRoot) {
+    public static String getPlaybackLogCSSFileName(final boolean addHtdocsRoot) {
         final String path = "spr/css/playback_log_format.css";
         return addHtdocsRoot ? Utils.concatPaths(getHtdocsRoot(), path) : path;
     }
 
 
-    public static String getConsolidatedLogCSSFileName(boolean addHtdocsRoot) {
+    public static String getConsolidatedLogCSSFileName(final boolean addHtdocsRoot) {
         final String path = "spr/css/consolidated_log_format.css";
         return addHtdocsRoot ? Utils.concatPaths(getHtdocsRoot(), path) : path;
     }
@@ -206,12 +211,13 @@ public class Configuration {
     public static String getHotKey() {
         String hotkey = properties.getProperty("controller.hotkey");
         if ("SHIFT".equals(hotkey) || "ALT".equals(hotkey)
-                || "CTRL".equals(hotkey) || "META".equals(hotkey))
+                || "CTRL".equals(hotkey) || "META".equals(hotkey)) {
             return hotkey;
+        }
         return "ALT";
     }
 
-    public static String appendLogsRoot(String fileName) {
+    public static String appendLogsRoot(final String fileName) {
         return Utils.concatPaths(getPlayBackLogsRoot(), fileName);
     }
 
@@ -309,15 +315,15 @@ public class Configuration {
         return getNonBlankLines(Utils.readCachedFile("../config/download_urls.txt"));
     }
 
-    protected static String[] getNonBlankLines(byte[] b){
+    protected static String[] getNonBlankLines(byte[] b) {
     	return getNonBlankLines(new String(b));
     }
 
-    protected static String[] getNonBlankLines(String s){
+    protected static String[] getNonBlankLines(String s) {
         s = s.trim().replaceAll("\\\r", "");
         String[] tokens = s.split("\n");
         ArrayList l = new ArrayList();
-        for (int i=0; i<tokens.length; i++){
+        for (int i=0; i<tokens.length; i++) {
         	String token = tokens[i].trim();
         	if (!token.equals("")) l.add(token);
         }
@@ -325,6 +331,6 @@ public class Configuration {
     }
 
     public static String tempDownloadDir() {
-		return "../temp/download";
+		return TMP_DOWNLOAD_DIR;
 	}
 }
