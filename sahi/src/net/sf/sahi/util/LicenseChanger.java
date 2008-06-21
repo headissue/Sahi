@@ -23,6 +23,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 public class LicenseChanger {
+    private static final String LICENSE_FILE_PATH = "D:\\kamlesh\\sahi\\trunk\\config\\license.txt";
+    private static final String LICENSE_FILE_CHANGE = "D:\\kamlesh\\sahi\\trunk\\htdocs";
+    
     public static void changeLicense(File f) throws IOException {
         if (f.isDirectory()){
             File[] files = f.listFiles();
@@ -40,7 +43,7 @@ public class LicenseChanger {
                 int endIx = s.indexOf("*/");
                 StringBuffer sb = new StringBuffer();
                 sb.append(s.substring(0, startIx));
-                sb.append(new String(Utils.readFile("D:\\kamlesh\\sahi\\trunk\\config\\license.txt")));
+                sb.append(new String(Utils.readFile(LICENSE_FILE_PATH)));
                 sb.append(s.substring(endIx + 2));
                 //String newS = s.replaceAll("[$]GPL_License[$]", new String(Utils.readFile("C:\\my\\sahi\\config\\gpl_inc.txt")));
                 FileOutputStream fos = new FileOutputStream(f);
@@ -52,6 +55,6 @@ public class LicenseChanger {
 
 
     public static void main(String[] args) throws IOException {
-        LicenseChanger.changeLicense(new File("D:\\kamlesh\\sahi\\trunk\\htdocs"));
+        LicenseChanger.changeLicense(new File(LICENSE_FILE_CHANGE ));
     }
 }
