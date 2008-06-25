@@ -60,16 +60,16 @@ var Sahi = function(){
     window.print = function (s){return _sahi.printMock(s)};
 
     this.XHRs = [];
-	this.escapeMap = {
-		'\b': '\\b',
-		'\t': '\\t',
-		'\n': '\\n',
-		'\f': '\\f',
-		'\r': '\\r',
-		'"' : '\\"',
-		'\\': '\\\\'
-	};
-	this.stopOnError = true;
+    this.escapeMap = {
+        '\b': '\\b',
+        '\t': '\\t',
+        '\n': '\\n',
+        '\f': '\\f',
+        '\r': '\\r',
+        '"' : '\\"',
+        '\\': '\\\\'
+    };
+    this.stopOnError = true;
 }
 var _sahi = new Sahi();
 var tried = false;
@@ -275,19 +275,19 @@ Sahi.prototype._dragDropXY = function (draggable, x, y, isRelative) {
     this.simulateMouseEvent(draggable, "mousedown");
     this.simulateMouseEvent(draggable, "mousemove");
 
-	var addX = 0, addY = 0;
-	if (isRelative){
-		var pos = this.findPos(draggable);
-		addX = pos[0];
-		addY = pos[1];
-		if (!x) x = 0;
-		if (!y) y = 0;
-		x += addX;
-		y += addY;
-	}else{
-		if (!x) x = this.findPos(draggable)[0];
-		if (!y) y = this.findPos(draggable)[1];
-	}
+    var addX = 0, addY = 0;
+    if (isRelative){
+        var pos = this.findPos(draggable);
+        addX = pos[0];
+        addY = pos[1];
+        if (!x) x = 0;
+        if (!y) y = 0;
+        x += addX;
+        y += addY;
+    }else{
+        if (!x) x = this.findPos(draggable)[0];
+        if (!y) y = this.findPos(draggable)[1];
+    }
 
     this.simulateMouseEventXY(draggable, "mousemove", x, y);
     this.simulateMouseEventXY(draggable, "mouseup", x, y);
@@ -764,7 +764,7 @@ Sahi.prototype._byId = function (id) {
     return this.findElementById(this.top(), id);
 }
 Sahi.prototype._byText = function (text, tag) {
-	var res = this.getBlankResult();
+    var res = this.getBlankResult();
     return this.tagByText(this.top(), text, tag, res).element;
 }
 Sahi.prototype._select = function (n) {
@@ -776,11 +776,11 @@ Sahi.prototype._radio = function (n) {
     return this.findElement(n, "radio", "input");
 }
 Sahi.prototype._div = function (id) {
-	var res = this.getBlankResult();
+    var res = this.getBlankResult();
     return this.tagByText(this.top(), id, "div", res).element;
 }
 Sahi.prototype._span = function (id) {
-	var res = this.getBlankResult();
+    var res = this.getBlankResult();
     return this.tagByText(this.top(), id, "span", res).element;
 }
 Sahi.prototype._spandiv = function (id) {
@@ -789,15 +789,15 @@ Sahi.prototype._spandiv = function (id) {
     return el;
 }
 Sahi.prototype._label = function (id) {
-	var res = this.getBlankResult();
-	var el = this.findTagHelper(id, this.top(), "label", res, "id").element;
+    var res = this.getBlankResult();
+    var el = this.findTagHelper(id, this.top(), "label", res, "id").element;
     if (el == null) el = this.tagByText(this.top(), id, "label", res).element;
     return el;
 }
 Sahi.prototype.tagByText = function (win, id, tagName, res) {
-	var o = this.getArrayNameAndIndex(id);
-	var ix = o.index;
-	var fetch = o.name;
+    var o = this.getArrayNameAndIndex(id);
+    var ix = o.index;
+    var fetch = o.name;
     var els = win.document.getElementsByTagName(tagName);
     for (var i = 0; i < els.length; i++) {
         var el = els[i];
@@ -822,8 +822,8 @@ Sahi.prototype.tagByText = function (win, id, tagName, res) {
     return res;
 }
 Sahi.prototype.isTextMatch = function(sample, pattern){
-	if (pattern instanceof RegExp)
-		return sample.match(pattern)
+    if (pattern instanceof RegExp)
+        return sample.match(pattern)
     return (sample == pattern)
 }
 Sahi.prototype.innerMost = function(el, re, tagName){
@@ -999,9 +999,9 @@ Sahi.prototype._saveDownloadedAs = function(filePath){
     this._callServer("SaveAs_saveLastDownloadedAs", "destination="+encodeURIComponent(filePath));
 }
 Sahi.prototype._lastDownloadedFileName = function(){
-	var	fileName = this._callServer("SaveAs_getLastDownloadedFileName");
-	if (fileName == "-1") return null;
-	return fileName;
+    var	fileName = this._callServer("SaveAs_getLastDownloadedFileName");
+    if (fileName == "-1") return null;
+    return fileName;
 }
 Sahi.prototype._clearLastDownloadedFileName = function(){
     this._callServer("SaveAs_clearLastDownloadedFileName");
@@ -1070,10 +1070,10 @@ Sahi.prototype.printMock = function () {
     }
 }
 Sahi.prototype._printCalled = function (){
-	return this.getServerVar("printCalled");
+    return this.getServerVar("printCalled");
 }
 Sahi.prototype._clearPrintCalled = function (){
-	return this.setServerVar("printCalled", null);
+    return this.setServerVar("printCalled", null);
 }
 
 Sahi.prototype._cell = function (id, row, col) {
@@ -1662,9 +1662,9 @@ var SahiAssertionException = function (msgNum, msgText) {
 var SahiNotMyWindowException = function (n) {
     this.name = "SahiNotMyWindowException";
     if (n){
-    	this.message = "Window with name ["+n+"] not found";
+        this.message = "Window with name ["+n+"] not found";
     }else{
-    	this.message = "Base window not found";
+        this.message = "Base window not found";
     }
 }
 var lastQs = "";
@@ -1778,10 +1778,10 @@ Sahi.prototype.getAccessorInfo = function (el) {
     } else if (tagLC == "td") {
         return new AccessorInfo(accessor, shortHand, "cell", "click", this._getText(el));
     } else if (tagLC == "div" || tagLC == "span") {
-        if (this._getText(el) == shortHand){
-            return new AccessorInfo(accessor, shortHand, "spandiv", "click", this._getText(el));
-        } else
+        if (el.id == shortHand){
             return new AccessorInfo(accessor, shortHand, "byId", "click", this._getText(el));
+        } else
+            return new AccessorInfo(accessor, shortHand, "spandiv", "click", this._getText(el));
     } else if (tagLC == "label") {
         return new AccessorInfo(accessor, shortHand, "label", "click", this._getText(el));
     }
@@ -1855,10 +1855,16 @@ Sahi.prototype.getShortHand = function (el, accessor) {
             shortHand += ", " + this.getRow(el).rowIndex;
             shortHand += ", " + el.cellIndex;
         } else if (tagLC == "span" || tagLC == "div" || tagLC == "label") {
-            if (el.id && !this.isIgnorableId(el.id)) shortHand = el.id;
-            else {
+            if (el.id && !this.isIgnorableId(el.id)){
+                shortHand = el.id;
+            } else {
                 shortHand = this._getText(el);
-                //if (shortHand.length > 50) shortHand = "/"+shortHand.substring(0, 50).replace(/\//g, '\\/')+"/";
+            }
+            if (this._spandiv(shortHand) != el){
+                var res = this.getBlankResult();
+                var attr = this.isIE() || this.isSafariLike() ? "innerText" : "textContent";
+                var ix = this.findTagIxHelper(shortHand, el, this.top(), tagLC, res, attr).cnt;
+                if (ix != -1) return shortHand + "[" + ix + "]";
             }
         }
     } catch(ex) {
@@ -2219,7 +2225,7 @@ Sahi.prototype.ex = function (isStep) {
                 if ((!this.areWindowsLoaded(this.top()) || !this.areXHRsDone()) && this.waitForLoad > 0) {
                     this.waitForLoad--;
                     if (!this.isIE() && this.waitForLoad % 20 == 0){
-                    	this.check204Response();
+                        this.check204Response();
                     }
                     this.execNextStep(isStep, this.interval);
                     return;
@@ -2266,7 +2272,7 @@ Sahi.prototype.ex = function (isStep) {
                             this.reportSuccess(cmds[i], debugInfo);
                         }
                     } catch(e) {
-	                    if (!(e instanceof SahiNotMyWindowException)) this.setCurrentIndex(i);
+                        if (!(e instanceof SahiNotMyWindowException)) this.setCurrentIndex(i);
                         throw e;
                     }
                 } catch (ex1) {
@@ -2310,7 +2316,7 @@ Sahi.prototype.ex = function (isStep) {
                 this.gotErrors(true);
                 if (this.stopOnError) this.stopPlaying();
                 else this.setCurrentIndex(i + 1);
-	        }
+            }
         }
         this.execNextStep(isStep, this.interval);
     } catch(ex2) {
@@ -2320,11 +2326,11 @@ Sahi.prototype.ex = function (isStep) {
     }
 }
 Sahi.prototype.check204Response = function(){
-	var last = this._lastDownloadedFileName()
-	if (last != null && last != this.lastDownloaded){
-		this.lastDownloaded = last;
-		this.loaded = true;
-	}
+    var last = this._lastDownloadedFileName()
+    if (last != null && last != this.lastDownloaded){
+        this.lastDownloaded = last;
+        this.loaded = true;
+    }
 }
 Sahi.prototype.canEvalInBase = function (cmd) {
     return  (this.top().opener == null && !this.isForPopup(cmd)) || (this.top().opener && this.top().opener._sahi.top() == this.top());
@@ -2681,7 +2687,7 @@ Sahi.prototype.escape = function (s) {
 
 Sahi.prototype.saveCondition = function (a) {
     this._setGlobal("condn" + this.getCurrentIndex(), a ? "true" : "false");
-	this.resetCmds();
+    this.resetCmds();
 }
 Sahi.prototype.resetCmds = function(){
     this.cmds = new Array();
@@ -2689,8 +2695,8 @@ Sahi.prototype.resetCmds = function(){
     this.scriptScope();
 }
 Sahi.prototype.handleSet = function(varName, value){
-	this._setGlobal(varName, value);
-	this.resetCmds();
+    this._setGlobal(varName, value);
+    this.resetCmds();
 }
 Sahi.prototype.quoteIfString = function (shortHand) {
     if (("" + shortHand).match(/^[0-9]+$/)) return shortHand;
@@ -2791,10 +2797,10 @@ if (!_sahi.isIE()){
     d.constructor.prototype.open = function(method, url, async, username, password){
         var opened = this.openOld(method, url, async, username, password);
         if (url.indexOf("/_s_/") == -1){
-	        var xs = _sahi.top()._sahi.XHRs;
-	        xs[xs.length] = this;
-	        this.setRequestHeader("sahi-isxhr", "true");
-	    }
+            var xs = _sahi.top()._sahi.XHRs;
+            xs[xs.length] = this;
+            this.setRequestHeader("sahi-isxhr", "true");
+        }
         return opened;
     }
 }else{
@@ -2821,8 +2827,8 @@ SahiXHRWrapper.prototype.open = function(method, url, async, username, password)
     if (url.indexOf("/_s_/") == -1){
         var xs = _sahi.top()._sahi.XHRs;
         xs[xs.length] = this;
-    	this.xhr.setRequestHeader("sahi-isxhr", "true");
-   	}
+        this.xhr.setRequestHeader("sahi-isxhr", "true");
+       }
     var fn = this.stateChange;
     var obj = this;
     this.xhr.onreadystatechange = function(){fn.apply(obj, arguments);}
@@ -2860,49 +2866,49 @@ if (_sahi.isIE()){
     XMLHttpRequest = SahiXHRWrapper;
 }
 Sahi.prototype.toJSON = function(el){
-	if (el == null || el == undefined) return 'null';
-	if (el instanceof Date){
-		return String(el);
-	}else if (typeof el == 'string'){
-		if (/["\\\x00-\x1f]/.test(el)) {
-			return '"' + el.replace(/([\x00-\x1f\\"])/g, function (a, b) {
-				var c = _sahi.escapeMap[b];
-				if (c) {
-					return c;
-				}
-				c = b.charCodeAt();
-				return '\\u00' +
-					Math.floor(c / 16).toString(16) +
-					(c % 16).toString(16);
-			}) + '"';
-		}
-		return '"' + el + '"';
-	}else if (el instanceof Array){
-		var ar = [];
-		for (var i=0; i<el.length; i++){
-			ar[i] = this.toJSON(el[i]);
-		}
-		return '[' + ar.join(',') + ']';
-	}else if (typeof el == 'number'){
-		return new String(el);
-	}else if (typeof el == 'boolean'){
-		return String(el);
-	}else if (el instanceof Object){
-		var ar = [];
-		for (var k in el){
-			var v = el[k];
-			if (typeof v != 'function'){
-				ar[ar.length] = this.toJSON(k) + ':' + this.toJSON(v);
-			}
-		}
-		return '{' + ar.join(',') + '}';
-	}
+    if (el == null || el == undefined) return 'null';
+    if (el instanceof Date){
+        return String(el);
+    }else if (typeof el == 'string'){
+        if (/["\\\x00-\x1f]/.test(el)) {
+            return '"' + el.replace(/([\x00-\x1f\\"])/g, function (a, b) {
+                var c = _sahi.escapeMap[b];
+                if (c) {
+                    return c;
+                }
+                c = b.charCodeAt();
+                return '\\u00' +
+                    Math.floor(c / 16).toString(16) +
+                    (c % 16).toString(16);
+            }) + '"';
+        }
+        return '"' + el + '"';
+    }else if (el instanceof Array){
+        var ar = [];
+        for (var i=0; i<el.length; i++){
+            ar[i] = this.toJSON(el[i]);
+        }
+        return '[' + ar.join(',') + ']';
+    }else if (typeof el == 'number'){
+        return new String(el);
+    }else if (typeof el == 'boolean'){
+        return String(el);
+    }else if (el instanceof Object){
+        var ar = [];
+        for (var k in el){
+            var v = el[k];
+            if (typeof v != 'function'){
+                ar[ar.length] = this.toJSON(k) + ':' + this.toJSON(v);
+            }
+        }
+        return '{' + ar.join(',') + '}';
+    }
 }
 Sahi.prototype._stopOnError = function(){
-	this.stopOnError = true;
+    this.stopOnError = true;
 }
 Sahi.prototype._continueOnError = function(){
-	this.stopOnError = false;
+    this.stopOnError = false;
 }
 Sahi.prototype.isIgnorableId = function(id){
     return id.match(/^z_/);
