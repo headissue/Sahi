@@ -160,6 +160,8 @@
                 <include name="link_test.sah"/>
 		        <include name="wait_for_with_reload.sah"/>
                 <include name="set.sah"/>
+                <include name="label.sah"/>
+                <include name="spandiv.sah"/>
             </fileset>
         </copy>
         <copy todir="temp/sahi/extlib">
