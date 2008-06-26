@@ -30,12 +30,13 @@ public class HTMLDecorator {
 		skin(layoutFile, pagesPath, outputPath);
 	}
 
-	private static void skin(String layoutFile, String pagesPath, String outputPath) {
+	private static void skin(final String layoutFile, final String pagesPath, final String outputPath) {
 		final String layout = new String(Utils.readFile(layoutFile));
 		File pagesDir = new File(pagesPath);
 		if (pagesDir.exists() && pagesDir.isDirectory()) {
 			File[] files = pagesDir.listFiles();
-			for (int i = 0; i < files.length; i++) {
+            int len = files.length; // cache the length so it doesn't need to be looked up over and over in the loop
+			for (int i = 0; i < len; i++) {
 				if (!files[i].getName().endsWith("html"))
 					continue;
 				decorate(layout, files[i], outputPath);
@@ -44,7 +45,7 @@ public class HTMLDecorator {
 
 	}
 
-	private static void decorate(String layout, File file, String outputPath) {
+	private static void decorate(final String layout, final File file, final String outputPath) {
 		try {
 			System.out.println(file.getName());
 			StringBuffer sb = new StringBuffer(layout);
@@ -67,7 +68,7 @@ public class HTMLDecorator {
 		}
 	}
 
-	private static String getTitle(String fileContents) {
+	private static String getTitle(final String fileContents) {
 		try {
 			String commentedTitle = fileContents.substring(0, fileContents.indexOf("\n")).trim();
 			return commentedTitle.substring("<!--".length(), commentedTitle.indexOf("-->"));
