@@ -2913,9 +2913,16 @@ Sahi.prototype._continueOnError = function(){
 Sahi.prototype.isIgnorableId = function(id){
     return id.match(/^z_/);
 }
+Sahi.prototype.iframeFromStr = function(iframe){
+    if (typeof iframe == "string") return this._byId(iframe);
+    return iframe
+}
 Sahi.prototype._rteWrite = function(iframe, s){
-    if (typeof iframe == "string"){
-        iframe = this._byId(iframe);
-    }
-    iframe.contentWindow.document.body.innerHTML = s;
+    this.iframeFromStr(iframe).contentWindow.document.body.innerHTML = s;
+}
+Sahi.prototype._rteHTML = function(iframe){
+    return this.iframeFromStr(iframe).contentWindow.document.body.innerHTML;
+}
+Sahi.prototype._rteText = function(iframe){
+    return this._getText(this.iframeFromStr(iframe).contentWindow.document.body);
 }

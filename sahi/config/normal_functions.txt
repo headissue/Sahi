@@ -43,3 +43,5 @@ _print
 _printCalled
 _label
 _lastDownloadedFileName
+_rteHTML
+_rteText
