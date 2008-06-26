@@ -25,26 +25,31 @@ import java.nio.channels.FileChannel;
  */
 
 public class FileUtils {
-    public static void copyDir(String src, String dest) throws IOException, InterruptedException {
+    public static void copyDir(final String src, final String dest) throws IOException, InterruptedException {
         copyDir(new File(src), new File(dest));
     }
 
-    public static void copyDir(File src, File dest) throws IOException {
+    public static void copyDir(final File src, final File dest) throws IOException {
         dest.mkdirs();
         File[] files = src.listFiles();
 
-        for (int i = 0; i < files.length; i++) {
+        int j = files.length;   // cache the length so it doesn't need to be looked up in the loop over and over
+        for (int i = 0; i < j; i++) {
             File file = files[i];
-            if (file.isDirectory()) copyDir(file, new File(dest, file.getName()));
-            else copyFile(file, new File(dest, file.getName()));
+            if (file.isDirectory()) {
+                copyDir(file, new File(dest, file.getName()));
+            }
+            else {
+                copyFile(file, new File(dest, file.getName()));
+            }
         }
     }
 
-    public static void copyFile(String src, String dest) throws IOException {
+    public static void copyFile(final String src, final String dest) throws IOException {
         copyFile(new File(src), new File(dest));
     }
 
-    public static void copyFile(File src, File dest) throws IOException {
+    public static void copyFile(final File src, final File dest) throws IOException {
         dest.getParentFile().mkdirs();
         dest.createNewFile();
 
