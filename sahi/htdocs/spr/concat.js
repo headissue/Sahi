@@ -1791,6 +1791,7 @@ Sahi.prototype.getShortHand = function (el, accessor) {
     var shortHand = "";
     try {
         var tagLC = el.tagName.toLowerCase();
+
         if (tagLC == "img") {
             shortHand = el.title;
             if (!shortHand) shortHand = el.alt;
@@ -1855,16 +1856,17 @@ Sahi.prototype.getShortHand = function (el, accessor) {
             shortHand += ", " + this.getRow(el).rowIndex;
             shortHand += ", " + el.cellIndex;
         } else if (tagLC == "span" || tagLC == "div" || tagLC == "label") {
-            if (el.id && !this.isIgnorableId(el.id)){
+            if (el.id && el.id!="" && !this.isIgnorableId(el.id) && this._byId(el.id) == el){
                 shortHand = el.id;
             } else {
                 shortHand = this._getText(el);
-            }
-            if (this._spandiv(shortHand) != el){
-                var res = this.getBlankResult();
-                var attr = this.isIE() || this.isSafariLike() ? "innerText" : "textContent";
-                var ix = this.findTagIxHelper(shortHand, el, this.top(), tagLC, res, attr).cnt;
-                if (ix != -1) return shortHand + "[" + ix + "]";
+                if (shortHand.length > 100) return;
+                if (this._spandiv(shortHand) != el){
+                    var res = this.getBlankResult();
+                    var attr = this.isIE() || this.isSafariLike() ? "innerText" : "textContent";
+                    var ix = 0;//this.findTagIxHelper(shortHand, el, this.top(), tagLC, res, attr).cnt;
+                    if (ix != -1) return shortHand + "[" + ix + "]";
+                }
             }
         }
     } catch(ex) {
@@ -2069,6 +2071,10 @@ Sahi.prototype.mouseOver = function (e) {
         var controlWin = _sahi.getController();
         if (controlWin) {
             var el = _sahi.getTarget(e);
+            if (el == _sahi.top()._sahi.lastElement){
+                return;
+            }
+            _sahi.top()._sahi.lastElement = el;
             var acc = _sahi.getAccessorInfo(_sahi.getKnownTags(el));
             try {
                 if (acc) controlWin.main.displayInfo(acc, _sahi.escapeDollar(_sahi.getAccessor1(acc)), _sahi.escapeValue(acc.value));
@@ -2569,7 +2575,6 @@ Sahi.prototype.addSlashU = function (num) {
 }
 
 Sahi.prototype.onBeforeUnLoad = function () {
-//    this._debug(this.real_onbeforeunload());
     this.loaded = false;
 }
 
