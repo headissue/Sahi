@@ -92,8 +92,8 @@ class Function {
 //                "The parameters are:\n" +
 //                "<ul>\n";
         
-        int j = arguments.length;   // cache the length so it doesn't need to be looked up over and over in the loop
-        for (int i = 0; i < j; i++) {
+        int len = arguments.length;   // cache the length so it doesn't need to be looked up over and over in the loop
+        for (int i = 0; i < len; i++) {
             s.append("<li><b>");
             s.append(arguments[i].trim());
             s.append("</b>: </li>\n");
