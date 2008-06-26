@@ -26,10 +26,11 @@ public class LicenseChanger {
     private static final String LICENSE_FILE_PATH = "D:\\kamlesh\\sahi\\trunk\\config\\license.txt";
     private static final String LICENSE_FILE_CHANGE = "D:\\kamlesh\\sahi\\trunk\\htdocs";
     
-    public static void changeLicense(File f) throws IOException {
+    public static void changeLicense(final File f) throws IOException {
         if (f.isDirectory()){
             File[] files = f.listFiles();
-            for (int i = 0; i < files.length; i++) {
+            int len = files.length;
+            for (int i = 0; i < len; i++) {
                 File file = files[i];
                 changeLicense(file);
             }
