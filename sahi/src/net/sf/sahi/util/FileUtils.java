@@ -33,7 +33,7 @@ public class FileUtils {
         dest.mkdirs();
         File[] files = src.listFiles();
 
-        int j = files.length;   // cache the length so it doesn't need to be looked up in the loop over and over
+        int j = files.length;   // cache the length so it doesn't need to be looked up over and over in the loop 
         for (int i = 0; i < j; i++) {
             File file = files[i];
             if (file.isDirectory()) {
