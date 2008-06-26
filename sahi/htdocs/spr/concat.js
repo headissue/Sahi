@@ -2643,7 +2643,7 @@ Sahi.prototype.getScript = function (info) {
     } else if (ev == "setselected") {
         cmd = "_setSelected(" + accessor + ", " + this.quotedEscapeValue(value) + ");";
     } else if (ev == "assert") {
-        cmd = "_assertNotNull(" + accessor + ");\r\n";
+        cmd = "_assertExists(" + accessor + ");\r\n";
         if (type == "cell") {
             cmd += "_assertEqual(" + this.quotedEscapeValue(value) + ", _getText(" + accessor + "));\n";
             cmd += "_assertContainsText(" + this.quotedEscapeValue(value) + ", " + accessor + ");";
@@ -2652,7 +2652,7 @@ Sahi.prototype.getScript = function (info) {
         } else if (type == "text" || type == "textarea" || type == "password") {
             cmd += "_assertEqual(" + this.quotedEscapeValue(value) + ", " + accessor + ".value);";
         } else if (type == "checkbox" || type == "radio") {
-            cmd += "_assert" + ("true" == "" + value ? "" : "Not" ) + "True(" + accessor + ".checked);";
+            cmd += "_assert" + ("true" == "" + value ? "" : "NotTrue" ) + "(" + accessor + ".checked);";
         } else if (type != "link" && type != "img") {
             cmd += "_assertContainsText(" + this.quotedEscapeValue(value) + ", " + accessor + ");";
         }
@@ -2912,4 +2912,10 @@ Sahi.prototype._continueOnError = function(){
 }
 Sahi.prototype.isIgnorableId = function(id){
     return id.match(/^z_/);
+}
+Sahi.prototype._rteWrite = function(iframe, s){
+    if (typeof iframe == "string"){
+        iframe = this._byId(iframe);
+    }
+    iframe.contentWindow.document.body.innerHTML = s;
 }

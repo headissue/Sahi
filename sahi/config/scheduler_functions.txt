@@ -56,3 +56,4 @@ _stopOnError
 _continueOnError
 _saveDownloadedAs
 _clearLastDownloadedFileName
+_rteWrite
