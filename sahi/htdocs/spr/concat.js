@@ -2931,3 +2931,6 @@ Sahi.prototype._rteHTML = function(iframe){
 Sahi.prototype._rteText = function(iframe){
     return this._getText(this.iframeFromStr(iframe).contentWindow.document.body);
 }
+Sahi.prototype._re = function(s){
+    return eval("/"+s+"/");
+}

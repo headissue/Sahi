@@ -45,3 +45,4 @@ _label
 _lastDownloadedFileName
 _rteHTML
 _rteText
+_re
