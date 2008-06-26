@@ -1720,7 +1720,7 @@ Sahi.prototype.getPopupName = function () {
     return n ? n : "";
 }
 Sahi.prototype.isPopup = function () {
-    return _sahi.top().opener != null && _sahi.top().opener != window._sahi.top()
+    return _sahi.top().opener != null && _sahi.top().opener._sahi.top() != window._sahi.top()
 }
 Sahi.prototype.addWait = function (time) {
     var val = parseInt(time);
