@@ -30,14 +30,14 @@ public class SocketPool {
     private final int START_PORT = 13300;
     private int lastPort;
 
-    public SocketPool(int size) {
+    public SocketPool(final int size) {
         for (int i = 0; i < size; i++) {
             returnToPool(START_PORT + i);
         }
         lastPort = START_PORT + size;
     }
 
-    private Socket createSocket(int port) throws IOException {
+    private Socket createSocket(final int port) throws IOException {
         Socket socket = new Socket();
         try {
             socket.setReuseAddress(true);
@@ -67,7 +67,7 @@ public class SocketPool {
         return socket;
     }
 
-    public Socket get(String host, int port) throws IOException {
+    public Socket get(final String host, final int port) throws IOException {
         Socket socket = get();
         try {
 //        	System.out.println("Trying: " + socket.getLocalPort());
@@ -82,7 +82,7 @@ public class SocketPool {
         return socket;
     }
 
-    public void release(Socket socket) {
+    public void release(final Socket socket) {
         try {
             socket.close();
         } catch (IOException e) {
@@ -91,7 +91,7 @@ public class SocketPool {
         returnToPool(socket.getLocalPort());
     }
 
-    void returnToPool(int port) {
+    void returnToPool(final int port) {
 //		System.out.println("returned to Pool " + port);
         synchronized (unused) {
             unused.add(unused.size(), new Integer(port));
