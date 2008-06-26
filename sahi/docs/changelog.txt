@@ -1,37 +1,48 @@
+25 Jun 2008
+-----------
+* Features added
+    _label added
+    _spandiv identifies elements better
+    Some support for downloading files added
+    _lastDownloadedFileName, _saveDownloadedAs, _clearLastDownloadedFileName added
+
+* Bugfixes
+    SahiNotMyWindowException related bug fixed
+
 05 Mar 2008
 -----------
 * Features added
-	_log(message, customLevel) for logging in different colors without affecting test stats,
-		customLevel can be 'custom1', 'custom2', 'custom3', 'custom4', 'custom5'
-	_stopOnError and _continueOnError added to continue inspite of errors during execution.
-	sahi.bat, sahi.sh modified to work with external classpaths
-	_printCalled() and _clearPrintCalled() added.
-		If window.print() was called, you can assert by
-		_assertTrue(_printCalled());
-		_clearPrintCalled();
-	Firefox "already running, but is not responding" errors during suite run handled.
-		This will happen only once now when the suite uses a freshly created profile.
+    _log(message, customLevel) for logging in different colors without affecting test stats,
+        customLevel can be 'custom1', 'custom2', 'custom3', 'custom4', 'custom5'
+    _stopOnError and _continueOnError added to continue inspite of errors during execution.
+    sahi.bat, sahi.sh modified to work with external classpaths
+    _printCalled() and _clearPrintCalled() added.
+        If window.print() was called, you can assert by
+        _assertTrue(_printCalled());
+        _clearPrintCalled();
+    Firefox "already running, but is not responding" errors during suite run handled.
+        This will happen only once now when the suite uses a freshly created profile.
 
 
 * Bugfixes
-	Some changes related to fileupload
-	_spandiv on IE would be recorded with ID rather than text
-	bugfix for multiline alert
-	some changes to _getDB. Uses _set now.
+    Some changes related to fileupload
+    _spandiv on IE would be recorded with ID rather than text
+    bugfix for multiline alert
+    some changes to _getDB. Uses _set now.
 
 
 21 Oct 2007
 -----------
 
 * Features added
-	_dragDropXY(element, x, y, isRelative) for positioning relative to current position
-	_dragDropXY(element, null, y) stays on the same x coord.
-	_dragDropXY(element, x, null) stays on the same y coord.
-	_position(element) added, which returns [x, y] of element
+    _dragDropXY(element, x, y, isRelative) for positioning relative to current position
+    _dragDropXY(element, null, y) stays on the same x coord.
+    _dragDropXY(element, x, null) stays on the same y coord.
+    _position(element) added, which returns [x, y] of element
 
 * Bugfixes
-	_dragDrop and _dragDropXY related bugs fixed. This fixes scriptaculous drag drop.
-	_click works slowly bug fixed.
+    _dragDrop and _dragDropXY related bugs fixed. This fixes scriptaculous drag drop.
+    _click works slowly bug fixed.
 
 
 15 Oct 2007
@@ -44,27 +55,27 @@ fixed json encodeuricomponent bug.
 11 Oct 2007
 -----------
 * Features added
-	Calls to non existent functions in script will fail script.
-	Hooking into XHR requests so that _wait statements are not required for AJAX.
-	_set added which takes away the confusion from _getGlobal, _setGlobal etc.
-	While running suites, the browser will be killed if no request is received from the browser in 20 seconds.
-	Further tests will be stopped if the ant target/command to run suites is killed.
-	Added sample rake scripts, ant project files and a commandline batch file for easy kickstart to running suites.
-	_dragDrop improved. (Not yet perfect though)
-	_dragDropXY(el, x, y) added
-	_createCookie(name, value) added
-	_deleteCookie(name) added
-	_byText(text, tagName) added
-	_cookie(name) added
+    Calls to non existent functions in script will fail script.
+    Hooking into XHR requests so that _wait statements are not required for AJAX.
+    _set added which takes away the confusion from _getGlobal, _setGlobal etc.
+    While running suites, the browser will be killed if no request is received from the browser in 20 seconds.
+    Further tests will be stopped if the ant target/command to run suites is killed.
+    Added sample rake scripts, ant project files and a commandline batch file for easy kickstart to running suites.
+    _dragDrop improved. (Not yet perfect though)
+    _dragDropXY(el, x, y) added
+    _createCookie(name, value) added
+    _deleteCookie(name) added
+    _byText(text, tagName) added
+    _cookie(name) added
 
 * Bugfixes
-	_setFile on IE
-	_wait
-	_confirm
-	_prompt
+    _setFile on IE
+    _wait
+    _confirm
+    _prompt
     Some problems around _button
-	Proxy-Connection header used instead of Connection header.
-	Changed www.sahidomain.com to sahi.example.com
+    Proxy-Connection header used instead of Connection header.
+    Changed www.sahidomain.com to sahi.example.com
 
 Known issues
 * Firefox has problems with multithreaded playback due to not being able to kill browsers properly.
