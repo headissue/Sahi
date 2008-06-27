@@ -1864,7 +1864,7 @@ Sahi.prototype.getShortHand = function (el, accessor) {
                 if (this._spandiv(shortHand) != el){
                     var res = this.getBlankResult();
                     var attr = this.isIE() || this.isSafariLike() ? "innerText" : "textContent";
-                    var ix = 0;//this.findTagIxHelper(shortHand, el, this.top(), tagLC, res, attr).cnt;
+                    var ix = this.findTagIxHelper(shortHand, el, this.top(), tagLC, res, attr).cnt;
                     if (ix != -1) return shortHand + "[" + ix + "]";
                 }
             }
