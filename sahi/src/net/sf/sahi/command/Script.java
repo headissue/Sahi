@@ -15,7 +15,7 @@ import java.util.regex.Pattern;
 
 /**
  * Sahi - Web Automation and Test Tool
- * 
+ *
  * Copyright  2006  V Narayan Raman
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -50,13 +50,13 @@ public class Script {
     public static String makeIncludeALink(String baseFile) {
         String inputStr = new String(Utils.readFile(baseFile));
         inputStr = LogViewer.highlight(inputStr, -1);
-        String patternStr = "[^\"']*.sah";
+        String patternStr = "[\"'](.*[.]sah)[\"']";
         Pattern pattern = Pattern.compile(patternStr);
         Matcher matcher = pattern.matcher(inputStr);
 
         StringBuffer sb = new StringBuffer();
         while (matcher.find()) {
-            String includedScriptName = matcher.group(0);
+            String includedScriptName = matcher.group(1);
             String scriptPath = Utils.concatPaths(baseFile, includedScriptName).replaceAll("\\\\", "/");
             String replaceStr = "";
             if (includedScriptName.startsWith("http://") || includedScriptName.startsWith("https://")){
