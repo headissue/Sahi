@@ -374,7 +374,9 @@ Sahi.prototype.simulateClick = function (el, isRight, isDouble) {
     var n = el;
 
     if (this.isIE() && !isRight) {
-        if (el && ((el.type && (el.type == "submit" || el.type == "button" || el.type == "reset" || el.type == "image" || el.type == "checkbox" || el.type == "radio")))) {
+        if (el && (el.tagName == "LABEL" || (el.type && (el.type == "submit" || el.type == "button"
+            || el.type == "reset" || el.type == "image"
+            || el.type == "checkbox" || el.type == "radio")))) {
             return el.click();
         }
     }
