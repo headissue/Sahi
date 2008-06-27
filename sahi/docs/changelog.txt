@@ -1,3 +1,18 @@
+27 Jun 2008
+-----------
+* Features added
+    _rteWrite, _rteHTML, _rteText added for writing and accessing Rich Text Editors
+    _spandiv identifies elements better
+    _re added for easily making strings to regular expressions
+    Time interval on error keeps increasing between each retry to allow for more time before failure.
+    Defaults changed for:
+        script.time_between_steps=100
+        script.time_between_steps_on_error=1500
+
+* Bugfixes
+    Bug relating to some windows being identified as popups if the page was opened from a contained iframe.
+    Bug in _spandiv causing "unresponsive script" error on firefox.
+
 25 Jun 2008
 -----------
 * Features added
@@ -78,8 +93,6 @@ fixed json encodeuricomponent bug.
     Changed www.sahidomain.com to sahi.example.com
 
 Known issues
-* Firefox has problems with multithreaded playback due to not being able to kill browsers properly.
-(Workaround: Do not add the 'threads=n' clause to sahi target)
 * Turn off keep-alive in sahi.properties if browser hangs
 * IE7 will always bypass proxy for http://localhost. Use http://machine_name/ instead
 * Framesets with frames from different domains will not work with Sahi
