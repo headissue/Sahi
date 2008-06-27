@@ -1861,12 +1861,15 @@ Sahi.prototype.getShortHand = function (el, accessor) {
             } else {
                 shortHand = this._getText(el);
                 if (shortHand.length > 100) return;
-                if (this._spandiv(shortHand) != el){
-                    var res = this.getBlankResult();
-                    var attr = this.isIE() || this.isSafariLike() ? "innerText" : "textContent";
-                    var ix = this.findTagIxHelper(shortHand, el, this.top(), tagLC, res, attr).cnt;
-                    if (ix != -1) return shortHand + "[" + ix + "]";
+                if (tagLC == "label"){
+                    if (this._label(shortHand) == el) return shortHand;
+                }else{
+                    if (this._spandiv(shortHand) == el) return shortHand;
                 }
+                var res = this.getBlankResult();
+                var attr = this.isIE() || this.isSafariLike() ? "innerText" : "textContent";
+                var ix = this.findTagIxHelper(shortHand, el, this.top(), tagLC, res, attr).cnt;
+                if (ix != -1) return shortHand + "[" + ix + "]";
             }
         }
     } catch(ex) {
