@@ -2290,8 +2290,9 @@ Sahi.prototype.ex = function (isStep) {
                     if (ex1 instanceof SahiAssertionException) {
                         var retries = this.getRetries();
                         if (retries < this.MAX_RETRIES) {
-                            this.setRetries(retries + 1);
-                            this.interval = this.ONERROR_INTERVAL * (retries + 1);
+                            retries = retries + 1;
+                            this.setRetries(retries);
+                            this.interval = this.ONERROR_INTERVAL;
                             this.execNextStep(isStep, this.interval);
                             return;
                         } else {
@@ -2317,8 +2318,9 @@ Sahi.prototype.ex = function (isStep) {
         } catch(ex) {
             var retries = this.getRetries();
             if (retries < this.MAX_RETRIES) {
-                this.setRetries(retries + 1);
-                this.interval = this.ONERROR_INTERVAL * (retries + 1);
+                retries = retries + 1;
+                this.setRetries(retries);
+                this.interval = this.ONERROR_INTERVAL;
             }else {
                 var debugInfo = "" + debugs[i];
                 if (this.getServerVar("sahi_play") == 1) {
