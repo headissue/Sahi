@@ -18,11 +18,21 @@
 
 package net.sf.sahi.util;
 
-import java.io.*;
+//
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -30,7 +40,7 @@ import java.util.regex.Pattern;
  * User: nraman Date: Jun 26, 2005 Time: 4:52:58 PM
  */
 public class Utils {
-    public static String escapeDoubleQuotesAndBackSlashes(String line) {
+    public static String escapeDoubleQuotesAndBackSlashes(final String line) {
         if (line == null)
             return null;
         return line.replaceAll("\\\\", "\\\\\\\\").replaceAll("\"", "\\\\\"");
@@ -57,7 +67,7 @@ public class Utils {
         return out.toByteArray();
     }
 
-    public static byte[] readURL(String url) {
+    public static byte[] readURL(final String url) {
         byte[] data = null;
         InputStream inputStream = null;
         try {
@@ -78,19 +88,19 @@ public class Utils {
 
     static Map fileCache = new HashMap();
 
-    public static byte[] readCachedFile(String fileName) {
+    public static byte[] readCachedFile(final String fileName) {
         if (!fileCache.containsKey(fileName)) {
             fileCache.put(fileName, readFile(fileName));
         }
         return (byte[]) fileCache.get(fileName);
     }
 
-    public static byte[] readFile(String fileName) {
+    public static byte[] readFile(final String fileName) {
         File file = new File(fileName);
         return readFile(file);
     }
 
-    public static byte[] readFile(File file) {
+    public static byte[] readFile(final File file) {
         if (file != null && file.isDirectory()) {
             throw new FileIsDirectoryException();
         }
@@ -116,6 +126,7 @@ public class Utils {
     // ASCII
     // equivalent. Eg : By passing "Éléphant", the function would return
     // "Elephant".
+    // Should consider refactoring to StringBuffer(); 
     public static String convertStringToASCII(String s) {
         return s.replaceAll("(è|é|ê|ë)", "e").replaceAll("(ù|ú|û|ü)", "u")
                 .replaceAll("(à|á|â|ã|ä|å)", "a").replaceAll("æ", "ae")
@@ -128,11 +139,11 @@ public class Utils {
                 .replaceAll("Ý", "Y");
     }
 
-    public static synchronized String createLogFileName(String scriptFileName) {
-        scriptFileName = new File(scriptFileName).getName();
+    public static synchronized String createLogFileName(final String scriptFileName) {
+        String TMPscriptFileName = new File(scriptFileName).getName();
         String date = new SimpleDateFormat("ddMMMyyyy__HH_mm_ss")
                 .format(new Date());
-        return convertStringToASCII(scriptFileName.replaceAll("[.].*$", "")
+        return convertStringToASCII(TMPscriptFileName.replaceAll("[.].*$", "")
                 + "__" + date);
     }
 
@@ -140,13 +151,13 @@ public class Utils {
         File sf2 = new File(s2);
         if (sf2.isAbsolute())
             return sf2;
-        if (!parent.isDirectory())
+        if (!parent.isDirectory()) 
             parent = parent.getParentFile();
         File file = new File(parent, s2);
         return file;
     }
 
-    public static String concatPaths(String s1, String s2) {
+    public static String concatPaths(final String s1, final String s2) {
         File sf2 = new File(s2);
         if (sf2.isAbsolute())
             return s2;
@@ -161,7 +172,7 @@ public class Utils {
         }
     }
 
-    public static ArrayList getTokens(String s) {
+    public static ArrayList getTokens(final String s) {
         ArrayList tokens = new ArrayList();
         int ix1 = 0;
         int ix2 = -1;
@@ -178,11 +189,11 @@ public class Utils {
         return tokens;
     }
 
-    public static boolean isBlankOrNull(String s) {
+    public static boolean isBlankOrNull(final String s) {
         return (s == null || "".equals(s));
     }
 
-    public static String substitute(String content, Properties substitutions) {
+    public static String substitute(final String content, final Properties substitutions) {
         String patternStr = "";
         int i = 0;
         Enumeration keys = substitutions.keys();
@@ -224,11 +235,12 @@ public class Utils {
         return sessionId.replaceFirst("sahix[0-9]+x", "");
     }
 
-    public static void deleteDir(File dir) {
+    public static void deleteDir(final File dir) {
         try {
             if (dir.exists()) {
                 File[] files = dir.listFiles();
-                for (int i = 0; i < files.length; i++) {
+                int len = files.length; // cached length so it doesn't have to be looked up in loop
+                for (int i = 0; i < len; i++) {
                     if (files[i].isDirectory()) {
                         deleteDir(files[i]);
                     } else {
@@ -262,12 +274,14 @@ public class Utils {
     public static String[] getCommandTokens(String commandString){
         String[] ar = commandString.split("\"");
         ArrayList tokens = new ArrayList();
-        for (int i=0; i<ar.length; i++){
+        int len = ar.length;
+        for (int i=0; i < len; i++){
             if (commandString.indexOf("\""+ar[i]+"\"") != -1){
                 tokens.add(ar[i]);
             }else{
                 String[] subtokens = ar[i].split(" ");
-                for (int j=0; j<subtokens.length; j++){
+                int length = subtokens.length; // cached length so it doesn't have to be looked up in loop
+                for (int j=0; j < length; j++){
                     tokens.add(subtokens[j]);
                 }
             }
