@@ -2286,7 +2286,7 @@ Sahi.prototype.ex = function (isStep) {
                         var retries = this.getRetries();
                         if (retries < this.MAX_RETRIES) {
                             this.setRetries(retries + 1);
-                            this.interval = this.ONERROR_INTERVAL;
+                            this.interval = this.ONERROR_INTERVAL * (retries + 1);
                             this.execNextStep(isStep, this.interval);
                             return;
                         } else {
@@ -2313,7 +2313,7 @@ Sahi.prototype.ex = function (isStep) {
             var retries = this.getRetries();
             if (retries < this.MAX_RETRIES) {
                 this.setRetries(retries + 1);
-                this.interval = this.ONERROR_INTERVAL;
+                this.interval = this.ONERROR_INTERVAL * (retries + 1);
             }else {
                 var debugInfo = "" + debugs[i];
                 if (this.getServerVar("sahi_play") == 1) {
@@ -2932,5 +2932,5 @@ Sahi.prototype._rteText = function(iframe){
     return this._getText(this.iframeFromStr(iframe).contentWindow.document.body);
 }
 Sahi.prototype._re = function(s){
-    return eval("/"+s+"/");
+    return eval("/"+s.replace(/\s+/g, '\\s+')+"/");
 }
