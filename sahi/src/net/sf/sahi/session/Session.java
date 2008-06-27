@@ -18,13 +18,14 @@
 
 package net.sf.sahi.session;
 
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 import net.sf.sahi.command.MockResponder;
 import net.sf.sahi.playback.SahiScript;
 import net.sf.sahi.record.Recorder;
 import net.sf.sahi.report.Report;
 import net.sf.sahi.test.SahiTestSuite;
-
-import java.util.*;
 
 /**
  * User: nraman Date: Jun 21, 2005 Time: 8:03:28 PM
