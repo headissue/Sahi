@@ -4,14 +4,16 @@
     _rteWrite, _rteHTML, _rteText added for writing and accessing Rich Text Editors
     _spandiv identifies elements better
     _re added for easily making strings to regular expressions
-    Time interval on error keeps increasing between each retry to allow for more time before failure.
-    Defaults changed for:
+    Defaults in sahi.properties changed to:
         script.time_between_steps=100
         script.time_between_steps_on_error=1500
+        script.max_reattempts_on_error=8
 
 * Bugfixes
     Bug relating to some windows being identified as popups if the page was opened from a contained iframe.
     Bug in _spandiv causing "unresponsive script" error on firefox.
+    Bug in View Script causing failure if the word "sah" was present in script.
+    _click on _label() will click the related element also.
 
 25 Jun 2008
 -----------
