@@ -27,7 +27,7 @@ import java.util.List;
 
 public class SocketPool {
     private final List unused = new LinkedList();
-    private final int START_PORT = 13300;
+    private static int START_PORT = 13300;
     private int lastPort;
 
     public SocketPool(final int size) {
