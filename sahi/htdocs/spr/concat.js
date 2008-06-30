@@ -2455,7 +2455,7 @@ Sahi.prototype.trim = function (s) {
     s = s.replace(/\xA0/g, ' ');
     s = s.replace(/^[ \t\n\r]*/g, '');
     s = s.replace(/[ \t\n\r]*$/g, '');
-    s = s.replace(/[\t\n\r]{1,}/g, ' ');
+    s = s.replace(/[ \t\n\r]{1,}/g, ' ');
     return s;
 }
 Sahi.prototype.list = function (el) {
