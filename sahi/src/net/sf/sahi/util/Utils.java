@@ -194,14 +194,17 @@ public class Utils {
     }
 
     public static String substitute(final String content, final Properties substitutions) {
-        String patternStr = "";
+
+        StringBuffer patternBuf = new StringBuffer();
         int i = 0;
         Enumeration keys = substitutions.keys();
         while (keys.hasMoreElements()) {
             String key = (String) keys.nextElement();
-            patternStr += (i++ == 0 ? "" : "|") + "\\$" + key;
+            patternBuf.append(i++ == 0 ? "" : "|").append("\\$").append(key);
         }
-        Pattern pattern = Pattern.compile(patternStr);
+                      
+        Pattern pattern = Pattern.compile(patternBuf.toString());
+        patternBuf = null;
         Matcher matcher = pattern.matcher(content);
 
         StringBuffer buf = new StringBuffer();
