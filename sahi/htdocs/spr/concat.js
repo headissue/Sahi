@@ -142,7 +142,7 @@ Sahi.prototype.getPartialAccessor = function (src) {
     return null;
 }
 Sahi.prototype.getLink = function (src) {
-    var lnx = document.getElementsByTagName("A");
+    var lnx = window.document.getElementsByTagName("A");
     for (var j = 0; j < lnx.length; j++) {
         if (lnx[j] == src) {
             return "links[" + j + "]";
@@ -151,7 +151,7 @@ Sahi.prototype.getLink = function (src) {
     return  null;
 }
 Sahi.prototype.getImg = function (src) {
-    var lnx = document.images;
+    var lnx = window.document.images;
     for (var j = 0; j < lnx.length; j++) {
         if (lnx[j] == src) {
             return "images[" + j + "]";
@@ -164,7 +164,7 @@ Sahi.prototype.getForm = function (src) {
     if (!String.isBlankOrNull(src.name) && this.nameNotAnInputElement(src)) {
         return "forms['" + src.name + "']";
     }
-    var fs = document.forms;
+    var fs = window.document.forms;
     for (var j = 0; j < fs.length; j++) {
         if (fs[j] == src) {
             return "forms[" + j + "]";
@@ -181,26 +181,26 @@ Sahi.prototype.getFormElement = function (src) {
 
 Sahi.prototype.getByTagName = function (src) {
     var tagName = src.tagName.toLowerCase();
-    var els = document.getElementsByTagName(tagName);
+    var els = window.document.getElementsByTagName(tagName);
     return "getElementsByTagName('" + tagName + "')[" + this.findInArray(els, src) + "]";
 }
 
 Sahi.prototype.getTable = function (src) {
-    var tables = document.getElementsByTagName("table");
-    if (src.id && src.id != null && src == document.getElementById(src.id)) {
+    var tables = window.document.getElementsByTagName("table");
+    if (src.id && src.id != null && src == window.document.getElementById(src.id)) {
         return "getElementById('" + src.id + "')";
     }
     return "getElementsByTagName('table')[" + this.findInArray(tables, src) + "]";
 }
 
 Sahi.prototype.getTableCell = function (src) {
-    var tables = document.getElementsByTagName("table");
+    var tables = window.document.getElementsByTagName("table");
     var row = this.getRow(src);
-    if (row.id && row.id != null && row == document.getElementById(row.id)) {
+    if (row.id && row.id != null && row == window.document.getElementById(row.id)) {
         return "getElementById('" + row.id + "').cells[" + src.cellIndex + "]";
     }
     var table = this.getTableEl(src);
-    if (table.id && table.id != null && table == document.getElementById(table.id)) {
+    if (table.id && table.id != null && table == window.document.getElementById(table.id)) {
         return "getElementById('" + table.id + "').rows[" + this.getRow(src).rowIndex + "].cells[" + src.cellIndex + "]";
     }
     return "getElementsByTagName('table')[" + this.findInArray(tables, this.getTableEl(src)) + "].rows[" + this.getRow(src).rowIndex + "].cells[" + src.cellIndex + "]";
@@ -442,7 +442,7 @@ Sahi.prototype.simulateMouseEvent = function (el, type, isRight, isDouble) {
     this.simulateMouseEventXY(el, type, xy[0], xy[1], isRight, isDouble);
 }
 Sahi.prototype.simulateMouseEventXY = function (el, type, x, y, isRight, isDouble) {
-    if (document.createEvent) {
+    if (window.document.createEvent) {
         if (this.isSafariLike()) {
             var evt = el.ownerDocument.createEvent('HTMLEvents')
             evt.initEvent(type, true, true);
@@ -570,7 +570,7 @@ Sahi.prototype.noop = function () {
 Sahi.prototype._setValue = function (el, val) {
     val = "" + val;
     var prevVal = el.value;
-    if (!document.createEvent) el.value = val;
+    if (!window.document.createEvent) el.value = val;
     if (el.type && el.type.indexOf("select") != -1) {
     } else {
         var append = false;
@@ -620,7 +620,7 @@ Sahi.prototype._setFile = function (el, v, url) {
 }
 
 Sahi.prototype.simulateEvent = function (target, evType) {
-    if (document.createEvent) {
+    if (window.document.createEvent) {
         var evt = new Object();
         evt.type = evType;
         evt.bubbles = true;
@@ -643,7 +643,7 @@ Sahi.prototype.simulateKeyEvent = function (charCode, target, evType, combo) {
     var c = String.fromCharCode(charCode);
     var isShift = combo == "SHIFT" || (charCode >= 65 && charCode <= 122 && c.toUpperCase() == c);
 
-    if (document.createEvent) {
+    if (window.document.createEvent) {
         if (this.isSafariLike()) {
             var event = target.ownerDocument.createEvent('HTMLEvents')
             event.initEvent(evType, false, false);
@@ -962,6 +962,7 @@ Sahi.prototype._alert = function (s) {
 Sahi.prototype.alertMock = function (s) {
     if (this.isPlaying()) {
         this.setServerVar("lastAlertText", s);
+        return;
     } else {
         return this._alert(s);
     }
@@ -1178,7 +1179,7 @@ Sahi.prototype.getFrame1 = function (win, doc) {
 }
 
 Sahi.prototype.simulateChange = function (el) {
-    if (document.all) {
+    if (window.document.all) {
         if (el.onchange) el.onchange();
         if (el.onblur) el.onblur();
     } else {
@@ -1631,13 +1632,13 @@ Sahi.prototype.createCookie = function (name, value, days)
         date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
         expires = "; expires=" + date.toGMTString();
     }
-    document.cookie = name + "=" + value + expires + "; path=/";
+    window.document.cookie = name + "=" + value + expires + "; path=/";
 }
 Sahi.prototype._createCookie = Sahi.prototype.createCookie;
 Sahi.prototype.readCookie = function (name)
 {
     var nameEQ = name + "=";
-    var ca = document.cookie.split(';');
+    var ca = window.document.cookie.split(';');
     for (var i = 0; i < ca.length; i++)
     {
         var c = ca[i];
@@ -2487,7 +2488,8 @@ Sahi.prototype.list = function (el) {
 }
 
 Sahi.prototype.findInArray = function (ar, el) {
-    for (var i = 0; i < ar.length; i++) {
+    var len = ar.length;
+    for (var i = 0; i < len; i++) {
         if (ar[i] == el) return i;
     }
     return -1;
@@ -2615,8 +2617,8 @@ Sahi.prototype.activateHotKey = function () {
         this.addEvent(document, "dblclick", Sahi.openControllerWindow);
         this.addEvent(document, "mousemove", this.mouseOver);
         if (this.isSafariLike()) {
-            var prev = document.ondblclick;
-            document.ondblclick = function(e) {
+            var prev = window.document.ondblclick;
+            window.document.ondblclick = function(e) {
                 if (prev != null) prev(e);
                 this.openControllerWindow(e)
             };
@@ -2730,7 +2732,7 @@ Sahi.prototype._style = function (el, style) {
     var value = el.style[this.toCamelCase(style)];
 
     if (!value)
-        if (document.defaultView)
+        if (window.document.defaultView)
             value = document.defaultView.getComputedStyle(el, "").getPropertyValue(style);
         else if (el.currentStyle)
             value = el.currentStyle[this.toCamelCase(style)];
@@ -2765,18 +2767,18 @@ Sahi.INSERT_TEXT = "<script src='/_s_/spr/concat.js'></scr"+"ipt>"+
 
 Sahi.prototype.ieDocClose = function(){
     this.oldDocWrite(this.sahiBuffer);
-    document.write(Sahi.INSERT_TEXT);
-    document.close();
+    window.document.write(Sahi.INSERT_TEXT);
+    window.document.close();
     this.loaded = true;
     this.play();
 }
 Sahi.prototype.ieDocWrite = function(s){
    this.sahiBuffer += s;
 }
-if (false && _sahi.isIE()){  // Donot move into method.
-    Sahi.prototype.oldDocWrite = document.write;
-    document.write = function (s) {_sahi.ieDocWrite(s);};
-    document.close = function () {_sahi.ieDocClose();};
+if (false && _sahi.isIE()){  // Do not move into method.
+    Sahi.prototype.oldDocWrite = window.document.write;
+    window.document.write = function (s) {_sahi.ieDocWrite(s);};
+    window.document.close = function () {_sahi.ieDocClose();};
 }
 //--
 Sahi.prototype.ffDocClose = function(){
