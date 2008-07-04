@@ -1,4 +1,4 @@
-var d = document.domain;
+var d = window.document.domain;
 var ix = d.lastIndexOf(".");
 ix = d.lastIndexOf(".", ix-1);
 if (ix!=-1){

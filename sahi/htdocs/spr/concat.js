@@ -95,9 +95,9 @@ Sahi.prototype.getKnownTags = function (src) {
         if (!el.tagName || el.tagName.toLowerCase() == "html" || el.tagName.toLowerCase() == "body") return null;
         var tag = el.tagName.toLowerCase();
         if (tag == "a" || tag == "select" || tag == "img" || tag == "form"
-                || tag == "input" || tag == "button" || tag == "textarea"
-                || tag == "textarea" || tag == "td" || tag == "table"
-                || ((tag == "div" || tag == "span")) || tag == "label" ) return el;
+            || tag == "input" || tag == "button" || tag == "textarea"
+            || tag == "textarea" || tag == "td" || tag == "table"
+            || ((tag == "div" || tag == "span")) || tag == "label" ) return el;
         el = el.parentNode;
     }
 }
@@ -330,7 +330,7 @@ Sahi.prototype._keyPress = function (el, charCode, combo) {
     this.simulateKeyEvent(charCode, el, "keydown", combo);
     this.simulateKeyEvent(charCode, el, "keypress", combo);
     if (prev + c != el.value) {
-//      if (!el.maxLength || el.value.length < el.maxLength)
+        //      if (!el.maxLength || el.value.length < el.maxLength)
         el.value = el.value + c;
     }
     this.simulateKeyEvent(charCode, el, "keyup", combo);
@@ -452,21 +452,21 @@ Sahi.prototype.simulateMouseEventXY = function (el, type, x, y, isRight, isDoubl
             // FF
             var evt = el.ownerDocument.createEvent("MouseEvents");
             evt.initMouseEvent(
-                    (isDouble ? "dbl" : "") + type,
-                    true, //can bubble
-                    true,
-                    el.ownerDocument.defaultView,
-                    (isDouble ? 2 : 1),
-                    x, //screen x
-                    y, //screen y
-                    x, //client x
-                    y, //client y
-                    false,
-                    false,
-                    false,
-                    false,
-                    isRight ? 2 : 0,
-                    null);
+            (isDouble ? "dbl" : "") + type,
+            true, //can bubble
+            true,
+            el.ownerDocument.defaultView,
+            (isDouble ? 2 : 1),
+            x, //screen x
+            y, //screen y
+            x, //client x
+            y, //client y
+            false,
+            false,
+            false,
+            false,
+            isRight ? 2 : 0,
+            null);
             el.dispatchEvent(evt);
         }
     } else {
@@ -506,7 +506,7 @@ Sahi.prototype.findPos = function (obj){
                 wasStatic = obj.style.position;
                 obj.style.position = "relative";
             }
-            */
+             */
             x += obj.offsetLeft;
             y += obj.offsetTop;
             if (wasStatic != null) obj.style.position = wasStatic;
@@ -668,7 +668,7 @@ Sahi.prototype.simulateKeyEvent = function (charCode, target, evType, combo) {
             if (!target) return;
             var event = target.ownerDocument.createEvent("KeyEvents");
             event.initKeyEvent(evt.type, evt.bubbles, evt.cancelable, target.ownerDocument.defaultView,
-                    evt.ctrlKey, evt.altKey, evt.shiftKey, evt.metaKey, evt.keyCode, evt.charCode);
+            evt.ctrlKey, evt.altKey, evt.shiftKey, evt.metaKey, evt.keyCode, evt.charCode);
             target.dispatchEvent(event);
         }
     } else {
@@ -1128,7 +1128,7 @@ Sahi.prototype._log = function (s, type) {
 Sahi.prototype._navigateTo = function (url, force) {
     if (force || this.top().location.href != url)
         this.top().location.href = url;
-//        this.top().setTimeout("location.href = '"+url+"'", 1);
+    //        this.top().setTimeout("location.href = '"+url+"'", 1);
 }
 Sahi.prototype._callServer = function (cmd, qs) {
     return this.sendToServer("/_s_/dyn/" + cmd + (qs == null ? "" : ("?" + qs)));
@@ -1680,7 +1680,7 @@ Sahi.prototype.onEv = function (e) {
         if (targ.form && targ.type) {
             var type = targ.type;
             if (type == "text" || type == "textarea" || type == "password"
-                    || type == "select-one" || type == "select-multiple") return true;
+                || type == "select-one" || type == "select-multiple") return true;
         }
     }
     var info = _sahi.getAccessorInfo(targ);
@@ -1943,7 +1943,7 @@ Sahi.prototype.docEventHandler = function (e) {
             // addEventListenersForCapturing
             debug("onmouseover"+tag);
         }
-        */
+         */
         t.hasAttached = true;
     }
 
@@ -2061,14 +2061,14 @@ Sahi.openControllerWindow = function (e) {
     if (!e) e = window.event;
     if (!_sahi.isHotKeyPressed(e)) return true;
     _sahi.top()._sahi.openWin(e);
-//    _sahi.openWin(e);
+    //    _sahi.openWin(e);
     return true;
 }
 Sahi.prototype.isHotKeyPressed = function (e) {
     return ((this.hotKey == "SHIFT" && e.shiftKey)
-            || (this.hotKey == "CTRL" && e.ctrlKey)
-            || (this.hotKey == "ALT" && e.altKey)
-            || (this.hotKey == "META" && e.metaKey));
+        || (this.hotKey == "CTRL" && e.ctrlKey)
+        || (this.hotKey == "ALT" && e.altKey)
+        || (this.hotKey == "META" && e.metaKey));
 }
 Sahi.prototype.mouseOver = function (e) {
     try {
@@ -2354,8 +2354,8 @@ Sahi.prototype.isForPopup = function (cmd) {
 }
 Sahi.prototype.canEval = function (cmd) {
     return (this.top().opener == null && !this.isForPopup(cmd)) // for base window
-            || (this.top().opener && this.top().opener._sahi.top() == this.top()) // for links in firefox
-            || (this.top().opener != null && this.isForPopup(cmd));
+        || (this.top().opener && this.top().opener._sahi.top() == this.top()) // for links in firefox
+        || (this.top().opener != null && this.isForPopup(cmd));
     // for popups
 }
 Sahi.prototype.pause = function () {
@@ -2447,7 +2447,7 @@ Sahi.prototype.reportSuccess = function (msg, debugInfo) {
 Sahi.prototype.logPlayBack = function (msg, type, debugInfo, failureMsg) {
     //this.sendToServer("/_s_/dyn/Log?msg=" + encodeURIComponent(msg) + "&type=" + type + "&debugInfo=" + (debugInfo?encodeURIComponent(debugInfo):""));
     this.sendToServer("/_s_/dyn/TestReporter_logTestResult?msg=" + encodeURIComponent(msg) + "&type=" + type
-            + "&debugInfo=" + (debugInfo ? encodeURIComponent(debugInfo) : "") + (failureMsg ? "&failureMsg=" + encodeURIComponent(failureMsg) : ""));
+        + "&debugInfo=" + (debugInfo ? encodeURIComponent(debugInfo) : "") + (failureMsg ? "&failureMsg=" + encodeURIComponent(failureMsg) : ""));
 }
 Sahi.prototype.trim = function (s) {
     if (s == null) return s;
@@ -2675,10 +2675,10 @@ Sahi.prototype.getScript = function (info) {
         if (ev == "wait") {
             cmd = "_wait(" + value + ");";
         } else if (ev == "mark") {
-            cmd = "//MARK: " + value;
-        } else if (ev == "setFile") {
-            cmd = "_setFile(" + accessor + ", " + this.quotedEscapeValue(value) + ");";
-        }
+        cmd = "//MARK: " + value;
+    } else if (ev == "setFile") {
+        cmd = "_setFile(" + accessor + ", " + this.quotedEscapeValue(value) + ");";
+    }
     if (cmd != null && popup != null && popup != "") {
         cmd = "_popup(\"" + popup + "\")." + cmd;
     }
@@ -2734,8 +2734,8 @@ Sahi.prototype._style = function (el, style) {
     if (!value)
         if (window.document.defaultView)
             value = document.defaultView.getComputedStyle(el, "").getPropertyValue(style);
-        else if (el.currentStyle)
-            value = el.currentStyle[this.toCamelCase(style)];
+    else if (el.currentStyle)
+        value = el.currentStyle[this.toCamelCase(style)];
 
     return value;
 }
@@ -2760,10 +2760,10 @@ Sahi.prototype.setWaitConditionTime = function(time) {
 }
 // document.write start
 Sahi.INSERT_TEXT = "<script src='/_s_/spr/concat.js'></scr"+"ipt>"+
-"<script src='http://sahi.example.com/_s_/dyn/SessionState/state.js'></scr"+"ipt>"+
-"<script src='http://sahi.example.com/_s_/dyn/Player_script/script.js'></scr"+"ipt>"+
-"<script src='/_s_/spr/playback.js'></scr"+"ipt>" +
-"";
+    "<script src='http://sahi.example.com/_s_/dyn/SessionState/state.js'></scr"+"ipt>"+
+    "<script src='http://sahi.example.com/_s_/dyn/Player_script/script.js'></scr"+"ipt>"+
+    "<script src='/_s_/spr/playback.js'></scr"+"ipt>" +
+    "";
 
 Sahi.prototype.ieDocClose = function(){
     this.oldDocWrite(this.sahiBuffer);
@@ -2773,7 +2773,7 @@ Sahi.prototype.ieDocClose = function(){
     this.play();
 }
 Sahi.prototype.ieDocWrite = function(s){
-   this.sahiBuffer += s;
+    this.sahiBuffer += s;
 }
 if (false && _sahi.isIE()){  // Do not move into method.
     Sahi.prototype.oldDocWrite = window.document.write;
@@ -2788,13 +2788,13 @@ Sahi.prototype.ffDocClose = function(){
     this.play();
 }
 Sahi.prototype.ffDocWrite = function(s){
-   this.sahiBuffer += s;
+    this.sahiBuffer += s;
 }
 if (!_sahi.isIE()) {
-//    Sahi.prototype.oldDocWrite = document.write;
-//    document.write = function (s) {_sahi.ffDocWrite(s);};
-//    Sahi.prototype.oldDocClose = document.close;
-//    document.close = function () {_sahi.ffDocClose();};
+    //    Sahi.prototype.oldDocWrite = document.write;
+    //    document.write = function (s) {_sahi.ffDocWrite(s);};
+    //    Sahi.prototype.oldDocClose = document.close;
+    //    document.close = function () {_sahi.ffDocClose();};
 }
 // document.write end
 
@@ -2842,7 +2842,7 @@ SahiXHRWrapper.prototype.open = function(method, url, async, username, password)
         var xs = _sahi.top()._sahi.XHRs;
         xs[xs.length] = this;
         this.xhr.setRequestHeader("sahi-isxhr", "true");
-       }
+    }
     var fn = this.stateChange;
     var obj = this;
     this.xhr.onreadystatechange = function(){fn.apply(obj, arguments);}
