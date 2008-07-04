@@ -1,3 +1,8 @@
+/**
+ * User: dlewis
+ * Date: Dec 7, 2006
+ * Time: 1:57:00 PM
+ */
 package net.sf.sahi.issue;
 
 import net.sf.sahi.report.Formatter;
@@ -5,12 +10,8 @@ import net.sf.sahi.report.TestSummary;
 
 import java.util.List;
 
-/**
- * User: dlewis
- * Date: Dec 7, 2006
- * Time: 1:57:00 PM
- */
 public class IssueFormatter implements Formatter {
+
     public String getSummaryData(TestSummary summary) {
         if (summary.hasFailed()) {
             StringBuffer sb = new StringBuffer("\n\n");

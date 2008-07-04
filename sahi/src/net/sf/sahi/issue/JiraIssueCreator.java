@@ -1,3 +1,8 @@
+/**
+ * User: dlewis
+ * Date: Dec 4, 2006
+ * Time: 5:11:59 PM
+ */
 package net.sf.sahi.issue;
 
 import net.sf.sahi.util.FileNotFoundRuntimeException;
@@ -11,19 +16,14 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.*;
 
-/**
- * User: dlewis
- * Date: Dec 4, 2006
- * Time: 5:11:59 PM
- */
 public class JiraIssueCreator implements IssueCreator {
-    private static Properties properties;
 
+    private static Properties properties;
     private XmlRpcClient rpcClient;
     private String loginToken;
     private Map issueParams;
 
-    public JiraIssueCreator(String propFile) {
+    public JiraIssueCreator(final String propFile) {
         loadPropFile(propFile);
         initializeXmlRpcClient(new XmlRpcClient(), new XmlRpcClientConfigImpl());
     }
@@ -44,7 +44,6 @@ public class JiraIssueCreator implements IssueCreator {
         loadPropFile(null);
     }
 
-
     void setIssueParams(Map issueParams) {
         this.issueParams = issueParams;
     }
@@ -60,7 +59,6 @@ public class JiraIssueCreator implements IssueCreator {
             throw new FileNotFoundRuntimeException(e);
         }
     }
-
 
     public static void main(String[] args) {
         JiraIssueCreator issueCreator = new JiraIssueCreator("");
@@ -109,7 +107,7 @@ public class JiraIssueCreator implements IssueCreator {
     }
 
     public String getLoginToken() {
-        if(loginToken == null)  {
+        if (loginToken == null) {
             login();
         }
         return loginToken;
@@ -127,6 +125,7 @@ public class JiraIssueCreator implements IssueCreator {
     }
 
     private class JiraItem {
+
         private Map attributes;
 
         public JiraItem(String method, List params, String itemName) throws XmlRpcException {
@@ -162,6 +161,4 @@ public class JiraIssueCreator implements IssueCreator {
             return list;
         }
     }
-
-
 }

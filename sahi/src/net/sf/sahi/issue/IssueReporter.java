@@ -1,3 +1,8 @@
+/**
+ * User: dlewis
+ * Date: Dec 7, 2006
+ * Time: 1:55:54 PM
+ */
 package net.sf.sahi.issue;
 
 import net.sf.sahi.report.SahiReporter;
@@ -10,19 +15,15 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
-/**
- * User: dlewis
- * Date: Dec 7, 2006
- * Time: 1:55:54 PM
- */
 public class IssueReporter extends SahiReporter {
+
     private List listIssueCreator = new ArrayList();
 
-    public void addIssueCreator(IssueCreator issueCreator) {
+    public void addIssueCreator(final IssueCreator issueCreator) {
         listIssueCreator.add(issueCreator);
     }
 
-    public IssueReporter(String suiteName) {
+    public IssueReporter(final String suiteName) {
         super(new IssueFormatter());
         this.suiteName = suiteName;
     }
@@ -40,7 +41,7 @@ public class IssueReporter extends SahiReporter {
         createIssue(issue);
     }
 
-    void createIssue(Issue issue) {
+    void createIssue(final Issue issue) {
         try {
             for (Iterator iterator = listIssueCreator.iterator(); iterator.hasNext();) {
                 IssueCreator issueCreator = (IssueCreator) iterator.next();
@@ -52,7 +53,7 @@ public class IssueReporter extends SahiReporter {
         }
     }
 
-    Issue prepareIssue(List tests) {
+    Issue prepareIssue(final List tests) {
         generateSuiteReport(tests);
         StringWriter sw = (StringWriter) writer;
         String summary = suiteName + " failed on " + new SimpleDateFormat("ddMMMyy_HH:mm:ss").format(new Date());

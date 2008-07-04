@@ -15,7 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package net.sf.sahi.playback;
 
 import net.sf.sahi.util.Utils;
@@ -24,15 +23,16 @@ import java.io.File;
 import java.util.ArrayList;
 
 public class FileScript extends SahiScript {
+
     public FileScript(String fileName) {
         super(fileName, new ArrayList(), new File(fileName).getName());
     }
 
-    public FileScript(String fileName, ArrayList parents) {
+    public FileScript(final String fileName, final ArrayList parents) {
         super(fileName, parents, new File(fileName).getName());
     }
 
-    protected void loadScript(String fileName) {
+    protected void loadScript(final String fileName) {
         try {
             setScript(new String(Utils.readFile(fileName)));
         } catch (Exception e) {
@@ -40,15 +40,14 @@ public class FileScript extends SahiScript {
         }
     }
 
-    String getFQN(String scriptName) {
+    String getFQN(final String scriptName) {
         if (scriptName.indexOf("http") == 0) {
             return scriptName;
         }
         return Utils.getRelativeFile(new File(path), scriptName).getAbsolutePath();
     }
 
-
-    SahiScript getNewInstance(String scriptName, ArrayList parents) {
+    SahiScript getNewInstance(final String scriptName, final ArrayList parents) {
         FileScript fileScript = new FileScript(getFQN(scriptName), parents);
         fileScript.parents = parents;
         return fileScript;

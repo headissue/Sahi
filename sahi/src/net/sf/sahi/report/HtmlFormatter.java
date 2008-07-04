@@ -1,3 +1,6 @@
+/**
+ * @author dlewis
+ */
 package net.sf.sahi.report;
 
 import net.sf.sahi.command.Command;
@@ -6,9 +9,6 @@ import net.sf.sahi.util.Utils;
 
 import java.util.List;
 
-/**
- * @author dlewis
- */
 public class HtmlFormatter implements Formatter {
 
     public String getFileName(String scriptName) {
@@ -29,22 +29,19 @@ public class HtmlFormatter implements Formatter {
 
     public String getHeader() {
         return new StringBuffer("<style>\n").append(
-                new String(Utils.readFile(Configuration
-                        .getPlaybackLogCSSFileName(true)))).append(
-                new String(Utils.readFile(Configuration
-                        .getConsolidatedLogCSSFileName(true)))).append(
+                new String(Utils.readFile(Configuration.getPlaybackLogCSSFileName(true)))).append(
+                new String(Utils.readFile(Configuration.getConsolidatedLogCSSFileName(true)))).append(
                 "</style>\n").toString();
     }
 
-    public String getStringResult(TestResult result) {
+    public String getStringResult(final TestResult result) {
         StringBuffer sb = new StringBuffer();
         sb.append("<div class=\"").append(result.type.getName()).append(
                 "\"><a class=\"").append(result.type.getName());
         if (!Utils.isBlankOrNull(result.debugInfo)) {
             sb.append("\" href=\"/_s_/dyn/").append(Command.LOG_HIGHLIGHT).append("?href=").append(result.debugInfo);
         }
-        sb.append("\">").append(result.message).append(result.failureMsg != null ? " " + result.failureMsg : "")
-                .append("</a></div>");
+        sb.append("\">").append(result.message).append(result.failureMsg != null ? " " + result.failureMsg : "").append("</a></div>");
 
         return sb.toString();
     }
@@ -55,13 +52,10 @@ public class HtmlFormatter implements Formatter {
 
     public String getSummaryData(TestSummary summary) {
         StringBuffer sb = new StringBuffer();
-        int successRate = summary.getSteps() != 0 ? ((summary.getSteps() - (summary
-                .getFailures() + summary.getErrors())) * 100)
-                / summary.getSteps()
+        int successRate = summary.getSteps() != 0 ? ((summary.getSteps() - (summary.getFailures() + summary.getErrors())) * 100) / summary.getSteps()
                 : 100;
         sb.append("<tr class=\"");
-        sb.append(summary.hasFailed() ? ResultType.FAILURE.getName() : ResultType.SUCCESS
-                .getName());
+        sb.append(summary.hasFailed() ? ResultType.FAILURE.getName() : ResultType.SUCCESS.getName());
         sb.append("\"><td>");
         if (summary.addLink()) {
             sb.append("<a class=\"SCRIPT\" href=\"").append(getFileName(summary.getLogFileName())).append("\">").append(summary.getScriptName()).append(
@@ -70,8 +64,7 @@ public class HtmlFormatter implements Formatter {
             sb.append(summary.getScriptName());
         }
         sb.append(
-                "</td><td>").append(summary.getSteps()).append("</td><td>")
-                .append(summary.getFailures()).append("</td><td>").append(
+                "</td><td>").append(summary.getSteps()).append("</td><td>").append(summary.getFailures()).append("</td><td>").append(
                 summary.getErrors()).append("</td><td>").append(
                 successRate).append("%</td></tr>");
         return sb.toString();

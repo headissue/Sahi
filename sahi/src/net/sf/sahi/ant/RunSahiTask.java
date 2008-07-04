@@ -15,7 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package net.sf.sahi.ant;
 
 import net.sf.sahi.test.TestRunner;
@@ -30,28 +29,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class RunSahiTask extends Task {
+
     private String suite;
-
     private String browser;
-
     private String baseURL;
-
     private String sahiHost;
-
     private String sahiPort;
-
     private String failureProperty;
-
     private String haltOnFailure;
-
     private String stop;
-
     private String threads = "1";
-
     private String browserOption;
-
     private CreateIssue createIssue;
-
     private List listReport = new ArrayList();
 
     public void setBrowserOption(String browserOption) {
@@ -88,8 +77,7 @@ public class RunSahiTask extends Task {
 
     private void stopServer() {
         try {
-            URL url = new URL("http://" + sahiHost + ":" + sahiPort
-                    + "/_s_/dyn/stopserver");
+            URL url = new URL("http://" + sahiHost + ":" + sahiPort + "/_s_/dyn/stopserver");
             InputStream s = url.openStream();
             s.close();
         } catch (MalformedURLException e) {
@@ -108,7 +96,7 @@ public class RunSahiTask extends Task {
             e.printStackTrace();
         }
         System.out.println("STATUS:" + status);
-        if (!"SUCCESS".equals(status)) {                
+        if (!"SUCCESS".equals(status)) {
             if (failureProperty != null) {
                 getProject().setProperty(failureProperty, "true");
             }
@@ -143,7 +131,6 @@ public class RunSahiTask extends Task {
 //        this.createIssue = new CreateIssue();
 //        return this.createIssue;
 //    }
-
     public void addConfiguredCreateIssue(CreateIssue createIssue) {
         System.out.println("Setting createIssue");
         if (!"jira".equalsIgnoreCase(createIssue.getTool())) {
@@ -155,7 +142,7 @@ public class RunSahiTask extends Task {
     public void addConfiguredReport(Report report) {
         if (!("junit".equalsIgnoreCase(report.getType()) || "html".equalsIgnoreCase(report.getType()))) {
             throw new BuildException("Valid valued for attribute 'type' of tag 'reporter' are html or junit");
-        }        
+        }
         this.listReport.add(report);
     }
 }

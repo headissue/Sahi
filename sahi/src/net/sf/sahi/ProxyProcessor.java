@@ -70,12 +70,10 @@ public class ProxyProcessor implements Runnable {
                 if (_s_ != -1 && (q == -1 || (q > _s_))) {
                     processLocally(uri, requestFromBrowser);
                 } else {
-                    if (isHostTheProxy(requestFromBrowser.host())
-                            && requestFromBrowser.port() == Configuration.getPort()) {
+                    if (isHostTheProxy(requestFromBrowser.host()) && requestFromBrowser.port() == Configuration.getPort()) {
                         processLocally(uri, requestFromBrowser);
                     } else if (uri.indexOf("favicon.ico") != -1) {
-                        sendResponseToBrowser(new HttpFileResponse(Configuration.getHtdocsRoot()
-                                + "spr/favicon.ico"));
+                        sendResponseToBrowser(new HttpFileResponse(Configuration.getHtdocsRoot() + "spr/favicon.ico"));
                     } else {
                         processAsProxy(requestFromBrowser);
                     }
@@ -83,9 +81,11 @@ public class ProxyProcessor implements Runnable {
             } else {
                 sendResponseToBrowser(new SimpleHttpResponse(""));
             }
-            if (isKeepAlive() && !client.isClosed()) new Thread(new ProxyProcessor(client)).start();
+            if (isKeepAlive() && !client.isClosed()) {
+                new Thread(new ProxyProcessor(client)).start();
+            }
         } catch (Exception e) {
-        	//e.printStackTrace();
+            //e.printStackTrace();
             logger.fine(e.getMessage());
             try {
                 client.close();
@@ -95,7 +95,7 @@ public class ProxyProcessor implements Runnable {
         }
     }
 
-    private boolean isHostTheProxy(String host) {
+    private boolean isHostTheProxy(final String host) {
         try {
             return InetAddress.getByName(host).getHostAddress().equals(
                     InetAddress.getLocalHost().getHostAddress())
@@ -109,36 +109,39 @@ public class ProxyProcessor implements Runnable {
         if (requestFromBrowser.isConnect()) {
             processConnect(requestFromBrowser);
         } else {
-            if (handleDifferently(requestFromBrowser)) return;
+            if (handleDifferently(requestFromBrowser)) {
+                return;
+            }
             HttpResponse responseFromHost = null;
             try {
-            	Session session = requestFromBrowser.session();
+                Session session = requestFromBrowser.session();
                 responseFromHost = remoteRequestProcessor.processHttp(requestFromBrowser);
-                if (responseFromHost.status().indexOf("200") != -1 &&
-                		(isDownloadContentType(responseFromHost.contentType()) ||
-                		isDownloadURL(requestFromBrowser.url()))
-                		){
-            		String fileName = requestFromBrowser.fileName();
-					save(responseFromHost, fileName);
-            		session.setVariable("download_lastFile", fileName);
-            		responseFromHost = new NoContentResponse();
+                if (responseFromHost.status().indexOf("200") != -1 
+                       && (isDownloadContentType(responseFromHost.contentType()) 
+                       || isDownloadURL(requestFromBrowser.url()))) {
+                    String fileName = requestFromBrowser.fileName();
+                    save(responseFromHost, fileName);
+                    session.setVariable("download_lastFile", fileName);
+                    responseFromHost = new NoContentResponse();
                 }
             } catch (Exception e) {
                 e.printStackTrace();
                 responseFromHost = new SimpleHttpResponse("");
             }
-            if (responseFromHost == null) responseFromHost = new SimpleHttpResponse("");
+            if (responseFromHost == null) {
+                responseFromHost = new SimpleHttpResponse("");
+            }
             sendResponseToBrowser(responseFromHost);
         }
     }
 
-    public void save(HttpResponse response, String fileName) {
-    	System.out.println("Downloading "+fileName+" to temp directory: "+ Configuration.tempDownloadDir());
-    	byte[] data = response.data();
+    public void save(HttpResponse response, final String fileName) {
+        System.out.println("Downloading " + fileName + " to temp directory: " + Configuration.tempDownloadDir());
+        byte[] data = response.data();
         try {
             File file = new File(Configuration.tempDownloadDir(), fileName);
             if (file.exists()) {
-            	file.delete();
+                file.delete();
             }
             file.createNewFile();
             FileOutputStream out;
@@ -151,7 +154,7 @@ public class ProxyProcessor implements Runnable {
     }
 
 
-    private boolean isDownloadURL(String url) {
+    private boolean isDownloadURL(final String url) {
         String[] list = Configuration.getDownloadURLList();
         for (int i = 0; i < list.length; i++) {
             String pattern = list[i];
@@ -163,21 +166,25 @@ public class ProxyProcessor implements Runnable {
     }
 
     private boolean isDownloadContentType(String contentType) {
-    	if (contentType == null || contentType.equals("")) return true;
-    	contentType = contentType.toLowerCase();
-		String[] downloadables = Configuration.getDownloadContentTypes();
-		for (int i=0; i<downloadables.length; i++){
-			if (contentType.indexOf(downloadables[i]) != -1){
-				return true;
-			}
-		}
-		return false;
-	}
+        if (contentType == null || contentType.equals("")) {
+            return true;
+        }
+        contentType = contentType.toLowerCase();
+        String[] downloadables = Configuration.getDownloadContentTypes();
+        for (int i = 0; i < downloadables.length; i++) {
+            if (contentType.indexOf(downloadables[i]) != -1) {
+                return true;
+            }
+        }
+        return false;
+    }
 
-	private boolean handleDifferently(HttpRequest request) throws IOException {
+    private boolean handleDifferently(final HttpRequest request) throws IOException {
         final MockResponder mockResponder = request.session().mockResponder();
         HttpResponse response = mockResponder.getResponse(request);
-        if (response == null) return false;
+        if (response == null) {
+            return false;
+        }
         sendResponseToBrowser(response);
         return true;
     }
@@ -195,7 +202,7 @@ public class ProxyProcessor implements Runnable {
     }
 
 
-    private void processLocally(String uri, HttpRequest requestFromBrowser) throws IOException {
+    private void processLocally(String uri, final HttpRequest requestFromBrowser) throws IOException {
         HttpResponse httpResponse = new LocalRequestProcessor().getLocalResponse(uri,
                 requestFromBrowser);
         sendResponseToBrowser(httpResponse);
@@ -207,7 +214,7 @@ public class ProxyProcessor implements Runnable {
         return new HttpRequest(in, isSSLSocket);
     }
 
-    protected void sendResponseToBrowser(HttpResponse responseFromHost) throws IOException {
+    protected void sendResponseToBrowser(final HttpResponse responseFromHost) throws IOException {
         OutputStream outputStreamToBrowser = new BufferedOutputStream(client.getOutputStream());
         responseFromHost.proxyKeepAlive(isKeepAlive());
         logger.fine("---------START----------");
@@ -216,11 +223,11 @@ public class ProxyProcessor implements Runnable {
         outputStreamToBrowser.write(responseFromHost.rawHeaders());
         outputStreamToBrowser.flush();
         final byte[] data = responseFromHost.data();
-        if (data != null){
-	        outputStreamToBrowser.write(data);
-	        outputStreamToBrowser.flush();
+        if (data != null) {
+            outputStreamToBrowser.write(data);
+            outputStreamToBrowser.flush();
         }
-        if (!isKeepAlive()){
+        if (!isKeepAlive()) {
             outputStreamToBrowser.close();
             client.close();
         }

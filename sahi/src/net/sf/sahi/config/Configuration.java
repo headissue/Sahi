@@ -15,7 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package net.sf.sahi.config;
 
 import net.sf.sahi.util.Utils;
@@ -33,15 +32,16 @@ import java.util.logging.Logger;
  * User: nraman Date: Jun 3, 2005 Time: 12:48:07 AM To
  */
 public class Configuration {
+
     private static Properties properties;
     private static final String LOG_PATTERN = "sahi.log";
     private static final String HTDOCS_ROOT = "../htdocs/";
     private static final String SAHI_PROPERTIES = "../config/sahi.properties";
     private static final String LOG_PROPERITES = "../config/log.properties";
     private static final String TMP_DOWNLOAD_DIR = "../temp/download";
-    
     public static final String PLAYBACK_LOG_ROOT = "playback";
     public static FileHandler handler;
+    
 
     static {
         properties = new Properties();
@@ -66,14 +66,16 @@ public class Configuration {
         int maxProfiles = Integer.parseInt(properties.getProperty("ff.profiles.max_number", "10"));
         for (int i = 0; i < maxProfiles; i++) {
             File profileN = new File(Utils.concatPaths(profileDir.getCanonicalPath(), prefix + i));
-            if (profileN.exists()) {continue;}
-        	System.out.println("Copying profile to " + profileN);
-			FileUtils.copyDir(templateDir, profileN);
+            if (profileN.exists()) {
+                continue;
+            }
+            System.out.println("Copying profile to " + profileN);
+            FileUtils.copyDir(templateDir, profileN);
         }
-    	System.out.println("\n\n--------NOTE-------- \n" +
-                 "When running a suite, if you get an 'already running, but is not responding' error alert on firefox, \n" +
-		 "don't worry, just click OK on the alerts and the next time you run the suite things will work fine.\n"   +
-		 "--------------------\n\n");
+        System.out.println("\n\n--------NOTE-------- \n" +
+                "When running a suite, if you get an 'already running, but is not responding' error alert on firefox, \n" +
+                "don't worry, just click OK on the alerts and the next time you run the suite things will work fine.\n" +
+                "--------------------\n\n");
     }
 
     public static void createFolders(final File file) {
@@ -108,7 +110,9 @@ public class Configuration {
     public static String getLogsRoot() {
         String fileName = properties.getProperty("logs.dir");
         File file = new File(fileName);
-        if (!file.exists()) {file.mkdirs();}
+        if (!file.exists()) {
+            file.mkdirs();
+        }
         return fileName;
     }
 
@@ -137,11 +141,12 @@ public class Configuration {
         return tokens;
     }
 
-
     public static String getPlayBackLogsRoot() {
         String fileName = Utils.concatPaths(getLogsRoot(), PLAYBACK_LOG_ROOT);
         File file = new File(fileName);
-        if (!file.exists()) file.mkdirs();
+        if (!file.exists()) {
+            file.mkdirs();
+        }
         return fileName;
     }
 
@@ -154,15 +159,13 @@ public class Configuration {
         return addHtdocsRoot ? Utils.concatPaths(getHtdocsRoot(), path) : path;
     }
 
-
     public static String getConsolidatedLogCSSFileName(final boolean addHtdocsRoot) {
         final String path = "spr/css/consolidated_log_format.css";
         return addHtdocsRoot ? Utils.concatPaths(getHtdocsRoot(), path) : path;
     }
 
     public static boolean isExternalProxyEnabled() {
-        return "true".equalsIgnoreCase(properties
-                .getProperty("ext.proxy.enable"));
+        return "true".equalsIgnoreCase(properties.getProperty("ext.proxy.enable"));
     }
 
     public static boolean isKeepAliveEnabled() {
@@ -173,7 +176,6 @@ public class Configuration {
     public static String getExternalProxyHost() {
         return properties.getProperty("ext.proxy.host");
     }
-
 
     public static int getTimeBetweenTestsInSuite() {
         try {
@@ -210,8 +212,7 @@ public class Configuration {
 
     public static String getHotKey() {
         String hotkey = properties.getProperty("controller.hotkey");
-        if ("SHIFT".equals(hotkey) || "ALT".equals(hotkey)
-                || "CTRL".equals(hotkey) || "META".equals(hotkey)) {
+        if ("SHIFT".equals(hotkey) || "ALT".equals(hotkey) || "CTRL".equals(hotkey) || "META".equals(hotkey)) {
             return hotkey;
         }
         return "ALT";
@@ -276,7 +277,6 @@ public class Configuration {
     public static String[] getExclusionList() {
         return getNonBlankLines(Utils.readCachedFile("../config/exclude_inject.txt"));
     }
-
     static int enableKeepAlive = 0;
 
     public static void enableKeepAlive() {
@@ -299,38 +299,40 @@ public class Configuration {
         return "true".equals(properties.getProperty("response.modify_activex"));
     }
 
-	public static int getMaxReAttemptsOnNotMyWindowError() {
+    public static int getMaxReAttemptsOnNotMyWindowError() {
         try {
             return Integer.parseInt(properties.getProperty("script.max_reattempts_on_window_not_found_error"));
         } catch (Exception e) {
             return 30;
         }
-	}
+    }
 
-	public static String[] getDownloadContentTypes() {
+    public static String[] getDownloadContentTypes() {
         return getNonBlankLines(Utils.readCachedFile("../config/download_contenttypes.txt"));
-	}
+    }
 
     public static String[] getDownloadURLList() {
         return getNonBlankLines(Utils.readCachedFile("../config/download_urls.txt"));
     }
 
     protected static String[] getNonBlankLines(byte[] b) {
-    	return getNonBlankLines(new String(b));
+        return getNonBlankLines(new String(b));
     }
 
     protected static String[] getNonBlankLines(String s) {
         s = s.trim().replaceAll("\\\r", "");
         String[] tokens = s.split("\n");
         ArrayList l = new ArrayList();
-        for (int i=0; i<tokens.length; i++) {
-        	String token = tokens[i].trim();
-        	if (!token.equals("")) l.add(token);
+        for (int i = 0; i < tokens.length; i++) {
+            String token = tokens[i].trim();
+            if (!token.equals("")) {
+                l.add(token);
+            }
         }
-    	return (String[]) l.toArray(new String[]{});
+        return (String[]) l.toArray(new String[]{});
     }
 
     public static String tempDownloadDir() {
-		return TMP_DOWNLOAD_DIR;
-	}
+        return TMP_DOWNLOAD_DIR;
+    }
 }

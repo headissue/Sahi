@@ -15,7 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package net.sf.sahi.command;
 
 import java.util.Properties;
@@ -30,15 +29,15 @@ import net.sf.sahi.util.Utils;
 
 public class SessionState {
 
-    public HttpResponse execute(HttpRequest request) {
+    public HttpResponse execute(final HttpRequest request) {
         Session session = request.session();
         Properties props = new Properties();
         props.setProperty("sessionId", session.id());
         props.setProperty("isRecording", "" + session.isRecording());
         props.setProperty("isWindowOpen", "" + session.isWindowOpen());
         props.setProperty("isSahiPaused", "" + isPaused(session));
-        props.setProperty("isSahiPlaying", ""+session.isPlayingBack());
-        props.setProperty("isSahiRecording", ""+session.isRecording());
+        props.setProperty("isSahiPlaying", "" + session.isPlayingBack());
+        props.setProperty("isSahiRecording", "" + session.isRecording());
         props.setProperty("hotkey", "" + Configuration.getHotKey());
 
         props.setProperty("interval", "" + Configuration.getTimeBetweenSteps());
@@ -47,44 +46,43 @@ public class SessionState {
         props.setProperty("maxWaitForLoad", "" + Configuration.getMaxCyclesForPageLoad());
 
         String waitCondition = session.getVariable("waitCondition");
-        if (Utils.isBlankOrNull(waitCondition)) waitCondition = "";
+        if (Utils.isBlankOrNull(waitCondition)) {
+            waitCondition = "";
+        }
         props.setProperty("waitCondition", "" + Utils.escapeDoubleQuotesAndBackSlashes(Utils.escapeDoubleQuotesAndBackSlashes(waitCondition)));
         String waitTime = session.getVariable("waitConditionTime");
-        if (Utils.isBlankOrNull(waitTime)) waitTime = "-1";
+        if (Utils.isBlankOrNull(waitTime)) {
+            waitTime = "-1";
+        }
         props.setProperty("waitConditionTime", "" + waitTime);
 
         NoCacheHttpResponse httpResponse = new NoCacheHttpResponse(
-                new HttpFileResponse(Configuration.getHtdocsRoot()
-                        + "spr/state.js", props, false, true));
+                new HttpFileResponse(Configuration.getHtdocsRoot() + "spr/state.js", props, false, true));
         addSahisidCookie(httpResponse, session);
         return httpResponse;
     }
 
-
-
-    private boolean isPaused(Session session) {
+    private boolean isPaused(final Session session) {
         return "1".equals(session.getVariable("sahi_paused"));
     }
 
-
-
-    public void setVar(HttpRequest request) {
+    public void setVar(final HttpRequest request) {
         Session session = request.session();
         String name = request.getParameter("name");
         String value = request.getParameter("value");
-        Hits.increment("SessionState_setVar :: "+name);
+        Hits.increment("SessionState_setVar :: " + name);
         setVar(name, value, session);
     }
 
-    public void setVar(String name, String value, Session session) {
+    public void setVar(final String name, final String value, final Session session) {
         session.setVariable(name, value);
     }
 
-    public HttpResponse getVar(HttpRequest request) {
+    public HttpResponse getVar(final HttpRequest request) {
         Session session = request.session();
         HttpResponse httpResponse;
         String name = request.getParameter("name");
-        Hits.increment("SessionState_getVar :: "+name);
+        Hits.increment("SessionState_getVar :: " + name);
         String value = session.getVariable(name);
         httpResponse = new NoCacheHttpResponse(value != null
                 ? value
@@ -92,18 +90,14 @@ public class SessionState {
         return httpResponse;
     }
 
-
-
-    private HttpResponse addSahisidCookie(HttpResponse httpResponse,
+    private HttpResponse addSahisidCookie(final HttpResponse httpResponse,
             Session session) {
-        httpResponse.addHeader("Set-Cookie", "sahisid=" + session.id()
-                + "; path=/; ");
+        httpResponse.addHeader("Set-Cookie", "sahisid=" + session.id() + "; path=/; ");
         // P3P: policyref="http://catalog.example.com/P3P/PolicyReferences.xml",
         // CP="NON DSP COR CURa ADMa DEVa CUSa TAIa OUR SAMa IND"
-        httpResponse
-                .addHeader(
-                        "P3P",
-                        "policyref=\"http://sahi.example.com/p3p.xml\", CP=\"NON DSP COR CURa ADMa DEVa CUSa TAIa OUR SAMa IND\"");
+        httpResponse.addHeader(
+                "P3P",
+                "policyref=\"http://sahi.example.com/p3p.xml\", CP=\"NON DSP COR CURa ADMa DEVa CUSa TAIa OUR SAMa IND\"");
         httpResponse.resetRawHeaders();
         return httpResponse;
     }

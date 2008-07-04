@@ -15,7 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package net.sf.sahi.command;
 
 import net.sf.sahi.issue.JiraIssueCreator;
@@ -30,7 +29,7 @@ import net.sf.sahi.test.SahiTestSuite;
 
 public class Suite {
 
-    public void start(HttpRequest request) {
+    public void start(final HttpRequest request) {
         Session session = request.session();
         String suitePath = request.getParameter("suite");
         String base = request.getParameter("base");
@@ -50,14 +49,14 @@ public class Suite {
         suite.run();
     }
 
-    private void setIssueCreators(SahiTestSuite suite, HttpRequest request) {
+    private void setIssueCreators(final SahiTestSuite suite, final HttpRequest request) {
         String propFile = request.getParameter("jira");
         if (propFile != null) {
             suite.addIssueCreator(new JiraIssueCreator(propFile));
         }
     }
 
-    public HttpResponse status(HttpRequest request) {
+    public HttpResponse status(final HttpRequest request) {
         Session session = request.session();
         SahiTestSuite suite = SahiTestSuite.getSuite(session.id());
         Status status = Status.FAILURE;
@@ -67,7 +66,7 @@ public class Suite {
         return new NoCacheHttpResponse(status.getName());
     }
 
-    private void setReporters(SahiTestSuite suite, HttpRequest request) {
+    private void setReporters(final SahiTestSuite suite, final HttpRequest request) {
         String logDir = request.getParameter("junit");
         if (logDir != null) {
             suite.addReporter(new JunitReporter(logDir));
@@ -78,10 +77,9 @@ public class Suite {
         }
     }
 
-    public void kill(HttpRequest request){
+    public void kill(final HttpRequest request) {
         Session session = request.session();
         SahiTestSuite suite = SahiTestSuite.getSuite(session.id());
         suite.kill();
     }
-
 }

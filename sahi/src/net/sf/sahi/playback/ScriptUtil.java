@@ -15,7 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package net.sf.sahi.playback;
 
 import net.sf.sahi.config.Configuration;
@@ -27,18 +26,19 @@ import java.util.List;
 import java.util.Arrays;
 
 public class ScriptUtil {
-    public static String getScriptsJs(String scriptName) {
+
+    public static String getScriptsJs(final String scriptName) {
         String[] fileList = getScriptFiles();
         Arrays.sort(fileList);
         return getJs(fileList, scriptName, false);
     }
 
-    public static String getScriptRootsJs(String dir) {
+    public static String getScriptRootsJs(final String dir) {
         String[] fileList = Configuration.getScriptRoots();
         return getJs(fileList, Utils.escapeDoubleQuotesAndBackSlashes(dir), true);
     }
 
-    private static String getJs(String[] list, String selected, boolean isDir) {
+    private static String getJs(final String[] list, final String selected, final boolean isDir) {
         StringBuffer sb = new StringBuffer();
         for (int i = 0; i < list.length; i++) {
             String absolutePath = list[i];
@@ -63,25 +63,28 @@ public class ScriptUtil {
         return (String[]) allFiles.toArray(new String[0]);
     }
 
-    private static List getFilesRecursively(File dir, List allFiles) {
+    private static List getFilesRecursively(final File dir, final List allFiles) {
         File[] files = dir.listFiles();
         for (int i = 0; i < files.length; i++) {
             File file = files[i];
             if (file.isDirectory()) {
                 getFilesRecursively(file, allFiles);
             } else {
-                if (isAddable(file))
+                if (isAddable(file)) {
                     allFiles.add(file.getAbsolutePath());
+                }
             }
         }
         return allFiles;
     }
 
-    private static boolean isAddable(File file) {
+    private static boolean isAddable(final File file) {
         String absolutePath = file.getAbsolutePath();
         String[] extensions = Configuration.getScriptExtensions();
         for (int i = 0; i < extensions.length; i++) {
-            if (absolutePath.endsWith(extensions[i])) return true;
+            if (absolutePath.endsWith(extensions[i])) {
+                return true;
+            }
         }
         return false;
     }

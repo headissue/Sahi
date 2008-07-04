@@ -15,7 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package net.sf.sahi.response;
 
 import net.sf.sahi.StreamHandler;
@@ -30,41 +29,47 @@ import java.util.logging.Logger;
  * Time: 10:25:31 PM
  */
 public class HttpResponse extends StreamHandler {
+
     private static final Logger logger = Logger.getLogger("net.sf.sahi.response.HttpResponse");
-    protected HttpResponse(){
+
+    protected HttpResponse() {
     }
 
-    public HttpResponse(InputStream in) throws IOException {
+    public HttpResponse(final InputStream in) throws IOException {
         populateHeaders(in, true);
         populateData(in);
-        logger.fine("First line:"+firstLine());
+        logger.fine("First line:" + firstLine());
     }
 
     public String contentType() {
         return getLastSetValueOfHeader("Content-Type");
     }
 
-    public void keepAlive(boolean keepAliveEnabled) {
+    public void keepAlive(final boolean keepAliveEnabled) {
         setFirstLine(firstLine().replaceAll("HTTP/1.0", "HTTP/1.1"));
         removeHeader("Content-length");
-        if (data() != null) setHeader("Content-Length", "" + data().length);
+        if (data() != null) {
+            setHeader("Content-Length", "" + data().length);
+        }
         removeHeader("Connection");
         removeHeader("Accept-ranges");
         setHeader("Connection", keepAliveEnabled ? "Keep-Alive" : "close");
         resetRawHeaders();
     }
 
-    public void proxyKeepAlive(boolean keepAliveEnabled) {
+    public void proxyKeepAlive(final boolean keepAliveEnabled) {
         removeHeader("Content-length");
-        if (data() != null) setHeader("Content-Length", "" + data().length);
+        if (data() != null) {
+            setHeader("Content-Length", "" + data().length);
+        }
         removeHeader("Connection");
         removeHeader("Accept-ranges");
         setHeader("Proxy-Connection", keepAliveEnabled ? "Keep-Alive" : "close");
         resetRawHeaders();
     }
 
-    public String status(){
+    public String status() {
         int ix = firstLine.indexOf(" ");
-        return firstLine.substring(ix, firstLine.indexOf(" ", ix +1)).trim();
+        return firstLine.substring(ix, firstLine.indexOf(" ", ix + 1)).trim();
     }
 }

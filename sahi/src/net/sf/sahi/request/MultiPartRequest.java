@@ -15,7 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package net.sf.sahi.request;
 
 import java.io.ByteArrayInputStream;
@@ -32,6 +31,7 @@ import java.util.Map;
  * Time: 9:18:19 PM
  */
 public class MultiPartRequest {
+
     private final HttpRequest httpRequest;
     List subRequests;
     public String delimiter;
@@ -55,8 +55,7 @@ public class MultiPartRequest {
         }
     }
 
-
-    private String getDelimiter(String dataStr) {
+    private String getDelimiter(final String dataStr) {
         return dataStr.substring(0, dataStr.indexOf("\n")).trim();
     }
 
@@ -80,7 +79,7 @@ public class MultiPartRequest {
         return httpRequest.rawHeaders();
     }
 
-    public byte[] rawHeaders(byte[] bytes) {
+    public byte[] rawHeaders(final byte[] bytes) {
         return httpRequest.setRawHeaders(bytes);
     }
 
@@ -112,7 +111,6 @@ public class MultiPartRequest {
         return httpRequest.protocol();
     }
 
-
     public HttpRequest getRebuiltRequest() {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         byte[] delimBytes = (delimiter + "\r\n").getBytes();
@@ -125,7 +123,7 @@ public class MultiPartRequest {
                 out.write(part.data());
                 out.write("\r\n".getBytes());
             }
-            out.write((delimiter+"--\r\n").getBytes());
+            out.write((delimiter + "--\r\n").getBytes());
         } catch (IOException e) {
             e.printStackTrace();
         }

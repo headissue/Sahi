@@ -1,3 +1,8 @@
+/**
+ * User: dlewis
+ * Date: Dec 8, 2006
+ * Time: 3:04:34 PM
+ */
 package net.sf.sahi.test;
 
 import net.sf.sahi.util.Utils;
@@ -5,22 +10,21 @@ import net.sf.sahi.util.Utils;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.*;
 
-/**
- * User: dlewis
- * Date: Dec 8, 2006
- * Time: 3:04:34 PM
- */
+import java.util.ArrayList;
+import java.util.List;
+import java.util.StringTokenizer;
+
 public class SuiteLoader {
+
     private String suitePath;
     private String base;
     private List listTest = new ArrayList();
 
-    public SuiteLoader(String suitePath, String base) {
+    public SuiteLoader(final String suitePath, final String base) {
         this.suitePath = suitePath;
         this.base = base;
-        loadScripts();          
+        loadScripts();
     }
 
     private void loadScripts() {
@@ -32,7 +36,7 @@ public class SuiteLoader {
         }
     }
 
-    private void processSuiteDir(File suite) {
+    private void processSuiteDir(final File suite) {
         File[] fileNames = suite.listFiles();
         for (int i = 0; i < fileNames.length; i++) {
             File file = fileNames[i];
@@ -60,13 +64,14 @@ public class SuiteLoader {
         }
     }
 
-    private void processLine(String line) throws MalformedURLException {
-        if (line.startsWith("#") || line.startsWith("//")
-                || line.trim().equals(""))
+    private void processLine(final String line) throws MalformedURLException {
+        if (line.startsWith("#") || line.startsWith("//") || line.trim().equals("")) {
             return;
+        }
         int ix = line.indexOf(' ');
-        if (ix == -1)
+        if (ix == -1) {
             ix = line.indexOf('\t');
+        }
         String testName;
         String startURL;
         if (ix != -1) {
@@ -82,7 +87,7 @@ public class SuiteLoader {
         addTest(Utils.concatPaths(suitePath, testName), startURL);
     }
 
-    private void addTest(String testName, String startURL) {
+    private void addTest(final String testName, final String startURL) {
         TestLauncher sahiTest = new TestLauncher(testName, startURL);
         listTest.add(sahiTest);
     }

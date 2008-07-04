@@ -15,7 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package net.sf.sahi.response;
 
 import java.io.FileInputStream;
@@ -23,7 +22,9 @@ import java.io.IOException;
 import java.util.Properties;
 
 public class MimeType {
+
     private static Properties properties;
+    
 
     static {
         properties = new Properties();
@@ -34,23 +35,24 @@ public class MimeType {
         }
     }
 
-    public static String get(String fileExtension, String defaultValue) {
-        fileExtension = fileExtension == null ? "" : fileExtension.toLowerCase();
+    public static String get(String fileExtension, final String defaultValue) {
+        fileExtension = (fileExtension == null ? "" : fileExtension.toLowerCase());
         return properties.getProperty(fileExtension, defaultValue);
     }
 
-    public static String getMimeTypeOfFile(String fileName) {
+    public static String getMimeTypeOfFile(final String fileName) {
         return getMimeTypeOfFile(fileName, "text/plain");
     }
 
-    public static String getMimeTypeOfFile(String fileName, String defaultValue) {
+    public static String getMimeTypeOfFile(final String fileName, final String defaultValue) {
         return get(getExtension(fileName), defaultValue);
     }
 
-
-    static String getExtension(String fileName) {
+    static String getExtension(final String fileName) {
         int ix = fileName.lastIndexOf('.');
-        if (ix == -1) return "";
+        if (ix == -1) {
+            return "";
+        }
         return fileName.substring(ix);
     }
 }

@@ -19,12 +19,13 @@ import net.sf.sahi.request.HttpRequest;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 public class Configuration {
-    public void enableKeepAlive(HttpRequest request){
+
+    public void enableKeepAlive(final HttpRequest request) {
         net.sf.sahi.config.Configuration.enableKeepAlive();
     }
-    public void disableKeepAlive(HttpRequest request){
+
+    public void disableKeepAlive(final HttpRequest request) {
         net.sf.sahi.config.Configuration.disableKeepAlive();
     }
 }

@@ -1,3 +1,6 @@
+/**
+ * @author dlewis
+ */
 package net.sf.sahi.report;
 
 import net.sf.sahi.util.Utils;
@@ -6,10 +9,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-/**
- * @author dlewis
- */
 public class Report {
+
     protected List listResult = new ArrayList();
     protected String scriptName;
     protected List listReporter;
@@ -20,7 +21,7 @@ public class Report {
         this.listReporter = listReporter;
     }
 
-    public Report(String scriptName, SahiReporter reporter) {
+    public Report(String scriptName, final SahiReporter reporter) {
         this.scriptName = scriptName;
         addReporter(reporter);
     }
@@ -52,8 +53,8 @@ public class Report {
         this.listResult.addAll(listResult);
     }
 
-    public void addResult(String message, String type, String debugInfo,
-                          String failureMsg) {
+    public void addResult(final String message, final String type, final String debugInfo,
+            final String failureMsg) {
         listResult.add(new TestResult(message, ResultType.getType(type),
                 debugInfo, failureMsg));
     }

@@ -15,7 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package net.sf.sahi.plugin;
 
 import net.sf.sahi.RemoteRequestProcessor;
@@ -23,7 +22,8 @@ import net.sf.sahi.request.HttpRequest;
 import net.sf.sahi.response.HttpResponse;
 
 public class Substituter {
-    public HttpResponse replaceHttps(HttpRequest request) {
+
+    public HttpResponse replaceHttps(final HttpRequest request) {
         HttpResponse response = new RemoteRequestProcessor().processHttp(request);
         byte[] bytes = response.data();
         String data = new String(bytes);
@@ -32,7 +32,7 @@ public class Substituter {
         return response;
     }
 
-    public HttpResponse makeHTTPS(HttpRequest request) {
+    public HttpResponse makeHTTPS(final HttpRequest request) {
         request.setSSL(true);
         return new RemoteRequestProcessor().processHttp(request);
     }

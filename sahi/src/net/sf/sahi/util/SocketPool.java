@@ -15,7 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package net.sf.sahi.util;
 
 import java.io.IOException;
@@ -26,6 +25,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class SocketPool {
+
     private final List unused = new LinkedList();
     private static int START_PORT = 13300;
     private int lastPort;
@@ -75,7 +75,7 @@ public class SocketPool {
         } catch (Exception e) {
 //        	e.printStackTrace();
             lastPort++;
-            System.out.println("### Creating New Socket : "+lastPort);
+            System.out.println("### Creating New Socket : " + lastPort);
             socket = createSocket(lastPort);
             socket.connect(new InetSocketAddress(host, port));
         }
@@ -98,5 +98,4 @@ public class SocketPool {
             unused.notifyAll();
         }
     }
-
 }

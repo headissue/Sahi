@@ -15,13 +15,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package net.sf.sahi.playback;
 
 public class SahiScriptHTMLAdapter {
-	public static String createHTML(String original) {
-		return "<pre>"+original.replaceAll("\\\r", "").replaceAll("\\\n", "<br/>")+"</pre>";
-	}
 
-
+    public static String createHTML(final String original) {
+        return "<pre>" + original.replaceAll("\\\r", "").replaceAll("\\\n", "<br/>") + "</pre>";
+    }
 }

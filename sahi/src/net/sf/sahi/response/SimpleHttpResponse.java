@@ -15,7 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package net.sf.sahi.response;
 
 /**
@@ -24,11 +23,12 @@ package net.sf.sahi.response;
  * Time: 11:04:06 PM
  */
 public class SimpleHttpResponse extends HttpResponse {
-    public SimpleHttpResponse(String dataStr) {
+
+    public SimpleHttpResponse(final String dataStr) {
         this(dataStr.getBytes());
     }
 
-    public SimpleHttpResponse(byte[] data) {
+    public SimpleHttpResponse(final byte[] data) {
         setData(data);
         setFirstLine("HTTP/1.0 200 OK");
         setHeader("Content-Type", "text/html");

@@ -15,7 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package net.sf.sahi.command;
 
 import net.sf.sahi.RemoteRequestProcessor;
@@ -35,15 +34,15 @@ public class MockResponder {
 
     private HashMap map = new HashMap();
 
-    public void add(String urlPattern, String className) {
+    public void add(final String urlPattern, final String className) {
         map.put(urlPattern, className);
     }
 
-    public void remove(String urlPattern) {
+    public void remove(final String urlPattern) {
         map.remove(urlPattern);
     }
 
-    String getCommand(String url) {
+    String getCommand(final String url) {
         final Iterator iterator = map.keySet().iterator();
         while (iterator.hasNext()) {
             String pattern = (String) iterator.next();
@@ -54,36 +53,36 @@ public class MockResponder {
         return null;
     }
 
-    public HttpResponse getResponse(HttpRequest request) {
+    public HttpResponse getResponse(final HttpRequest request) {
         String url = request.url();
         final String command = getCommand(url);
-        if (command == null)
+        if (command == null) {
             return null;
+        }
         System.out.println("url: " + url);
         System.out.println("command: " + command);
         return new CommandExecuter(command, request).execute();
     }
 
-    public void remove(HttpRequest request) {
+    public void remove(final HttpRequest request) {
         request.session().mockResponder().remove(request.getParameter("pattern"));
     }
 
-    public void add(HttpRequest request) {
+    public void add(final HttpRequest request) {
         request.session().mockResponder().add(request.getParameter("pattern"), request.getParameter("class"));
     }
 
-    public HttpResponse mockImage(HttpRequest request) throws IOException {
+    public HttpResponse mockImage(final HttpRequest request) throws IOException {
         return new HttpFileResponse(Utils.concatPaths(Configuration.getHtdocsRoot(), "spr/mock.gif"), null, true, true);
     }
 
-    public HttpResponse simple(HttpRequest request) throws IOException {
+    public HttpResponse simple(final HttpRequest request) throws IOException {
         Properties props = new Properties();
         props.put("url", request.url());
-        return new HttpModifiedResponse(new HttpFileResponse(Configuration.getHtdocsRoot() + "spr/simpleMock.htm", props, false, false), request
-            .isSSL(), request.fileExtension());
+        return new HttpModifiedResponse(new HttpFileResponse(Configuration.getHtdocsRoot() + "spr/simpleMock.htm", props, false, false), request.isSSL(), request.fileExtension());
     }
 
-    public HttpResponse fileUpload(HttpRequest request) {
+    public HttpResponse fileUpload(final HttpRequest request) {
         return new RemoteRequestProcessor().processHttp(request);
     }
 }

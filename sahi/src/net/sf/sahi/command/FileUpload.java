@@ -15,7 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package net.sf.sahi.command;
 
 import net.sf.sahi.RemoteRequestProcessor;
@@ -33,12 +32,13 @@ import java.util.Iterator;
 import java.util.List;
 
 public class FileUpload {
-    public void setFile(HttpRequest request) {
+
+    public void setFile(final HttpRequest request) {
         request.session().setVariable("file:" + request.getParameter("n"), request.getParameter("v"));
-        request.session().mockResponder().add(request.getParameter("action").replaceAll("[.]", "[.]")+".*", "FileUpload_appendFiles");
+        request.session().mockResponder().add(request.getParameter("action").replaceAll("[.]", "[.]") + ".*", "FileUpload_appendFiles");
     }
 
-    public HttpResponse appendFiles(HttpRequest request) {
+    public HttpResponse appendFiles(final HttpRequest request) {
         HttpRequest rebuiltRequest = request;
         if (request.isMultipart()) {
             Session session = request.session();
@@ -52,8 +52,10 @@ public class FileUpload {
             for (Iterator iterator = parts.iterator(); iterator.hasNext();) {
                 MultiPartSubRequest part = (MultiPartSubRequest) iterator.next();
                 String fileName = session.getVariable("file:" + part.name());
-                if (Utils.isBlankOrNull(fileName)) continue;
-                System.out.println("Uploading: fileName = "+fileName);
+                if (Utils.isBlankOrNull(fileName)) {
+                    continue;
+                }
+                System.out.println("Uploading: fileName = " + fileName);
                 part.setHeader("Content-Type", MimeType.getMimeTypeOfFile(fileName, "application/octet-stream"));
                 byte[] fileContent = Utils.readFile(fileName);
                 part.setData(fileContent);

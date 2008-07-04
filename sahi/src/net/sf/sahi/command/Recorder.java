@@ -15,7 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package net.sf.sahi.command;
 
 import net.sf.sahi.request.HttpRequest;
@@ -23,24 +22,26 @@ import net.sf.sahi.session.Session;
 import net.sf.sahi.util.Utils;
 
 public class Recorder {
-    public void start(HttpRequest request) {
+
+    public void start(final HttpRequest request) {
         startRecorder(request);
     }
 
-    public void record(HttpRequest request) {
+    public void record(final HttpRequest request) {
         request.session().getRecorder().record(request.getParameter("cmd"));
     }
 
-    public void stop(HttpRequest request) {
+    public void stop(final HttpRequest request) {
         request.session().getRecorder().stop();
     }
 
-
-    private void startRecorder(HttpRequest request) {
+    private void startRecorder(final HttpRequest request) {
         Session session = request.session();
         String dir = request.getParameter("dir");
         String fileName = request.getParameter("file");
-        if (fileName.indexOf(".") == -1) fileName = fileName + ".sah";
+        if (fileName.indexOf(".") == -1) {
+            fileName = fileName + ".sah";
+        }
         net.sf.sahi.record.Recorder recorder = session.getRecorder();
         recorder.setDir(dir);
         recorder.start(Utils.concatPaths(dir, fileName));

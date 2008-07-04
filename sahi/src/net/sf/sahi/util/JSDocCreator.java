@@ -15,7 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package net.sf.sahi.util;
 
 import net.sf.sahi.config.Configuration;
@@ -27,6 +26,7 @@ import java.io.IOException;
 import java.util.StringTokenizer;
 
 public class JSDocCreator {
+
     public static void main(String args[]) {
 
         FileOutputStream out;
@@ -56,11 +56,12 @@ public class JSDocCreator {
 }
 
 class Function {
+
     String name = "";
     String[] arguments;
     private String line;
 
-    public Function(String line) {
+    public Function(final String line) {
         this.line = line;
         String[] words = line.split("(\\(|,|\\))");
         name = words[0].trim();
@@ -69,11 +70,11 @@ class Function {
     }
 
     public String toString() {
-        
+
         // converted to use a StringBuffer
         StringBuffer s = new StringBuffer();
         s.append("<br>");
-        s.append(SahiScript.getActionKeyWords().contains(name) ?  "This is a scheduler function." : "" );
+        s.append(SahiScript.getActionKeyWords().contains(name) ? "This is a scheduler function." : "");
         s.append("<br><br>\n");
         s.append("<h3>Syntax</h3>\n");
         s.append("<div class=\"syntax\">\n");
@@ -82,7 +83,7 @@ class Function {
         s.append("</h4>\n");
         s.append("The parameters are:\n");
         s.append("<ul>\n");
-     
+
 //        String s = "<br>" +
 //                (SahiScript.getActionKeyWords().contains(name) ?  "This is a scheduler function." : "" ) +
 //                "<br><br>\n" +
@@ -91,14 +92,14 @@ class Function {
 //                "<h4>" + line + "</h4>\n" +
 //                "The parameters are:\n" +
 //                "<ul>\n";
-        
+
         int len = arguments.length;   // cache the length so it doesn't need to be looked up over and over in the loop
         for (int i = 0; i < len; i++) {
             s.append("<li><b>");
             s.append(arguments[i].trim());
             s.append("</b>: </li>\n");
         }
-        
+
         s.append("<br>\n</ul>\n");
         s.append("</div>\n");
         s.append("\n");
@@ -106,7 +107,7 @@ class Function {
         s.append("<pre>\n");
         s.append("</pre>");
         s.append("\n\n");
-        
+
 //        s +=  "<br>\n</ul>\n" +
 //                "</div>\n" +
 //                "\n" +

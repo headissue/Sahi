@@ -1,18 +1,3 @@
-package net.sf.sahi.command;
-
-import net.sf.sahi.playback.SahiScript;
-import net.sf.sahi.report.LogViewer;
-import net.sf.sahi.request.HttpRequest;
-import net.sf.sahi.response.HttpFileResponse;
-import net.sf.sahi.response.HttpResponse;
-import net.sf.sahi.util.Utils;
-
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Properties;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 /**
  * Sahi - Web Automation and Test Tool
  *
@@ -31,8 +16,25 @@ import java.util.regex.Pattern;
  * limitations under the License.
  */
 
+package net.sf.sahi.command;
+
+import net.sf.sahi.playback.SahiScript;
+import net.sf.sahi.report.LogViewer;
+import net.sf.sahi.request.HttpRequest;
+import net.sf.sahi.response.HttpFileResponse;
+import net.sf.sahi.response.HttpResponse;
+import net.sf.sahi.util.Utils;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+
 public class Script {
-    public HttpResponse view(HttpRequest request) {
+
+    public HttpResponse view(final HttpRequest request) {
         String file = request.getParameter("script");
         return view(file);
     }
@@ -47,7 +49,7 @@ public class Script {
         return new HttpFileResponse(net.sf.sahi.config.Configuration.getHtdocsRoot() + "spr/script.htm", props, false, true);
     }
 
-    public static String makeIncludeALink(String baseFile) {
+    public static String makeIncludeALink(final String baseFile) {
         String inputStr = new String(Utils.readFile(baseFile));
         inputStr = LogViewer.highlight(inputStr, -1);
         String patternStr = "[\"'](.*[.]sah)[\"']";
@@ -59,10 +61,10 @@ public class Script {
             String includedScriptName = matcher.group(1);
             String scriptPath = Utils.concatPaths(baseFile, includedScriptName).replaceAll("\\\\", "/");
             String replaceStr = "";
-            if (includedScriptName.startsWith("http://") || includedScriptName.startsWith("https://")){
-                replaceStr = "<a href='"+includedScriptName+"'>"+includedScriptName+"</a>";
-            }else{
-                replaceStr = "<a href='/_s_/dyn/Script_view?script="+scriptPath+"'>"+includedScriptName+"</a>";
+            if (includedScriptName.startsWith("http://") || includedScriptName.startsWith("https://")) {
+                replaceStr = "<a href='" + includedScriptName + "'>" + includedScriptName + "</a>";
+            } else {
+                replaceStr = "<a href='/_s_/dyn/Script_view?script=" + scriptPath + "'>" + includedScriptName + "</a>";
             }
             matcher.appendReplacement(sb, replaceStr);
         }
@@ -70,7 +72,7 @@ public class Script {
         return sb.toString();
     }
 
-    HttpResponse dummyFunctions(HttpRequest request) {
+    HttpResponse dummyFunctions(final HttpRequest request) {
         ArrayList words = SahiScript.getKeyWords();
         StringBuffer sb = new StringBuffer();
         for (Iterator iterator = words.iterator(); iterator.hasNext();) {
@@ -84,5 +86,4 @@ public class Script {
         props.setProperty("dummyFunctions", functions);
         return new HttpFileResponse(net.sf.sahi.config.Configuration.getHtdocsRoot() + "spr/dummyFunctions.js", props, false, true);
     }
-
 }

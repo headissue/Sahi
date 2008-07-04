@@ -15,7 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package net.sf.sahi.plugin;
 
 import net.sf.sahi.response.HttpResponse;
@@ -23,7 +22,8 @@ import net.sf.sahi.response.HttpFileResponse;
 import net.sf.sahi.request.HttpRequest;
 
 public class FileReader {
-    public HttpResponse contents(HttpRequest request){
+
+    public HttpResponse contents(final HttpRequest request) {
         return new HttpFileResponse(request.getParameter("fileName"));
     }
 }

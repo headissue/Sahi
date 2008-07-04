@@ -15,7 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package net.sf.sahi.playback;
 
 import net.sf.sahi.config.Configuration;
@@ -33,8 +32,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public abstract class SahiScript {
-    private static Logger logger = Configuration
-            .getLogger("net.sf.sahi.playback.SahiScript");
+
+    private static Logger logger = Configuration.getLogger("net.sf.sahi.playback.SahiScript");
     private static ArrayList actionKeywords;
     private static ArrayList normalKeywords;
     protected String script;
@@ -58,29 +57,27 @@ public abstract class SahiScript {
         init(filePath);
     }
 
-    protected void setScript(String s) {
+    protected void setScript(final String s) {
         original = s;
         jsString = modify(s);
         script = appendFunction(jsString);//addJSEvalCode(jsString);
     }
 
-    private String appendFunction(String jsString) {
-        String s = "" +
-                "_sahi.scriptScope = function (){" +
-                "\n\t_sahi.scriptScope.execute = function(s){eval(s);};" +
-                "\n\n" +
-                "//Your code starts" +
-                "\n\n";
-        s += jsString;
-        s += "\n\n" +
-                "//Your code ends" +
-                "\n\n" +
-                "}" +
-                "\ntry{_sahi.scriptScope();}catch(e){_sahi.loadError = e; throw e;}";
-        return s;
+    private String appendFunction(final String jsString) {
+
+        StringBuffer buf = new StringBuffer();
+
+        buf.append("_sahi.scriptScope = function (){");
+        buf.append("\n\t_sahi.scriptScope.execute = function(s){eval(s);};\n\n");
+        buf.append("//Your code starts\n\n");
+        buf.append(jsString);
+        buf.append("\n\n//Your code ends\n\n}");
+        buf.append("\ntry{_sahi.scriptScope();}catch(e){_sahi.loadError = e; throw e;}");
+
+        return buf.toString();
     }
 
-    public String jsString(){
+    public String jsString() {
         return jsString;
     }
 
@@ -103,8 +100,9 @@ public abstract class SahiScript {
         while (tokens.hasNext()) {
             lineNumber++;
             String line = ((String) tokens.next()).trim();
-            if ("".equals(line))
+            if ("".equals(line)) {
                 continue;
+            }
             if (line.startsWith("_include")) {
                 sb.append(processInclude(line));
             } else if (line.startsWith("while")) {
@@ -133,31 +131,35 @@ public abstract class SahiScript {
         Matcher matcher = pattern.matcher(line);
         boolean matchFound = matcher.find();
 
-        if (!matchFound){
-        	return modifyLine(line);
-    	} else {
-    		String varName = matcher.group(1);
-    		String varValue = matcher.group(2);
-    		StringBuffer sb = new StringBuffer();
-    		sb.append("var $sahi_cmdLen = _sahi.cmds.length+1;\r\n");
-    		String dollarVarName = varName.startsWith("$") ? "\\" + varName : varName;
-    		sb.append(scheduleLine("_sahi.handleSet('" + dollarVarName + "' + $sahi_cmdLen, " + varValue + ");", lineNumber, true));
-    		sb.append(modifyLine(varName + "Temp = _getGlobal('" + varName + "' + _sahi.cmds.length);"));
-    		sb.append(modifyLine("if (" + varName + "Temp) "+ varName +" = "+varName+ "Temp;"));
-    		return sb.toString();
+        if (!matchFound) {
+            return modifyLine(line);
+        } else {
+            String varName = matcher.group(1);
+            String varValue = matcher.group(2);
+            StringBuffer sb = new StringBuffer();
+            sb.append("var $sahi_cmdLen = _sahi.cmds.length+1;\r\n");
+            String dollarVarName = varName.startsWith("$") ? "\\" + varName : varName;
+            sb.append(scheduleLine("_sahi.handleSet('" + dollarVarName + "' + $sahi_cmdLen, " + varValue + ");", lineNumber, true));
+            sb.append(modifyLine(varName + "Temp = _getGlobal('" + varName + "' + _sahi.cmds.length);"));
+            sb.append(modifyLine("if (" + varName + "Temp) " + varName + " = " + varName + "Temp;"));
+            return sb.toString();
         }
-	}
+    }
 
-	String modifyWait(String line, int lineNumber) {
+    String modifyWait(String line, int lineNumber) {
         int comma = line.indexOf(",");
-        if (comma == -1) return scheduleLine(line, lineNumber);
+        if (comma == -1) {
+            return scheduleLine(line, lineNumber);
+        }
         StringBuffer sb = new StringBuffer();
         sb.append(line.substring(0, comma));
         sb.append(", ");
         int close = line.lastIndexOf(")");
-        if (close == -1) close = line.length();
+        if (close == -1) {
+            close = line.length();
+        }
         sb.append("\"");
-        sb.append(separateVariables(line.substring(comma+1, close).trim()));
+        sb.append(separateVariables(line.substring(comma + 1, close).trim()));
         sb.append("\");");
         return scheduleLine(sb.toString(), lineNumber);
     }
@@ -170,12 +172,15 @@ public abstract class SahiScript {
     }
 
     private String scheduleLine(String line, int lineNumber) {
-    	return scheduleLine(line, lineNumber, true);
+        return scheduleLine(line, lineNumber, true);
     }
+
     private String scheduleLine(String line, int lineNumber, boolean separate) {
         StringBuffer sb = new StringBuffer();
         sb.append(PREFIX);
-        if (separate) line = separateVariables(line);
+        if (separate) {
+            line = separateVariables(line);
+        }
         sb.append(modifyFunctionNames(line));
         sb.append(CONJUNCTION);
         sb.append(Utils.escapeDoubleQuotesAndBackSlashes(filePath));
@@ -216,7 +221,6 @@ public abstract class SahiScript {
         return null;
     }
 
-
     static String getActionRegExp() {
         ArrayList keywords = getActionKeyWords();
         return getActionRegExp(keywords);
@@ -229,8 +233,9 @@ public abstract class SahiScript {
         for (int i = 0; i < size; i++) {
             String keyword = (String) keywords.get(i);
             sb.append(keyword);
-            if (i != size - 1)
+            if (i != size - 1) {
                 sb.append("|");
+            }
         }
         sb.append(")\\s*\\(.*");
         return sb.toString();
@@ -253,21 +258,25 @@ public abstract class SahiScript {
     static String getRegExp(boolean isForStripping, ArrayList keywords) {
         StringBuffer sb = new StringBuffer();
         int size = keywords.size();
-        if (isForStripping)
+        if (isForStripping) {
             sb.append("_sahi.");
+        }
         sb.append("_?(");
         for (int i = 0; i < size; i++) {
             String keyword = (String) keywords.get(i);
             sb.append(keyword);
-            if (i != size - 1)
+            if (i != size - 1) {
                 sb.append("|");
+            }
         }
         sb.append(")(\\s*\\()");
         return sb.toString();
     }
 
     public static ArrayList getActionKeyWords() {
-        if (actionKeywords == null) actionKeywords = loadActionKeyWords();
+        if (actionKeywords == null) {
+            actionKeywords = loadActionKeyWords();
+        }
         return actionKeywords;
     }
 
@@ -278,7 +287,9 @@ public abstract class SahiScript {
     }
 
     public static ArrayList getKeyWords() {
-        if (normalKeywords == null) normalKeywords = loadKeyWords();
+        if (normalKeywords == null) {
+            normalKeywords = loadKeyWords();
+        }
         return normalKeywords;
     }
 
@@ -295,7 +306,6 @@ public abstract class SahiScript {
         try {
             fns.load(new FileInputStream("../config/" + type + "_functions.txt"));
         } catch (Exception e) {
-
         }
         keywords.addAll(fns.keySet());
         return keywords;
@@ -317,8 +327,7 @@ public abstract class SahiScript {
             if (c == '\\') {
                 escaped = !escaped;
             }
-            if (!isVar && c == '$' && !escaped && i + 1 < len
-                    && Character.isJavaIdentifierStart(s.charAt(i + 1))) {
+            if (!isVar && c == '$' && !escaped && i + 1 < len && Character.isJavaIdentifierStart(s.charAt(i + 1))) {
                 isVar = true;
                 bracket = 0;
                 square = 0;
@@ -328,22 +337,28 @@ public abstract class SahiScript {
                 boolean append = false;
 
                 if (c == '"') {
-                    if (!(escaped || quoted))
+                    if (!(escaped || quoted)) {
                         doubleQuoted = !doubleQuoted;
+                    }
                 } else if (c == '\'') {
-                    if (!(escaped || doubleQuoted))
+                    if (!(escaped || doubleQuoted)) {
                         quoted = !quoted;
+                    }
                 } else if (!escaped && !quoted && !doubleQuoted) {
                     if (c == '(') {
                         bracket++;
                     } else if (c == ')') {
                         bracket--;
-                        if (bracket < 0) append = true;
+                        if (bracket < 0) {
+                            append = true;
+                        }
                     } else if (c == '[') {
                         square++;
                     } else if (c == ']') {
                         square--;
-                        if (square < 0) append = true;
+                        if (square < 0) {
+                            append = true;
+                        }
                     } else {
                         append = true;
                     }
@@ -364,7 +379,6 @@ public abstract class SahiScript {
         return sb.toString();
     }
 
-
     String findCondition(String s) {
         char c = ' ';
         boolean escaped = false;
@@ -376,7 +390,9 @@ public abstract class SahiScript {
         int i = 0;
         i = s.indexOf("_condition");
         i = s.indexOf("(", i) + 1;
-        if (i == 0) return null;
+        if (i == 0) {
+            return null;
+        }
         int start = i;
         int end = -1;
 
@@ -387,11 +403,13 @@ public abstract class SahiScript {
             }
             if (!escaped && !(Character.isJavaIdentifierPart(c) || c == '.')) {
                 if (c == '"') {
-                    if (!(escaped || quoted))
+                    if (!(escaped || quoted)) {
                         doubleQuoted = !doubleQuoted;
+                    }
                 } else if (c == '\'') {
-                    if (!(escaped || doubleQuoted))
+                    if (!(escaped || doubleQuoted)) {
                         quoted = !quoted;
+                    }
                 } else if (!escaped && !quoted && !doubleQuoted) {
                     if (c == '(') {
                         bracket++;
@@ -408,7 +426,9 @@ public abstract class SahiScript {
                 escaped = false;
             }
         }
-        if (end == -1) return null;
+        if (end == -1) {
+            return null;
+        }
         return s.substring(start, end);
     }
 
@@ -421,19 +441,23 @@ public abstract class SahiScript {
     }
 
     public String modifyIfWhile(String s, int lineNumber, String prefix, String suffix) {
-        if (s.indexOf("_condition") == -1) return modifyLine(s);
+        if (s.indexOf("_condition") == -1) {
+            return modifyLine(s);
+        }
         String condition = findCondition(s);
-        if (condition == null) return modifyLine(s);
+        if (condition == null) {
+            return modifyLine(s);
+        }
         StringBuffer sb = new StringBuffer();
         sb.append(prefix);
-        sb.append(scheduleLine("_sahi.saveCondition("+condition+");", lineNumber));
+        sb.append(scheduleLine("_sahi.saveCondition(" + condition + ");", lineNumber));
         sb.append(suffix);
         int end = s.indexOf(condition) + condition.length() + 1;
         sb.append(s.substring(end));
         return sb.toString();
     }
 
-    protected String read(InputStream in) {
+    protected String read(final InputStream in) {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         int c = ' ';
         try {
@@ -450,7 +474,7 @@ public abstract class SahiScript {
         return scriptName;
     }
 
-    protected void init(String url) {
+    protected void init(final String url) {
         this.path = url;
         loadScript(url);
     }

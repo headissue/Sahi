@@ -1,29 +1,30 @@
-package net.sf.sahi.report;
-
-import java.util.List;
-
 /**
  * @author dlewis
  * 
  */
+package net.sf.sahi.report;
+
+import java.util.List;
+
 public interface Formatter {
-	String getFileName(String scriptName);
 
-	String getHeader();
+    String getFileName(String scriptName);
 
-	String getResultData(List listResult);
+    String getHeader();
 
-	String getSummaryHeader();
+    String getResultData(List listResult);
 
-	String getSummaryData(TestSummary summary);
+    String getSummaryHeader();
 
-	String getSummaryFooter();
+    String getSummaryData(TestSummary summary);
 
-	String getStartScript();
+    String getSummaryFooter();
 
-	String getStopScript();
+    String getStartScript();
 
-	String getFooter();
+    String getStopScript();
+
+    String getFooter();
 
     String getSuiteLogFileName();
 }

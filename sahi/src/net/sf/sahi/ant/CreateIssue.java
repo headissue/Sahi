@@ -6,6 +6,7 @@ package net.sf.sahi.ant;
  * Time: 5:09:40 PM
  */
 public class CreateIssue {
+
     private String tool;
     private String propertiesFile;
 

@@ -1,6 +1,5 @@
 package net.sf.sahi.util;
 
-
 /**
  * Sahi - Web Automation and Test Tool
  * 
@@ -18,10 +17,8 @@ package net.sf.sahi.util;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 public class ClassLoadHelper {
 //    private static URLClassLoader customLoader = new URLClassLoader(getURLs());
-
     public static Class getClass(String name) throws ClassNotFoundException {
         return Class.forName(name);
     }

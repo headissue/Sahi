@@ -6,8 +6,8 @@ package net.sf.sahi.ant;
  * Time: 6:23:55 PM
  */
 public class Report {
-    private String logDir;
 
+    private String logDir;
     private String type;
 
     public Report() {

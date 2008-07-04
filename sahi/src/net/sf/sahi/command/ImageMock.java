@@ -6,7 +6,6 @@ import net.sf.sahi.response.HttpFileResponse;
 import net.sf.sahi.response.HttpResponse;
 import net.sf.sahi.util.Utils;
 
-
 /**
  * Sahi - Web Automation and Test Tool
  * 
@@ -24,9 +23,9 @@ import net.sf.sahi.util.Utils;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 public class ImageMock {
-    public HttpResponse execute(HttpRequest request) {
+
+    public HttpResponse execute(final HttpRequest request) {
         return new HttpFileResponse(Utils.concatPaths(Configuration.getHtdocsRoot(), "spr/mock.gif"), null, true, true);
     }
 }

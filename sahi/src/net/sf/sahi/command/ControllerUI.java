@@ -15,7 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package net.sf.sahi.command;
 
 import net.sf.sahi.playback.SahiScript;
@@ -28,34 +27,32 @@ import net.sf.sahi.util.Utils;
 
 public class ControllerUI {
 
-    public void opened(HttpRequest request) {
+    public void opened(final HttpRequest request) {
         request.session().setIsWindowOpen(true);
     }
 
-    public void closed(HttpRequest request) {
+    public void closed(final HttpRequest request) {
         request.session().setIsWindowOpen(false);
     }
 
-    public HttpResponse getSahiScript(HttpRequest request) {
+    public HttpResponse getSahiScript(final HttpRequest request) {
         String code = request.getParameter("code");
-        return new NoCacheHttpResponse(SahiScript
-                .modifyFunctionNames(code));
+        return new NoCacheHttpResponse(SahiScript.modifyFunctionNames(code));
     }
 
-    public HttpResponse scriptsList(HttpRequest request) {
-        return new NoCacheHttpResponse(ScriptUtil
-                .getScriptsJs(getScriptPath(request.session())));
+    public HttpResponse scriptsList(final HttpRequest request) {
+        return new NoCacheHttpResponse(ScriptUtil.getScriptsJs(getScriptPath(request.session())));
     }
 
-    public HttpResponse scriptDirsList(HttpRequest request) {
-        return new NoCacheHttpResponse(ScriptUtil
-                .getScriptRootsJs(request.session().getRecorder().getDir()));
+    public HttpResponse scriptDirsList(final HttpRequest request) {
+        return new NoCacheHttpResponse(ScriptUtil.getScriptRootsJs(request.session().getRecorder().getDir()));
     }
 
-    private String getScriptPath(Session session) {
+    private String getScriptPath(final Session session) {
         SahiScript script = session.getScript();
-        if (script == null)
+        if (script == null) {
             return "";
+        }
         return Utils.escapeDoubleQuotesAndBackSlashes(script.getFilePath());
     }
 }

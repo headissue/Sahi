@@ -15,7 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package net.sf.sahi.test;
 
 import net.sf.sahi.config.Configuration;
@@ -31,6 +30,7 @@ import java.util.logging.Logger;
  *         Launches browser with test and kills it on completion
  */
 public class TestLauncher {
+
     private final String scriptName;
     private final String startURL;
     private String sessionId;
@@ -41,21 +41,21 @@ public class TestLauncher {
     private String browserOption;
     private int threadNo;
 
-    public TestLauncher(String scriptName, String startURL) {
+    public TestLauncher(final String scriptName, final String startURL) {
         this.scriptName = scriptName;
         this.startURL = startURL;
     }
 
-    public void setSessionId(String sessionId) {
+    public void setSessionId(final String sessionId) {
         this.sessionId = sessionId;
         this.childSessionId = createChildSessionId();
     }
 
-    public void setBrowser(String browser) {
+    public void setBrowser(final String browser) {
         this.browser = browser;
     }
 
-    public void setBrowserOption(String browserOption) {
+    public void setBrowserOption(final String browserOption) {
         this.browserOption = browserOption;
     }
 
@@ -80,9 +80,7 @@ public class TestLauncher {
     private String getURL() {
         String cmd = null;
         try {
-            cmd = "http://sahi.example.com/_s_/dyn/Player_auto?file="
-                    + URLEncoder.encode(scriptName, "UTF8") + "&startUrl="
-                    + URLEncoder.encode(startURL, "UTF8");
+            cmd = "http://sahi.example.com/_s_/dyn/Player_auto?file=" + URLEncoder.encode(scriptName, "UTF8") + "&startUrl=" + URLEncoder.encode(startURL, "UTF8");
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
@@ -97,7 +95,7 @@ public class TestLauncher {
         return url + "&sahisid=" + childSessionId;
     }
 
-    private Process openURL(String url) {
+    private Process openURL(final String url) {
         String cmd = buildCommand(url);
         logger.fine("cmd=" + cmd);
         Process process = null;
@@ -109,7 +107,7 @@ public class TestLauncher {
         return process;
     }
 
-    private String buildCommand(String url) {
+    private String buildCommand(final String url) {
         if (Utils.isWindows()) {
             return buildCommandForWindows(url);
         } else {
@@ -117,20 +115,21 @@ public class TestLauncher {
         }
     }
 
-    String buildCommandForWindows(String url) {
+    String buildCommandForWindows(final String url) {
         String result;
         result = "\"" + browser + "\" ";
-        if (!Utils.isBlankOrNull(browserOption))
-            result += browserOption.replaceAll("[$]threadNo", ""+threadNo);
+        if (!Utils.isBlankOrNull(browserOption)) {
+            result += browserOption.replaceAll("[$]threadNo", "" + threadNo);
+        }
         result += " \"" + url + "\"";
         return result;
     }
 
-    String buildCommandForNonWindows(String url) {
+    String buildCommandForNonWindows(final String url) {
         String result;
         result = browser.replaceAll("[ ]+", "\\ ");
         if (!Utils.isBlankOrNull(browserOption)) {
-            result += browserOption.replaceAll("[ ]+", "\\ ").replaceAll("[$]threadNo", ""+threadNo);
+            result += browserOption.replaceAll("[ ]+", "\\ ").replaceAll("[$]threadNo", "" + threadNo);
         }
         result += " " + url;
         return result;
@@ -139,7 +138,7 @@ public class TestLauncher {
     public void stop() {
         System.out.println("Killing " + scriptName);
         logger.fine("Killing " + scriptName);
-        try{
+        try {
             if (process != null) {
                 // if (isFirefox() && Utils.isWindows()) {
                 // try {
@@ -150,7 +149,7 @@ public class TestLauncher {
                 // }
                 process.destroy();
             }
-        }catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -162,7 +161,6 @@ public class TestLauncher {
 //	private boolean isFirefox() {
     // return browser.toLowerCase().indexOf("firefox") != -1;
     //	}
-
     public void setThreadNo(int threadNo) {
         this.threadNo = threadNo;
     }

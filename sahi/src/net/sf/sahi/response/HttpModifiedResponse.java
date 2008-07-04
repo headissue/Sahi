@@ -15,7 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package net.sf.sahi.response;
 
 import java.io.ByteArrayOutputStream;
@@ -28,12 +27,15 @@ import net.sf.sahi.util.Utils;
  * User: nraman Date: May 14, 2005 Time: 1:43:05 AM
  */
 public class HttpModifiedResponse extends HttpResponse {
+
     boolean isSSL = false;
     private String fileExtension;
     private static byte[] INJECT_TOP_SSL = null;
     private static byte[] INJECT_BOTTOM_SSL = null;
     private static byte[] INJECT_TOP;
     private static byte[] INJECT_BOTTOM;
+    
+
     static {
         INJECT_TOP = Utils.readFile("../config/inject_top.txt");
         INJECT_BOTTOM = Utils.readFile("../config/inject_bottom.txt");
@@ -45,7 +47,7 @@ public class HttpModifiedResponse extends HttpResponse {
         return new String(content).replaceAll("http", "https").getBytes();
     }
 
-    public HttpModifiedResponse(HttpResponse response, boolean isSSL, String fileExtension)
+    public HttpModifiedResponse(final HttpResponse response, final boolean isSSL, String fileExtension)
             throws IOException {
         this.fileExtension = fileExtension;
         copyFrom(response);
@@ -57,12 +59,13 @@ public class HttpModifiedResponse extends HttpResponse {
                 removeHeader("ETag");
                 removeHeader("Last-Modified");
                 setData(getModifiedData());
-            }else if (isJs()){
+            } else if (isJs()) {
                 setData(substituteIEActiveX(data()));
             }
             resetRawHeaders();
         }
     }
+
     private boolean isJs() {
         return "js".equalsIgnoreCase(fileExtension);
     }
@@ -97,7 +100,7 @@ public class HttpModifiedResponse extends HttpResponse {
 
     }
 
-    static byte[] substituteModals(byte[] content) {
+    static byte[] substituteModals(final byte[] content) {
         // long start = System.currentTimeMillis();
         String s = new String(content);
         s = s.replaceAll("(\\W+)((alert)|(confirm)|(prompt))\\s*\\(", "$1sahi_$2(");
@@ -107,7 +110,9 @@ public class HttpModifiedResponse extends HttpResponse {
     }
 
     private boolean isHTML() {
-        if (isJs()) return false;
+        if (isJs()) {
+            return false;
+        }
         String contentType = contentType();
         if (contentType != null && contentType.toLowerCase().indexOf("text/html") != -1) {
             return true;
@@ -120,28 +125,30 @@ public class HttpModifiedResponse extends HttpResponse {
 
     private boolean hasHtmlContent() {
         String s = getSampleContent();
-        return s.indexOf("<html") != -1 || s.indexOf("<body") != -1 || s.indexOf("<table") != -1
-                || s.indexOf("<script") != -1 || s.indexOf("<form") != -1;
+        return s.indexOf("<html") != -1 || s.indexOf("<body") != -1 || s.indexOf("<table") != -1 || s.indexOf("<script") != -1 || s.indexOf("<form") != -1;
     }
-
     private String sampleContent = null;
+
     private String getSampleContent() {
         if (sampleContent == null) {
             int length = 500;
-            if (data().length < length)
+            if (data().length < length) {
                 length = data().length;
+            }
             sampleContent = new String(data(), 0, length).toLowerCase();
         }
         return sampleContent;
     }
 
-    public static HttpResponse modify(HttpResponse response) throws IOException {
+    public static HttpResponse modify(final HttpResponse response) throws IOException {
         response.setData(inject(substituteIEActiveX(response.data()), 0, false));
         return response;
     }
 
-    static byte[] substituteIEActiveX(byte[] bs) {
-        if (!Configuration.modifyActiveX()) return bs;
+    static byte[] substituteIEActiveX(final byte[] bs) {
+        if (!Configuration.modifyActiveX()) {
+            return bs;
+        }
         return new String(bs).replaceAll("new[\\s]*ActiveXObject", "new_ActiveXObject").getBytes();
     }
 }

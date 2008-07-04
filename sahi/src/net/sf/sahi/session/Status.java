@@ -11,24 +11,24 @@ import java.util.Map;
  * Time: 5:48:08 PM
  */
 public class Status {
-    private String name = null;
 
+    private String name = null;
     private static final Map mapStatus = new HashMap();
 
     public String getName() {
         return name;
     }
 
-    private Status(String name) {
+    private Status(final String name) {
         this.name = name;
         mapStatus.put(name, this);
     }
 
-    public boolean equals(String name) {
+    public boolean equals(final String name) {
         return !Utils.isBlankOrNull(name) && this.name.equalsIgnoreCase(name);
     }
 
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         return obj != null && this.equals(((Status) obj).getName());
     }
 
@@ -36,17 +36,12 @@ public class Status {
         return this.name;
     }
 
-    public static Status getStatus(String name) {
+    public static Status getStatus(final String name) {
         return (Status) mapStatus.get(name.toUpperCase());
     }
-
     public static final Status RUNNING = new Status("RUNNING");
-
     public static final Status SUCCESS = new Status("SUCCESS");
-
     public static final Status FAILURE = new Status("FAILURE");
-
     public static final Status RETRY = new Status("RETRY");
-
     public static final Status INITIAL = new Status("INITIAL");
 }

@@ -1,11 +1,3 @@
-package net.sf.sahi.util;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.nio.channels.FileChannel;
-
 /**
  * Sahi - Web Automation and Test Tool
  * 
@@ -23,8 +15,16 @@ import java.nio.channels.FileChannel;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package net.sf.sahi.util;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.channels.FileChannel;
 
 public class FileUtils {
+
     public static void copyDir(final String src, final String dest) throws IOException, InterruptedException {
         copyDir(new File(src), new File(dest));
     }
@@ -38,8 +38,7 @@ public class FileUtils {
             File file = files[i];
             if (file.isDirectory()) {
                 copyDir(file, new File(dest, file.getName()));
-            }
-            else {
+            } else {
                 copyFile(file, new File(dest, file.getName()));
             }
         }

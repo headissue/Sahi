@@ -1,7 +1,13 @@
 package net.sf.sahi.ant;
 
-import javax.mail.*;
-import javax.mail.internet.*;
+
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 
 public class Mailer {
     private java.util.Properties props;
@@ -31,7 +37,7 @@ public class Mailer {
         }
     }
 
-    public void send(String from, String to, String subject, String content)
+    public void send(final String from, final String to, final String subject, final String content)
             throws AddressException, MessagingException {
         Session session = Session.getDefaultInstance(props, null);
 

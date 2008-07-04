@@ -15,7 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package net.sf.sahi.session;
 
 import java.util.HashMap;
@@ -31,6 +30,7 @@ import net.sf.sahi.test.SahiTestSuite;
  * User: nraman Date: Jun 21, 2005 Time: 8:03:28 PM
  */
 public class Session {
+
     private Status status;
     private static Map sessions = new HashMap();
     private String sessionId;
@@ -46,22 +46,22 @@ public class Session {
         return report;
     }
 
-    public void setReport(Report report) {
+    public void setReport(final Report report) {
         this.report = report;
     }
 
-    public static void removeInstance(String sessionId) {
+    public static void removeInstance(final String sessionId) {
         sessions.remove(sessionId);
     }
 
-    public static Session getInstance(String sessionId) {
+    public static Session getInstance(final String sessionId) {
         if (!sessions.containsKey(sessionId)) {
             sessions.put(sessionId, new Session(sessionId));
         }
         return (Session) sessions.get(sessionId);
     }
 
-    public Session(String sessionId) {
+    public Session(final String sessionId) {
         this.sessionId = sessionId;
         this.variables = new HashMap();
         this.status = Status.INITIAL;
@@ -71,7 +71,7 @@ public class Session {
         return sessionId;
     }
 
-    public void setIsWindowOpen(boolean isWindowOpen) {
+    public void setIsWindowOpen(final boolean isWindowOpen) {
         this.isWindowOpen = isWindowOpen;
     }
 
@@ -80,8 +80,9 @@ public class Session {
     }
 
     public Recorder getRecorder() {
-        if (this.recorder == null)
+        if (this.recorder == null) {
             this.recorder = new Recorder();
+        }
         return recorder;
     }
 
@@ -89,19 +90,18 @@ public class Session {
         return getRecorder().isRecording();
     }
 
-    public void setScript(SahiScript script) {
+    public void setScript(final SahiScript script) {
         this.script = script;
     }
 
-    public String getVariable(String name) {
+    public String getVariable(final String name) {
 //    	System.out.println("get name="+name);
 //    	System.out.println("get value="+(String) (variables.get(name)));
         return (String) (variables.get(name));
     }
 
-    public void removeVariables(String pattern) {
-        for (Iterator iterator = variables.keySet().iterator(); iterator
-                .hasNext();) {
+    public void removeVariables(final String pattern) {
+        for (Iterator iterator = variables.keySet().iterator(); iterator.hasNext();) {
             String s = (String) iterator.next();
             if (s.matches(pattern)) {
                 iterator.remove();
@@ -109,7 +109,7 @@ public class Session {
         }
     }
 
-    public void setVariable(String name, String value) {
+    public void setVariable(final String name, final String value) {
 //    	System.out.println("set name="+name);
 //    	System.out.println("set value="+value);
         variables.put(name, value);
@@ -146,5 +146,4 @@ public class Session {
     public long lastActiveTime() {
         return timestamp;
     }
-
 }

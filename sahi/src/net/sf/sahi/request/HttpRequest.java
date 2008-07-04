@@ -15,7 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package net.sf.sahi.request;
 
 import net.sf.sahi.StreamHandler;
@@ -26,13 +25,18 @@ import net.sf.sahi.util.Utils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLDecoder;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.StringTokenizer;
 import java.util.logging.Logger;
 
 /**
  * User: nraman Date: May 13, 2005 Time: 10:01:13 PM
  */
 public class HttpRequest extends StreamHandler {
+
     private String host;
     private int port;
     private String uri;
@@ -44,21 +48,22 @@ public class HttpRequest extends StreamHandler {
     private boolean isAjax;
     private String fileExtension;
     private String hostWithPort;
-	private String fileName;
+    private String fileName;
 
     HttpRequest() {
     }
 
-    public HttpRequest(InputStream in) throws IOException {
+    public HttpRequest(final InputStream in) throws IOException {
         this(in, false);
     }
 
-    public HttpRequest(InputStream in, boolean isSSLSocket) throws IOException {
+    public HttpRequest(final InputStream in, final boolean isSSLSocket) throws IOException {
         this.isSSLSocket = isSSLSocket;
         populateHeaders(in, true);
         isAjax = headers().containsKey("sahi-isxhr");
-        if (isPost())
+        if (isPost()) {
             populateData(in);
+        }
         if (isPost() || isGet() || isConnect()) {
             setHostAndPort();
             setUri();
@@ -76,7 +81,7 @@ public class HttpRequest extends StreamHandler {
         return port;
     }
 
-    public void setHost(String host) {
+    public void setHost(final String host) {
         this.host = host;
     }
 
@@ -97,7 +102,9 @@ public class HttpRequest extends StreamHandler {
     }
 
     public String method() {
-        if (firstLine() == null) return null;
+        if (firstLine() == null) {
+            return null;
+        }
         return firstLine().substring(0, firstLine().indexOf(" "));
     }
 
@@ -107,7 +114,7 @@ public class HttpRequest extends StreamHandler {
         uri = stripHostName(withHost, host, isSSL());
     }
 
-    String stripHostName(String withHost, String hostName, boolean ssl) {
+    String stripHostName(final String withHost, final String hostName, final boolean ssl) {
         String stripped = withHost;
         if (withHost.startsWith("http://") || withHost.startsWith("https://")) {
             int indexOfSlash = withHost.indexOf("/", withHost.indexOf(hostName));
@@ -128,8 +135,9 @@ public class HttpRequest extends StreamHandler {
         hostWithPort = getLastSetValueOfHeader("Host");
         host = hostWithPort;
         port = 80;
-        if (isSSL())
+        if (isSSL()) {
             port = 443;
+        }
         int indexOfColon = hostWithPort.indexOf(":");
         if (indexOfColon != -1) {
             host = hostWithPort.substring(0, indexOfColon);
@@ -143,9 +151,9 @@ public class HttpRequest extends StreamHandler {
     }
 
     private void setQueryString() {
-        if (uri == null)
+        if (uri == null) {
             return;
-
+        }
         int qIx = uri.indexOf("?");
         String uriWithoutQueryString = uri;
         if (qIx != -1 && qIx + 1 < uri.length()) {
@@ -159,10 +167,12 @@ public class HttpRequest extends StreamHandler {
             fileExtension = uriWithoutQueryString.substring(dotIx + 1);
         }
         int lastSlashIx = uriWithoutQueryString.lastIndexOf("/");
-        if (lastSlashIx != -1){
-        	if (lastSlashIx+1 < uriWithoutQueryString.length())
-        		fileName = uriWithoutQueryString.substring(lastSlashIx+1);
-        	else fileName = "no_filename";
+        if (lastSlashIx != -1) {
+            if (lastSlashIx + 1 < uriWithoutQueryString.length()) {
+                fileName = uriWithoutQueryString.substring(lastSlashIx + 1);
+            } else {
+                fileName = "no_filename";
+            }
         }
     }
 
@@ -175,8 +185,9 @@ public class HttpRequest extends StreamHandler {
             if (eqIx != -1) {
                 String key = keyVal.substring(0, eqIx);
                 String value = "";
-                if (eqIx + 1 <= keyVal.length())
+                if (eqIx + 1 <= keyVal.length()) {
                     value = keyVal.substring(eqIx + 1);
+                }
                 try {
                     params.put(key, URLDecoder.decode(value, "UTF-8"));
                 } catch (Exception e) {
@@ -200,8 +211,9 @@ public class HttpRequest extends StreamHandler {
     private void setCookies() {
         cookies = new LinkedHashMap();
         String cookieString = getLastSetValueOfHeader("Cookie");
-        if (cookieString == null)
+        if (cookieString == null) {
             return;
+        }
         StringTokenizer tokenizer = new StringTokenizer(cookieString, ";");
         while (tokenizer.hasMoreTokens()) {
             String keyVal = tokenizer.nextToken();
@@ -209,8 +221,9 @@ public class HttpRequest extends StreamHandler {
             if (eqIx != -1) {
                 String key = keyVal.substring(0, eqIx).trim();
                 String value = "";
-                if (eqIx + 1 <= keyVal.length())
+                if (eqIx + 1 <= keyVal.length()) {
                     value = keyVal.substring(eqIx + 1).trim();
+                }
                 cookies.put(key, value);
             }
         }
@@ -227,10 +240,11 @@ public class HttpRequest extends StreamHandler {
         return rebuildCookies(cookies);
     }
 
-    static String rebuildCookies(Map cookies2) {
+    static String rebuildCookies(final Map cookies2) {
         StringBuffer sb = new StringBuffer();
-        if (cookies2.size() == 0)
+        if (cookies2.size() == 0) {
             return "";
+        }
         Iterator keys = cookies2.keySet().iterator();
         while (keys.hasNext()) {
             String key = (String) keys.next();
@@ -277,13 +291,14 @@ public class HttpRequest extends StreamHandler {
         String sessionId;
         sessionId = getParameter("sahisid");
 //        System.out.println("1:" + sessionId);
-        if (Utils.isBlankOrNull(sessionId)){
+        if (Utils.isBlankOrNull(sessionId)) {
             sessionId = getCookie("sahisid");
 //            System.out.println("2:" + sessionId);
         }
-        if (Utils.isBlankOrNull(sessionId))
+        if (Utils.isBlankOrNull(sessionId)) {
             sessionId = "sahi_" + System.currentTimeMillis();
 //        System.out.println("3:" + sessionId);
+        }
         return Session.getInstance(sessionId);
     }
 
@@ -315,7 +330,9 @@ public class HttpRequest extends StreamHandler {
 
     public boolean isExcluded() {
         //System.out.println("isAjax="+isAjax+" for "+url());
-        if (isAjax) return true;
+        if (isAjax) {
+            return true;
+        }
         String url = url();
         String[] exclusionList = Configuration.getExclusionList();
         for (int i = 0; i < exclusionList.length; i++) {
@@ -326,5 +343,4 @@ public class HttpRequest extends StreamHandler {
         }
         return false;
     }
-
 }

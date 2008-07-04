@@ -15,7 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package net.sf.sahi.response;
 
 import java.text.SimpleDateFormat;
@@ -29,16 +28,18 @@ import net.sf.sahi.util.Utils;
  * User: nraman Date: May 15, 2005 Time: 10:14:34 PM
  */
 public class HttpFileResponse extends HttpResponse {
+
     private String fileName;
     boolean addCacheHeader = false;
 
-    public HttpFileResponse(String fileName, Properties substitutions, boolean addCacheHeader, boolean cacheFileInMemory) {
+    public HttpFileResponse(final String fileName, final Properties substitutions, final boolean addCacheHeader, final boolean cacheFileInMemory) {
         this.fileName = fileName;
         byte[] bytes;
-        if (cacheFileInMemory && !Configuration.isDevMode())
+        if (cacheFileInMemory && !Configuration.isDevMode()) {
             bytes = Utils.readCachedFile(fileName);
-        else
+        } else {
             bytes = Utils.readFile(fileName);
+        }
         setData(bytes);
         if (substitutions != null) {
             setData(Utils.substitute(new String(data()), substitutions).getBytes());
@@ -47,8 +48,7 @@ public class HttpFileResponse extends HttpResponse {
         setHeaders();
     }
 
-
-    public HttpFileResponse(String fileName) {
+    public HttpFileResponse(final String fileName) {
         this(fileName, null, false, false);
 //		this(fileName, null, true, true);
     }

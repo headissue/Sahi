@@ -15,7 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package net.sf.sahi.command;
 
 import net.sf.sahi.report.LogViewer;
@@ -30,7 +29,7 @@ import net.sf.sahi.config.Configuration;
 
 public class Log {
 
-    public HttpResponse viewLogs(HttpRequest request) {
+    public HttpResponse viewLogs(final HttpRequest request) {
         String fileName = URLParser.logFileNamefromURI(request.uri());
         if ("".equals(fileName)) {
             return new NoCacheHttpResponse(LogViewer.getLogsList(Configuration.getPlayBackLogsRoot()));
@@ -39,7 +38,7 @@ public class Log {
         }
     }
 
-    public HttpResponse highlight(HttpRequest request) {
+    public HttpResponse highlight(final HttpRequest request) {
         int lineNumber = getLineNumber(request);
         String href = request.getParameter("href");
         String content;
@@ -54,12 +53,13 @@ public class Log {
         return response;
     }
 
-    private int getLineNumber(HttpRequest req) {
+    private int getLineNumber(final HttpRequest req) {
         String p = req.getParameter("n");
         int i = -1;
         try {
             i = Integer.parseInt(p);
         } catch (Exception e) {
+            
         }
         return i;
     }

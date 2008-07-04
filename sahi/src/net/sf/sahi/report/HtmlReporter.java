@@ -1,11 +1,12 @@
-package net.sf.sahi.report;
-
 /**
  * User: dlewis
  * Date: Dec 6, 2006
  * Time: 3:14:31 PM
  */
+package net.sf.sahi.report;
+
 public class HtmlReporter extends SahiReporter {
+
     protected boolean createSuiteLogFolder = false;
 
     public HtmlReporter() {
@@ -17,7 +18,7 @@ public class HtmlReporter extends SahiReporter {
         this.createSuiteLogFolder = createSuiteLogFolder;
     }
 
-    public HtmlReporter(String logDir) {
+    public HtmlReporter(final String logDir) {
         super(logDir, new HtmlFormatter());
         createSuiteLogFolder = true;
     }

@@ -15,7 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package net.sf.sahi.response;
 
 import java.util.logging.Logger;
@@ -26,28 +25,31 @@ import java.util.logging.Logger;
  * Time: 11:04:06 PM
  */
 public class NoCacheHttpResponse extends HttpResponse {
-	private static final Logger logger = Logger.getLogger("net.sf.sahi.response.NoCacheHttpResponse");
-	private int status = 200;
-	private String statusMessage = "OK";
 
-	public NoCacheHttpResponse() {
-		this("");
+    private static final Logger logger = Logger.getLogger("net.sf.sahi.response.NoCacheHttpResponse");
+    private int status = 200;
+    private String statusMessage = "OK";
+
+    public NoCacheHttpResponse() {
+        this("");
     }
 
-	public NoCacheHttpResponse(String dataStr) {
-		setNoCacheHeaders(dataStr.getBytes());
+    public NoCacheHttpResponse(final String dataStr) {
+        setNoCacheHeaders(dataStr.getBytes());
     }
 
-	public NoCacheHttpResponse(int status, String statusMessage, String dataStr) {
-		this.status = status;
-		if (status != 200) this.statusMessage = "";
-		this.statusMessage = statusMessage == null ? "" : statusMessage;
-		setNoCacheHeaders(dataStr.getBytes());
-	}
+    public NoCacheHttpResponse(final int status, final String statusMessage, final String dataStr) {
+        this.status = status;
+        if (status != 200) {
+            this.statusMessage = "";
+        }
+        this.statusMessage = statusMessage == null ? "" : statusMessage;
+        setNoCacheHeaders(dataStr.getBytes());
+    }
 
-    protected void setNoCacheHeaders(byte[] data) {
+    protected void setNoCacheHeaders(final byte[] data) {
         setData(data);
-		setFirstLine("HTTP/1.1 " + status + " " + statusMessage);
+        setFirstLine("HTTP/1.1 " + status + " " + statusMessage);
         setHeader("Content-Type", "text/html");
         setHeader("Cache-control", "no-store");
         setHeader("Pragma", "no-cache");
@@ -57,7 +59,7 @@ public class NoCacheHttpResponse extends HttpResponse {
         logger.fine(new String(rawHeaders()));
     }
 
-	public NoCacheHttpResponse(HttpResponse httpResponse) {
-		setNoCacheHeaders(httpResponse.data());
+    public NoCacheHttpResponse(final HttpResponse httpResponse) {
+        setNoCacheHeaders(httpResponse.data());
     }
 }

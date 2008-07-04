@@ -15,28 +15,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package net.sf.sahi.util;
 
 import net.sf.sahi.config.Configuration;
 import net.sf.sahi.command.Command;
 
 public class URLParser {
+
     public static String logFileNamefromURI(final String uri) {
         String fileName = getRelativeLogFile(uri);
-        if ("".equals(fileName)) { return "";}
+        if ("".equals(fileName)) {
+            return "";
+        }
         return Configuration.appendLogsRoot(fileName);
     }
 
     static String getRelativeLogFile(final String uri) {
         String fileName = uri.substring(uri.indexOf(Command.LOG_VIEW) + Command.LOG_VIEW.length());
-        while (fileName.startsWith("/")) {fileName = fileName.substring(1);}
+        while (fileName.startsWith("/")) {
+            fileName = fileName.substring(1);
+        }
         return fileName;
     }
 
     public static String fileNamefromURI(final String uri) {
-        return Utils.concatPaths(Configuration.getHtdocsRoot(), uri
-                .substring(uri.indexOf("_s_/") + 4));
+        return Utils.concatPaths(Configuration.getHtdocsRoot(), uri.substring(uri.indexOf("_s_/") + 4));
     }
 
     public static String scriptFileNamefromURI(final String uri, final String token) {
@@ -48,18 +51,23 @@ public class URLParser {
 
     public static String getCommandFromUri(final String uri) {
         int ix1 = uri.indexOf("/dyn/");
-        if (ix1 == -1) return null;
+        if (ix1 == -1) {
+            return null;
+        }
         ix1 = ix1 + 5;
         int ix2 = uri.indexOf("/", ix1);
         int ix3 = uri.indexOf("?", ix1);
         int endIx = -1;
-        if (ix2 > -1 && ix3 == -1) {endIx = ix2;}
-        else if (ix3 > -1 && ix2 == -1) {endIx = ix3;}
-        else {
+        if (ix2 > -1 && ix3 == -1) {
+            endIx = ix2;
+        } else if (ix3 > -1 && ix2 == -1) {
+            endIx = ix3;
+        } else {
             endIx = ix3 < ix2 ? ix3 : ix2;
         }
-        if (endIx == -1) {endIx = uri.length();}
+        if (endIx == -1) {
+            endIx = uri.length();
+        }
         return uri.substring(ix1, endIx);
     }
-
 }

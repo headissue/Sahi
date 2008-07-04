@@ -1,3 +1,8 @@
+/**
+ * User: dlewis
+ * Date: Dec 6, 2006
+ * Time: 3:15:15 PM
+ */
 package net.sf.sahi.report;
 
 import net.sf.sahi.config.Configuration;
@@ -9,12 +14,8 @@ import java.io.*;
 import java.util.Iterator;
 import java.util.List;
 
-/**
- * User: dlewis
- * Date: Dec 6, 2006
- * Time: 3:15:15 PM
- */
 public abstract class SahiReporter {
+
     protected Formatter formatter;
     protected String logDir;
     protected Writer writer;
@@ -54,17 +55,19 @@ public abstract class SahiReporter {
 
     protected void writeTestSummary(List tests) throws IOException {
         for (Iterator iter = tests.iterator(); iter.hasNext();) {
-            try{
+            try {
                 TestLauncher test = (TestLauncher) iter.next();
                 Session session = Session.getInstance(test.getChildSessionId());
                 Report report = session.getReport();
-                if (report == null) continue;
+                if (report == null) {
+                    continue;
+                }
                 TestSummary summary = report.getTestSummary();
                 if (summary != null) {
                     summary.setAddLink(true);
                     writer.write(formatter.getSummaryData(summary));
                 }
-            }catch (Exception e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
@@ -98,8 +101,7 @@ public abstract class SahiReporter {
     public String getLogDir() {
         if (Utils.isBlankOrNull(logDir)) {
             if (createSuiteLogFolder()) {
-                logDir = Configuration.appendLogsRoot(Utils
-                        .createLogFileName(suiteName));
+                logDir = Configuration.appendLogsRoot(Utils.createLogFileName(suiteName));
             } else {
                 logDir = Configuration.getPlayBackLogsRoot();
             }
@@ -110,11 +112,11 @@ public abstract class SahiReporter {
 
     public abstract boolean createSuiteLogFolder();
 
-    public void setLogDir(String logDir) {
+    public void setLogDir(final String logDir) {
         this.logDir = logDir;
     }
 
-    public void setSuiteName(String suiteName) {
+    public void setSuiteName(final String suiteName) {
         this.suiteName = suiteName;
     }
 }

@@ -59,14 +59,16 @@ public class TestRunner {
             String base = getBase(args);
             String browser = getBrowser(args);
             String logDir = args[3];
-            if ("default".equalsIgnoreCase(logDir))
+            if ("default".equalsIgnoreCase(logDir)) {
                 logDir = "";
+            }
             String sahiHost = args[4];
             String port = args[5];
             String threads = args[6];
             String browserOption = "";
-            if (args.length == 8)
+            if (args.length == 8) {
                 browserOption = args[7];
+            }
             TestRunner testRunner = new TestRunner(suiteName, browser, base, sahiHost, port, threads, browserOption);
             testRunner.addReport(new Report("html", logDir));
             String status = testRunner.execute();
@@ -83,12 +85,9 @@ public class TestRunner {
 
     protected static void help() {
         System.out.println("------------------------");
-        System.out
-                .println("Usage: java TestRunner <suite_name> <browser_executable> <start_url> <log_dir> <sahi_host> <sahi_port> <number_of_threads>  [<browser_option>]");
-        System.out
-                .println("Set log_dir to \"default\" if you want to log to the default log dir");
-        System.out
-                .println("Set number_of_threads to a number less than 5 for Internet Explorer");
+        System.out.println("Usage: java TestRunner <suite_name> <browser_executable> <start_url> <log_dir> <sahi_host> <sahi_port> <number_of_threads>  [<browser_option>]");
+        System.out.println("Set log_dir to \"default\" if you want to log to the default log dir");
+        System.out.println("Set number_of_threads to a number less than 5 for Internet Explorer");
         //System.out.println("Set number_of_threads to 1 for FireFox");
         System.out.println("Set browser_option to \"-profile <sahi_base>/browser/ff/profiles/sahi$threadNo\" for Firefox.");
         System.out.println("------------------------");
@@ -103,7 +102,7 @@ public class TestRunner {
     }
 
     public TestRunner(String suiteName, String browser, String base, String sahiHost, String port,
-                      String threads, String browserOption) {
+            String threads, String browserOption) {
         this.suiteName = suiteName;
         this.browser = browser;
         this.base = base;
@@ -124,24 +123,18 @@ public class TestRunner {
 
     public String execute() throws IOException, InterruptedException {
         this.sessionId = "sahi_" + System.currentTimeMillis();
-        StringBuffer urlStr = new StringBuffer(200).append("http://")
-                .append(sahiHost).append(":").append(port).append(
-                "/_s_/dyn/Suite_start?suite=")
-                .append(encode(suiteName)).append("&base=")
-                .append(encode(base))
-                .append("&browser=").append(encode(browser))
-                .append("&threads=").append(encode(threads))
-                .append("&sahisid=").append(encode(this.sessionId));
+        StringBuffer urlStr = new StringBuffer(200).append("http://").append(sahiHost).append(":").append(port).append(
+                "/_s_/dyn/Suite_start?suite=").append(encode(suiteName)).append("&base=").append(encode(base)).append("&browser=").append(encode(browser)).append("&threads=").append(encode(threads)).append("&sahisid=").append(encode(this.sessionId));
         if (listReport == null || listReport.size() == 0) {
             addReport(new Report("html", null));
         }
         for (Iterator iterator = listReport.iterator(); iterator.hasNext();) {
             Report report = (Report) iterator.next();
-            urlStr.append("&").append(encode(report.getType())).append("=").append(report.getLogDir()!=null? encode(report.getLogDir()) : "");
+            urlStr.append("&").append(encode(report.getType())).append("=").append(report.getLogDir() != null ? encode(report.getLogDir()) : "");
         }
         if (createIssue != null) {
             urlStr.append("&").append(encode(createIssue.getTool())).append("=");
-            if (createIssue.getPropertiesFile()!=null) {
+            if (createIssue.getPropertiesFile() != null) {
                 urlStr.append(encode(createIssue.getPropertiesFile()));
             }
         }
@@ -150,11 +143,11 @@ public class TestRunner {
             urlStr.append("&browserOption=").append(encode(browserOption));
         }
 
-        try{
+        try {
             Thread thread = new Thread(new ShutDownHook(sahiHost, port, sessionId));
             Runtime.getRuntime().addShutdownHook(thread);
             System.out.println("Added shutdown hook.");
-        }catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         System.out.println(urlStr);
@@ -182,9 +175,7 @@ public class TestRunner {
         String status;
         String urlStr;
         try {
-            urlStr = "http://" + sahiHost + ":" + port
-                    + "/_s_/dyn/Suite_status?s" + "&sahisid="
-                    + encode(sessionId);
+            urlStr = "http://" + sahiHost + ":" + port + "/_s_/dyn/Suite_status?s" + "&sahisid=" + encode(sessionId);
             URL url = new URL(urlStr);
             InputStream in = url.openStream();
             StringBuffer sb = new StringBuffer();
@@ -195,8 +186,7 @@ public class TestRunner {
             status = sb.toString();
             in.close();
         } catch (Exception e) {
-            System.out
-                    .println("Exception while connecting to Sahi proxy to check status. Retrying ...");
+            System.out.println("Exception while connecting to Sahi proxy to check status. Retrying ...");
             status = "RETRY";
         }
         return status;
@@ -224,15 +214,15 @@ public class TestRunner {
         return browser;
     }
 
-    public String toString(){
+    public String toString() {
         StringBuffer sb = new StringBuffer();
-        sb.append("\nsuiteName = "+suiteName);
-        sb.append("\nbrowser = "+browser);
-        sb.append("\nbase = "+base);
-        sb.append("\nsahiHost = "+sahiHost);
-        sb.append("\nport = "+port);
-        sb.append("\nthreads = "+threads);
-        sb.append("\nbrowserOption = "+browserOption);
+        sb.append("\nsuiteName = " + suiteName);
+        sb.append("\nbrowser = " + browser);
+        sb.append("\nbase = " + base);
+        sb.append("\nsahiHost = " + sahiHost);
+        sb.append("\nport = " + port);
+        sb.append("\nthreads = " + threads);
+        sb.append("\nbrowserOption = " + browserOption);
         return sb.toString();
 
     }

@@ -6,8 +6,8 @@ package net.sf.sahi.issue;
  * Time: 4:59:11 PM
  */
 public class Issue {
-    private String summary;
 
+    private String summary;
     private String description;
 
     public Issue(String summary, String description) {

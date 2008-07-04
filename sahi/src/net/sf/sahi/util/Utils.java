@@ -15,7 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package net.sf.sahi.util;
 
 //
@@ -40,9 +39,11 @@ import java.util.regex.Pattern;
  * User: nraman Date: Jun 26, 2005 Time: 4:52:58 PM
  */
 public class Utils {
+
     public static String escapeDoubleQuotesAndBackSlashes(final String line) {
-        if (line == null)
+        if (line == null) {
             return null;
+        }
         return line.replaceAll("\\\\", "\\\\\\\\").replaceAll("\"", "\\\\\"");
     }
 
@@ -50,14 +51,13 @@ public class Utils {
         return getBytes(in, -1);
     }
 
-    public static byte[] getBytes(InputStream in, int contentLength)
+    public static byte[] getBytes(final InputStream in, final int contentLength)
             throws IOException {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         int c = ' ';
         int count = 0;
         try {
-            while ((contentLength == -1 || count < contentLength)
-                    && (c = in.read()) != -1) {
+            while ((contentLength == -1 || count < contentLength) && (c = in.read()) != -1) {
                 count++;
                 out.write(c);
             }
@@ -85,7 +85,6 @@ public class Utils {
         }
         return data;
     }
-
     static Map fileCache = new HashMap();
 
     public static byte[] readCachedFile(final String fileName) {
@@ -113,8 +112,9 @@ public class Utils {
             throw new FileNotFoundRuntimeException(e);
         } finally {
             try {
-                if (inputStream != null)
+                if (inputStream != null) {
                     inputStream.close();
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -128,42 +128,39 @@ public class Utils {
     // "Elephant".
     // Should consider refactoring to StringBuffer(); 
     public static String convertStringToASCII(String s) {
-        return s.replaceAll("(è|é|ê|ë)", "e").replaceAll("(ù|ú|û|ü)", "u")
-                .replaceAll("(à|á|â|ã|ä|å)", "a").replaceAll("æ", "ae")
-                .replaceAll("(ì|í|î|ï)", "i").replaceAll("(ò|ó|ô|õ|ö|ø)", "o")
-                .replaceAll("(ý|ÿ)", "y").replaceAll("ñ", "n").replaceAll("ç",
-                        "c").replaceAll("(À|Á|Â|Ã|Ä|Å)", "A").replaceAll("Æ",
-                        "AE").replaceAll("Ç", "C").replaceAll("(È|É|Ê|Ë)", "E")
-                .replaceAll("(Ì|Í|Î|Ï)", "I").replaceAll("Ñ", "N").replaceAll(
-                        "(Ò|Ó|Ô|Õ|Ö|Ø)", "O").replaceAll("(Ù|Ú|Û|Ü)", "U")
-                .replaceAll("Ý", "Y");
+        return s.replaceAll("(è|é|ê|ë)", "e").replaceAll("(ù|ú|û|ü)", "u").replaceAll("(à|á|â|ã|ä|å)", "a").replaceAll("æ", "ae").replaceAll("(ì|í|î|ï)", "i").replaceAll("(ò|ó|ô|õ|ö|ø)", "o").replaceAll("(ý|ÿ)", "y").replaceAll("ñ", "n").replaceAll("ç",
+                "c").replaceAll("(À|Á|Â|Ã|Ä|Å)", "A").replaceAll("Æ",
+                "AE").replaceAll("Ç", "C").replaceAll("(È|É|Ê|Ë)", "E").replaceAll("(Ì|Í|Î|Ï)", "I").replaceAll("Ñ", "N").replaceAll(
+                "(Ò|Ó|Ô|Õ|Ö|Ø)", "O").replaceAll("(Ù|Ú|Û|Ü)", "U").replaceAll("Ý", "Y");
     }
 
     public static synchronized String createLogFileName(final String scriptFileName) {
         String TMPscriptFileName = new File(scriptFileName).getName();
-        String date = new SimpleDateFormat("ddMMMyyyy__HH_mm_ss")
-                .format(new Date());
-        return convertStringToASCII(TMPscriptFileName.replaceAll("[.].*$", "")
-                + "__" + date);
+        String date = new SimpleDateFormat("ddMMMyyyy__HH_mm_ss").format(new Date());
+        return convertStringToASCII(TMPscriptFileName.replaceAll("[.].*$", "") + "__" + date);
     }
 
-    public static File getRelativeFile(File parent, String s2) {
+    public static File getRelativeFile(File parent, final String s2) {
         File sf2 = new File(s2);
-        if (sf2.isAbsolute())
+        if (sf2.isAbsolute()) {
             return sf2;
-        if (!parent.isDirectory()) 
+        }
+        if (!parent.isDirectory()) {
             parent = parent.getParentFile();
+        }
         File file = new File(parent, s2);
         return file;
     }
 
     public static String concatPaths(final String s1, final String s2) {
         File sf2 = new File(s2);
-        if (sf2.isAbsolute())
+        if (sf2.isAbsolute()) {
             return s2;
+        }
         File parent = new File(s1);
-        if (!parent.isDirectory())
+        if (!parent.isDirectory()) {
             parent = parent.getParentFile();
+        }
         File file = new File(parent, s2);
         try {
             return file.getCanonicalPath();
@@ -202,7 +199,7 @@ public class Utils {
             String key = (String) keys.nextElement();
             patternBuf.append(i++ == 0 ? "" : "|").append("\\$").append(key);
         }
-                      
+
         Pattern pattern = Pattern.compile(patternBuf.toString());
         patternBuf = null;
         Matcher matcher = pattern.matcher(content);
@@ -219,22 +216,22 @@ public class Utils {
     }
 
     public static String makeString(String s) {
-        if (s == null)
+        if (s == null) {
             return null;
-        return escapeDoubleQuotesAndBackSlashes(s).replaceAll("\n", "\\\\n")
-                .replaceAll("\r", "");
+        }
+        return escapeDoubleQuotesAndBackSlashes(s).replaceAll("\n", "\\\\n").replaceAll("\r", "");
 
     }
 
-    public static String escapeQuotesForXML(String input) {
+    public static String escapeQuotesForXML(final String input) {
         return input.replaceAll("\"", "&quot;");
     }
 
-    public static String escapeQuotes(String input) {
+    public static String escapeQuotes(final String input) {
         return input.replaceAll("\"", "\\\\\"");
     }
 
-    public static String stripChildSessionId(String sessionId) {
+    public static String stripChildSessionId(final String sessionId) {
         return sessionId.replaceFirst("sahix[0-9]+x", "");
     }
 
@@ -256,14 +253,13 @@ public class Utils {
         }
     }
 
-    public static String makePathOSIndependent(String path) {
+    public static String makePathOSIndependent(final String path) {
         String separator = System.getProperty("file.separator");
         return path.replace('/', separator.charAt(0));
     }
 
     public static boolean isWindows() {
-        return System.getProperty("os.name").toLowerCase()
-                .startsWith("windows");
+        return System.getProperty("os.name").toLowerCase().startsWith("windows");
     }
 
     public static boolean isWindowsNT() {
@@ -274,17 +270,17 @@ public class Utils {
         return System.getProperty("os.name").equals("Windows 95");
     }
 
-    public static String[] getCommandTokens(String commandString){
+    public static String[] getCommandTokens(String commandString) {
         String[] ar = commandString.split("\"");
         ArrayList tokens = new ArrayList();
         int len = ar.length;
-        for (int i=0; i < len; i++){
-            if (commandString.indexOf("\""+ar[i]+"\"") != -1){
+        for (int i = 0; i < len; i++) {
+            if (commandString.indexOf("\"" + ar[i] + "\"") != -1) {
                 tokens.add(ar[i]);
-            }else{
+            } else {
                 String[] subtokens = ar[i].split(" ");
                 int length = subtokens.length; // cached length so it doesn't have to be looked up in loop
-                for (int j=0; j < length; j++){
+                for (int j = 0; j < length; j++) {
                     tokens.add(subtokens[j]);
                 }
             }

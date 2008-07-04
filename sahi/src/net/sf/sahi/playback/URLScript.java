@@ -15,7 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package net.sf.sahi.playback;
 
 import net.sf.sahi.util.Utils;
@@ -25,19 +24,20 @@ import java.net.URL;
 import java.net.MalformedURLException;
 
 public class URLScript extends SahiScript {
-    public URLScript(String url) {
+
+    public URLScript(final String url) {
         super(url, new ArrayList(), url);
     }
 
-    public URLScript(String url, ArrayList parents) {
+    public URLScript(final String url, final ArrayList parents) {
         super(url, parents, url);
     }
 
-    protected void loadScript(String url) {
+    protected void loadScript(final String url) {
         setScript(new String(Utils.readURL(url)));
     }
 
-    String getFQN(String scriptName) {
+    String getFQN(final String scriptName) {
         try {
             return new URL(new URL(path), scriptName).toString();
         } catch (MalformedURLException e) {
@@ -46,9 +46,9 @@ public class URLScript extends SahiScript {
         return null;
     }
 
-    SahiScript getNewInstance(String scriptName, ArrayList parents) {
-        scriptName = getFQN(scriptName);
-        URLScript urlScript = new URLScript(scriptName, parents);
+    SahiScript getNewInstance(final String scriptName, final ArrayList parents) {
+        String script = getFQN(scriptName);
+        URLScript urlScript = new URLScript(script, parents);
         urlScript.parents = parents;
         return urlScript;
     }

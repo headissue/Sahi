@@ -15,7 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package net.sf.sahi.ssl;
 
 import java.io.File;
@@ -43,20 +42,23 @@ public class SSLHelper {
 
     private String defaultFilePath = "../certs/sahi_example_com";
     static HashMap sslSocketFactories = new HashMap();
+
     private SSLSocketFactory getSSLClientSocketFactory(String domain) throws IOException {
-        if (domain == null)
+        if (domain == null) {
             domain = "sahi.example.com";
+        }
         if (!sslSocketFactories.containsKey(domain)) {
             String sslPassword = Configuration.getSSLPassword();
             String fileWithPath = getTrustStoreFilePath(domain);
             final SSLSocketFactory socketFactory = createSocketFactory(fileWithPath, sslPassword);
-            if (socketFactory != null)
+            if (socketFactory != null) {
                 sslSocketFactories.put(domain, socketFactory);
+            }
         }
         return (SSLSocketFactory) sslSocketFactories.get(domain);
     }
 
-    private SSLSocketFactory createSocketFactory(String fileWithPath, String password) {
+    private SSLSocketFactory createSocketFactory(final String fileWithPath, final String password) {
         SSLSocketFactory factory = null;
         try {
             SSLContext sslContext;
@@ -80,12 +82,14 @@ public class SSLHelper {
         return (SSLSocketFactory) SSLSocketFactory.getDefault();
     }
 
-    private String getTrustStoreFilePath(String domain) {
+    private String getTrustStoreFilePath(final String domain) {
         String fileWithPath = Utils.concatPaths(Configuration.getCertsPath(), getCertsFileName(domain));
-        if ((new File(fileWithPath)).exists())
+        if ((new File(fileWithPath)).exists()) {
             return fileWithPath;
-        if (!Configuration.autoCreateSSLCertificates())
+        }
+        if (!Configuration.autoCreateSSLCertificates()) {
             return defaultFilePath;
+        }
         try {
             createKeyStore(domain, fileWithPath);
             return fileWithPath;
@@ -94,14 +98,14 @@ public class SSLHelper {
         }
     }
 
-    private String getCertsFileName(String domain) {
+    private String getCertsFileName(final String domain) {
         return domain.replace('.', '_');
     }
 
     private void createKeyStore(String domain, String keyStoreFilePath) throws IOException, InterruptedException {
         String command = getSSLCommand(domain, keyStoreFilePath, Configuration.getSSLPassword(), Configuration.getKeytoolPath());
         System.out.println("\n\n\n--------------------HTTPS/SSL START--------------------" +
-                "\n\nSahi is trying to create a certificate for domain: \n"+domain+
+                "\n\nSahi is trying to create a certificate for domain: \n" + domain +
                 "\n\nIf you are unable to connect to this HTTPS site, do the following:" +
                 "\nCheck on your filesystem to see if a file like " +
                 "\n" + keyStoreFilePath +
@@ -117,17 +121,16 @@ public class SSLHelper {
                 getPrintableSSLCommand(command) +
                 "\n\n-------COMMAND END-------" +
                 "\n\nThe files in certs can be copied over to other systems to make ssl/https work there." +
-                "\n\n--------------------HTTPS/SSL END--------------------\n\n\n"
-                );
+                "\n\n--------------------HTTPS/SSL END--------------------\n\n\n");
         Process p = Runtime.getRuntime().exec(Utils.getCommandTokens(command));
         p.waitFor();
     }
 
-    String getPrintableSSLCommand(String command) {
+    String getPrintableSSLCommand(final String command) {
         return command.replace('\n', ' ').replaceAll("\r", "");
     }
 
-    String getSSLCommand(String domain, String keyStoreFilePath, String password, String keytool) {
+    String getSSLCommand(final String domain, final String keyStoreFilePath, final String password, final String keytool) {
         String contents = new String(Utils.readCachedFile(Utils.concatPaths(Configuration.getConfigPath(), "ssl.txt"))).trim();
         Properties props = new Properties();
         props.put("domain", domain);
@@ -140,20 +143,24 @@ public class SSLHelper {
 
     private TrustManager[] getAllTrustingManager() {
         TrustManager[] trustAllCerts = new TrustManager[]{new X509TrustManager() {
-            public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-                return null;
-            }
-            public void checkClientTrusted(java.security.cert.X509Certificate[] certs,
-                    String authType) {
-            }
-            public void checkServerTrusted(java.security.cert.X509Certificate[] certs,
-                    String authType) {
-            }
-        }};
+
+        public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+            return null;
+        }
+
+        public void checkClientTrusted(java.security.cert.X509Certificate[] certs,
+                String authType) {
+        }
+
+        public void checkServerTrusted(java.security.cert.X509Certificate[] certs,
+                String authType) {
+        }
+    }
+        };
         return trustAllCerts;
     }
 
-    public Socket getSocket(HttpRequest request, InetAddress addr, int port) throws IOException {
+    public Socket getSocket(final HttpRequest request, final InetAddress addr, final int port) throws IOException {
         SSLSocketFactory sslFact = getSSLClientSocketFactory(addr.getHostName());
         SSLSocket socket = (SSLSocket) sslFact.createSocket(addr, port);
         socket.setUseClientMode(true);
@@ -161,7 +168,7 @@ public class SSLHelper {
         return socket;
     }
 
-    public SSLSocket convertToSecureSocket(Socket plainSocket, String domain) {
+    public SSLSocket convertToSecureSocket(final Socket plainSocket, final String domain) {
         try {
             return (SSLSocket) getSSLClientSocketFactory(domain).createSocket(plainSocket,
                     plainSocket.getInetAddress().getHostName(), plainSocket.getPort(), true);
@@ -171,7 +178,7 @@ public class SSLHelper {
         return null;
     }
 
-    public SSLSocket convertToSecureServerSocket(Socket socket, String domain) {
+    public SSLSocket convertToSecureServerSocket(final Socket socket, final String domain) {
         SSLSocket sslSocket = convertToSecureSocket(socket, domain);
         sslSocket.setUseClientMode(false);
         return sslSocket;

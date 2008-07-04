@@ -15,7 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package net.sf.sahi.command;
 
 import net.sf.sahi.request.HttpRequest;
@@ -25,17 +24,18 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 public class Debug {
-    public void toOut(HttpRequest request) {
+
+    public void toOut(final HttpRequest request) {
         String msg = request.getParameter("msg");
         System.out.println(msg);
     }
 
-    public void toErr(HttpRequest request) {
+    public void toErr(final HttpRequest request) {
         String msg = request.getParameter("msg");
         System.err.println(msg);
     }
 
-    public void toFile(HttpRequest request) {
+    public void toFile(final HttpRequest request) {
         String msg = request.getParameter("msg");
         try {
             File file = new File(request.getParameter("file"));

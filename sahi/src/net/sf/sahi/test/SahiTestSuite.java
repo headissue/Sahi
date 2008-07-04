@@ -15,9 +15,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package net.sf.sahi.test;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import net.sf.sahi.issue.IssueCreator;
 import net.sf.sahi.issue.IssueReporter;
 import net.sf.sahi.report.SahiReporter;
@@ -27,9 +31,8 @@ import net.sf.sahi.util.Utils;
 import net.sf.sahi.command.Player;
 import net.sf.sahi.config.Configuration;
 
-import java.util.*;
-
 public class SahiTestSuite {
+
     private final String suitePath;
     private final String base;
     private List tests = new ArrayList();
@@ -47,7 +50,7 @@ public class SahiTestSuite {
     private boolean killed = false;
     private static HashMap suites = new HashMap();
 
-    public SahiTestSuite(String suitePath, String base, String browser, String sessionId, String browseroption) {
+    public SahiTestSuite(final String suitePath, final String base, final String browser, final String sessionId, final String browseroption) {
         this.suitePath = suitePath;
         this.base = base;
         this.browser = browser;
@@ -74,18 +77,18 @@ public class SahiTestSuite {
         return listReporter;
     }
 
-    public static SahiTestSuite getSuite(String sessionId) {
+    public static SahiTestSuite getSuite(final String sessionId) {
         return (SahiTestSuite) suites.get(Utils.stripChildSessionId(sessionId));
     }
 
-    private void executeTest(int threadNo) {
+    private void executeTest(final int threadNo) {
         TestLauncher test = (TestLauncher) tests.get(currentTestIndex);
         test.setThreadNo(threadNo);
         test.execute();
         currentTestIndex++;
     }
 
-    public synchronized void notifyComplete(String childSessionId) {
+    public synchronized void notifyComplete(final String childSessionId) {
         TestLauncher test = ((TestLauncher) (testsMap.get(childSessionId)));
         test.stop();
         try {
@@ -137,17 +140,16 @@ public class SahiTestSuite {
         Iterator keys = testsMap.keySet().iterator();
         long now = System.currentTimeMillis();
         long inactivityLimit = Configuration.getMaxInactiveTimeForScript();
-        while(keys.hasNext()){
+        while (keys.hasNext()) {
             String sessionId = (String) keys.next();
             Session session = Session.getInstance(sessionId);
             long lastActiveTime = session.lastActiveTime();
-            if (session.getStatus() != Status.SUCCESS
-                    && session.getStatus() != Status.FAILURE
-                    && now - lastActiveTime > inactivityLimit){
-                String message = "Forcefully terminating script. \nNo response from browser within expected time ("+inactivityLimit/1000+" seconds).";
+            if (session.getStatus() != Status.SUCCESS && session.getStatus() != Status.FAILURE && now - lastActiveTime > inactivityLimit) {
+                String message = "Forcefully terminating script. \nNo response from browser within expected time (" + inactivityLimit / 1000 + " seconds).";
                 System.out.println(message);
-                if (session.getReport() != null)
+                if (session.getReport() != null) {
                     session.getReport().addResult(message, "ERROR", "", "");
+                }
                 new Player().stop(session);
             }
         }
@@ -162,10 +164,12 @@ public class SahiTestSuite {
 
     private synchronized void executeSuite() {
         while (currentTestIndex < tests.size()) {
-            if (killed) return;
+            if (killed) {
+                return;
+            }
             for (; availableThreads > 0 && currentTestIndex < tests.size(); availableThreads--) {
                 int freeThreadNo = getFreeThreadNo();
-                if (freeThreadNo != -1){
+                if (freeThreadNo != -1) {
                     freeThreads[freeThreadNo] = false;
                     this.executeTest(freeThreadNo);
                 }
@@ -180,7 +184,9 @@ public class SahiTestSuite {
 
     private synchronized int getFreeThreadNo() {
         for (int i = 0; i < freeThreads.length; i++) {
-            if (freeThreads[i]) return i;
+            if (freeThreads[i]) {
+                return i;
+            }
         }
         return -1;
     }
@@ -205,20 +211,21 @@ public class SahiTestSuite {
         }
     }
 
-    public void setAvailableThreads(int availableThreads) {
+    public void setAvailableThreads(final int availableThreads) {
         this.availableThreads = availableThreads;
         freeThreads = new boolean[availableThreads];
-        for (int i = 0; i < freeThreads.length; i++) {
+        int len = freeThreads.length;
+        for (int i = 0; i < len; i++) {
             freeThreads[i] = true;
         }
     }
 
-    public void addReporter(SahiReporter reporter) {
+    public void addReporter(final SahiReporter reporter) {
         reporter.setSuiteName(suiteName);
         listReporter.add(reporter);
     }
 
-    public void addIssueCreator(IssueCreator issueCreator) {
+    public void addIssueCreator(final IssueCreator issueCreator) {
         if (issueReporter == null) {
             issueReporter = new IssueReporter(suiteName);
         }
@@ -226,8 +233,7 @@ public class SahiTestSuite {
     }
 
     public void kill() {
-        System.out.println("Kill called");
+        System.out.println("Shutting down ...");
         killed = true;
     }
-
 }
