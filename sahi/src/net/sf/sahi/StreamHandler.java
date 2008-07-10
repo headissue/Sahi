@@ -22,7 +22,12 @@ import net.sf.sahi.util.Utils;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.StringTokenizer;
 
 /**
  * User: nraman Date: May 13, 2005 Time: 7:24:06 PM
@@ -127,7 +132,7 @@ public abstract class StreamHandler {
         return firstLine;
     }
 
-    protected String setFirstLine(String s) {
+    protected String setFirstLine(final String s) {
         return (firstLine = s);
     }
 
@@ -152,7 +157,7 @@ public abstract class StreamHandler {
         return sb.toString().getBytes();
     }
 
-    public void setHeader(String key, String value) {
+    public void setHeader(final String key, final String value) {
         List entry = new ArrayList();
         entry.add(value);
         headers.put(key, entry);
@@ -167,18 +172,18 @@ public abstract class StreamHandler {
         entry.add(value);
     }
 
-    protected void removeHeader(String key) {
+    protected void removeHeader(final String key) {
         headers.remove(key);
     }
 
-    protected String getLastSetValueOfHeader(String key) {
+    protected String getLastSetValueOfHeader(final String key) {
         List entry = (List) headers.get(key);
         if (entry == null)
             return null;
         return (String) entry.get(entry.size() - 1);
     }
 
-    protected void copyFrom(StreamHandler orig) {
+    protected void copyFrom(final StreamHandler orig) {
         this.headers = orig.headers;
         this.rawHeaders = orig.rawHeaders;
         this.contentLength = orig.contentLength;
