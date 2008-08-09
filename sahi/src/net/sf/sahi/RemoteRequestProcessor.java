@@ -18,6 +18,14 @@
 
 package net.sf.sahi;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.InetAddress;
+import java.net.Socket;
+import java.util.Properties;
+import java.util.logging.Logger;
+
 import net.sf.sahi.config.Configuration;
 import net.sf.sahi.request.HttpRequest;
 import net.sf.sahi.response.HttpFileResponse;
@@ -25,15 +33,6 @@ import net.sf.sahi.response.HttpModifiedResponse;
 import net.sf.sahi.response.HttpResponse;
 import net.sf.sahi.ssl.SSLHelper;
 import net.sf.sahi.util.SocketPool;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.InetAddress;
-import java.net.Socket;
-import java.net.SocketException;
-import java.util.Properties;
-import java.util.logging.Logger;
 
 public class RemoteRequestProcessor {
     private static Logger logger = Configuration.getLogger("net.sf.sahi.RemoteRequestProcessor");

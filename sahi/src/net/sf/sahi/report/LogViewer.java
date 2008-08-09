@@ -60,7 +60,7 @@ public class LogViewer {
             }
 
             // Add stuff to the front of the string
-            tmpBuf.insert(0, "</span>");
+            tmpBuf.insert(0, "</span> ");
             tmpBuf.insert(0, (i + 1));
             tmpBuf.insert(0, "<span>");
             // and glue on the stuff at the back of the string

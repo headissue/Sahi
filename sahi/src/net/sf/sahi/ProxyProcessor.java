@@ -116,8 +116,8 @@ public class ProxyProcessor implements Runnable {
             try {
                 Session session = requestFromBrowser.session();
                 responseFromHost = remoteRequestProcessor.processHttp(requestFromBrowser);
-                if (responseFromHost.status().indexOf("200") != -1 
-                       && (isDownloadContentType(responseFromHost.contentType()) 
+                if (responseFromHost.status().indexOf("200") != -1
+                       && (isDownloadContentType(responseFromHost.contentType())
                        || isDownloadURL(requestFromBrowser.url()))) {
                     String fileName = requestFromBrowser.fileName();
                     save(responseFromHost, fileName);
@@ -167,7 +167,7 @@ public class ProxyProcessor implements Runnable {
 
     private boolean isDownloadContentType(String contentType) {
         if (contentType == null || contentType.equals("")) {
-            return true;
+            return false;
         }
         contentType = contentType.toLowerCase();
         String[] downloadables = Configuration.getDownloadContentTypes();
@@ -225,8 +225,8 @@ public class ProxyProcessor implements Runnable {
         final byte[] data = responseFromHost.data();
         if (data != null) {
             outputStreamToBrowser.write(data);
-            outputStreamToBrowser.flush();
         }
+        outputStreamToBrowser.flush();
         if (!isKeepAlive()) {
             outputStreamToBrowser.close();
             client.close();

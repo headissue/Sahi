@@ -48,9 +48,8 @@ public class HttpResponse extends StreamHandler {
     public void keepAlive(final boolean keepAliveEnabled) {
         setFirstLine(firstLine().replaceAll("HTTP/1.0", "HTTP/1.1"));
         removeHeader("Content-length");
-        if (data() != null) {
-            setHeader("Content-Length", "" + data().length);
-        }
+        int len = data() != null ? data().length : 0;
+        setHeader("Content-Length", "" + len);
         removeHeader("Connection");
         removeHeader("Accept-ranges");
         setHeader("Connection", keepAliveEnabled ? "Keep-Alive" : "close");
@@ -59,9 +58,8 @@ public class HttpResponse extends StreamHandler {
 
     public void proxyKeepAlive(final boolean keepAliveEnabled) {
         removeHeader("Content-length");
-        if (data() != null) {
-            setHeader("Content-Length", "" + data().length);
-        }
+        int len = data() != null ? data().length : 0;
+        setHeader("Content-Length", "" + len);
         removeHeader("Connection");
         removeHeader("Accept-ranges");
         setHeader("Proxy-Connection", keepAliveEnabled ? "Keep-Alive" : "close");

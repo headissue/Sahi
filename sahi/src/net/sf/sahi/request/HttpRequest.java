@@ -37,310 +37,328 @@ import java.util.logging.Logger;
  */
 public class HttpRequest extends StreamHandler {
 
-    private String host;
-    private int port;
-    private String uri;
-    private String queryString = "";
-    private Map params = new HashMap();
-    private Map cookies = null;
-    private static final Logger logger = Logger.getLogger("net.sf.sahi.request.HttpRequest");
-    private boolean isSSLSocket;
-    private boolean isAjax;
-    private String fileExtension;
-    private String hostWithPort;
-    private String fileName;
+	private String host;
 
-    HttpRequest() {
-    }
+	private int port;
 
-    public HttpRequest(final InputStream in) throws IOException {
-        this(in, false);
-    }
+	private String uri;
 
-    public HttpRequest(final InputStream in, final boolean isSSLSocket) throws IOException {
-        this.isSSLSocket = isSSLSocket;
-        populateHeaders(in, true);
-        isAjax = headers().containsKey("sahi-isxhr");
-        if (isPost()) {
-            populateData(in);
-        }
-        if (isPost() || isGet() || isConnect()) {
-            setHostAndPort();
-            setUri();
-            setQueryString();
-        }
-        logger.fine("\nFirst line:" + firstLine());
-        logger.fine("isSSL=" + isSSL());
-    }
+	private String queryString = "";
 
-    public String host() {
-        return host;
-    }
+	private Map params = new HashMap();
 
-    public int port() {
-        return port;
-    }
+	private Map cookies = null;
 
-    public void setHost(final String host) {
-        this.host = host;
-    }
+	private static final Logger logger = Logger
+			.getLogger("net.sf.sahi.request.HttpRequest");
 
-    public boolean isPost() {
-        return "post".equalsIgnoreCase(method());
-    }
+	private boolean isSSLSocket;
 
-    public boolean isGet() {
-        return "get".equalsIgnoreCase(method());
-    }
+	private boolean isAjax;
 
-    public boolean isConnect() {
-        return "connect".equalsIgnoreCase(method());
-    }
+	private String fileExtension;
 
-    public boolean isSSL() {
-        return isSSLSocket || isConnect();
-    }
+	private String hostWithPort;
 
-    public String method() {
-        if (firstLine() == null) {
-            return null;
-        }
-        return firstLine().substring(0, firstLine().indexOf(" "));
-    }
+	private String fileName;
 
-    void setUri() {
-        String withHost = firstLine().substring(firstLine().indexOf(" "),
-                firstLine().lastIndexOf(" ")).trim();
-        uri = stripHostName(withHost, host, isSSL());
-    }
+	HttpRequest() {
+	}
 
-    String stripHostName(final String withHost, final String hostName, final boolean ssl) {
-        String stripped = withHost;
-        if (withHost.startsWith("http://") || withHost.startsWith("https://")) {
-            int indexOfSlash = withHost.indexOf("/", withHost.indexOf(hostName));
-            stripped = withHost.substring(indexOfSlash);
-        }
-        return stripped;
-    }
+	public HttpRequest(final InputStream in) throws IOException {
+		this(in, false);
+	}
 
-    public String uri() {
-        return uri;
-    }
+	public HttpRequest(final InputStream in, final boolean isSSLSocket)
+			throws IOException {
+		this.isSSLSocket = isSSLSocket;
+		populateHeaders(in, true);
+		isAjax = headers().containsKey("sahi-isxhr");
+		if (isPost()) {
+			populateData(in);
+		}
+		if (isPost() || isGet() || isConnect()) {
+			setHostAndPort();
+			setUri();
+			setQueryString();
+		}
+		logger.fine("\nFirst line:" + firstLine());
+		logger.fine("isSSL=" + isSSL());
+	}
 
-    public String protocol() {
-        return firstLine().substring(firstLine().lastIndexOf(" "));
-    }
+	public String host() {
+		return host;
+	}
 
-    private void setHostAndPort() {
-        hostWithPort = getLastSetValueOfHeader("Host");
-        host = hostWithPort;
-        port = 80;
-        if (isSSL()) {
-            port = 443;
-        }
-        int indexOfColon = hostWithPort.indexOf(":");
-        if (indexOfColon != -1) {
-            host = hostWithPort.substring(0, indexOfColon);
-            try {
-                port = Integer.parseInt(hostWithPort.substring(indexOfColon + 1).trim());
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        host = Utils.stripChildSessionId(host);
-    }
+	public int port() {
+		return port;
+	}
 
-    private void setQueryString() {
-        if (uri == null) {
-            return;
-        }
-        int qIx = uri.indexOf("?");
-        String uriWithoutQueryString = uri;
-        if (qIx != -1 && qIx + 1 < uri.length()) {
-            uriWithoutQueryString = uri.substring(0, qIx);
-            queryString = uri.substring(qIx + 1);
-        }
+	public void setHost(final String host) {
+		this.host = host;
+	}
 
-        fileExtension = "";
-        int dotIx = uriWithoutQueryString.indexOf(".");
-        if (dotIx != -1) {
-            fileExtension = uriWithoutQueryString.substring(dotIx + 1);
-        }
-        int lastSlashIx = uriWithoutQueryString.lastIndexOf("/");
-        if (lastSlashIx != -1) {
-            if (lastSlashIx + 1 < uriWithoutQueryString.length()) {
-                fileName = uriWithoutQueryString.substring(lastSlashIx + 1);
-            } else {
-                fileName = "no_filename";
-            }
-        }
-    }
+	public boolean isPost() {
+		return "post".equalsIgnoreCase(method());
+	}
 
-    private void setGetParameters() {
-        String str = isGet() ? queryString() : new String(data());
-        StringTokenizer tokenizer = new StringTokenizer(str, "&");
-        while (tokenizer.hasMoreTokens()) {
-            String keyVal = tokenizer.nextToken();
-            int eqIx = keyVal.indexOf('=');
-            if (eqIx != -1) {
-                String key = keyVal.substring(0, eqIx);
-                String value = "";
-                if (eqIx + 1 <= keyVal.length()) {
-                    value = keyVal.substring(eqIx + 1);
-                }
-                try {
-                    params.put(key, URLDecoder.decode(value, "UTF-8"));
-                } catch (Exception e) {
-                    params.put(key, value);
-                }
-            }
-        }
-    }
+	public boolean isGet() {
+		return "get".equalsIgnoreCase(method());
+	}
 
-    public String queryString() {
-        return queryString;
-    }
+	public boolean isConnect() {
+		return "connect".equalsIgnoreCase(method());
+	}
 
-    public String getParameter(String key) {
-        if (params.size() == 0) {
-            setGetParameters();
-        }
-        return (String) params.get(key);
-    }
+	public boolean isSSL() {
+		return isSSLSocket || isConnect();
+	}
 
-    private void setCookies() {
-        cookies = new LinkedHashMap();
-        String cookieString = getLastSetValueOfHeader("Cookie");
-        if (cookieString == null) {
-            return;
-        }
-        StringTokenizer tokenizer = new StringTokenizer(cookieString, ";");
-        while (tokenizer.hasMoreTokens()) {
-            String keyVal = tokenizer.nextToken();
-            int eqIx = keyVal.indexOf('=');
-            if (eqIx != -1) {
-                String key = keyVal.substring(0, eqIx).trim();
-                String value = "";
-                if (eqIx + 1 <= keyVal.length()) {
-                    value = keyVal.substring(eqIx + 1).trim();
-                }
-                cookies.put(key, value);
-            }
-        }
-    }
+	public String method() {
+		if (firstLine() == null) {
+			return null;
+		}
+		return firstLine().substring(0, firstLine().indexOf(" "));
+	}
 
-    public String getCookie(String key) {
-        if (cookies == null) {
-            setCookies();
-        }
-        return (String) cookies.get(key);
-    }
+	void setUri() {
+		String withHost = firstLine().substring(firstLine().indexOf(" "),
+				firstLine().lastIndexOf(" ")).trim();
+		uri = stripHostName(withHost, host, isSSL());
+	}
 
-    String rebuildCookies() {
-        return rebuildCookies(cookies);
-    }
+	String stripHostName(final String withHost, final String hostName,
+			final boolean ssl) {
+		String stripped = withHost;
+		if (withHost.startsWith("http://") || withHost.startsWith("https://")) {
+			int indexOfSlash = withHost
+					.indexOf("/", withHost.indexOf(hostName));
+			stripped = withHost.substring(indexOfSlash);
+		}
+		return stripped;
+	}
 
-    static String rebuildCookies(final Map cookies2) {
-        StringBuffer sb = new StringBuffer();
-        if (cookies2.size() == 0) {
-            return "";
-        }
-        Iterator keys = cookies2.keySet().iterator();
-        while (keys.hasNext()) {
-            String key = (String) keys.next();
-            String value = (String) cookies2.get(key);
-            sb.append(" ").append(key).append("=").append(value).append(";");
-        }
-        String cookieStr = sb.toString().trim();
-        if (cookieStr.endsWith(";")) {
-            cookieStr = cookieStr.substring(0, cookieStr.length() - 1);
-        }
-        return cookieStr;
-    }
+	public String uri() {
+		return uri;
+	}
 
-    public Map cookies() {
-        if (cookies == null) {
-            setCookies();
-        }
-        return cookies;
-    }
+	public String protocol() {
+		return firstLine().substring(firstLine().lastIndexOf(" "));
+	}
 
-    public HttpRequest modifyForFetch() {
-        if (Configuration.isExternalProxyEnabled()) {
-            setFirstLine(firstLine().replaceAll("HTTP/1.1", "HTTP/1.0"));
-        } else {
-            setFirstLine(method() + " " + uri() + " HTTP/1.0");
-        }
-        removeHeader("Proxy-Connection");
-        removeHeader("Accept-Encoding");
-        removeHeader("Keep-Alive");
-        removeHeader("sahi-isxhr");
-        // removeHeader("ETag");
-        // removeHeader("If-Modified-Since");
-        // removeHeader("If-None-Match");
-        setHeader("Connection", "close");
-        cookies().remove("sahisid");
-        setHeader("Cookie", rebuildCookies());
-        setRawHeaders(getRebuiltHeaderBytes());
-        logger.fine(firstLine());
-        logger.fine("\n------------\n\nRequest Headers:\n" + headers());
-        return this;
-    }
+	private void setHostAndPort() {
+		hostWithPort = getLastSetValueOfHeader("Host");
+		host = hostWithPort;
+		port = 80;
+		if (isSSL()) {
+			port = 443;
+		}
+		int indexOfColon = hostWithPort.indexOf(":");
+		if (indexOfColon != -1) {
+			host = hostWithPort.substring(0, indexOfColon);
+			try {
+				port = Integer.parseInt(hostWithPort
+						.substring(indexOfColon + 1).trim());
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		host = Utils.stripChildSessionId(host);
+	}
 
-    public Session session() {
-        String sessionId;
-        sessionId = getParameter("sahisid");
-//        System.out.println("1:" + sessionId);
-        if (Utils.isBlankOrNull(sessionId)) {
-            sessionId = getCookie("sahisid");
-//            System.out.println("2:" + sessionId);
-        }
-        if (Utils.isBlankOrNull(sessionId)) {
-            sessionId = "sahi_" + System.currentTimeMillis();
-//        System.out.println("3:" + sessionId);
-        }
-        return Session.getInstance(sessionId);
-    }
+	private void setQueryString() {
+		if (uri == null) {
+			return;
+		}
+		int qIx = uri.indexOf("?");
+		String uriWithoutQueryString = uri;
+		if (qIx != -1 && qIx + 1 < uri.length()) {
+			uriWithoutQueryString = uri.substring(0, qIx);
+			queryString = uri.substring(qIx + 1);
+		}
 
-    public String fileExtension() {
-        return fileExtension;
-    }
+		fileExtension = "";
+		int dotIx = uriWithoutQueryString.indexOf(".");
+		if (dotIx != -1) {
+			fileExtension = uriWithoutQueryString.substring(dotIx + 1);
+		}
+		int lastSlashIx = uriWithoutQueryString.lastIndexOf("/");
+		if (lastSlashIx != -1) {
+			if (lastSlashIx + 1 < uriWithoutQueryString.length()) {
+				fileName = uriWithoutQueryString.substring(lastSlashIx + 1);
+			} else {
+				fileName = "no_filename";
+			}
+		}
+	}
 
-    public String fileName() {
-        return fileName;
-    }
+	private void setGetParameters() {
+		String str = isGet() ? queryString() : new String(data());
+		StringTokenizer tokenizer = new StringTokenizer(str, "&");
+		while (tokenizer.hasMoreTokens()) {
+			String keyVal = tokenizer.nextToken();
+			int eqIx = keyVal.indexOf('=');
+			if (eqIx != -1) {
+				String key = keyVal.substring(0, eqIx);
+				String value = "";
+				if (eqIx + 1 <= keyVal.length()) {
+					value = keyVal.substring(eqIx + 1);
+				}
+				try {
+					params.put(key, URLDecoder.decode(value, "UTF-8"));
+				} catch (Exception e) {
+					params.put(key, value);
+				}
+			}
+		}
+	}
 
-    public String url() {
-        return (isSSL() ? "https" : "http") + "://" + hostWithPort + (uri == null ? "" : uri);
-    }
+	public String queryString() {
+		return queryString;
+	}
 
-    public boolean isMultipart() {
-        String contentType = getLastSetValueOfHeader("Content-Type");
-        return contentType != null && contentType.startsWith("multipart/form-data");
-    }
+	public String getParameter(String key) {
+		if (params.size() == 0) {
+			setGetParameters();
+		}
+		return (String) params.get(key);
+	}
 
-    public void setSSL(boolean isSSL) {
-        this.isSSLSocket = isSSL;
-    }
+	private void setCookies() {
+		cookies = new LinkedHashMap();
+		String cookieString = getLastSetValueOfHeader("Cookie");
+		if (cookieString == null) {
+			return;
+		}
+		StringTokenizer tokenizer = new StringTokenizer(cookieString, ";");
+		while (tokenizer.hasMoreTokens()) {
+			String keyVal = tokenizer.nextToken();
+			int eqIx = keyVal.indexOf('=');
+			if (eqIx != -1) {
+				String key = keyVal.substring(0, eqIx).trim();
+				String value = "";
+				if (eqIx + 1 <= keyVal.length()) {
+					value = keyVal.substring(eqIx + 1).trim();
+				}
+				cookies.put(key, value);
+			}
+		}
+	}
 
-    public boolean isIE() {
-        String agent = getLastSetValueOfHeader("User-Agent");
-        return (agent == null || agent.indexOf("MSIE") != -1);
-    }
+	public String getCookie(String key) {
+		if (cookies == null) {
+			setCookies();
+		}
+		return (String) cookies.get(key);
+	}
 
-    public boolean isExcluded() {
-        //System.out.println("isAjax="+isAjax+" for "+url());
-        if (isAjax) {
-            return true;
-        }
-        String url = url();
-        String[] exclusionList = Configuration.getExclusionList();
-        for (int i = 0; i < exclusionList.length; i++) {
-            String pattern = exclusionList[i];
-            if (url.matches(pattern.trim())) {
-                return true;
-            }
-        }
-        return false;
-    }
+	String rebuildCookies() {
+		return rebuildCookies(cookies);
+	}
+
+	static String rebuildCookies(final Map cookies2) {
+		StringBuffer sb = new StringBuffer();
+		if (cookies2.size() == 0) {
+			return "";
+		}
+		Iterator keys = cookies2.keySet().iterator();
+		while (keys.hasNext()) {
+			String key = (String) keys.next();
+			String value = (String) cookies2.get(key);
+			sb.append(" ").append(key).append("=").append(value).append(";");
+		}
+		String cookieStr = sb.toString().trim();
+		if (cookieStr.endsWith(";")) {
+			cookieStr = cookieStr.substring(0, cookieStr.length() - 1);
+		}
+		return cookieStr;
+	}
+
+	public Map cookies() {
+		if (cookies == null) {
+			setCookies();
+		}
+		return cookies;
+	}
+
+	public HttpRequest modifyForFetch() {
+		if (Configuration.isExternalProxyEnabled()) {
+			setFirstLine(firstLine().replaceAll("HTTP/1.1", "HTTP/1.0"));
+		} else {
+			setFirstLine(method() + " " + uri() + " HTTP/1.0");
+		}
+		removeHeader("Proxy-Connection");
+		removeHeader("Accept-Encoding");
+		removeHeader("Keep-Alive");
+		removeHeader("sahi-isxhr");
+		// removeHeader("ETag");
+		// removeHeader("If-Modified-Since");
+		// removeHeader("If-None-Match");
+		setHeader("Connection", "close");
+		cookies().remove("sahisid");
+		setHeader("Cookie", rebuildCookies());
+		setRawHeaders(getRebuiltHeaderBytes());
+		logger.fine(firstLine());
+		logger.fine("\n------------\n\nRequest Headers:\n" + headers());
+		return this;
+	}
+
+	public Session session() {
+		String sessionId;
+		sessionId = getParameter("sahisid");
+		// System.out.println("1:" + sessionId);
+		if (Utils.isBlankOrNull(sessionId)) {
+			sessionId = getCookie("sahisid");
+			// System.out.println("2:" + sessionId);
+		}
+		if (Utils.isBlankOrNull(sessionId)) {
+			sessionId = "sahi_" + System.currentTimeMillis();
+			// System.out.println("3:" + sessionId);
+		}
+		return Session.getInstance(sessionId);
+	}
+
+	public String fileExtension() {
+		return fileExtension;
+	}
+
+	public String fileName() {
+		return fileName;
+	}
+
+	public String url() {
+		return (isSSL() ? "https" : "http") + "://" + hostWithPort
+				+ (uri == null ? "" : uri);
+	}
+
+	public boolean isMultipart() {
+		String contentType = getLastSetValueOfHeader("Content-Type");
+		return contentType != null
+				&& contentType.startsWith("multipart/form-data");
+	}
+
+	public void setSSL(boolean isSSL) {
+		this.isSSLSocket = isSSL;
+	}
+
+	public boolean isIE() {
+		String agent = getLastSetValueOfHeader("User-Agent");
+		return (agent == null || agent.indexOf("MSIE") != -1);
+	}
+
+	public boolean isExcluded() {
+		// System.out.println("isAjax="+isAjax+" for "+url());
+		if (isAjax) {
+			return true;
+		}
+		String url = url();
+		String[] exclusionList = Configuration.getExclusionList();
+		for (int i = 0; i < exclusionList.length; i++) {
+			String pattern = exclusionList[i];
+			if (url.matches(pattern.trim())) {
+				return true;
+			}
+		}
+		return false;
+	}
 }
