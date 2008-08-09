@@ -30,7 +30,7 @@
         <javac destdir="${sahi.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}"
                memoryMaximumSize="${compiler.max.memory}" fork="true" srcdir="test">
             <classpath>
-                <pathelement location="extlib/test/ant-launcher.jar"/>
+                <pathelement location="extlib/ant/ant-testutil.jar"/>
                 <pathelement location="extlib/test/jmock-1.1.0.jar"/>
                 <pathelement location="extlib/test/ant-testutil.jar"/>
                 <pathelement location="extlib/test/jmock-cglib-1.1.0.jar"/>
@@ -265,7 +265,7 @@
         <junit dir="bin" printsummary="false" fork="true" maxMemory="128M">
             <classpath>
                 <path path="classes"/>
-                <pathelement location="extlib/test/ant-launcher.jar"/>
+                <pathelement location="extlib/ant/ant-testutil.jar"/>
                 <pathelement location="extlib/test/jmock-1.1.0.jar"/>
                 <pathelement location="extlib/test/ant-testutil.jar"/>
                 <pathelement location="extlib/test/jmock-cglib-1.1.0.jar"/>
