@@ -7,8 +7,17 @@
 <body>
 <h2>IFRAME Tests</h2>
 
-<iframe src="iframesTest_inc.htm">    
+<iframe src="iframesTest_inc.htm">
 </iframe>
+<div id="another">
+</div>
+
+<script>
+function writeAnotherIframe(){
+	document.getElementById("another").innerHTML = '<iframe src="iframesTest_inc.htm"></iframe>';
+}
+window.setTimeout("writeAnotherIframe()", 1000)
+</script>
 
 </body>
 </html>
