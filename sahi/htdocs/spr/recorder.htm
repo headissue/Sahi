@@ -44,22 +44,6 @@
     </script>
 
     <style type="text/css">
-        .hiTab {
-            border-left: solid white 2px;
-            border-right: solid gray 2px;
-            border-top: solid white 2px;
-            cursor: pointer;
-        }
-
-        .dimTab {
-            border-left: solid white 1px;
-            border-right: solid gray 1px;
-            border-top: solid white 1px;
-            border-bottom: solid white 1px;
-            font-size: 11pt;
-            cursor: pointer;
-        }
-
         .recPane {
             display: block;
             background-color: white;
@@ -70,18 +54,8 @@
             margin: 2px;
         }
 
-        .playbackPane {
-            display: none;
-            background-color: white;
-            border-left: solid white 2px;
-            border-right: solid gray 2px;
-            border-top: solid white 2px;
-            border-bottom: solid gray 2px;
-            margin: 2px;
-        }
-
-        a, body, input, td {
-            font-size: 12;
+        a, body, input, td, textarea, select {
+            font-size: 8pt;
             font-family: verdana;
         }
 
@@ -100,27 +74,30 @@
 
         .comment {
             color: darkred;
-            font-size: 10px;
             font-weight: bolder;
         }
         .suggestDD{
             border:0px;
-                background-color:lightgray;
+            background-color:lightgray;
             position:absolute;
             display:none;
         }
     </style>
 </head>
-
-<body onload="doOnRecLoad();resizeTA2(document.getElementById('taDebug'), 40, 470)" onbeforeunload="doOnRecUnLoad()"
-      onresize="resizeTA2(document.getElementById('taDebug'), 40, 470)" onkeyup="hideAllSuggests(event)" onclick="Suggest.hideAll()">
+<script>
+function resizeTAs(){
+	resizeTA2(document.getElementById('taDebug'), 40, 400, 50);
+	resizeTA2(document.getElementById('taResult'), 40, 400, 50);
+}
+</script>
+<body onload="doOnRecLoad();resizeTAs()" onbeforeunload="doOnRecUnLoad()"
+      onresize="resizeTAs()" onkeyup="hideAllSuggests(event)" onclick="Suggest.hideAll()">
 <div id="rec" class="recPane">
 <table bgcolor="">
     <tr>
         <td colspan="2" class="comment">Enter a script name and click
             "Record" to start recording.<br>
             Script will be generated in sahi/scripts directory.<br>
-            <br>
         </td>
     </tr>
 
@@ -144,7 +121,7 @@
                                     <td>Script Name:</td>
                                     <td>
                                         <input type="text" name="file" value="">
-                                        <input type="submit" value="Record">
+                                        <input type="submit" name="record" value="Record">
                                         <input type="button" value="Stop" onclick="stopRec()">
                                     </td>
                                 </tr>
@@ -170,18 +147,17 @@
             <form name="currentForm">
                 <table>
                     <tr>
-                        <td colspan="2" class="comment">Press CTRL key and hover mouse over
+                        <td colspan="3" class="comment">Press CTRL key and hover mouse over
                             any HTML element. <a class='comment' href='sahi_recorder_help.htm'
                                                  target='_blank'>More ...</a><br>
                         </td>
-                        <td><input type="button" class="button" value=" Props " onclick=
-                                "showProperties()"></td>
+                        <td></td>
                     </tr>
 
                     <tr>
                         <td>Accessor:</td>
                         <td>
-                            <input id="suggestBox" name="accessor" value="" size="45" onkeyup="Suggest.suggests['1'].textboxEvent(event)" autocomplete="off">
+                            <input id="suggestBox" name="accessor" value="" style="width:280px" onkeyup="Suggest.suggests['1'].textboxEvent(event)" autocomplete="off">
                             <select id="suggestDD" class="suggestDD" onclick="Suggest.suggests['1'].choose(event)" onkeydown="Suggest.suggests['1'].handleUpArrow(event)" onkeyup="Suggest.suggests['1'].selectEvent(event)"></select>
                         </td>
                         <td><input type="button" class="button" value=" Click " onclick=
@@ -202,28 +178,33 @@
 
                     <tr>
                         <td>Alternative:</td>
-                        <td><input name="alternative" value="" size="45"></td>
+                        <td><select name="alternative" onchange="$('suggestBox').value=this.value;" style="width:280px"></select></td>
                         <td><input type="button" class="button" value=" Hilight " onclick=
                                 "demoHighlight()"></td>
                     </tr>
 
                     <tr>
                         <td>Value:</td>
-                        <td><input name="elValue" value="" size="45"></td>
+                        <td><input id="elValue" name="elValue" value="" style="width:280px"></td>
                         <td><input type="button" class="button" value=" Set " onclick=
                                 "demoSetValue()"></td>
                     </tr>
+
+                    <tr>
+                        <td>Window name:</td>
+                        <td><input name="winName" value="" style="width:280px"></td>
+                        <td><input type="button" class="button" value=" Props " onclick="showProperties()"></td>
+                    </tr>
+
                 </table>
 
                 <br>
-                <input type="button" class="button" value="Assert" onclick=
-                        "top.opener.top._sahi.doAssert()"> <input type="button" class="button" value=
-                    "Wait" onclick="addWait()"> <input type="input" name="waitTime"
-                                                       value="3000" size="6"> ms <input type="button"
-                                                                                        value="Comment"
-                                                                                        onclick="mark()"> <input
-                    type="input" name="comment" value="" size=
-                    "20"><br>
+                <input type="button" class="button" value="Assert" onclick="top.opener.top._sahi.doAssert($('suggestBox').value, $('elValue').value)"/> 
+                <input type="button" class="button" value="Wait" onclick="addWait()"/> 
+                <input type="input" name="waitTime" value="3000" size="6"> ms 
+                <input type="button" value="Comment" onclick="mark()"/> 
+                <input type="input" name="comment" value="" size="20"/>
+                <br>
                 <hr>
                 APIs List: <input type="text" id="apiTextbox" onkeyup="Suggest.suggests['2'].textboxEvent(event)" autocomplete="off" size="55">
                 <select id="apiSelect" class="suggestDD" onclick="Suggest.suggests['2'].choose(event)" onkeydown="Suggest.suggests['2'].handleUpArrow(event)" onkeyup="Suggest.suggests['2'].selectEvent(event)"></select>
@@ -240,7 +221,9 @@
                 <input type="hidden" name="history">
                 <textarea name="debug" rows="8" cols="50" id="taDebug" style="white-space:normal"></textarea><br/>
                 <input type="button" onclick="evaluateExpr(true)" value="Test --&gt; ">
-                <input type="button" onclick="append()" value="Append to Script"><br/>
+                <input type="button" onclick="append()" value="Append to Script">
+                <input type="button" onmousedown="demoHighlight2()" value="Highlight">
+                <input type="button" onmousedown="demoClick2()" value="Click"><br/>
                 <textarea name="result" rows="3" cols="50" id="taResult" style="white-space:normal;background-color:silver" readonly="true"></textarea>
                 &nbsp;&nbsp;&nbsp;&nbsp;
             </form>

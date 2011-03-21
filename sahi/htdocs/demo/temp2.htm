@@ -1,0 +1,392 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head id="ctl00_Head1"><title>
+	Untitled Page
+</title>
+<link href="../../styles/FeatureBrowser/ig_shared.css" type="text/css" rel="stylesheet" />
+<link href="../../styles/FeatureBrowser/ig_dataGrid.css" type="text/css" rel="stylesheet" /><link id="ctl00_Link3" rel="stylesheet" type="text/css" href="../../webSample_style.css" />    
+     
+ 
+    <script type="text/javascript">
+        function MM_openBrWindow(theURL, winName, features) { //v2.0
+            var startpos, endpos, intWidth, intHeight, top, left, length;
+ 
+            // Get Width
+            startpos = features.indexOf("width=") + 6;
+            endpos = startpos;
+ 
+            while ((features.charCodeAt(endpos) >= 48) && (features.charCodeAt(endpos) <= 57)) {
+                endpos++;
+            }
+ 
+            intWidth = features.substring(startpos, endpos);
+ 
+            // Get Height
+            startpos = features.indexOf("height=") + 7;
+            endpos = startpos;
+ 
+            while ((features.charCodeAt(endpos) >= 48) && (features.charCodeAt(endpos) <= 57)) {
+                endpos++;
+            }
+ 
+            intHeight = features.substring(startpos, endpos);
+ 
+            // Now determine top and left positions (centering) based on height and width
+            top = (screen.height - intHeight) / 2;
+            left = (screen.width - intWidth) / 2;
+ 
+            features += ", top=" + top + ", left=" + left;
+ 
+            return window.open(theURL, winName, features);
+        }
+    </script>
+ 
+</head>
+<body>
+    <form name="aspnetForm" method="post" action="WebDataGrid_AdvCustomPager.aspx" id="aspnetForm">
+<div>
+<input type="hidden" name="__EVENTTARGET" id="__EVENTTARGET" value="" />
+<input type="hidden" name="__EVENTARGUMENT" id="__EVENTARGUMENT" value="" />
+<input type="hidden" name="__LASTFOCUS" id="__LASTFOCUS" value="" />
+<input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="/wEPDwUJNjMzMDQxODkwD2QWAmYPZBYCAgMPZBYCAgcPZBYCAgEPZBYCAgEPZBYCZg9kFgICAQ8WBRYCFgUPFgIeC18hRGF0YUJvdW5kZ2RkZGRkDwXwAmMuLTFfdC4wLkluZnJhZ2lzdGljc35XZWJ+VUl+R3JpZENvbnRyb2xzfkJvdW5kRGF0YUZpZWxkX3QuMS5JbmZyYWdpc3RpY3N+V2ViflVJfkdyaWRDb250cm9sc35Cb3VuZERhdGFGaWVsZF90LjIuSW5mcmFnaXN0aWNzfldlYn5VSX5HcmlkQ29udHJvbHN+Qm91bmREYXRhRmllbGRfdC4zLkluZnJhZ2lzdGljc35XZWJ+VUl+R3JpZENvbnRyb2xzfkJvdW5kRGF0YUZpZWxkX3QuNC5JbmZyYWdpc3RpY3N+V2ViflVJfkdyaWRDb250cm9sc35Cb3VuZERhdGFGaWVsZF90LjUuSW5mcmFnaXN0aWNzfldlYn5VSX5HcmlkQ29udHJvbHN+Qm91bmREYXRhRmllbGRfdC42LkluZnJhZ2lzdGljc35XZWJ+VUl+R3JpZENvbnRyb2xzfkJvdW5kRGF0YUZpZWxkFgcPZhYDFg4eAkYwBQpDdXN0b21lcklEHgJGMQL/////Dx4DR0YwZR4EQkRGMWUeBEJERjAFCkN1c3RvbWVySUQeBEJERjNlHg5oaWRkZW5JbnRlcm5hbAspigFJbmZyYWdpc3RpY3MuV2ViLlVJLkRlZmF1bHRhYmxlQm9vbGVhbiwgSW5mcmFnaXN0aWNzNC5XZWIudjEwLjIsIFZlcnNpb249MTAuMi4yMDEwMi4xMDExLCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPTdkZDVjMzE2M2YyY2QwY2IAFgQeA0ZDMmUeA0ZDMQUCSWRkDwIBFgMWDh8BBQtDb21wYW55TmFtZR8CAv////8PHwNlHwRlHwUFC0NvbXBhbnlOYW1lHwZlHwcLKwQAFgQfCGUfCQUHQ29tcGFueWQPAgIWAxYOHwEFB0NvbnRhY3QfAgL/////Dx8DZR8EZR8FBQtDb250YWN0TmFtZR8GZR8HCysEABYEHwhlHwkFB0NvbnRhY3RkDwIDFgMWDh8BBQdBZGRyZXNzHwIC/////w8fA2UfBGUfBQUHQWRkcmVzcx8GZR8HCysEABYEHwhlHwkFB0FkZHJlc3NkDwIEFgMWDh8BBQRDaXR5HwIC/////w8fA2UfBGUfBQUEQ2l0eR8GZR8HCysEABYEHwhlHwkFBENpdHlkDwIFFgMWDh8BBQpQb3N0YWxDb2RlHwIC/////w8fA2UfBGUfBQUKUG9zdGFsQ29kZR8GZR8HCysEABYEHwhlHwkFA1ppcGQPAgYWAxYOHwEFB0NvdW50cnkfAgL/////Dx8DZR8EZR8FBQdDb3VudHJ5HwZlHwcLKwQAFgQfCGUfCQUHQ291bnRyeWQPZBYHD2YWAxYGHwUFCkN1c3RvbWVySUQfAQUKQ3VzdG9tZXJJRB8HCysEAGRkDwIBFgMWBh8FBQtDb21wYW55TmFtZR8BBQtDb21wYW55TmFtZR8HCysEAGRkDwICFgMWBh8FBQtDb250YWN0TmFtZR8BBQdDb250YWN0HwcLKwQAZGQPAgMWAxYGHwUFB0FkZHJlc3MfAQUHQWRkcmVzcx8HCysEAGRkDwIEFgMWBh8FBQRDaXR5HwEFBENpdHkfBwsrBABkZA8CBRYDFgYfBQUKUG9zdGFsQ29kZR8BBQpQb3N0YWxDb2RlHwcLKwQAZGQPAgYWAxYGHwUFB0NvdW50cnkfAQUHQ291bnRyeR8HCysEAGRkD2QWAQ9mFgJkZGRkFgJmD2QWAmYPZBYCBQ1DdXN0b21lclBhZ2VyD2QWBAICDxAPFgIfAGdkDxYKZgIBAgICAwIEAgUCBgIHAggCCRYKEAUBMQUBMWcQBQEyBQEyZxAFATMFATNnEAUBNAUBNGcQBQE1BQE1ZxAFATYFATZnEAUBNwUBN2cQBQE4BQE4ZxAFATkFATlnEAUCMTAFAjEwZxYBZmQCAw8PFgIeBFRleHQFAjEwZGQYAQUeX19Db250cm9sc1JlcXVpcmVQb3N0QmFja0tleV9fFgUFIWN0bDAwJENvbnRlbnRMaXZlJFdlYkRhdGFHcmlkVmlldwVCY3RsMDAkQ29udGVudExpdmUkV2ViRGF0YUdyaWRWaWV3JGN0bDAwJEN1c3RvbWVyUGFnZXIkSW1hZ2VCdXR0b24xBUJjdGwwMCRDb250ZW50TGl2ZSRXZWJEYXRhR3JpZFZpZXckY3RsMDAkQ3VzdG9tZXJQYWdlciRJbWFnZUJ1dHRvbjIFQmN0bDAwJENvbnRlbnRMaXZlJFdlYkRhdGFHcmlkVmlldyRjdGwwMCRDdXN0b21lclBhZ2VyJEltYWdlQnV0dG9uMwVCY3RsMDAkQ29udGVudExpdmUkV2ViRGF0YUdyaWRWaWV3JGN0bDAwJEN1c3RvbWVyUGFnZXIkSW1hZ2VCdXR0b240zNcSeycNtJ+DH4PdgYs+a8Fn6kcOAJWWlZ88iiKVKwY=" />
+</div>
+ 
+<script type="text/javascript"> 
+//<![CDATA[
+var theForm = document.forms['aspnetForm'];
+if (!theForm) {
+    theForm = document.aspnetForm;
+}
+function __doPostBack(eventTarget, eventArgument) {
+    if (!theForm.onsubmit || (theForm.onsubmit() != false)) {
+        theForm.__EVENTTARGET.value = eventTarget;
+        theForm.__EVENTARGUMENT.value = eventArgument;
+        theForm.submit();
+    }
+}
+//]]>
+</script>
+ 
+ 
+<script src="/2010.2/WebResource.axd?d=0o5MbrJvvjSd5RZoAEi50Q2&amp;t=634113341639333750" type="text/javascript"></script>
+ 
+ 
+<script src="/2010.2/ScriptResource.axd?d=KyHbAItTFWMTTRggcEDijOumpa8EFRWV-Q5M0NlKMaSG8HZOVEilAWq9mWRp1NsmDis9liSaNdn7FEPTB1JFIw0hgUyl336jnGSIZkCtLh41&amp;t=16ab2387" type="text/javascript"></script>
+<script type="text/javascript"> 
+//<![CDATA[
+if (typeof(Sys) === 'undefined') throw new Error('ASP.NET Ajax client-side framework failed to load.');
+//]]>
+</script>
+ 
+<script src="/2010.2/ScriptResource.axd?d=KyHbAItTFWMTTRggcEDijOumpa8EFRWV-Q5M0NlKMaSG8HZOVEilAWq9mWRp1Nsm-NKIVryieYa9qFEZVWhIdeG0VDk3X3VkYfGsA_Q5fSvgpbwYxOiy9SwwvjQMTET40&amp;t=16ab2387" type="text/javascript"></script>
+<script src="/2010.2/ScriptResource.axd?d=9UeNENEi0NhRVMdEOVcX3JZnlp0V7mSfyZ32pGwPvuJNzbxJ17vKprFSpUnUR0GjfWmMM2KACg2-CDxU0opzuX_IDs-hsV6Ir0ueUvxqCO01&amp;t=ffffffffac480b40" type="text/javascript"></script>
+<script src="/2010.2/ScriptResource.axd?d=9UeNENEi0NhRVMdEOVcX3JZnlp0V7mSfyZ32pGwPvuJNzbxJ17vKprFSpUnUR0Gj6edFtwLxxQJXo8axR2HO-cS4plbv-Z8XVQExwdyYZ-Y1&amp;t=ffffffffac480b40" type="text/javascript"></script>
+<script src="/2010.2/ScriptResource.axd?d=9UeNENEi0NhRVMdEOVcX3JZnlp0V7mSfyZ32pGwPvuJNzbxJ17vKprFSpUnUR0GjGuY3pHM8E3V36KKChcj2RKJ8_M47_L6TFUVo2dqC6Bg1&amp;t=ffffffffac480b40" type="text/javascript"></script>
+<script src="/2010.2/ScriptResource.axd?d=9UeNENEi0NhRVMdEOVcX3JZnlp0V7mSfyZ32pGwPvuJNzbxJ17vKprFSpUnUR0GjlQq2eFnOl5JAHOoiUBLtS9xBkOuOhkb2Fr3YSWAe5BE1&amp;t=ffffffffac480b40" type="text/javascript"></script>
+<script src="/2010.2/ScriptResource.axd?d=9UeNENEi0NhRVMdEOVcX3JZnlp0V7mSfyZ32pGwPvuJNzbxJ17vKprFSpUnUR0Gj_47BYJmKJw2qSOq0WVW5Fu31rJ0qWRoAyW-RgIEEA7Q1&amp;t=ffffffffac480b40" type="text/javascript"></script>
+<script src="/2010.2/ScriptResource.axd?d=9UeNENEi0NhRVMdEOVcX3JZnlp0V7mSfyZ32pGwPvuJNzbxJ17vKprFSpUnUR0GjbU59DFBv9R6N_qEF3U9cUhaJLr2zYlUHpUbVeG-im9I1&amp;t=ffffffffac480b40" type="text/javascript"></script>
+<script src="/2010.2/ScriptResource.axd?d=9UeNENEi0NhRVMdEOVcX3JZnlp0V7mSfyZ32pGwPvuJNzbxJ17vKprFSpUnUR0Gju3FL7hIu5HH6i3oAcn01ovTMPS-zlP9l93Qbm7Yu8e41&amp;t=ffffffffac480b40" type="text/javascript"></script>
+<script src="/2010.2/ScriptResource.axd?d=9UeNENEi0NhRVMdEOVcX3JZnlp0V7mSfyZ32pGwPvuJNzbxJ17vKprFSpUnUR0Gjpxx5-hZ9PEOeirA87mArt64yyIWUXAC9r0A_m3vJEUc1&amp;t=ffffffffac480b40" type="text/javascript"></script>
+<script src="/2010.2/ScriptResource.axd?d=9UeNENEi0NhRVMdEOVcX3JZnlp0V7mSfyZ32pGwPvuJNzbxJ17vKprFSpUnUR0GjmNAT1VXlTX-daLImH2b16ZycUd-KZO6FlXWG6nOzzsgZsDNfAQfYtzpdn4ZSqyvC0&amp;t=ffffffffac480b40" type="text/javascript"></script>
+<script src="/2010.2/ScriptResource.axd?d=9UeNENEi0NhRVMdEOVcX3JZnlp0V7mSfyZ32pGwPvuJNzbxJ17vKprFSpUnUR0GjVPktctPokhc4TaPmX5U-hWunZdslmRu0yb7Ew0Qq6zBtKFdHgWxCgYn7lRAjx1ns0&amp;t=ffffffffac480b40" type="text/javascript"></script>
+<script src="/2010.2/ScriptResource.axd?d=9UeNENEi0NhRVMdEOVcX3JZnlp0V7mSfyZ32pGwPvuKr9wIksAzHA2yrXI25o5ktHjeAAH7AU5H922uDU02rWRh755gULkh0GJMAbN-1xCkEUA9sMw7Tq4xrpnFVQAW_0&amp;t=ffffffffac480b40" type="text/javascript"></script>
+<script src="/2010.2/ScriptResource.axd?d=9UeNENEi0NhRVMdEOVcX3JZnlp0V7mSfyZ32pGwPvuKr9wIksAzHA2yrXI25o5ktHjeAAH7AU5H922uDU02rWRh755gULkh0GJMAbN-1xCkiaGUs3Htj7opdBeR45wFz0&amp;t=ffffffffac480b40" type="text/javascript"></script>
+<script src="/2010.2/ScriptResource.axd?d=9UeNENEi0NhRVMdEOVcX3JZnlp0V7mSfyZ32pGwPvuJylycGHhBQPCgls3PH8btOhvWJNqmfVSx3mfvhUSo-mM-5d27S6Xa16e3crl_Av5E1&amp;t=ffffffffac480b40" type="text/javascript"></script>
+<script src="/2010.2/ScriptResource.axd?d=9UeNENEi0NhRVMdEOVcX3JZnlp0V7mSfyZ32pGwPvuKr9wIksAzHA2yrXI25o5ktHjeAAH7AU5H922uDU02rWRh755gULkh0GJMAbN-1xCnyl1Gh5u9NRxDMG_U5_C0YNHooadgMReoayW4heQoclQ2&amp;t=ffffffffac480b40" type="text/javascript"></script>
+<div>
+ 
+	<input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="/wEWEQKy3ri4BALsvvT9DwLsvvD9DwKDufTrDQKM1t6FAQKN1t6FAQKO1t6FAQKP1t6FAQKI1t6FAQKJ1t6FAQKK1t6FAQKb1t6FAQKU1t6FAQKM1p6GAQLsvuz9DwLsvuj9DwKgyaBt3NqWRmci3GNjKKbHmPVvkWcX43hLqDA0I8mnSKJYT0s=" />
+</div>
+    <script type="text/javascript"> 
+//<![CDATA[
+Sys.WebForms.PageRequestManager._initialize('ctl00$scriptmanager1', 'aspnetForm', ['tctl00$ContentLive$UpdatePanel1',''], [], [], 90, 'ctl00');
+//]]>
+</script>
+ 
+    
+    <!-- Sample Title -->
+    <div id="ctl00_SampleTitleDiv" class="sampleTitle">
+        
+	How to build a custom pager
+ 
+    </div>
+    <!-- Sample Description -->
+    <div class="sampleDescription">        
+        
+	The WebDataGrid includes a paging behavior that allows you configure the grid to display data across multi pages. This sample shows how to create a custom pager appearance using the pager’s template.
+ 
+    </div>
+    
+    <!-- Main Body -->
+    <div id="ctl00_OverviewPanel">
+	       
+        <div>
+            <div>
+                
+	<style type="text/css">
+		.igg_CustomPager
+		{
+			font-size: 11px;
+			margin-right: 30px;
+			background-color: transparent;
+			text-align: center;
+			vertical-align: middle;
+			background-image: url(../../images/WebDataGrid/pagerBG.gif);
+		}
+		.DropDownClass
+		{
+			font-size: 11px;
+		}
+		.igg_PageLink
+		{
+			border: 0px solid #ff0000;
+			padding-left: 0px;
+			padding-right: 0px;
+		}
+		.igg_CurrentPageLink
+		{
+			color: white;
+			background-image: url(../../images/WebDataGrid/customPager.png);
+			background-repeat: no-repeat;
+			padding-top: 6px;
+			padding-left: 15px;
+			padding-right: 15px;
+			padding-bottom: 5px;
+		}
+	</style>
+	<div id="wrapper" class="wgDataBind">
+		<div id="container">
+			<div id="DataGridWrapper">
+				<div id="ctl00_ContentLive_UpdatePanel1">
+		
+						<input type="hidden" id="ctl00_ContentLive_WebDataGridView_clientState" name="ctl00_ContentLive_WebDataGridView_clientState" /><div id="ctl00_ContentLive_WebDataGridView" class="ig_FeatureBrowserControl igg_FeatureBrowserControl" xxxstyle="height:425px;width:800px;overflow:hidden;visibility:hidden;">
+  <table cellpadding="0" cellspacing="0" border="0" id="x:752258940.0:mkr:outerTbl.hdn" xxxstyle="table-layout:fixed;width:100%;">
+    <colgroup>
+      <col xxxstyle="width:100%;">
+      <col id="x:752258940.1:mkr:vsb:sub:vScrWidth" xxxstyle="width:18px;">
+    </colgroup>
+    <tr>
+      <td>
+        <table cellpadding="0" cellspacing="0" border="0" id="x:752258940.2:mkr:contentTbl" xxxstyle="table-layout:fixed;width:100%;">
+          <tbody id="x:752258940.3:mkr:headingArea">
+            <tr id="x:752258940.14:mkr:header" class="ig_FeatureBrowserHeader igg_FeatureBrowserHeader">
+              <td>
+                <div xxxstyle="overflow:hidden;">
+                  <table id="x:752258940.15:mkr:headerContent.hdn" cellpadding="0" border="0" xxxstyle="table-layout:fixed;width:100%;visibility:hidden" cellspacing="0">
+                    <tr id="x:752258940.16:mkr:columnHeaderRow">
+                      <th id="x:752258940.17:adr:0:idx:0:key:CustomerID" class="igg_FeatureBrowserHeaderCaption" xxxstyle="">Id</th>
+                      <th id="x:752258940.17:adr:1:idx:1:key:CompanyName" class="igg_FeatureBrowserHeaderCaption" xxxstyle="">Company</th>
+                      <th id="x:752258940.17:adr:2:idx:2:key:Contact" class="igg_FeatureBrowserHeaderCaption" xxxstyle="">Contact</th>
+                      <th id="x:752258940.17:adr:3:idx:3:key:Address" class="igg_FeatureBrowserHeaderCaption" xxxstyle="">Address</th>
+                      <th id="x:752258940.17:adr:4:idx:4:key:City" class="igg_FeatureBrowserHeaderCaption" xxxstyle="">City</th>
+                      <th id="x:752258940.17:adr:5:idx:5:key:PostalCode" class="igg_FeatureBrowserHeaderCaption" xxxstyle="">Zip</th>
+                      <th id="x:752258940.17:adr:6:idx:6:key:Country" class="igg_FeatureBrowserHeaderCaption" xxxstyle="">Country</th>
+                    </tr>
+                  </table>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+          <tbody>
+            <tr>
+              <td xxxstyle="vertical-align:top;">
+                <div id="x:752258940.4:mkr:container" xxxstyle="overflow:hidden;height:382px;">
+                  <table cellspacing="0" cellpadding="0" border="0" xxxstyle="table-layout:fixed;width:100%;visibility:hidden" id="x:752258940.5:mkr:dataTbl.hdn">
+                    <tbody id="x:752258940.18:mkr:rows:nw:1" class="ig_FeatureBrowserItem igg_FeatureBrowserItem">
+                      <tr id="x:752258940.19:adr:0:key:[&quot;ALFKI&quot;]:tag:">
+                        <td>ALFKI</td>
+                        <td>Alfreds Futterkiste</td>
+                        <td>Maria Anders</td>
+                        <td>Obere Str. 57</td>
+                        <td>Berlin</td>
+                        <td>12209</td>
+                        <td>Germany</td>
+                      </tr>
+                      <tr id="x:752258940.19:adr:1:key:[&quot;ANATR&quot;]:tag:" class="ig_FeatureBrowserAlt igg_FeatureBrowserAlt">
+                        <td>ANATR</td>
+                        <td>Ana Trujillo Emparedados y helados</td>
+                        <td>Ana Trujillo</td>
+                        <td>Avda. de la Constitución 2222</td>
+                        <td>México D.F.</td>
+                        <td>05021</td>
+                        <td>Mexico</td>
+                      </tr>
+                      <tr id="x:752258940.19:adr:2:key:[&quot;ANTON&quot;]:tag:">
+                        <td>ANTON</td>
+                        <td>Antonio Moreno Taquería</td>
+                        <td>Antonio Moreno</td>
+                        <td>Mataderos  2312</td>
+                        <td>México D.F.</td>
+                        <td>05023</td>
+                        <td>Mexico</td>
+                      </tr>
+                      <tr id="x:752258940.19:adr:3:key:[&quot;AROUT&quot;]:tag:" class="ig_FeatureBrowserAlt igg_FeatureBrowserAlt">
+                        <td>AROUT</td>
+                        <td>Around the Horn</td>
+                        <td>Thomas Hardy</td>
+                        <td>120 Hanover Sq.</td>
+                        <td>London</td>
+                        <td>WA1 1DP</td>
+                        <td>UK</td>
+                      </tr>
+                      <tr id="x:752258940.19:adr:4:key:[&quot;BERGS&quot;]:tag:">
+                        <td>BERGS</td>
+                        <td>Berglunds snabbköp</td>
+                        <td>Christina Berglund</td>
+                        <td>Berguvsvägen  8</td>
+                        <td>Luleå</td>
+                        <td>S-958 22</td>
+                        <td>Sweden</td>
+                      </tr>
+                      <tr id="x:752258940.19:adr:5:key:[&quot;BLAUS&quot;]:tag:" class="ig_FeatureBrowserAlt igg_FeatureBrowserAlt">
+                        <td>BLAUS</td>
+                        <td>Blauer See Delikatessen</td>
+                        <td>Hanna Moos</td>
+                        <td>Forsterstr. 57</td>
+                        <td>Mannheim</td>
+                        <td>68306</td>
+                        <td>Germany</td>
+                      </tr>
+                      <tr id="x:752258940.19:adr:6:key:[&quot;BLONP&quot;]:tag:">
+                        <td>BLONP</td>
+                        <td>Blondel père et fils</td>
+                        <td>Frédérique Citeaux</td>
+                        <td>24, place Kléber</td>
+                        <td>Strasbourg</td>
+                        <td>67000</td>
+                        <td>France</td>
+                      </tr>
+                      <tr id="x:752258940.19:adr:7:key:[&quot;BOLID&quot;]:tag:" class="ig_FeatureBrowserAlt igg_FeatureBrowserAlt">
+                        <td>BOLID</td>
+                        <td>Bólido Comidas preparadas</td>
+                        <td>Martín Sommer</td>
+                        <td>C/ Araquil, 67</td>
+                        <td>Madrid</td>
+                        <td>28023</td>
+                        <td>Spain</td>
+                      </tr>
+                      <tr id="x:752258940.19:adr:8:key:[&quot;BONAP&quot;]:tag:">
+                        <td>BONAP</td>
+                        <td>Bon app'</td>
+                        <td>Laurence Lebihan</td>
+                        <td>12, rue des Bouchers</td>
+                        <td>Marseille</td>
+                        <td>13008</td>
+                        <td>France</td>
+                      </tr>
+                      <tr id="x:752258940.19:adr:9:key:[&quot;BOTTM&quot;]:tag:" class="ig_FeatureBrowserAlt igg_FeatureBrowserAlt">
+                        <td>BOTTM</td>
+                        <td>Bottom-Dollar Markets</td>
+                        <td>Elizabeth Lincoln</td>
+                        <td>23 Tsawassen Blvd.</td>
+                        <td>Tsawassen</td>
+                        <td>T2F 8M4</td>
+                        <td>Canada</td>
+                      </tr>
+                    </tbody>
+                  </table><div id="ctl00_ContentLive_WebDataGridView_eppool" xxxstyle="display:none;position:absolute;width:1px;z-index:1;">
+ 
+</div></div>
+              </td>
+            </tr>
+          </tbody>
+          <tbody id="x:752258940.6:mkr:footingArea"></tbody>
+        </table>
+      </td>
+      <td id="x:752258940.7:mkr:vsb" xxxstyle="display:none;vertical-align:top;">
+        <div id="x:752258940.8:mkr:vScrBar" xxxstyle="overflow-x:hidden;overflow-y:scroll;height:382px;">
+          <div xxxstyle="width:1px;"></div>
+        </div>
+      </td>
+    </tr>
+    <tr id="x:752258940.9:mkr:hScrHeight" xxxstyle="height:18px;display:none;">
+      <td>
+        <div id="x:752258940.10:mkr:hScrBar" xxxstyle="overflow-x:scroll;overflow-y:hidden;width:100%;height:18px;">
+          <div xxxstyle="height:1px;"></div>
+        </div>
+      </td>
+      <td id="x:752258940.11:mkr:vsb" class="igg_FeatureBrowserScrollbarIntersection" xxxstyle="margin:0px;padding:0px;display:none;"></td>
+    </tr>
+    <tr id="x:752258940.12:mkr:afterContent">
+      <td colspan="2" xxxstyle="vertical-align:bottom;">
+        <div id="x:752258940.13:mkr:pager_bottom" class="igg_FeatureBrowserPager igg_CustomPager" xxxstyle="width:100%;">
+          <style type="text/css"> 
+	.igg_CustomPager
+	{
+		font-size: 11px;
+		margin-right: 30px;
+		background-color: transparent;
+		/* you need to use the !important modifier, so that text-align: center remains after the update panel updates */
+		text-align: center !important;
+		vertical-align: middle;
+		background-image: url(../../images/WebDataGrid/pagerBG.gif);
+	}
+	.DropDownClass
+	{
+		font-size: 11px;
+	}
+	.igg_PageLink
+	{
+		border: 0px solid #ff0000;
+		padding-left: 0px;
+		padding-right: 0px;
+	}
+	.igg_CurrentPageLink
+	{
+		color: white;
+		background-image: url(../../images/WebDataGrid/customPager.png);
+		background-repeat: no-repeat;
+		padding-top: 6px;
+		padding-left: 15px;
+		padding-right: 15px;
+		padding-bottom: 5px;
+	}
+</style><input type="image" name="ctl00$ContentLive$WebDataGridView$ctl00$CustomerPager$ImageButton1" id="ctl00_ContentLive_WebDataGridView_ctl00_CustomerPager_ImageButton1" align="absmiddle" src="../../images/WebDataGrid/pagerFirst.gif" xxxstyle="border-width:0px;"><input type="image" name="ctl00$ContentLive$WebDataGridView$ctl00$CustomerPager$ImageButton2" id="ctl00_ContentLive_WebDataGridView_ctl00_CustomerPager_ImageButton2" align="absmiddle" src="../../images/WebDataGrid/pagerPrev.gif" xxxstyle="border-width:0px;">
+Page
+<select name="ctl00$ContentLive$WebDataGridView$ctl00$CustomerPager$PagerPageList" onchange="javascript:setTimeout('__doPostBack(\'ctl00$ContentLive$WebDataGridView$ctl00$CustomerPager$PagerPageList\',\'\')', 0)" id="ctl00_ContentLive_WebDataGridView_ctl00_CustomerPager_PagerPageList" class="DropDownClass"><option selected value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+            <option value="7">7</option>
+            <option value="8">8</option>
+            <option value="9">9</option>
+            <option value="10">10</option></select>
+ of 
+<span id="ctl00_ContentLive_WebDataGridView_ctl00_CustomerPager_PageText">10</span><input type="image" name="ctl00$ContentLive$WebDataGridView$ctl00$CustomerPager$ImageButton3" id="ctl00_ContentLive_WebDataGridView_ctl00_CustomerPager_ImageButton3" align="absmiddle" src="../../images/WebDataGrid/pagerNext.gif" xxxstyle="border-width:0px;"><input type="image" name="ctl00$ContentLive$WebDataGridView$ctl00$CustomerPager$ImageButton4" id="ctl00_ContentLive_WebDataGridView_ctl00_CustomerPager_ImageButton4" align="absmiddle" src="../../images/WebDataGrid/pagerLast.gif" xxxstyle="border-width:0px;"></div>
+      </td>
+    </tr>
+  </table>
+</div>
+					
+	</div>
+			</div>
+		</div>
+		
+ 
+            </div>
+        </div>
+    
+</div>
+    
+    <!-- The Following Panels are all Invisible Currently. Leaving in Place to Prevent 
+         breaking subpages that reference these ContentPlaceholders -->         
+    
+    
+                
+    
+                                  
+    <input type="hidden" name="ctl00$_IG_CSS_LINKS_" id="ctl00__IG_CSS_LINKS_" value="~/WebFeatureBrowser/webSample_style.css|../../styles/FeatureBrowser/ig_dataGrid.css|../../styles/FeatureBrowser/ig_shared.css" />
+ 
+<script type="text/javascript"> 
+//<![CDATA[
+Sys.Application.add_init(function() {
+    $create(Infragistics.Web.UI.WebDataGrid, {"id":"ctl00_ContentLive_WebDataGridView","name":"WebDataGridView","props":[[[,10,,],{"c":{"sv":"1","uid":"ctl00$ContentLive$WebDataGridView","we":"false","ecr":false,"ti":0,"pi":"[]","cbdci":1,"en":"true","_pi":"[\"../../styles/FeatureBrowser/images/ig_ajaxIndicator.gif\",,,\"ig_FeatureBrowserAjaxIndicator\",,1,,,,\"ig_FeatureBrowserAjaxIndicatorBlock\",,3,,3,\"Async post\"]","cbc":0,"ea":"true"}}],[[[[1]],,],[[["Paging"],{"c":{"ps":10,"pa":1,"pc":10,"pi":0,"pic":false}}],,,["PageIndexChanging::2"]]],[{'0':[[0,,""],{"c":{"headTxt":"Id","cf":"","type":"string","type2":0,"vIndex":0,"footTxt":"","key":"CustomerID","nullable":false}}],'1':[[0,,""],{"c":{"headTxt":"Company","cf":"","type":"string","type2":0,"vIndex":1,"footTxt":"","key":"CompanyName","nullable":false}}],'2':[[0,,""],{"c":{"headTxt":"Contact","cf":"","type":"string","type2":0,"vIndex":2,"footTxt":"","key":"Contact","nullable":false}}],'3':[[0,,""],{"c":{"headTxt":"Address","cf":"","type":"string","type2":0,"vIndex":3,"footTxt":"","key":"Address","nullable":false}}],'4':[[0,,""],{"c":{"headTxt":"City","cf":"","type":"string","type2":0,"vIndex":4,"footTxt":"","key":"City","nullable":false}}],'5':[[0,,""],{"c":{"headTxt":"Zip","cf":"","type":"string","type2":0,"vIndex":5,"footTxt":"","key":"PostalCode","nullable":false}}],'6':[[0,,""],{"c":{"headTxt":"Country","cf":"","type":"string","type2":0,"vIndex":6,"footTxt":"","key":"Country","nullable":false}}]},{}],[],]}, null, null, $get("ctl00_ContentLive_WebDataGridView"));
+});
+//]]>
+</script>
+</form>
+</body>
+</html>
+

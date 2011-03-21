@@ -1,0 +1,106 @@
+ 
+ 
+ 
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+ 
+<head>
+<script type="text/javascript" src="/s1gcb/app/js/jquery-1.4.2.js"></script>
+<script type="text/javascript" src="/s1gcb/app/js/jquery.ui.core.js"></script>
+<script type="text/javascript" src="/s1gcb/app/js/jquery.ui.cookie.js"></script>
+<script type="text/javascript" src="/s1gcb/app/js/jquery.ui.tabs.js"></script>
+<script type="text/javascript" src="/s1gcb/app/js/jquery.ui.datepicker.js"></script>
+<script type="text/javascript" src="/s1gcb/app/js/jquery.ui.resizable.js"></script>
+<script type="text/javascript" src="/s1gcb/app/js/jquery.ui.dialog.min.js"></script>
+ 
+<script type="text/javascript" src="/s1gcb/app/js/jquery.form.js"></script>
+<script type="text/javascript" src="/s1gcb/app/js/jquery.tools.min.js"></script>
+<script type="text/javascript" src="/s1gcb/app/js/proxy.js"></script>
+<script type="text/javascript" src="/s1gcb/app/js/breadcrumbs.js"></script>
+ 
+<script type="text/javascript" src="/s1gcb/app/js/utilities.js"></script>
+<script type="text/javascript" src="/s1gcb/app/js/jquery.hoverIntent.js"></script>
+<script type="text/javascript" src="/s1gcb/app/js/jquery.s1.menus.js"></script>
+<script type="text/javascript" src="/s1gcb/app/js/jquery.s1.pager.js"></script>
+<script type="text/javascript" src="/s1gcb/app/js/jquery.s1.inlineListTable.js"></script>
+<script type="text/javascript" src="/s1gcb/app/js/jquery.s1.scrollingTable.js"></script>
+<!--[if IE]><script type="text/javascript" src="/s1gcb/app/js/excanvas.js"></script><![endif]-->
+<script type="text/javascript" src="/s1gcb/app/js/jquery.bt.js"></script>
+<script type="text/javascript" src="/s1gcb/app/js/dojo-release-1.3.2/dojo/dojo.js"></script>
+<script type="text/javascript" src="/s1gcb/app/js/s1/s1.js"></script>
+<script type="text/javascript" src="/s1gcb/app/js/s1/util/pathhelpers.js"></script>
+<script type="text/javascript" src="/s1gcb/app/js/s1/util/printing.js"></script>
+<script type="text/javascript" src="/s1gcb/app/js/s1/util/help.js"></script>
+<script type="text/javascript" src="/s1gcb/app/js/s1/managers/eventmanager.js"></script>
+<script type="text/javascript" src="/s1gcb/app/js/s1/managers/widgetmanager.js"></script>
+<script type="text/javascript" src="/s1gcb/app/js/s1/managers/errormanager.js"></script>
+<script type="text/javascript" src="/s1gcb/app/js/s1/widgets/widget.js"></script>
+<script type="text/javascript" src="/s1gcb/app/js/s1/widgets/fieldselect.js"></script>
+<script type="text/javascript" src="/s1gcb/app/js/s1/widgets/fieldedit.js"></script>
+<script type="text/javascript" src="/s1gcb/app/js/s1/widgets/button.js"></script>
+<script type="text/javascript" src="/s1gcb/app/js/s1/widgets/dropdownbutton.js"></script>
+<script type="text/javascript" src="/s1gcb/app/js/s1/widgets/containerinput.js"></script>
+<script type="text/javascript" src="/s1gcb/app/js/s1/widgets/currencyconverter.js"></script>
+<script type="text/javascript" src="/s1gcb/app/js/s1/widgets/fieldcheck.js"></script>
+<script type="text/javascript" src="/s1gcb/app/js/s1/widgets/fieldtextarea.js"></script>
+<script type="text/javascript" src="/s1gcb/app/js/s1/widgets/fieldradiogroup.js"></script>
+<script type="text/javascript" src="/s1gcb/app/js/s1/widgets/fielddate.js"></script>
+<script type="text/javascript" src="/s1gcb/app/js/s1/widgets/fieldmoney.js"></script>
+<script type="text/javascript" src="/s1gcb/app/js/s1/widgets/listtable.js"></script>
+<script type="text/javascript" src="/s1gcb/app/js/s1/widgets/contentbox.js"></script>
+<script type="text/javascript" src="/s1gcb/app/js/s1/widgets/frequencyinput.js"></script>
+<script type="text/javascript" src="/s1gcb/app/js/s1/widgets/multiboxinput.js"></script>
+<script type="text/javascript" src="/s1gcb/app/js/s1/widgets/fieldmonetaryrange.js"></script>
+<script type="text/javascript" src="/s1gcb/app/js/s1/widgets/fieldbankid.js"></script>
+<script type="text/javascript" src="/s1gcb/app/js/s1/widgets/fieldgenericrange.js"></script>
+<script type="text/javascript" src="/s1gcb/app/js/s1/widgets/fieldaccountselection.js"></script>
+ 
+<script src="/s1gcb/app/js/s1/widgets/fieldmonetaryrange.js"></script>
+ 
+<link href="/s1gcb/framework/css/all-styles.css" rel="stylesheet" type="text/css" />
+<!--[if IE]><link href="/s1gcb/framework/css/ie-general-css-overrides.css" rel="stylesheet" type="text/css" /><![endif]-->
+<!--[if IE 7]><link href="/s1gcb/framework/css/ie7-css-overrides.css" rel="stylesheet" type="text/css" /><![endif]-->
+<link href="/s1gcb/framework/css/jquery-ui/base/jquery.ui.all.css" rel="stylesheet" type="text/css">
+<link href="/s1gcb/framework/css/custom-styles.css" rel="stylesheet" type="text/css" />
+ 
+<script type="text/javascript"> 
+	
+	function loadOverlayContent() {
+			$.s1.proxy.contextPath = "/s1gcb";
+			$.s1.proxy.csrfGuardToken = "OWASP_CSRFTOKEN";
+			$.s1.proxy.csrfGuardValue = "M2EV-8W2C-CYKM-SSL3-2CEN-MAOR-RUFG-44PN";
+			window.parent.S1.Overlay.setInsideOverlay(true);
+			window.parent.S1.Overlay.showContent($("#overlayContent"), S1.WidgetManager);
+			window.parent.S1.Overlay.View.resizeDiv($("#superContainer"));
+			/* Expand the overlay when a container is expanded */
+			S1.subscribe("container_show", function(){
+				window.parent.S1.Overlay.View.resizeDiv($("#superContainer"));
+			});	
+			S1.subscribe("container_hide", function(){
+				window.parent.S1.Overlay.View.resizeDiv($("#superContainer"));
+			});	
+			S1.ErrorManager.scrollIntoView();
+		}
+		
+</script>
+<script type="text/javascript"> 
+	var epUserDateFormat='mm/dd/yyyy';
+</script>
+</head>
+ 
+<body onload="loadOverlayContent();" style="min-width:65em;">
+<!--[if IE]><div id="minWidthSpacer" style="width:65em;height:0em;line-height:0em;">&nbsp;</div><![endif]-->
+<div id="superContainer">
+	<div id="printLinkContainer" style="width:100%">
+		<div style="float:right;padding-top:0.25em; padding-bottom:0.25em; padding-right: 1em;">
+            <a class="link_print" href="#" s1ignore="true" onclick="S1.Printing.printOverlayPage();return false;" title="This link will open the current content in a new window that is streamlined for printing">Print-Friendly</a>
+		</div>
+	</div>
+	<div id="messagecontainer" role="region alert" aria-live="assertive" aria-relevant="all">
+		<h1>Messages</h1>
+	</div>
+	<div id="overlayContent"></div>
+</div>
+ 
+</body>
+</html>

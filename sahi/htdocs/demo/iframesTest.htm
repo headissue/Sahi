@@ -7,14 +7,18 @@
 <body>
 <h2>IFRAME Tests</h2>
 
-<iframe src="iframesTest_inc.htm">
+<input type="text" id="checkRecord" value="verify me"/><br/>
+<input type="button" value="Click me" onclick="document.getElementById('checkRecord').value='1111'"/><br/>
+<br/> 
+
+<iframe src="index.htm" height="300px" style="float:left;margin:20px;">
 </iframe>
-<div id="another">
+<div id="another" style="float:left;margin:20px;">
 </div>
 
 <script>
 function writeAnotherIframe(){
-	document.getElementById("another").innerHTML = '<iframe src="iframesTest_inc.htm"></iframe>';
+	document.getElementById("another").innerHTML = '<iframe src="index.htm" height="300px"></iframe>';
 }
 window.setTimeout("writeAnotherIframe()", 1000)
 </script>

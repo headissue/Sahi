@@ -71,14 +71,35 @@ function sahiCreateRequestObject(){
     return obj;
 }
 function sahiGetServerVar(name){
-    var v = sahiSendToServer("/_s_/dyn/SessionState_getVar?name="+escape(name));
+    var v = sahiSendToServer("/_s_/dyn/SessionState_getVar?name="+fixedEncodeURIComponent(name));
     if (v == "null") return null;
-    return v;
+    return fixedDecodeURIComponent(v);
 }
 function sahiSetServerVar(name, value){
-    sahiSendToServer("/_s_/dyn/SessionState_setVar?name="+escape(name)+"&value="+escape(value));
+    sahiSendToServer("/_s_/dyn/SessionState_setVar?name="+fixedEncodeURIComponent(name)+"&value="+fixedEncodeURIComponent(value));
 }
 function sahiSendToServer(url){
+	try {
+	    var rand = (new Date()).getTime() + Math.floor(Math.random() * (10000));
+	    var http = sahiCreateRequestObject();
+	    url = url + (url.indexOf("?") == -1 ? "?" : "&") + "t=" + rand;
+	    var post = url.substring(url.indexOf("?") + 1);
+	    url = url.substring(0, url.indexOf("?"));
+	    http.open("POST", url, false);
+	    http.send(post);
+	    return http.responseText;
+	} catch(ex) {
+		sahiHandleException(ex)
+	}
+}
+function fixedEncodeURIComponent (str) {  
+	  return encodeURIComponent(str).replace(/%20/g, '+').replace(/!/g, '%21').replace(/'/g, '%27').replace(/\(/g, '%28').  
+	                                 replace(/\)/g, '%29').replace(/\*/g, '%2A');//.replace(/%81/g, "%3F");  
+} 
+function fixedDecodeURIComponent(msg){
+	return decodeURIComponent(msg.replace(/[+]/g, ' '));	
+}
+function xsahiSendToServer(url){
     try{
         var rand = (new Date()).getTime() + Math.floor(Math.random()*(10000));
         var http = sahiCreateRequestObject();
@@ -90,11 +111,11 @@ function sahiSendToServer(url){
 }
 function sahiLogErr(msg){
     return;
-    sahiSendToServer("/_s_/dyn/Log?msg=" + escape(msg) + "&type=err" );
+    sahiSendToServer("/_s_/dyn/Log?msg=" + fixedEncodeURIComponent(msg) + "&type=err" );
 }
 
 function sahiLogPlayBack(msg, st, debugInfo){
-    sahiSendToServer("/_s_/dyn/Log?msg=" + escape(msg) + "&type=" + st + "&debugInfo=" + escape(debugInfo));
+    sahiSendToServer("/_s_/dyn/Log?msg=" + fixedEncodeURIComponent(msg) + "&type=" + st + "&debugInfo=" + fixedEncodeURIComponent(debugInfo));
 }
 function sahiGetParentNode(el, tagName){
     var parent = el.parentNode;

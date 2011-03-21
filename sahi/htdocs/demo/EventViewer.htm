@@ -22,9 +22,11 @@
         var j = 0;
         for (var i in el) {
             if (!p || ("" + i).indexOf(p) != -1) {
-                if (typeof el[i] != "function") {
-                    s += i + "=" + el[i] + ",";
-                }
+                try{
+	                if (typeof el[i] != "function") {
+	                    s += i + "=" + el[i] + ",";
+	                }
+                }catch(e){}
                 j++;
                 //                if (j % 4 == 0)
                 s += "\n";
@@ -33,9 +35,9 @@
         return s;
     }
 
-    function onEv(e) {
+    function onEv(e, n) {
         if (!e) e = window.event;
-        var n = "ta" + (getTarget(e).name.indexOf("1")!=-1 ? 1 : 2);
+        if (!n) n = "ta" + (getTarget(e).name.indexOf("1")!=-1 ? 1 : 2);
         document.f1.elements[n].value = sahiList(e);
     }
     function diff() {
@@ -89,12 +91,15 @@
         <option value="onmouseover">onmouseover</option>
         <option value="onmouseup">onmouseup</option>
     </select>
+    <input type="button" value="Clear All" onclick="form.reset()">
     <table width="80%">
         <tr>
             <td>
                 <input type="text" name="t1" onkeypress="onEv(event, 'ta1')">
                 <input type="button" name="b1" value="Click" onclick="onEv(event, 'ta1')">
+                <span onmousedown="onEv(event, 'ta1')">Click</span>
                 <input type="button" name="rb1" value="Right Click" oncontextmenu="onEv(event, 'ta1')">
+                <span oncontextmenu="onEv(event, 'ta1')">Right Click</span>
                 <input type="button" name="db1" value="Double Click" ondblclick="onEv(event, 'ta1')">
             </td>
             <td>
@@ -102,7 +107,9 @@
             <td>
                 <input type="text" name="t2" onkeypress="onEv(event, 'ta2')">
                 <input type="button" name="b2" value="Click" onclick="onEv(event, 'ta2')">
+                <span onmousedown="onEv(event, 'ta2')">Click</span>
                 <input type="button" name="rb2" value="Right Click" oncontextmenu="onEv(event, 'ta2')">
+                <span oncontextmenu="onEv(event, 'ta2')">Right Click</span>
                 <input type="button" name="db2" value="Double Click" ondblclick="onEv(event, 'ta2')">
             </td>
         </tr>

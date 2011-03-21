@@ -22,20 +22,72 @@
 <title>
 	Sahi - $message
 </title>
+<link href="/_s_/spr/css/error.css" rel="stylesheet" type="text/css"/>
 </head>
 
-<body>
+<body style="background-color:#909090;">
+	<script>
+	function $(x){return document.getElementById(x);}
+	function hide(el){el.style.display = "none";}
+	function show(el){el.style.display = "block";}
+	</script>
+	<center>
+	<div style="border:1px solid gray;background-color:white;width:600px;text-align:left;margin-top:40px;">
+	<div style="padding:1px 20px 20px 20px;">
+	<h3>Sahi Error - $message</h3>
+	
+	<b style="color:red">Sahi could not connect to the desired URL</b><br/><br/>
+	
+	
+	<div class="box">
+	<h3>Either the remote server is down or not reachable</h3> 
+	<div class="tip">
+	If the web site is not accessible even when the browser proxy configuration is removed, it means the server is down.
+	</div>
+	</div>
+	
+	<h2>or</h2> <br/>
+	
+	<div class="box">
+	<h3>You need an external proxy to be configured.</h3>
+	<div class="tip">
+	If you normally require to use another proxy to connect to external websites, you need to configure Sahi to use that proxy.
+	</div>
 	<br/>
-	<b>Sahi - $message</b><br/><br/>
-	Either the remote server is down<br/> or <br/>
-	You need an external proxy to be configured. <br/><br/>
-	You could configure the external proxy by editing &lt;sahi_root&gt;/config/sahi.properties and setting these properties: <br/><br/>
-	ext.proxy.enable=true <br/>
-	ext.proxy.host=<i>external_proxy_server_hostname_or_ip</i> <br/>
-	ext.proxy.port=<i>external_proxy_server_port</i> <br/>
-	<br/>
-	Exception was:<br/>
-	$message
-</body>
+	You can configure the external proxy by editing<br/> 
+	<b>&lt;sahi_root&gt;/userdata/config/userdata.properties</b> and setting these properties: <br/><br/>
+	<div class="code">
+	ext.http.proxy.enable=true <br/>
+	ext.http.proxy.host=<i>external_proxy_server_hostname_or_ip</i> <br/>
+	ext.http.proxy.port=<i>external_proxy_server_port</i> <br/>
+	</div>
 
+	<br/>If your proxy needs authorization, you should set these properties too.<br/><br/>
+	<div class="code">
+	ext.http.proxy.auth.enable=true <br/>
+	ext.http.proxy.auth.name=<i>proxy_authorization_username</i> <br/>
+	ext.http.proxy.auth.password=<i>proxy_authorization_password</i> <br/>
+	</div>
+	<br/>You should do the same with <b>ext.https</b> settings for <b>https</b> sites.<br/><br/>
+	
+	To bypass external proxy for some web addresses, like local addresses, set<br/><br/>
+	<div class="code">
+	ext.http.both.proxy.bypass_hosts=localhost|127.0.0.1|<i>*.internaldomain.com</i><br/>
+	</div>
+	</div>
+	
+	<br/>
+	
+	<div style="display:none;cursor:pointer;" id="minus" onclick="hide($('exc'));hide($('minus'));show($('plus'));">- hide stacktrace</div>
+	<div style="display:block;cursor:pointer;" id="plus" onclick="show($('exc'));hide($('plus'));show($('minus'));">+ show stacktrace</div>
+	<div id="exc">$exception</div>
+	</div>
+	</div>
+	</center>
+</body>
+<script>
+if (_sahi && _sahi.isPlaying){
+	_sahi._log("<b>Could not connect to the web server.</b><br/>" + '$exception', "custom2");
+}
+</script>
 </html>

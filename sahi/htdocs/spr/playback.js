@@ -1,6 +1,6 @@
 /**
  * Sahi - Web Automation and Test Tool
- * 
+ *
  * Copyright  2006  V Narayan Raman
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,15 +15,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-_sahi.removeEvent(window, "load", Sahi.init);
+__sahiDebug__("playback.js: start");
+_sahi.removeEvent(window, "load", Sahi.onWindowLoad);
 _sahi.removeEvent(window, "beforeunload", Sahi.onBeforeUnLoad);
-_sahi.addEvent(window, "load", Sahi.init);
+_sahi.addEvent(window, "load", Sahi.onWindowLoad);
 _sahi.addEvent(window, "beforeunload", Sahi.onBeforeUnLoad);
 try{
 if (!tried){
     if (_sahi.isWinOpen){
-        _sahi.openWin();
+    	try{
+    		if (_sahi.top() == window.top){
+    			_sahi.top()._sahi.openWin();
+    		}
+        }catch(e){}
     }
     tried = true;
 }
 }catch(e){}
+_sahi.initTimer = window.setTimeout("Sahi.onWindowLoad()", (_sahi.waitForLoad) * _sahi.INTERVAL);
+__sahiDebug__("playback.js: end");

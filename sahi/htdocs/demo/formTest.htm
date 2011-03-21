@@ -11,11 +11,52 @@ function dummy(){
 function testFormName(){
     alert(typeof document.f1.name);
 }
+_done = [];
+_attrs = [];
+function getAllAttributes(){
+	_done = [];
+	_attrs = ['elements'];
+	var nodes = [document, window];
+	var els = document.f1.elements;
+	var doneTypes = [];
+	for (var i=0; i<els.length; i++){
+		var el = els[i];
+		if (!doneTypes[el.type]){
+			nodes[nodes.length] = el;
+			doneTypes[el.type] = true;
+		}
+	}	    
+	nodes[nodes.length] = document.links[0];
+	for (var i=0; i<nodes.length; i++){
+		getAttributes(nodes[i]);
+	}
+	var s = "";		
+	_attrs = _attrs.sort();
+	for (var i=0; i< _attrs.length; i++){
+		 if (i % 5 == 0) s += "\n";
+		 s += "'" + _attrs[i] + "', ";
+	}
+	document.getElementById("output").value = s;
+}
+function getAttributes(el){
+    if (typeof el == "object") {
+        for (var i in el) {
+            try{
+		        if (("" + el[i]).indexOf("function") == -1 && !_done[i]) {
+		            _attrs[_attrs.length] = i;
+		            _done[i] = i;
+		        }
+            }catch(e){}
+        }
+    }
+}
 </script>
+<style>
+.bordercheck{border: 2px solid blue;}
+</style>
 </head>
 <body onload="testFormName()">
 <h2>Form Test</h2>
-
 <form name="f1">
 <table>
 <tr>
@@ -25,7 +66,7 @@ function testFormName(){
 
 <tr>
 <td>&lt;input type="text" value="" name="t1"&gt;</td>
-<td><input type="text" value="" name="t1"></td>
+<td><input type="text" value="" name="t1" class="bordercheck"></td>
 </tr>
 
 <tr>
@@ -42,6 +83,17 @@ function testFormName(){
 <td>&lt;input type="text" value="" name="$a_dollar"&gt;</td>
 <td><input type="text" value="" name="$a_dollar"> </td>
 </tr>
+
+<tr>
+<td>&lt;input type="text" value="" disabled="true" name="textdisabled"&gt;</td>
+<td><input type="text" value="" disabled="true" name="textdisabled"></td>
+</tr>
+
+<tr>
+<td>&lt;input type="text" value="" readonly name="textreadonly"&gt;</td>
+<td><input type="text" value="" readonly name="textreadonly"></td>
+</tr>
+
 </table>
 
 <hr>
@@ -52,32 +104,33 @@ TextArea:<br>
  &lt;textarea value=""&gt;&lt;/textarea&gt;<br>
 <textarea value=""></textarea><br>
 <br>
- 
+
 
 <hr>
 Checkbox :<br>
 <pre>
-&lt;input type="checkbox" value="" name="c1"&gt;
-&lt;input type="checkbox" value=""&gt;
-&lt;input type="checkbox" value="" name="c1"&gt;
-&lt;input type="checkbox" value=""&gt;
+&lt;input type="checkbox" value="cv1" name="c1"&gt;
+&lt;input type="checkbox" value="cv2"&gt;
+&lt;input type="checkbox" value="cv3" name="c1"&gt;
+&lt;input type="checkbox" value="cv4"&gt;
 </pre>
 
 <br>
-<input type="checkbox" value="" name="c1"> <input type="checkbox"
-value=""> <input type="checkbox" value="" name="c1"> <input type=
-"checkbox" value=""><br>
+<input type="checkbox" value="cv1" name="c1"> 
+<input type="checkbox" value="cv2"> 
+<input type="checkbox" value="cv3" name="c1"> 
+<input type="checkbox" value=""><br>
 <br>
- 
+
 
 <hr>
 Radio :<br>
-&lt;input type="radio" value="" name="r1"&gt;&lt;input type="radio"
-value="" name="r1"&gt;<br>
-<input type="radio" value="" name="r1"><input type="radio" value=""
+&lt;input type="radio" value="rv1" name="r1"&gt;&lt;input type="radio"
+value="rv2" name="r1"&gt;<br>
+<input type="radio" value="rv1" name="r1"><input type="radio" value="rv2"
 name="r1"><br>
 <br>
- 
+
 
 <hr>
 Password:<br>
@@ -87,7 +140,7 @@ Password:<br>
  &lt;input type="password" value="" &gt;<br>
 <input type="password" value=""><br>
 <br>
- 
+
 
 <hr>
 Select:<br>
@@ -113,7 +166,7 @@ function a(e){
 </select><br>
 <br>
 <br>
- 
+
 
 <pre>
 &lt;select id="s1Id"&gt;
@@ -130,7 +183,7 @@ function a(e){
 <option value="o3">o3</option>
 </select><br>
 <br>
- 
+
 
 <pre>
 &lt;select&gt;
@@ -147,7 +200,7 @@ function a(e){
 <option value="o3">o3</option>
 </select><br>
 <br>
- 
+
 <pre>
 &lt;select multiple="multiple" onchange="a(event)"&gt;
 &lt;option value="o1"&gt;o1
@@ -222,7 +275,7 @@ name="submitBtnName"&gt;<br>
  &lt;input type="submit"&gt;<br>
 <input type="submit"><br>
 <br>
- 
+
 
 <hr>
 Image:<br>
@@ -238,7 +291,7 @@ onclick="dummy()"&gt;&lt;/img&gt;<br>
  &lt;img src="add.gif" onclick="dummy()"&gt;&lt;/img&gt;<br>
 <img src="add.gif" onclick="dummy()"><br>
 <br>
- 
+
 
 <hr>
 Search:<br>
@@ -250,26 +303,37 @@ value="" maxlength="255" /&gt;<br>
 maxlength="255"><br>
 <br>
 &lt;input class="button" type="image" src="add.gif" name="qs"
-border="0" value="Search" alt="Search" width="25" height="19"
+border="0" value="Search" alt="Search"
 /&gt;<br>
 <br>
 <input class="button" type="image" src="add.gif" name="qs" border=
-"0" value="Search" alt="Search" width="25" height="19"><br>
+"0" value="Search" alt="Search"  ><br>
 <br>
 &lt;input class="button" type="image" src="add.gif" name="qs"
-border="0" value="Search" width="25" height="19" /&gt;<br>
+border="0" value="Search"   /&gt;<br>
 <br>
 <input class="button" type="image" src="add.gif" name="qs" border=
-"0" value="Search" width="25" height="19"><br>
+"0" value="Search"  ><br>
 <br>
 &lt;img src="add.gif" alt="imgaa" border="0" value="Search"
-width="25" height="19" onclick="alert('111')"/&gt;<br>
+  onclick="alert('111')"/&gt;<br>
 <br>
-<img src="add.gif" alt="imgaa" border="0" value="Search" width="25"
-height="19" onclick="alert('111')"><br>
+<img src="add.gif" alt="imgaa" border="0" value="Search"
+ onclick="alert('111')"><br>
 <br>
-</form>
 
+<br/><br/><br/>
+<input type="image" src="add.gif" alt="Search" id="isb1"> |
+<input type="image" src="add.gif" alt="Search" id="isb2"> |
+<input type="image" src="add.gif" title="Search" id="isb3"> |
+<input type="image" src="add.gif" alt="Search" id="isb4">
+<br>
+
+<input type="button" onclick="getAllAttributes()" value="Get All Attributes"><br/>
+<textarea id="output"></textarea>
+
+<input type="hidden" name="hiddenone" value="abc"/>
+</form>
 <br>
 <br>
  <a href="index.htm">Back</a>

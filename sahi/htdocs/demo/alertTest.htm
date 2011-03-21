@@ -1,8 +1,8 @@
 <!DOCTYPE html PUBLIC "-//IETF//DTD HTML 2.0//EN">
 <html>
 <head>
-<meta name="generator" content="HTML Tidy, see www.w3.org">
-<title></title>
+<title>Alert Test</title>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
 </head>
 <body>
 <h2>Alert Test</h2>
@@ -14,11 +14,15 @@ function showAlert(){
 function showMultilineAlert(){
     alert("You must correct the following Errors:\nYou must select a messaging price plan.\nYou must select an international messaging price plan.\nYou must enter a value for the Network Lookup Charge");
 }
+function showMultiUnicode(){
+	alert("Verifique se todos os campos obrigatórios foram preenchidos.\n\nProduto:required.");	
+}
 </script>
 <form name="f1">
     <input type="text" name="t1" value="Alert Message"><br><br>
     <input type="button" name="b1" value="Click For Alert" onclick="showAlert()"><br>
-    <input type="button" name="b1" value="Click For Multiline Alert" onclick="showMultilineAlert()"><br>
+    <input type="button" name="b2" value="Click For Multiline Alert" onclick="showMultilineAlert()"><br>
+    <input type="button" name="b3" value="Multiline Unicode" onclick="showMultiUnicode()"><br>
 </form>
 <br>
 <a href="index.htm">Back</a>

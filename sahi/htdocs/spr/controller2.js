@@ -15,6 +15,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+function $(id){
+	return document.getElementById(id);
+}
 function checkOpener() {
     try {
         var x = window.top.opener.document;
@@ -39,23 +42,27 @@ function checkURL(url) {
     if (url.indexOf("://") == -1) return "http://" + url;
     return url;
 }
+function resetIfNeeded(){
+	var nextStep = parseInt(window.document.playform.nextStep.value);
+	var currentStep = parseInt(window.document.getElementById("currentStep").innerHTML);
+	if (nextStep <= currentStep){
+		resetScript();
+	}
+}
 function play() {
+	resetIfNeeded();
     try {
-        sahi().playManual(parseInt(window.document.playform.step.value))
+        sahi().playManual(parseInt(window.document.playform.nextStep.value))
     } catch (e) {
         displayLogs("Please open the Controller again. \n(Press CTRL ALT-DblClick on the main window.)");
     }
     return true;
 }
 function stepWisePlay() {
-    var i = parseInt(window.document.playform.step.value);
-    //i = i+1
-    sahi().setCurrentIndex(i);
-    sahi().stepWisePlay();
+	resetIfNeeded();
+    var i = parseInt(window.document.playform.nextStep.value);
+    sahiOpener().eval("_sahi.skipTill("+i+")");
     sahiOpener().eval("_sahi.ex(true)");
-}
-function a() {
-    sahiSetServerVar("sahi_play", 1);
 }
 function pause() {
     sahi().pause();
@@ -64,7 +71,8 @@ function stopPlay() {
     sahi().stopPlaying();
 }
 function resetStep() {
-    window.document.playform.step.value = 0;
+    window.document.getElementById("currentStep").innerHTML = "0";
+    window.document.playform.nextStep.value = 1;
     sahiSetServerVar("sahiIx", 0);
     sahiSetServerVar("sahiLocalIx", 0);
 }
@@ -74,6 +82,7 @@ function clearLogs() {
 function stopRec() {
     try {
         sahi().stopRecording();
+        enableRecordButton();
     } catch(ex) {
         alert(ex);
     }
@@ -97,7 +106,7 @@ function sendPlaybackSnapshot() {
     var s = "";
     s += addVar("controller_url", window.document.scripturlform.url.value);
     s += addVar("controller_logs", window.document.logForm.logs.value);
-    s += addVar("controller_step", window.document.playform.step.value);
+    s += addVar("controller_step", window.document.playform.nextStep.value);
     s += addVar("controller_url_starturl", window.document.scripturlform.starturl.value);
     s += addVar("controller_pb_dir", window.document.scriptfileform.dir.value);
     s += addVar("controller_file_starturl", window.document.scriptfileform.starturl.value);
@@ -111,7 +120,7 @@ function sendRecorderSnapshot() {
     s += addVar("controller_el_value", window.document.currentForm.elValue.value);
     s += addVar("controller_comment", window.document.currentForm.comment.value);
     s += addVar("controller_accessor", window.document.currentForm.accessor.value);
-    s += addVar("controller_alternative", window.document.currentForm.alternative.value);
+//    s += addVar("controller_alternative", window.document.currentForm.alternative.value);
     s += addVar("controller_debug", window.document.currentForm.debug.value);
     s += addVar("controller_history", window.document.currentForm.history.value);
     s += addVar("controller_waitTime", window.document.currentForm.waitTime.value);
@@ -185,7 +194,7 @@ function resizeElementWidth(p_elementName, p_size) {
 function resizeDropdown(p_dropdownContent, p_dropdownName, p_prefix) {
     var longest = getLongestListElementSize(p_dropdownContent);
     // A caracter is about 7 pixel long
-    var newDropdownSize = (longest - p_prefix) * 7 + 20;
+    var newDropdownSize = (longest - p_prefix) * 6.2 + 20;
     resizeElementWidth(p_dropdownName, newDropdownSize);
 }
 
@@ -240,7 +249,7 @@ function doOnPlaybackLoad() {
 }
 function doOnTabsLoad() {
     try {
-        var hilightedTab = sahiGetServerVar("controller_tab")
+        var hilightedTab = sahiGetServerVar("sahi_controller_tab");
         if (hilightedTab == null || hilightedTab == "") hilightedTab = "recorder";
         showTab(hilightedTab);
         top.isWinOpen = true;
@@ -248,10 +257,19 @@ function doOnTabsLoad() {
         sahiHandleException(ex);
     }
 }
+function isSameStep(ix) {
+    try {
+        return (window.document.playform.nextStep.value == "" + ix);
+    } catch(e) {
+    	return false;
+    }
+}
+
 function displayStepNum(ix) {
     try {
         if (window.document.playform)
-            window.document.playform.step.value = "" + ix;
+            window.document.getElementById("currentStep").innerHTML = "" + ix;
+            window.document.playform.nextStep.value = "" + (ix + 1);
     } catch(e) {
         sahiHandleException(e);
     }
@@ -267,9 +285,14 @@ function sahiGetCurrentIndex() {
 function displayQuery(s) {
     //    document.currentForm.query.value = forceWrap(s);
 }
-function displayLogs(s) {
-    window.document.logForm.logs.value += s + "\n";
-    window.document.logForm.logs.scrollTop = window.document.logForm.logs.scrollHeight;
+function displayLogs(s, i) {
+	if (i == null){ // for stop PlayBack messages
+		if (window.document.logForm.logs.value.match(s)) return;
+	}
+	if ((""+i) != window.document.getElementById("currentStep").innerHTML) {
+	    window.document.logForm.logs.value += s + "\n";
+	    window.document.logForm.logs.scrollTop = window.document.logForm.logs.scrollHeight;
+    }
 }
 
 function forceWrap(s1) {
@@ -312,7 +335,12 @@ var isRecordAll = true;
 function recordAll() {
     isRecordAll = !isRecordAll;
 }
-
+function disableRecordButton(){
+	window.document.recordstartform.record.disabled = true;
+}
+function enableRecordButton(){
+	window.document.recordstartform.record.disabled = false;
+}
 function onRecordStartFormSubmit(f) {
     if (window.document.recordstartform.file.value == "") {
         alert("Please enter a name for the script");
@@ -321,6 +349,7 @@ function onRecordStartFormSubmit(f) {
     }
     if (sahiOpener()) {
         sahi().startRecording(recordAll);
+		disableRecordButton();
         //    	window.setTimeout("top.location.reload();", 1000);
     }
     return true;
@@ -333,13 +362,13 @@ function hilightTab(n) {
     window.document.getElementById("recorderTab").className = "dimTab";
     //    document.getElementById("settingsTab").className = "dimTab";
     window.document.getElementById(n + "Tab").className = "hiTab";
-    sahiSetServerVar("controller_tab", n);
+    sahiSetServerVar("sahi_controller_tab", n);
 }
 function initRecorderTab() {
     window.document.recordstartform.file.value = getRecVar("controller_recorder_file");
     window.document.currentForm.elValue.value = getRecVar("controller_el_value");
     window.document.currentForm.accessor.value = getRecVar("controller_accessor");
-    window.document.currentForm.alternative.value = getRecVar("controller_alternative");
+//    window.document.currentForm.alternative.value = getRecVar("controller_alternative");
     window.document.currentForm.comment.value = getRecVar("controller_comment");
     window.document.currentForm.history.value = getRecVar("controller_history");
     window.document.currentForm.debug.value = getRecVar("controller_debug");
@@ -347,6 +376,7 @@ function initRecorderTab() {
     window.document.currentForm.result.value = getRecVar("controller_result");
     var dir = getRecVar("controller_rec_dir");
     if (dir && dir != null) window.document.recordstartform.dir.value = getRecVar("controller_rec_dir");
+    if (sahi().isRecording()) disableRecordButton();
 }
 function showTab(s) {
     if (window.top.main.location.href.indexOf(s + '.htm') != -1) return;
@@ -358,21 +388,23 @@ function listProperties(){
 }
 function initPlaybackTab() {
     var dir = getPbVar("controller_pb_dir");
-    if (dir != null && dir != "") 
+    if (dir != null && dir != "")
         window.document.scriptfileform.dir.value = dir;
     window.document.scripturlform.url.value = getPbVar("controller_url");
     window.document.logForm.logs.value = getPbVar("controller_logs");
     window.document.scripturlform.starturl.value = getPbVar("controller_url_starturl");
     window.document.scriptfileform.starturl.value = getPbVar("controller_file_starturl");
-    window.document.playform.step.value = getPbVar("controller_step");
+    window.document.playform.nextStep.value = getPbVar("controller_step");
     byFile(getPbVar("controller_show_url") != "true");
 }
-function displayInfo(info, escapedAccessor, escapedValue) {
+function displayInfo(accessors, escapedAccessor, escapedValue, popupName) {
     var f = window.document.currentForm;
     if (f) {
         f.elValue.value = escapedValue ? escapedValue : "";
         f.accessor.value = escapedAccessor;
-        f.alternative.value = info.accessor;
+        populateOptions(f.alternative, accessors);
+        //f.alternative.value = info.accessor;
+        f.winName.value = popupName;
     }
 }
 
@@ -411,13 +443,13 @@ function mark() {
     sahi().mark(window.document.currentForm.comment.value);
     //   sahiSendToServer('/_s_/dyn/Recorder_record?event=mark&value='+escape(document.currentForm.comment.value));
 }
-
 function getEvaluateExpressionResult(str){
     sahiSetServerVar("sahiEvaluateExpr", "true");
     var res = "";
     try {
         res = sahi()._eval(addSahi(str));
     } catch(e) {
+    	//throw e;
         if (e.exceptionType && e.exceptionType == "SahiAssertionException") {
             res = "[Assertion Failed]" + (e.messageText?e.messageText:"");
         }
@@ -433,7 +465,8 @@ function getEvaluateExpressionResult(str){
 function evaluateExpr(showErr) {
     if (!showErr) showErr = false;
     document.currentForm.history.value += "\n" + window.document.currentForm.debug.value;
-    var res = getEvaluateExpressionResult(window.document.currentForm.debug.value);
+    var txt = getText();
+    var res = getEvaluateExpressionResult(txt);
     if (showErr) {
         window.document.currentForm.result.value = "" + res;
     }
@@ -446,7 +479,26 @@ function demoHighlight() {
     setDebugValue("_highlight(" + window.document.currentForm.accessor.value + ");");
     evaluateExpr();
 }
-
+function getSelectedText(){
+	if (sahi().isIE()) return getSel();
+	var textarea = window.document.currentForm.debug;
+	var len = textarea.value.length;
+	var start = textarea.selectionStart;
+	var end = textarea.selectionEnd;
+	var sel = textarea.value.substring(start, end);
+	return sel;
+}
+function getText(){
+    var txt = getSelectedText();
+    if (txt == "") txt = window.document.currentForm.debug.value;
+    return txt;
+}
+function demoHighlight2(){
+	getEvaluateExpressionResult("_highlight(" + getText() + ");");
+}
+function demoClick2(){
+	getEvaluateExpressionResult("_click(" + getText() + ");");
+}
 function demoSetValue() {
     var acc = window.document.currentForm.accessor.value;
     if (acc.indexOf("_select") == 0 || acc.indexOf('e("select")') != -1) {
@@ -460,11 +512,11 @@ function setDebugValue(s) {
     window.document.currentForm.debug.value = s;
 }
 function append() {
-    sahiSendToServer('/_s_/dyn/Recorder_record?cmd=' + escape(window.document.currentForm.debug.value));
+    sahiSendToServer('/_s_/dyn/Recorder_record?step=' + encodeURIComponent(window.document.currentForm.debug.value));
 }
 
 function addSahi(s) {
-    return sahiSendToServer("/_s_/dyn/ControllerUI_getSahiScript?code=" + sahi().escape(s));
+    return sahiSendToServer("/_s_/dyn/ControllerUI_getSahiScript?code=" + encodeURIComponent(s));
 }
 
 function blankIfNull(s) {
@@ -486,12 +538,21 @@ function checkScript(f) {
     return true;
 
 }
+function replay(){
+    resetStep();
+    clearLogs();
+    resetScript();
+}
+function resetScript(){
+	sahiSendToServer("/_s_/dyn/Player_resetScript");
+}
 function onScriptFormSubmit(f) {
     if (!checkScript(f)) return false;
     if (f.starturl.value == "") f.starturl.value = sahiOpener().location.href;
     var url = checkURL(f.starturl.value);
     resetStep();
     clearLogs();
+	sendPlaybackSnapshot();
     window.setTimeout("reloadPage('" + url + "')", 100);
 }
 function reloadPage(u) {
@@ -522,22 +583,22 @@ function getSel()
 function showHistory() {
     var histWin = window.open("history.htm", "sahi_history", "height=500px,width=450px");
 }
-function resizeTA2(el, minusRight, minusTop) {
+function resizeTA2(el, minusRight, minusTop, percent) {
     if (parseInt(navigator.appVersion) > 3) {
         if (navigator.appName == "Netscape") {
             winW = window.innerWidth;
             winH = window.innerHeight;
-        }
-        if (navigator.appName.indexOf("Microsoft") != -1) {
+        }else if (navigator.appName.indexOf("Microsoft") != -1) {
             winW = document.body.offsetWidth;
             winH = document.body.offsetHeight;
+            winH = winH - 20;
         }
     }
-    el.style.width = winW - minusRight;
-    el.style.height = winH - minusTop;
+    el.style.width = winW - minusRight + 'px';
+    el.style.height = (winH - minusTop)*(percent/100) + 'px';
 }
 function showStack() {
-    var curIx = window.document.playform.step.value;
+    var curIx = window.document.playform.nextStep.value;
     var win = window.open("blank.htm");
     var cmds = sahi().cmds;
     var s = "";
@@ -609,21 +670,27 @@ function getAPIs(str){
         el = sahi();
     }catch(e){}
     if (str == null || str == "") str = "_";
-    //    str = "sahi"+str;
+	if (str.indexOf("_") != 0) str = "_" + str;
 
     var d = "";
 
+	var fns = [];
     for (var i in el){
         d += i + "<br>";
-        if (i.indexOf(str) == 0 && i != str && el[i]){
+        if (i.indexOf(str) == 0 && el[i]){
             var val = i
             var fnStr = el[i].toString();
-            var args = trim(fnStr.substring(fnStr.indexOf(" "), fnStr.indexOf("{")));
+            if (fnStr.indexOf("function") == -1) continue;
+            var args = trim(fnStr.substring(fnStr.indexOf("("), fnStr.indexOf("{")));
             if (args == "") continue;
             val = i + args;
             val = stripSahi(val);
-            options[options.length] = new Option(val, val);
+            fns[fns.length] = val;
         }
+    }
+    fns = fns.sort();
+    for (var i=0; i<fns.length; i++){
+    	options[i] = new Option(fns[i], fns[i]);
     }
     //    alert(d);
     return options;
@@ -635,3 +702,4 @@ function hideAllSuggests(e){
         Suggest.hideAll();
     }
 }
+function sahiHandleException(e){}

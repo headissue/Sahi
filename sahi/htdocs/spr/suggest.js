@@ -1,11 +1,39 @@
+/**
+ * Copyright  2006  V Narayan Raman
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 Suggest.suggests = [];
-function Suggest(textEl, selectEl, menuId){
+function Suggest(textEl, selectEl, menuId, fixedLeft){
 	this.textEl = textEl;
 	this.selectEl = selectEl;
 	this.menuId = menuId;
+	this.fixedLeft = fixedLeft;
 	Suggest.suggests[menuId] = this;
+	this.textEl.onkeyup = this.wrap(this.textboxEvent);
+	this.textEl.onfocus = function() {this.inFocus = true};
+	this.textEl.onblur = function() {this.inFocus = false};
+	this.selectEl.onclick = this.wrap(this.choose);
+	this.selectEl.onkeydown = this.wrap(this.handleUpArrow);
+	this.selectEl.onkeyup = this.wrap(this.selectEvent);	
 }
-
+Suggest.prototype.wrap = function (fn) {
+	var el = this;
+	return function(){return fn.apply(el, arguments);};
+};
+Suggest.prototype.suggestOnClick = function(){
+	this.textEl.onclick = this.wrap(this.textboxEvent);
+}
 Suggest.prototype.reposition = function (x, y){
     el = this.selectEl;
     el.style.position = "absolute";
@@ -31,7 +59,7 @@ Suggest.prototype.handleUpArrow = function(e){
 }
 
 Suggest.prototype.escape = function(e){
-	this.hide();
+	this.hide(true);
 }
 
 Suggest.hideAll = function (e){
@@ -44,7 +72,7 @@ Suggest.prototype.suggest = function (e){
     var str = this.textEl.value;
 
     this.selectEl.options.length = 0;
-    
+
     var options = this.getOptions(str);
     for (var i=0; i<options.length; i++){
         this.selectEl.options[i] = options[i];
@@ -54,9 +82,15 @@ Suggest.prototype.suggest = function (e){
 
 	if (this.selectEl.options.length > 0) {
 		this.selectEl.options[0].selected = true;
-		this.reposition(this.findPosX(this.textEl) + (this.textEl.value.length * 4), this.findPosY(this.textEl)+20);    
+		var offset = this.textEl.value.length * 4;
+		var maxRight = 160;
+		if (offset > maxRight){
+			offset = maxRight;
+		}
+		var leftPos = (!this.fixedLeft) ? offset : 0;
+		this.reposition(this.findPosX(this.textEl) + leftPos, this.findPosY(this.textEl)+20);
 	} else {
-		this.hide();
+		this.hide(true);
 	}
 }
 
@@ -71,6 +105,8 @@ Suggest.prototype.textboxEvent = function (e){
 			return;
 		} else if (e.keyCode == Suggest.KEY_ENTER){
             if (this.onchange) this.onchange();
+            this.hide(true);
+            return;
         }
     }
 	this.suggest(e);
@@ -103,13 +139,14 @@ Suggest.prototype.choose = function () {
     }else{
 		this.textEl.value = this.selectEl.value;
 	}
-	this.textEl.focus();
 	this.hide();
+	this.textEl.focus();
     if (this.onchange) this.onchange();
 }
 
-Suggest.prototype.hide = function (){
-	this.selectEl.style.display = 'none';
+Suggest.prototype.hide = function (force){
+	if(force || !this.textEl.inFocus)
+		this.selectEl.style.display = 'none';
 }
 
 Suggest.prototype.findPosY = function (obj)

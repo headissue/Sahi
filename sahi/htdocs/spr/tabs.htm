@@ -29,11 +29,19 @@
     </script>
 
     <style type="text/css">
+    body{
+    	font-family:verdana;
+    	font-size: 8pt;
+    }
         .hiTab {
-            border-left: solid white 2px;
-            border-right: solid gray 2px;
-            border-top: solid white 2px;
+            border-left: solid white 1px;
+            border-right: solid gray 1px;
+            border-top: solid white 1px;
+            color: black;
             cursor: pointer;
+            font-size: 10pt;
+            padding: 3pt;
+            padding-bottom: 2px;
         }
 
         .dimTab {
@@ -41,8 +49,11 @@
             border-right: solid gray 1px;
             border-top: solid white 1px;
             border-bottom: solid white 1px;
-            font-size: 11pt;
+            color: darkgray;
             cursor: pointer;
+            font-size: 9pt;
+            padding: 2pt;
+            padding-bottom: 2px;
         }
 
         .noTab {
@@ -73,7 +84,6 @@
             margin-left: 12px;
             background-color: #D3D3D3;
             text-align:right;
-            font-size:10px;
             font-family:verdana;
             }
     </style>
@@ -82,7 +92,7 @@
 <body bgcolor="lightgrey" onload="doOnTabsLoad()" onbeforeunload="doOnTabsUnLoad()" style="margin-top:10px;">
 <span onclick="showTab('recorder')" id="recorderTab" class="dimTab">&nbsp;Record&nbsp;</span><span onclick="showTab('playback')" id="playbackTab" class="hiTab">&nbsp;Playback&nbsp;</span>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<span class="build"><a href="http://sahi.co.in" target="_blank">Sahi</a> (Build: @build@) &nbsp; <a href="https://sourceforge.net/donate/index.php?group_id=151639" target="_blank">Support</a></span>
+<span class="build"><a href="http://sahi.co.in" target="_blank">Sahi</a> (Build: @build@) &nbsp; <a href="http://sahi.co.in/w/paid-support" target="_blank">Support</a></span>
 <!--<span onclick="showTab('settings')" id="settingsTab" class="dimTab">&nbsp;Settings&nbsp;</span>-->
 </body>
 </html>

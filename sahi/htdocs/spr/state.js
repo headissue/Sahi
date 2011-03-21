@@ -15,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+__sahiDebug__("state.js: start");
 try {
     _sahi.sid = '$sessionId';
     _sahi.isWinOpen = $isWindowOpen;
@@ -32,7 +33,18 @@ try {
     _sahi.waitForLoad = _sahi.SAHI_MAX_WAIT_FOR_LOAD;
     _sahi.interval = _sahi.INTERVAL;
 
-    _sahi.setWaitCondition("$waitCondition");
-    _sahi.setWaitConditionTime($waitConditionTime);
+    _sahi.__scriptName =  "$scriptName";
+    _sahi.__scriptPath =  "$scriptPath";
+
+    _sahi.strictVisibilityCheck = $strictVisibilityCheck;
+    _sahi.STABILITY_INDEX = $stabilityIndex;
+    _sahi.controllerMode = "$controllerMode";
+    _sahi.setWaitForXHRReadyStates("$waitReadyStates");
+    _sahi.escapeUnicode = $escapeUnicode;
+    _sahi.commonDomain = "$commonDomain";
+    _sahi.ignorableIdsPattern = new RegExp('$ignorableIdsPattern');
+    _sahi.chromeExplicitCheckboxRadioToggle = $chromeExplicitCheckboxRadioToggle;
+    // Pro start
 } catch(e) {
 }
+__sahiDebug__("state.js: end");

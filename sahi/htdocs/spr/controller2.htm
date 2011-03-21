@@ -39,6 +39,12 @@ function informOpen(){
     var href = (ishttps? "https" : "http")  +"://sahi.example.com/_s_/dyn/ControllerUI_opened";
     new Image(0,0).src = href;
 }
+// Needs to move into the right place.
+function showSteps(s){
+    var d = top.main.document.currentForm.debug;
+    top.main.document.currentForm.history.value += "\n" + d.value;
+    d.value = s;	
+}
 </script>
 <script type="text/javascript" src="/_s_/spr/domainfix.js"></script>
 </head>
