@@ -1,5 +1,6 @@
 _alert
 _assertEqual
+_assertEqualArrays
 _assertNotEqual
 _assertNotNull
 _assertNull
@@ -13,8 +14,6 @@ _callServer
 _click
 _clickLinkByAccessor
 _dragDrop
-_getCellText
-_getSelectedText
 _resetSavedRandom
 _setSelected
 _setValue
@@ -24,6 +23,7 @@ _eval
 _setGlobal
 _wait
 _popup
+_domain
 _highlight
 _log
 _navigateTo
@@ -44,7 +44,6 @@ _focus
 _keyDown
 _keyUp
 _mockImage
-_execute
 _assertContainsText
 _enableKeepAlive
 _disableKeepAlive
@@ -52,8 +51,20 @@ _dragDropXY
 _deleteCookie
 _createCookie
 _clearPrintCalled
-_stopOnError
-_continueOnError
 _saveDownloadedAs
 _clearLastDownloadedFileName
 _rteWrite
+_type
+_check
+_uncheck
+_blur
+_removeFocus
+_clearLastAlert
+_clearLastPrompt
+_clearLastConfirm
+_closeWindow
+_assertNotContainsText
+_simulateMouseEvent
+_simulateMouseEventXY
+_mouseDown
+_mouseUp

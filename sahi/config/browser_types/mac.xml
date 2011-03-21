@@ -1,0 +1,22 @@
+<browserTypes>
+	<browserType> 
+		<name>firefox</name> 
+		<displayName>Firefox</displayName>
+		<icon>firefox.png</icon>
+		<path>/Applications/Firefox.app/Contents/MacOS/firefox-bin</path>  
+		<options>-profile "$userDir/browser/ff/profiles/sahi$threadNo" -no-remote</options>  
+		<processName>Firefox</processName> 
+		<capacity>5</capacity>  
+	</browserType>
+	
+	<browserType> 
+		<name>safari</name>  
+		<displayName>Safari</displayName>
+		<icon>safari.png</icon>
+		<path>/Applications/Safari.app/Contents/MacOS/Safari</path>  
+		<options> </options>  
+		<processName>Safari</processName> 
+		<useSystemProxy>true</useSystemProxy> 
+		<capacity>5</capacity>  
+	</browserType>
+</browserTypes>
