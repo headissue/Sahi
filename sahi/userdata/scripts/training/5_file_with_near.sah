@@ -1,0 +1,18 @@
+_include("5_included.sah");
+
+function addAndVerify($numJava, $numRuby, $numPython, $total){
+	login("test", "secret");
+	addBooks($numJava, $numRuby, $numPython);
+	verifyTotal($total);
+	_click(_button("Logout"));
+}
+
+addAndVerify(2, 1, 1, 1150);
+
+var $data = [
+[2, 1, 1, 1150],
+[3, 2, 1, 1650],
+[1, 1, 1, 850]
+]
+
+_dataDrive(addAndVerify, $data);

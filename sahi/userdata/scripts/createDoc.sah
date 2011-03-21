@@ -1,0 +1,40 @@
+_navigateTo("http://sahi.co.in/w/browser-action-apis");
+_writeToFile("", "d:/boopathi/sahi_debug.log", true);
+
+var $content = "";
+for(var $i = 0; $i<67; $i++){
+	var $api = _getText(_strong($i));
+	if ($api.indexOf("_") == 0) {
+//		$content += $api + "\n";
+		$content += '<function name="' + getFunctionName() + '">\n';
+		$content += '<param name ="' + getParameters() + '"/>\n';
+		var $comment = _fetch(_cell(0, _under(_parentNode(_strong($i), "TD"))).innerHTML);
+		$content += '<comment>' + $comment.replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</comment>\n';
+		$content += '</function>\n\n';
+
+
+	}
+}
+
+function getFunctionName(){
+	var $startIndex = 1;
+	var $endIndex = $api.indexOf("(");
+	var $functionName = $api.substring($startIndex, $endIndex);
+	return $functionName;
+}
+
+
+function getParameters(){
+	var $startIndex = $api.indexOf("(") + 1;
+	var $endIndex = $api.indexOf(")");
+	var $functionName = $api.substring($startIndex, $endIndex);
+	return $functionName; 
+}
+
+
+_writeToFile($content, "d:/boopathi/sahi_debug.log");
+
+
+
+
+

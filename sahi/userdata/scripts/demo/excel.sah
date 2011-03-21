@@ -1,0 +1,24 @@
+function performStep($url){
+	_navigateTo($url);
+	_wait(1000);
+}
+
+function readExcelFile($filePath, $sheetName){
+	var $db = _getDB("sun.jdbc.odbc.JdbcOdbcDriver", 
+			"jdbc:odbc:Driver={Microsoft Excel Driver (*.xls)};DBQ=" + $filePath + ";readOnly=false", 
+			"", 
+			"");
+	if (!$sheetName) $sheetName = "Sheet1";
+	return $db.select("select * from [" + $sheetName + "$]");	
+}
+
+var $rs = readExcelFile ("D:\\temp\\sample.xls");
+
+_dataDrive(performStep, $rs);
+/*
+for (var $i=0; $i < $rs.length; $i++){
+  var $row = $rs[$i];
+  var $url = $row[0];
+  performStep($url);
+}
+*/

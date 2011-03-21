@@ -1,0 +1,23 @@
+_navigateTo("http://sahi.co.in/demo/training/");
+_setValue(_textbox("user"), "test");
+_setValue(_password("password"), "secret");
+_click(_submit("Login"));
+_setValue(_textbox("q11"), "2");
+_setValue(_textbox("q[1]"), "1");
+_setValue(_textbox("q[2]"), "1");
+_click(_button("Add"));
+_assertExists(_textbox("total"));
+_assert(_isVisible(_textbox("total")));
+_assertEqual("1151", _textbox("total").value);
+
+function onScriptEnd(){
+	_click(_button("Logout"));
+}
+
+function onScriptError($s){
+	_sahi.print(">> Error: " + $s);
+}
+
+function onScriptFailure($s){
+	_sahi.print(">> Failure: " + $s);
+}

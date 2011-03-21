@@ -1,0 +1,6 @@
+_click(_link("Referer"));
+_assertEqual("http://gramam:8080/demo/", _getText(_span("referer")));
+_click(_link("Back"));
+_click(_link("Frames Test"));
+_click(_link("Referer[1]"));
+_assertEqual("http://gramam:8080/demo/", _getText(_span("referer")));

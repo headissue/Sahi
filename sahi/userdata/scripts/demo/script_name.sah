@@ -1,0 +1,7 @@
+_assertEqual("script_name.sah", _scriptName());
+$a = _scriptName();
+_assertEqual("script_name.sah", $a);
+
+$sp = _scriptPath();
+_assertEqual("D:\\sahi_v2\\scripts\\demo\\script_name.sah", $sp);
+_assertEqual("D:\\sahi_v2\\scripts\\demo\\script_name.sah", _scriptPath());

@@ -1,0 +1,3 @@
+_setFile(_file("file1"), "C:\\Documents and Settings\\nraman\\Desktop\\dots2.jpg");
+_click(_radio("is_public_0"));
+_click(_submit("UPLOAD"));

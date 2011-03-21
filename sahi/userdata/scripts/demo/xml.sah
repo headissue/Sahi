@@ -1,0 +1,26 @@
+var xmlStr = '' +
+'<people>' +
+'   <person gender="male">' +
+'      <name>Ant</name>' +
+'      <hair>Shaggy</hair>' +
+'      <eyes>Blue</eyes>' +
+'      <height measure="metric">176</height>' +
+'   </person>' +
+'   <person gender="male">' +
+'      <name>Paul</name>' +
+'      <hair>Spiky</hair>' +
+'      <eyes>Grey</eyes>' +
+'      <height measure="metric">178</height>' +
+'   </person>' +
+'</people>';
+
+var $x = new XML(xmlStr);
+_assertEqual("Ant", $x.person[0].name.toString());
+_assertEqual("Grey", $x.person[1].eyes.toString());
+
+for each (var $p in $x.person){
+    var $measure = $p.height.@measure.toString();
+    _assert($measure == "metric");
+    var $h = $p.height.toString();
+    _assert($h > 170);
+}

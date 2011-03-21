@@ -1,0 +1,6 @@
+function addBooks($numJava, $numRuby, $numPython){
+	_setValue(_textbox("q"), $numJava);
+	_setValue(_textbox("q[1]"), $numRuby);
+	_setValue(_textbox("q[2]"), $numPython);
+	_click(_button("Add"));
+}

@@ -1,0 +1,24 @@
+function getLinks(like){
+	var retVal = [];
+	var links = document.links;
+	for (var i=0; i<links.length; i++){
+		if (links[i].innerHTML.indexOf(like) != -1){
+			retVal[retVal.length] = links[i].innerHTML;
+		}
+	}
+	return retVal;
+}
+
+function f($like){
+	var $links = [];
+	_set($links, getLinks($like));
+	for(var $i=0; $i<$links.length; $i++){
+		if ($links[$i].indexOf("sahi") != -1){
+			_alert(_link($links[$i]));
+		}
+	}
+}
+
+f("sahi");
+_alert("111");
+f("dahi");

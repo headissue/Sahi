@@ -1,0 +1,30 @@
+_click(_link("Form Test"));
+var $url = "abcd";
+_setValue(_textbox("t1"), $url);
+
+_setValue(_textbox("t1"), "$url");
+_click(_link("Back"));
+
+if (_condition(_title() == "Sahi Tests")){
+	_assertEqual("Sahi Tests", _title());
+}
+
+function testWhileWithCondition(){
+	_navigateTo("/demo/");
+	var $fcnt = 0;
+	while (_condition(_getText(_link($fcnt)) != "Table Test")) {
+		$fcnt++;
+	}
+	_assertEqual(2, $fcnt);
+}
+function testForWithCondition(){
+	_navigateTo("/demo/");
+	for (var $fcnt = 0; _condition(_getText(_link($fcnt)) != "Table Test") ; $fcnt++) {
+		_log(_getText(_link($fcnt)));
+		if ($fcnt > 5) break;
+	}
+	_assertEqual(2, $fcnt);
+}
+
+//testForWithCondition();
+_runUnitTests();

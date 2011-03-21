@@ -1,0 +1,15 @@
+print("----------------");
+print("----------------");
+function f1(){
+    var $a = [];
+    _set($a, getLinks());
+    //print("########## "+$a)
+    for (var i=0; i<$a.length; i++){
+        var $linkText = $a[i];
+        _click(_link($linkText));
+        _click(_link('Back'));
+    }
+}
+
+f1();
+//f1();

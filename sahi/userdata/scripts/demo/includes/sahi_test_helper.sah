@@ -1,0 +1,26 @@
+function _assertPriceEquals($rowNo, $expectedPrice)
+{
+  _assertEqual($expectedPrice, _getText(_byId("price_"+$rowNo),"Verify Hotel Price For Row"+$rowNo));
+}
+
+function search_iwant($searchText)
+{
+  _click(_radio("criteria_search_mode_iwant"));
+  _setValue(_textbox("criteria[search_text]"), $searchText);
+  _click(_radio("sort_by_relevance"));
+  _click(top.document.getElementsByTagName('button')[0]);
+  _assertNotNull(_span("SELECT A PAGE OF RESULTS:"));
+}
+
+function search_poi_with_sort($searchText, $sort_order)
+{
+  _click(_radio("criteria_search_mode_interest"));
+  _setValue(_textbox("criteria[search_text]"), $searchText);
+
+  if($sort_order != null) {
+    _click(_radio("sort_by_" + $sort_order));
+  }
+  
+  _click(top.document.getElementsByTagName('button')[0]);
+  _assertNotNull(_span("SELECT A PAGE OF RESULTS:"));
+}

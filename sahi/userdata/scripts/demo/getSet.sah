@@ -1,0 +1,4 @@
+_click(_link("Link Test"));
+_set("linkO", _link("linkByHtml"));
+_click(_get("linkO"));
+_assertContainsText("Link By HTML Test Back", document.body);

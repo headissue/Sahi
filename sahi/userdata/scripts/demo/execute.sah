@@ -1,0 +1,30 @@
+function exists(dir){
+	var f = new java.io.File(dir);
+	return f.exists();
+}
+function createDeleteDir($dir){
+	_execute('cmd /C mkdir "' + $dir + '"') //default sync execution
+	var i = 0;
+	var $exists = false;
+	while (i < 10) {
+		 $exists = exists($dir);
+		 if ($exists) break;
+		 _wait(1000);
+    }
+	_assertTrue($exists, $dir + " does not exist");
+	var $f = new java.io.File($dir);
+	_assertTrue($f.isDirectory(), $dir + " is not a directory");
+	_execute('cmd /C rmdir "' + $dir + '"', true)//async execution
+	var i = 0;
+	var $exists = true;
+	while (i < 10) {
+		 $exists = exists($dir);
+		 if (!$exists) break;
+		 _wait(1000);
+    }
+	$exists = exists($dir)
+	_assertFalse($exists, $dir + " exists");
+}
+createDeleteDir("test_execute");
+createDeleteDir("test execute");
+

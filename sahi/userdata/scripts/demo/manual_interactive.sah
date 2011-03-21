@@ -1,0 +1,27 @@
+function testConfirmReturnsValue(){
+	var $val = _confirm("Are you sure?");
+	_alert($val);
+}
+
+function testConfirmCanBeUsedAsCondition(){
+	if (_confirm("Are you sure?")) {
+		_alert("OK");
+	} else {
+		_alert("Cancel")
+	}
+}
+
+function testPromptReturnsValue(){
+	var $input = _prompt("Enter your name");
+	_alert("Your name is " + $input);
+}
+
+function testPromptCanBeUsedAsCondition(){
+	if (_prompt("Enter red or blue") == "red") {
+		_alert("Nice: you entered red");
+	} else {
+		_alert("You did not enter red!")
+	}
+}
+
+_runUnitTests(["testPromptCanBeUsedAsCondition"]);

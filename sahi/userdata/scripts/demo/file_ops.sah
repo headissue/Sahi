@@ -1,0 +1,7 @@
+function writeToFile($message, $filePath){
+  var out = new java.io.FileWriter($filePath, true);
+  out.write($message + "\n");
+  out.close();
+}
+
+writeToFile("my message", "d:/temp/sahi_debug.log");

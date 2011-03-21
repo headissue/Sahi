@@ -1,0 +1,11 @@
+_setValue(_textbox("user"), "test");
+_setValue(_password("password"), "secret");
+_click(_submit("Login"));
+_setValue(_textbox("q"), "2");
+_setValue(_textbox("q[1]"), "1");
+_setValue(_textbox("q[2]"), "1");
+_click(_button("Add"));
+_click(_cell("Rs.200[1]"));
+_assertExists(_textbox("total"));
+_assert(_isVisible(_textbox("total")));
+_assertEqual("1150", _textbox("total").value);

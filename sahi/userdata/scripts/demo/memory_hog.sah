@@ -1,0 +1,14 @@
+function a(){
+	var $memoryHog = new Array();
+	
+	var $memA = new Array();
+	for (var j=0; j<1000000; j++){
+		$memA[j] = "sss";
+	}
+	var $memoryHogString = $memA.join("");
+	for (var i=0; i<4; i++){
+		$memoryHog[i] = $memoryHogString;
+	}
+	var $mem2 = $memoryHog.join("");
+}
+//a();

@@ -1,0 +1,2 @@
+_navigateTo("http://gramam/demo/safariClickBug.htm");
+_click(_link("Compose"));

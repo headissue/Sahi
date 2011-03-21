@@ -1,0 +1,10 @@
+function myRecoveryFn(){
+	var $s = "OH.. Error.. Running the recovery script";
+	_alert($s);
+}
+var $xx = 10;
+_setRecovery(myRecoveryFn);
+_click(_link("Link Test"));
+//_removeRecovery();
+_click(_link("Links Test"));
+_alert("done");

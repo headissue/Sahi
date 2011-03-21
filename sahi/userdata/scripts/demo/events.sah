@@ -1,0 +1,38 @@
+
+function setUp(){
+	_navigateTo("/demo/eventSequence.htm");
+	_click(_button("Add event listeners"));
+	_click(_button("Clear"));
+}
+
+function testBlurChangeSequence(){
+	_click(_checkbox(0, _in(_label("textbox value"))));
+	_setValue(_textbox("t1"), "ab");
+	_click(_button("Button"));
+	_click(document.body);
+	if (_isFF()){
+		_assertEqual("\nt1:focus; $('t1').value=\nt1:keydown; $('t1').value=\nt1:keypress; $('t1').value=\nt1:keyup; $('t1').value=a\nt1:keydown; $('t1').value=a\nt1:keypress; $('t1').value=a\nt1:keyup; $('t1').value=ab\nb1:mousedown; $('t1').value=ab\nt1:change; $('t1').value=ab\nt1:blur; $('t1').value=ab\nb1:focus; $('t1').value=ab\nb1:mouseup; $('t1').value=ab\nb1:click; $('t1').value=ab\nb1:blur; $('t1').value=ab", _textarea("logs").value);
+	} else { 
+		_assertEqual("\nt1:focus; $('t1').value=\nt1:keydown; $('t1').value=\nt1:keypress; $('t1').value=\nt1:keyup; $('t1').value=a\nt1:keydown; $('t1').value=a\nt1:keypress; $('t1').value=a\nt1:keyup; $('t1').value=ab\nb1:mousedown; $('t1').value=ab\nt1:change; $('t1').value=ab\nt1:blur; $('t1').value=ab\nb1:focus; $('t1').value=ab\nb1:mouseup; $('t1').value=ab\nb1:click; $('t1').value=ab\nb1:blur; $('t1').value=ab", _textarea("logs").value);		
+	}
+	
+}
+
+function testCheckboxEvents(){
+	_assert(!_checkbox("cb1").checked);
+	_click(_checkbox("cb1"));
+	_assert(_checkbox("cb1").checked);
+	_click(document.body);
+	_assertEqual("\ncb1:mousedown\ncb1:focus\ncb1:mouseup\ncb1:click\ncb1:change\ncb1:blur", _textarea("logs").value);	
+}
+
+function testRadioEvents(){
+	_assert(!_radio("r11").checked);
+	_click(_radio("r11"));
+	_assert(_radio("r11").checked);
+	_click(document.body);
+	_assertEqual("\nr11:mousedown\nr11:focus\nr11:mouseup\nr11:click\nr11:change\nr11:blur", _textarea("logs").value);
+}
+
+_runUnitTests();
+

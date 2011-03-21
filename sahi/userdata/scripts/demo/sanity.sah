@@ -1,0 +1,40 @@
+_log("navigator.userAgent="+navigator.userAgent);
+_log("navigator.appName="+navigator.appName);
+_log("window.XMLHttpRequest="+window.XMLHttpRequest);
+_log("_sahi.isIE()=" + _sahi.isIE());
+_log("_sahi.isFF3()=" + _sahi.isFF3());
+_log("_sahi.isFF()=" + _sahi.isFF());
+_log("_sahi.isChrome()=" + _sahi.isChrome());
+_log("_sahi.isSafari()=" + _sahi.isSafari());
+_log("_sahi.isSafariLike()=" + _sahi.isSafariLike());
+
+
+function testTextbox(){
+	_assertEqual("", _textbox("tx").value);
+	_setValue(_textbox("tx"), "abcd");
+	_assertEqual("abcd", _textbox("tx").value);
+}
+
+function testTextarea(){
+	_assertEqual("", _textarea("txa").value);
+	_setValue(_textarea("txa"), "abcd");
+	_assertEqual("abcd", _textarea("txa").value);
+}
+
+function testCheckbox(){
+	_assertExists(_checkbox("cb"));
+	_assert(_isVisible(_checkbox("cb")));
+	_assertNotTrue(_checkbox("cb").checked);
+	
+	_click(_checkbox("cb"));
+	_assert(_checkbox("cb").checked);
+	
+	_click(_checkbox("cb"));
+	_assertNotTrue(_checkbox("cb").checked);
+}
+
+function setUp(){
+	_call(document.f1.reset());
+}
+
+_runUnitTests();

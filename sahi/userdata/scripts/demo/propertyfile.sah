@@ -1,0 +1,42 @@
+function fSetProperty($propFile,$prop,$value) {
+          var $props = loadPropertyFile($propFile);
+          $props.setProperty($prop, $value);
+          var $out = new java.io.FileOutputStream($propFile);
+          $props.store($out, null);
+          // delete first line
+          var $contents = _readFile($propFile);
+          $contents = $contents.substring($contents.indexOf("\n")+1)
+          _writeFile($contents, $propFile, true);
+          return "E_OK";
+}
+
+function loadPropertyFile($propFile){
+    var $props = new java.util.Properties();
+    var $in = new java.io.FileInputStream($propFile)
+    $props.load($in);
+    $in.close();
+    return $props;
+}
+
+function fGetProperty($propFile,$prop,$value) {
+	var $props =loadPropertyFile($propFile)
+	var $val = ""+ $props.getProperty($prop);
+	return $val;
+}
+ 
+var $propFile = new java.io.File(_scriptPath()).getParent() + "\\test.properties";
+var $prop="$Testing";
+var $value="testing.csv";
+ 
+var $iRetVal = fGetProperty($propFile,$prop);
+_debug($iRetVal);
+_assertEqual("12345.csv",  $iRetVal);
+
+var $iRetVal = fSetProperty($propFile,$prop, $value);
+_debug($iRetVal);
+_assertEqual("E_OK",  $iRetVal);
+ 
+var $iRetVal = fGetProperty($propFile, $prop);
+_debug($iRetVal);
+_assertEqual("testing.csv",  $iRetVal);
+fSetProperty($propFile, $prop, "12345.csv");
