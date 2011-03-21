@@ -11,11 +11,34 @@ import java.io.BufferedWriter;
 import java.util.List;
 
 /**
+ * Sahi - Web Automation and Test Tool
+ * 
+ * Copyright  2006  V Narayan Raman
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+/**
  * User: dlewis
  * Date: Dec 8, 2006
  * Time: 3:35:44 PM
  */
 public class SuiteLoaderTest extends TestCase {
+	private static final long serialVersionUID = 4009823211721628781L;
+
+	static {
+		Configuration.init();
+	}
+	
     private File dir = new File(Configuration.getScriptRoots()[0] + System.getProperty("file.separator") + "junit");
 
     protected void setUp() throws Exception {
@@ -32,15 +55,15 @@ public class SuiteLoaderTest extends TestCase {
         subDir.mkdirs();
         new File(subDir, "script1.sah").createNewFile();
 
-        List listTest = new SuiteLoader(dir.getAbsolutePath(),"testBase").getListTest();
+        List<TestLauncher> listTest = new SuiteLoader(Utils.getAbsolutePath(dir),"testBase").getListTest();
         assertEquals(3,listTest.size());
-        TestLauncher test = (TestLauncher)listTest.get(0);
+        TestLauncher test = listTest.get(0);
         assertEquals("testBase",test.getStartURL());
     }
 
     public void testProcessSuiteFile() throws IOException {
         File suiteFile = createSuiteFile();
-        List listTest = new SuiteLoader(suiteFile.getAbsolutePath(),"http://testBase").getListTest();
+        List<TestLauncher> listTest = new SuiteLoader(Utils.getAbsolutePath(suiteFile),"http://testBase").getListTest();
         assertEquals(3,listTest.size());
         TestLauncher test = (TestLauncher)listTest.get(0);
         assertEquals("http://testBase",test.getStartURL());

@@ -5,6 +5,7 @@
  */
 package net.sf.sahi.test;
 
+import net.sf.sahi.config.Configuration;
 import net.sf.sahi.util.Utils;
 
 import java.io.File;
@@ -15,11 +16,30 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
+/**
+ * Sahi - Web Automation and Test Tool
+ * 
+ * Copyright  2006  V Narayan Raman
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+
 public class SuiteLoader {
 
     private String suitePath;
     private String base;
-    private List listTest = new ArrayList();
+    private List<TestLauncher> listTest = new ArrayList<TestLauncher>();
 
     public SuiteLoader(final String suitePath, final String base) {
         this.suitePath = suitePath;
@@ -28,11 +48,15 @@ public class SuiteLoader {
     }
 
     private void loadScripts() {
-        File suite = new File(suitePath);
+        File suite = new File(Configuration.getAbsoluteUserPath(suitePath));
         if (suite.isDirectory()) {
             processSuiteDir(suite);
         } else {
-            processSuiteFile();
+        	if (Utils.isSahiTestFile(suitePath)){
+        		addTest(suitePath, base);
+        	}else{
+        		processSuiteFile();
+        	}
         }
     }
 
@@ -43,16 +67,17 @@ public class SuiteLoader {
             if (file.isDirectory()) {
                 processSuiteDir(file);
             } else {
-                String testName = file.getAbsolutePath();
-                if (testName.endsWith(".sah") || testName.endsWith(".sahi")) {
+                String testName = Utils.getAbsolutePath(file);
+                if (Utils.isSahiTestFile(testName)) {
                     addTest(testName, base);
                 }
             }
         }
     }
 
+
     private void processSuiteFile() {
-        String contents = new String(Utils.readFile(suitePath));
+        String contents = new String(Utils.readFile(Configuration.getAbsoluteUserPath(suitePath)));
         StringTokenizer tokens = new StringTokenizer(contents, "\n");
         while (tokens.hasMoreTokens()) {
             String line = tokens.nextToken();
@@ -84,15 +109,15 @@ public class SuiteLoader {
         if (!(startURL.startsWith("http://") || startURL.startsWith("https://"))) {
             startURL = new URL(new URL(base), startURL).toString();
         }
-        addTest(Utils.concatPaths(suitePath, testName), startURL);
+        addTest(Utils.concatPaths(suitePath, testName, true), startURL);
     }
 
-    private void addTest(final String testName, final String startURL) {
+    public void addTest(final String testName, final String startURL) {
         TestLauncher sahiTest = new TestLauncher(testName, startURL);
         listTest.add(sahiTest);
     }
 
-    public List getListTest() {
+    public List<TestLauncher> getListTest() {
         return listTest;
     }
 }

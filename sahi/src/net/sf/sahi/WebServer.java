@@ -30,6 +30,9 @@ import java.net.Socket;
  * Time: 6:52:31 PM
  */
 public class WebServer {
+	static {
+		Configuration.init("..", "../userdata/");
+	}
     private int port = 10000;
 
     public WebServer(int port) {

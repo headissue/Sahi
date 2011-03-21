@@ -1,6 +1,6 @@
 /**
  * Sahi - Web Automation and Test Tool
- * 
+ *
  * Copyright  2006  V Narayan Raman
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -52,7 +52,7 @@ public class ScriptUtil {
     }
 
     private static String[] getScriptFiles() {
-        List allFiles = new ArrayList();
+        List<String> allFiles = new ArrayList<String>();
         Configuration.createScriptsDirIfNeeded();
         String[] scriptRoots = Configuration.getScriptRoots();
         for (int i = 0; i < scriptRoots.length; i++) {
@@ -60,10 +60,17 @@ public class ScriptUtil {
             File file = new File(scriptRoot);
             getFilesRecursively(file, allFiles);
         }
-        return (String[]) allFiles.toArray(new String[0]);
+        return allFiles.toArray(new String[0]);
     }
-
-    private static List getFilesRecursively(final File dir, final List allFiles) {
+    
+	public static String[] getScriptFiles(String dir) {
+		List<String> allFiles = new ArrayList<String>();
+		File file = new File(dir);
+		getFilesRecursively(file, allFiles);
+		return allFiles.toArray(new String[0]);
+	}
+	
+    private static List<String> getFilesRecursively(final File dir, final List<String> allFiles) {
         File[] files = dir.listFiles();
         for (int i = 0; i < files.length; i++) {
             File file = files[i];
@@ -71,7 +78,7 @@ public class ScriptUtil {
                 getFilesRecursively(file, allFiles);
             } else {
                 if (isAddable(file)) {
-                    allFiles.add(file.getAbsolutePath());
+                    allFiles.add(Utils.getAbsolutePath(file));
                 }
             }
         }
@@ -79,7 +86,7 @@ public class ScriptUtil {
     }
 
     private static boolean isAddable(final File file) {
-        String absolutePath = file.getAbsolutePath();
+        String absolutePath = Utils.getAbsolutePath(file);
         String[] extensions = Configuration.getScriptExtensions();
         for (int i = 0; i < extensions.length; i++) {
             if (absolutePath.endsWith(extensions[i])) {

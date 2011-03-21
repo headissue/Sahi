@@ -18,26 +18,30 @@
 
 package net.sf.sahi;
 
-import net.sf.sahi.command.MockResponder;
-import net.sf.sahi.config.Configuration;
-import net.sf.sahi.request.HttpRequest;
-import net.sf.sahi.response.HttpFileResponse;
-import net.sf.sahi.response.HttpResponse;
-import net.sf.sahi.response.NoContentResponse;
-import net.sf.sahi.response.SimpleHttpResponse;
-import net.sf.sahi.session.Session;
-import net.sf.sahi.ssl.SSLHelper;
-
-import javax.net.ssl.SSLSocket;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.net.UnknownHostException;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Properties;
 import java.util.logging.Logger;
+
+import javax.net.ssl.SSLHandshakeException;
+import javax.net.ssl.SSLSocket;
+
+import net.sf.sahi.command.MockResponder;
+import net.sf.sahi.config.Configuration;
+import net.sf.sahi.request.HttpRequest;
+import net.sf.sahi.response.HttpFileResponse;
+import net.sf.sahi.response.HttpResponse;
+import net.sf.sahi.response.SimpleHttpResponse;
+import net.sf.sahi.ssl.SSLHelper;
+import net.sf.sahi.util.ThreadLocalMap;
+import net.sf.sahi.util.TrafficLogger;
+import net.sf.sahi.util.Utils;
 
 /**
  * User: nraman Date: May 13, 2005 Time: 7:06:11 PM To
@@ -50,6 +54,17 @@ public class ProxyProcessor implements Runnable {
     private static Logger logger = Configuration.getLogger("net.sf.sahi.ProxyProcessor");
     public RemoteRequestProcessor remoteRequestProcessor = new RemoteRequestProcessor();
 
+	private static HashMap<String, String> hostAddresses = new HashMap<String, String>(100);
+
+	private static String localhost;
+
+	static {
+		try {
+			localhost = InetAddress.getLocalHost().getHostAddress();
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		}
+	}
 
     public ProxyProcessor(Socket client) {
         this.client = client;
@@ -57,13 +72,13 @@ public class ProxyProcessor implements Runnable {
     }
 
     public void run() {
+    	if (client.isClosed()) return;
+    	ThreadLocalMap.clearAll();
+    	HttpRequest requestFromBrowser = null;
         try {
-            HttpRequest requestFromBrowser = getRequestFromBrowser();
-            logger.fine("---RAW INPUT HEADERS START---");
-            logger.fine(new String(requestFromBrowser.rawHeaders()));
-            logger.fine("---RAW INPUT HEADERS END---");
+            requestFromBrowser = getRequestFromBrowser();
             String uri = requestFromBrowser.uri();
-//            System.out.println(uri);
+            logger.finest(uri);
             if (uri != null) {
                 int _s_ = uri.indexOf("/_s_/");
                 int q = uri.indexOf("?");
@@ -84,10 +99,13 @@ public class ProxyProcessor implements Runnable {
             if (isKeepAlive() && !client.isClosed()) {
                 new Thread(new ProxyProcessor(client)).start();
             }
+        } catch (SSLHandshakeException ssle) {
+        	logger.fine(ssle.getMessage());
         } catch (Exception e) {
-            //e.printStackTrace();
+        	//e.printStackTrace();
             logger.fine(e.getMessage());
             try {
+            	// should close only in case of exception. Do not move this to finally. Will cause sockets to not be reused.
                 client.close();
             } catch (IOException e2) {
                 logger.warning(e2.getMessage());
@@ -97,15 +115,27 @@ public class ProxyProcessor implements Runnable {
 
     private boolean isHostTheProxy(final String host) {
         try {
-            return InetAddress.getByName(host).getHostAddress().equals(
-                    InetAddress.getLocalHost().getHostAddress())
-                    || InetAddress.getByName(host).getHostAddress().equals("127.0.0.1");
+        	if (host.equals(Configuration.getCommonDomain())) return true;
+            String hostAddress = getHostAddress(host);
+			return hostAddress.equals(localhost) || hostAddress.equals("127.0.0.1");
         } catch (Exception e) {
             return false;
         }
     }
 
-    private void processAsProxy(HttpRequest requestFromBrowser) throws IOException {
+	private String getHostAddress(final String host) throws UnknownHostException {
+		if (!hostAddresses.containsKey(host)){
+			hostAddresses.put(host, InetAddress.getByName(host).getHostAddress());
+		}
+		return hostAddresses.get(host);
+	}
+
+    private void processAsProxy(HttpRequest requestFromBrowser) throws Exception {
+    	final String fileName = requestFromBrowser.fileName();
+    	Date time = new Date();
+    	TrafficLogger.createLoggerForThread(fileName, "unmodified", Configuration.isUnmodifiedTrafficLoggingOn(), time);
+        TrafficLogger.createLoggerForThread(fileName, "modified", Configuration.isModifiedTrafficLoggingOn(), time);
+
         if (requestFromBrowser.isConnect()) {
             processConnect(requestFromBrowser);
         } else {
@@ -114,16 +144,7 @@ public class ProxyProcessor implements Runnable {
             }
             HttpResponse responseFromHost = null;
             try {
-                Session session = requestFromBrowser.session();
                 responseFromHost = remoteRequestProcessor.processHttp(requestFromBrowser);
-                if (responseFromHost.status().indexOf("200") != -1
-                       && (isDownloadContentType(responseFromHost.contentType())
-                       || isDownloadURL(requestFromBrowser.url()))) {
-                    String fileName = requestFromBrowser.fileName();
-                    save(responseFromHost, fileName);
-                    session.setVariable("download_lastFile", fileName);
-                    responseFromHost = new NoContentResponse();
-                }
             } catch (Exception e) {
                 e.printStackTrace();
                 responseFromHost = new SimpleHttpResponse("");
@@ -131,55 +152,12 @@ public class ProxyProcessor implements Runnable {
             if (responseFromHost == null) {
                 responseFromHost = new SimpleHttpResponse("");
             }
+//          System.out.println("Fetching >> :" + new String(requestFromBrowser.url()));
             sendResponseToBrowser(responseFromHost);
         }
     }
 
-    public void save(HttpResponse response, final String fileName) {
-        System.out.println("Downloading " + fileName + " to temp directory: " + Configuration.tempDownloadDir());
-        byte[] data = response.data();
-        try {
-            File file = new File(Configuration.tempDownloadDir(), fileName);
-            if (file.exists()) {
-                file.delete();
-            }
-            file.createNewFile();
-            FileOutputStream out;
-            out = new FileOutputStream(file, true);
-            out.write(data);
-            out.close();
-        } catch (IOException e) {
-            System.out.println("Could not write to file");
-        }
-    }
-
-
-    private boolean isDownloadURL(final String url) {
-        String[] list = Configuration.getDownloadURLList();
-        for (int i = 0; i < list.length; i++) {
-            String pattern = list[i];
-            if (url.matches(pattern.trim())) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private boolean isDownloadContentType(String contentType) {
-        if (contentType == null || contentType.equals("")) {
-            return false;
-        }
-        contentType = contentType.toLowerCase();
-        String[] downloadables = Configuration.getDownloadContentTypes();
-        for (int i = 0; i < downloadables.length; i++) {
-            if (contentType.indexOf(downloadables[i]) != -1) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private boolean handleDifferently(final HttpRequest request) throws IOException {
+    private boolean handleDifferently(final HttpRequest request) throws Exception {
         final MockResponder mockResponder = request.session().mockResponder();
         HttpResponse response = mockResponder.getResponse(request);
         if (response == null) {
@@ -203,8 +181,19 @@ public class ProxyProcessor implements Runnable {
 
 
     private void processLocally(String uri, final HttpRequest requestFromBrowser) throws IOException {
-        HttpResponse httpResponse = new LocalRequestProcessor().getLocalResponse(uri,
-                requestFromBrowser);
+    	HttpResponse httpResponse;
+    	try {
+    		httpResponse = new LocalRequestProcessor().getLocalResponse(uri, requestFromBrowser);
+    	} catch (Exception e) {
+    		Properties props = new Properties();
+    		props.put("responseCode", "500");
+    		props.put("time", "" + (new Date()));
+    		props.put("message", Utils.getStackTraceString(e, true));
+    		
+    		httpResponse = new HttpFileResponse(
+    				Configuration.getHtdocsRoot() + "spr/5xx.htm",
+    				props, false, true);
+    	}
         sendResponseToBrowser(httpResponse);
     }
 
@@ -215,22 +204,14 @@ public class ProxyProcessor implements Runnable {
     }
 
     protected void sendResponseToBrowser(final HttpResponse responseFromHost) throws IOException {
-        OutputStream outputStreamToBrowser = new BufferedOutputStream(client.getOutputStream());
-        responseFromHost.proxyKeepAlive(isKeepAlive());
-        logger.fine("---------START----------");
-        logger.fine(new String(responseFromHost.rawHeaders()));
-        logger.fine("---------END----------");
-        outputStreamToBrowser.write(responseFromHost.rawHeaders());
-        outputStreamToBrowser.flush();
-        final byte[] data = responseFromHost.data();
-        if (data != null) {
-            outputStreamToBrowser.write(data);
-        }
-        outputStreamToBrowser.flush();
+    	OutputStream outputStreamToBrowser = client.getOutputStream();
+		responseFromHost.sendHeaders(outputStreamToBrowser, isKeepAlive());
+		responseFromHost.sendBody(outputStreamToBrowser);
         if (!isKeepAlive()) {
             outputStreamToBrowser.close();
             client.close();
         }
+        responseFromHost.cleanUp();
     }
 
     private boolean isKeepAlive() {

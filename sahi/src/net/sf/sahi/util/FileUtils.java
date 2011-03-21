@@ -1,6 +1,6 @@
 /**
  * Sahi - Web Automation and Test Tool
- * 
+ *
  * Copyright  2006  V Narayan Raman
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -33,7 +33,7 @@ public class FileUtils {
         dest.mkdirs();
         File[] files = src.listFiles();
 
-        int j = files.length;   // cache the length so it doesn't need to be looked up over and over in the loop 
+        int j = files.length;   // cache the length so it doesn't need to be looked up over and over in the loop
         for (int i = 0; i < j; i++) {
             File file = files[i];
             if (file.isDirectory()) {
@@ -48,6 +48,13 @@ public class FileUtils {
         copyFile(new File(src), new File(dest));
     }
 
+	public static boolean renameFile(String oldPath, String newPath) {
+		File oldFile = new File(oldPath);
+		File newFile = new File(newPath);
+		if (newFile.exists()) newFile.delete();
+		return oldFile.renameTo(newFile);
+	}    
+    
     public static void copyFile(final File src, final File dest) throws IOException {
         dest.getParentFile().mkdirs();
         dest.createNewFile();
@@ -58,4 +65,9 @@ public class FileUtils {
         sourceChannel.close();
         targetChannel.close();
     }
+
+    public static String cleanFileName(String fileName) {
+    	if (fileName == null) return fileName;
+		return fileName.replaceAll("[\\\\/:*?\"<>|]", "");
+	}
 }

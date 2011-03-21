@@ -23,114 +23,133 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Iterator;
 
 import net.sf.sahi.request.HttpRequest;
 import net.sf.sahi.response.HttpResponse;
 import net.sf.sahi.response.SimpleHttpResponse;
-import net.sf.sahi.util.Utils;
 import net.sf.sahi.util.ClassLoadHelper;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.Set;
+import net.sf.sahi.util.Utils;
 
 public class DBClient {
 
     public String driverName;
+
     public String jdbcurl;
+
     public String username;
+
     public String password;
+
     public String sql;
 
-    public void execute(final HttpRequest request) {
+    public void execute(final String driverName, final String jdbcurl,
+            final String username, final String password, final String sql) {
+        Statement stmt = null;
+        Connection connection = null;
         try {
-            init(request);
             ClassLoadHelper.getClass(driverName);
-            Connection connection = DriverManager.getConnection(jdbcurl, username, password);
-            Statement stmt = connection.createStatement();
-            try {
-                stmt.executeUpdate(sql);
-            } catch (Exception e) {
-                stmt.close();
-            }
+            connection = DriverManager.getConnection(jdbcurl, username,
+                    password);
+            stmt = connection.createStatement();
+            stmt.executeUpdate(sql);
+            stmt.close();
         } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+            if (connection != null) {
+                try {
+                    stmt.close();
+                    connection.close();
+                } catch (Exception e) {
+                }
+            }
+        }
+    }
+
+    public void execute(final HttpRequest request) {
+        init(request);
+        execute(driverName, jdbcurl, username, password, sql);
+    }
+
+    public String select(final String driverName, final String jdbcurl,
+            final String username, final String password, final String sql) {
+        try {
+            return getJSObject(getResult(driverName, jdbcurl, username, password, sql));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "exception: " + Utils.getStackTraceString(e);
         }
     }
 
     public HttpResponse select(final HttpRequest request) {
-        try {
-            init(request);
-            String s = getJSObject(getResult(driverName, jdbcurl, username, password));
-//            System.out.println(s.replaceAll("\\},\\{", "},\n{"));
-            return new SimpleHttpResponse(s);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
+        init(request);
+        String s = select(driverName, jdbcurl, username, password, sql);
+        return new SimpleHttpResponse(s);
     }
 
-    ArrayList getResult(final String driverName, final String jdbcurl, final String username, final String password) throws ClassNotFoundException, SQLException {
+    ArrayList<ArrayList<String>> getResult(final String driverName, final String jdbcurl,
+            final String username, final String password, final String sql)
+            throws ClassNotFoundException, SQLException {
         ClassLoadHelper.getClass(driverName);
-        Connection connection = DriverManager.getConnection(jdbcurl, username, password);
+        Connection connection = DriverManager.getConnection(jdbcurl, username,
+                password);
         Statement stmt = connection.createStatement();
-        ArrayList list = new ArrayList();
+        ArrayList<ArrayList<String>> list = new ArrayList<ArrayList<String>>();
         try {
             ResultSet rs = stmt.executeQuery(sql);
-
-            ArrayList columnNames = new ArrayList();
+            ArrayList<String> columnNames = new ArrayList<String>();
             ResultSetMetaData rsmd = rs.getMetaData();
             int numColumns = rsmd.getColumnCount();
             for (int i = 1; i < numColumns + 1; i++) {
                 String columnName = rsmd.getColumnName(i);
                 columnNames.add(columnName);
             }
-            list = new ArrayList();
+            list.add(columnNames);
             while (rs.next()) {
-                HashMap map = new LinkedHashMap();
-                for (Iterator iterator = columnNames.iterator(); iterator.hasNext();) {
-                    String columnName = (String) iterator.next();
+            	ArrayList<String> record = new ArrayList<String>();
+                for (Iterator<String> iterator = columnNames.iterator(); iterator.hasNext();) {
+                    String columnName = iterator.next();
                     String value = rs.getString(columnName);
-                    map.put(columnName, value);
+                    record.add(value);
                 }
-                list.add(map);
+                list.add(record);
             }
-        } catch (SQLException e) {
-            stmt.close();
+        } finally {
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (Exception e) {
+                }
+            }
         }
         return list;
     }
 
-    String getJSObject(final ArrayList list) {
+    String getJSObject(final ArrayList<ArrayList<String>> list) {
         StringBuffer sb = new StringBuffer();
-        sb.append("var a=[");
+        sb.append("{result: [[");
         boolean isFirst1 = true;
-        for (Iterator iterator = list.iterator(); iterator.hasNext();) {
-            if (isFirst1) {
-                isFirst1 = false;
-            } else {
-                sb.append(",");
-            }
-            sb.append("{");
-            boolean isFirst2 = true;
-            HashMap map = (HashMap) iterator.next();
-            Set keys = map.keySet();
-            for (Iterator iterator1 = keys.iterator(); iterator1.hasNext();) {
-                if (isFirst2) {
-                    isFirst2 = false;
-                } else {
+        for (Iterator<ArrayList<String>> iterator = list.iterator(); iterator.hasNext();) {
+        	if (isFirst1)
+        		isFirst1 = false;
+        	else
+        		sb.append(",[");
+        	ArrayList<String> record = iterator.next();  
+            for (int i = 0; i < record.size(); i++ ) {
+                if(i!=0){
                     sb.append(",");
                 }
-                String columnName = (String) iterator1.next();
-                String value = (String) map.get(columnName);
-                sb.append(columnName + ":\"" + Utils.escapeDoubleQuotesAndBackSlashes(value) + "\"");
+                String value = record.get(i);
+                sb.append("\"" + Utils.makeString(value) + "\"");
+                //sb.append("\"" + Utils.escapeDoubleQuotesAndBackSlashes(value) + "\"");
             }
-            sb.append("}");
-        }
-        sb.append("];a");
+            sb.append("]");
+        }        
+        sb.append("]}");
         return sb.toString();
+        
     }
 
     private void init(final HttpRequest request) {

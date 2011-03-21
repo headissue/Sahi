@@ -1,6 +1,6 @@
 /**
  * Sahi - Web Automation and Test Tool
- * 
+ *
  * Copyright  2006  V Narayan Raman
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,22 +18,18 @@
 
 package net.sf.sahi;
 
-import net.sf.sahi.util.Utils;
-
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.StringTokenizer;
+
+import net.sf.sahi.util.Utils;
 
 /**
  * User: nraman Date: May 13, 2005 Time: 7:24:06 PM
  */
 public abstract class StreamHandler {
-    Map headers = new LinkedHashMap();
+	HttpHeaders headers = new HttpHeaders();
     private byte[] rawHeaders;
     private int contentLength = -1;
     private byte[] data;
@@ -41,27 +37,32 @@ public abstract class StreamHandler {
 
     protected void populateData(InputStream in) throws IOException {
         data = Utils.getBytes(in, contentLength());
+        setContentLength(data.length);
+        //System.out.println("## Contentlength = "+ contentLength);
     }
 
     protected void populateHeaders(InputStream in,
                                    boolean handleFirstLineSpecially) throws IOException {
         setRawHeaders(in);
         setHeaders(new String(rawHeaders), handleFirstLineSpecially);
-        setContentLength();
+        setContentLengthFromHeader();
     }
 
-    private void setContentLength(int length) {
-        setHeader("Content-Length", "" + length);
+    protected void setContentLength(int length) {
+		removeHeader("Content-Length");
+    	if (length != -1){
+    		setHeader("Content-Length", "" + length);
+    	}
         contentLength = length;
     }
 
-    private void setContentLength() {
+    private void setContentLengthFromHeader() {
         String contentLenStr = getLastSetValueOfHeader("Content-Length");
         if (contentLenStr != null)
             contentLength = Integer.parseInt(contentLenStr);
     }
 
-    public final byte[] data() {
+    public byte[] data() {
         return data;
     }
 
@@ -76,8 +77,12 @@ public abstract class StreamHandler {
         return contentLength;
     }
 
-    public final Map headers() {
+    public final HttpHeaders headers() {
         return headers;
+    }
+    
+    public boolean hasHeader(String key){
+    	return headers.hasHeader(key);
     }
 
     public final byte[] rawHeaders() {
@@ -93,7 +98,7 @@ public abstract class StreamHandler {
     }
 
     private void setRawHeaders(InputStream in) throws IOException {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         byte prev = ' ';
         byte c;
         while ((c = (byte) in.read()) != -1) {
@@ -137,50 +142,49 @@ public abstract class StreamHandler {
     }
 
     protected byte[] getRebuiltHeaderBytes() {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         if (firstLine() != null) {
             sb.append(firstLine());
             sb.append("\r\n");
         }
-        Iterator keys = headers.keySet().iterator();
-        while (keys.hasNext()) {
-            String key = (String) keys.next();
-            List values = (List) headers.get(key);
-            int size = values.size();
-            for (int i = 0; i < size; i++) {
-                String value = (String) values.get(i);
-                sb.append(key).append(": ").append(value).append("\r\n");
-
-            }
-        }
+        sb.append(headers.toString());
         sb.append("\r\n");
         return sb.toString().getBytes();
     }
 
     public void setHeader(final String key, final String value) {
-        List entry = new ArrayList();
-        entry.add(value);
-        headers.put(key, entry);
+        headers.setHeader(key, value);
     }
+
+//    public void setHeaders(Map headers) {
+//        this.headers = new HashMap(headers);
+//    }
 
     public void addHeader(String key, String value) {
-        List entry = (List) headers.get(key);
-        if (entry == null) {
-            entry = new ArrayList();
-            headers.put(key, entry);
-        }
-        entry.add(value);
+    	headers.addHeader(key, value);
     }
 
-    protected void removeHeader(final String key) {
-        headers.remove(key);
+    public void removeHeader(final String key) {
+        headers.removeHeader(key);
     }
 
+	public void removeHeader(String key, String value) {
+        List<String> values = headers.getHeaders(key);
+        if (values == null) return;
+        int size = values.size();
+        int removeIx = -1;
+        for (int i = 0; i < size; i++) {
+            String value2 = (String) values.get(i);
+            if (value.equals(value2)){
+            	removeIx = i;
+            }
+        }	
+    	if (removeIx != -1) values.remove(removeIx);
+	}
+
+    
     protected String getLastSetValueOfHeader(final String key) {
-        List entry = (List) headers.get(key);
-        if (entry == null)
-            return null;
-        return (String) entry.get(entry.size() - 1);
+    	return headers.getLastHeader(key);
     }
 
     protected void copyFrom(final StreamHandler orig) {

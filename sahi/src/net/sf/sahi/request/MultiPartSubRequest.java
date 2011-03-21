@@ -1,6 +1,6 @@
 /**
  * Sahi - Web Automation and Test Tool
- * 
+ *
  * Copyright  2006  V Narayan Raman
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -41,7 +41,9 @@ public class MultiPartSubRequest extends StreamHandler {
         populateHeaders(in, false);
         populateData(in);
         setNameAndFileName(getLastSetValueOfHeader("Content-Disposition"));
-    }
+		removeHeader("Content-Length");
+        // System.out.println(new String(rawHeaders()));
+	}
 
     void setNameAndFileName(final String s) {
         StringTokenizer tokenizer = new StringTokenizer(s, ";");

@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 /**
  * User: nraman
@@ -33,7 +32,7 @@ import java.util.Map;
 public class MultiPartRequest {
 
     private final HttpRequest httpRequest;
-    List subRequests;
+    List<MultiPartSubRequest> subRequests;
     public String delimiter;
 
     public MultiPartRequest(HttpRequest httpRequest) throws IOException {
@@ -46,7 +45,7 @@ public class MultiPartRequest {
         delimiter = getDelimiter(dataStr);
         int nextIx;
         int prevIx = delimiter.length();
-        subRequests = new ArrayList();
+        subRequests = new ArrayList<MultiPartSubRequest>();
         while (prevIx + 1 < dataStr.length() && (nextIx = dataStr.indexOf(delimiter, prevIx + 1)) != -1) {
             String subReqStr = dataStr.substring(prevIx, nextIx).trim();
             MultiPartSubRequest multiPartSubRequest = new MultiPartSubRequest(new ByteArrayInputStream(subReqStr.getBytes()));
@@ -63,16 +62,12 @@ public class MultiPartRequest {
         return httpRequest;
     }
 
-    public List getMultiPartSubRequests() {
+    public List<MultiPartSubRequest> getMultiPartSubRequests() {
         return subRequests;
     }
 
     public final int contentLength() {
         return httpRequest.contentLength();
-    }
-
-    public final Map headers() {
-        return httpRequest.headers();
     }
 
     public final byte[] rawHeaders() {
@@ -115,7 +110,7 @@ public class MultiPartRequest {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         byte[] delimBytes = (delimiter + "\r\n").getBytes();
         try {
-            for (Iterator iterator = subRequests.iterator(); iterator.hasNext();) {
+            for (Iterator<MultiPartSubRequest> iterator = subRequests.iterator(); iterator.hasNext();) {
                 out.write(delimBytes);
                 MultiPartSubRequest part = (MultiPartSubRequest) iterator.next();
                 part.resetRawHeaders();

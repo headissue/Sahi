@@ -8,7 +8,7 @@ import java.io.FileOutputStream;
 
 /**
  * Sahi - Web Automation and Test Tool
- * 
+ *
  * Copyright  2006  V Narayan Raman
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,7 +25,8 @@ import java.io.FileOutputStream;
  */
 
 public class FileUtilsTest extends TestCase {
-    String src = "../temp/copysrc/";
+	private static final long serialVersionUID = 4433222425549723764L;
+	String src = "../temp/copysrc/";
     String dest = "../temp/copydest/";
     String file1 = "a.txt";
     String file2 = "nested/b.txt";
@@ -74,4 +75,11 @@ public class FileUtilsTest extends TestCase {
         new File(dest+"/nested").delete();
         new File(dest).delete();
     }
+
+    public void testCleanFileName() throws IOException {
+        assertEquals("abcdefghijk", FileUtils.cleanFileName("a\\b/c:d*e?f\"g<h>i|jk"));
+        String fileName = null;
+        assertNull(FileUtils.cleanFileName(fileName));
+    }
+
 }

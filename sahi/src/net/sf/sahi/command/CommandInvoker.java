@@ -52,7 +52,7 @@ public class CommandInvoker {
         
         String cmd = "";
         try {
-            cmd = getCommandForOS(command);
+            cmd = command; // getCommandForOS(command);
             System.out.println("Executing: " + cmd);
             Process process = Runtime.getRuntime().exec(Utils.getCommandTokens(cmd));
             return (isSynchronous) ? getExitStatus(process) : SUCCESS;

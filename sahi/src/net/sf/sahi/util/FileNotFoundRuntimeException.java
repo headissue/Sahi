@@ -18,8 +18,9 @@
 package net.sf.sahi.util;
 
 public class FileNotFoundRuntimeException extends RuntimeException {
+	private static final long serialVersionUID = -6600876695622201125L;
 
-    public FileNotFoundRuntimeException() {
+	public FileNotFoundRuntimeException() {
         super();
     }
 

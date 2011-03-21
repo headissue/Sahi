@@ -1,6 +1,6 @@
 /**
  * Sahi - Web Automation and Test Tool
- * 
+ *
  * Copyright  2006  V Narayan Raman
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -30,18 +30,20 @@ import java.util.List;
 
 public class RunSahiTask extends Task {
 
-    private String suite;
-    private String browser;
-    private String baseURL;
-    private String sahiHost;
-    private String sahiPort;
-    private String failureProperty;
-    private String haltOnFailure;
-    private String stop;
-    private String threads = "1";
+    protected String suite;
+    protected String browser;
+    protected String baseURL;
+    protected String sahiHost;
+    protected String sahiPort;
+    protected String failureProperty;
+    protected String haltOnFailure;
+    protected String stop;
+    protected String threads = "1";
     private String browserOption;
+    private String browserProcessName;
     private CreateIssue createIssue;
-    private List listReport = new ArrayList();
+    private List<Report> listReport = new ArrayList<Report>();
+	private String browserType;
 
     public void setBrowserOption(String browserOption) {
         this.browserOption = browserOption;
@@ -66,6 +68,14 @@ public class RunSahiTask extends Task {
     public void setSahiHost(String sahiHost) {
         this.sahiHost = sahiHost;
     }
+    
+    public void setBrowserType(String browserType) {
+		this.browserType = browserType;
+    }
+    
+    public String getBrowserType() {
+    	return this.browserType;
+    }
 
     public void execute() throws BuildException {
         if (stop != null) {
@@ -89,8 +99,13 @@ public class RunSahiTask extends Task {
     private void startServer() {
         String status = "FAILURE";
         try {
-            TestRunner testRunner = new TestRunner(suite, browser, baseURL,
-                    sahiHost, sahiPort, threads, browserOption, listReport, createIssue);
+        	TestRunner testRunner;
+        	if (this.browserType != null) {
+        		testRunner = new TestRunner(suite, browserType, baseURL, sahiHost, sahiPort, threads, listReport, createIssue);
+        	} else {
+	            testRunner = new TestRunner(suite, browser, baseURL,
+	                    sahiHost, sahiPort, threads, browserOption, browserProcessName, listReport, createIssue);
+        	}
             status = testRunner.execute();
         } catch (Exception e) {
             e.printStackTrace();
@@ -145,4 +160,8 @@ public class RunSahiTask extends Task {
         }
         this.listReport.add(report);
     }
+
+	public void setBrowserProcessName(String browserProcessName) {
+		this.browserProcessName = browserProcessName;
+	}
 }

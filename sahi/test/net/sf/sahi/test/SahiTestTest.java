@@ -4,9 +4,29 @@ import junit.framework.TestCase;
 
 import java.io.IOException;
 
+/**
+ * Sahi - Web Automation and Test Tool
+ * 
+ * Copyright  2006  V Narayan Raman
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 public class SahiTestTest extends TestCase {
 
-    public void xtestProcess2() throws IOException, InterruptedException {
+	private static final long serialVersionUID = 7669927478979181445L;
+
+	@SuppressWarnings("unchecked")
+	public void xtestProcess2() throws IOException, InterruptedException {
         Process p = null;
         java.util.Properties envVars = new java.util.Properties();
         Runtime r = Runtime.getRuntime();

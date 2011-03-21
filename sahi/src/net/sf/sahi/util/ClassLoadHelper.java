@@ -19,7 +19,8 @@ package net.sf.sahi.util;
  */
 public class ClassLoadHelper {
 //    private static URLClassLoader customLoader = new URLClassLoader(getURLs());
-    public static Class getClass(String name) throws ClassNotFoundException {
+    @SuppressWarnings("unchecked")
+	public static Class getClass(String name) throws ClassNotFoundException {
         return Class.forName(name);
     }
 //

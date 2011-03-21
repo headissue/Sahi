@@ -1,6 +1,6 @@
 /**
  * Sahi - Web Automation and Test Tool
- * 
+ *
  * Copyright  2006  V Narayan Raman
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,7 +17,10 @@
  */
 package net.sf.sahi.response;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import net.sf.sahi.util.Utils;
 
 /**
  * User: nraman
@@ -35,7 +38,7 @@ public class NoCacheHttpResponse extends HttpResponse {
     }
 
     public NoCacheHttpResponse(final String dataStr) {
-        setNoCacheHeaders(dataStr.getBytes());
+        setNoCacheHeaders(Utils.getBytes(dataStr));
     }
 
     public NoCacheHttpResponse(final int status, final String statusMessage, final String dataStr) {
@@ -44,22 +47,30 @@ public class NoCacheHttpResponse extends HttpResponse {
             this.statusMessage = "";
         }
         this.statusMessage = statusMessage == null ? "" : statusMessage;
-        setNoCacheHeaders(dataStr.getBytes());
+        setNoCacheHeaders(Utils.getBytes(dataStr));
     }
 
     protected void setNoCacheHeaders(final byte[] data) {
+    	setNoCacheHeaders(data, null);
+    }
+    protected void setNoCacheHeaders(final byte[] data, String contentType) {
         setData(data);
         setFirstLine("HTTP/1.1 " + status + " " + statusMessage);
-        setHeader("Content-Type", "text/html");
+        if (contentType == null)
+        	setHeader("Content-Type", "text/html");
+        else
+        	setHeader("Content-Type", contentType);
         setHeader("Cache-control", "no-store");
         setHeader("Pragma", "no-cache");
         setHeader("Expires", "-1");
         setHeader("Content-Length", "" + data().length);
-        setRawHeaders(getRebuiltHeaderBytes());
-        logger.fine(new String(rawHeaders()));
+        resetRawHeaders();
+		if (logger.isLoggable(Level.FINEST)){
+			logger.finest(new String(rawHeaders()));
+		}
     }
 
     public NoCacheHttpResponse(final HttpResponse httpResponse) {
-        setNoCacheHeaders(httpResponse.data());
+        setNoCacheHeaders(httpResponse.data(), httpResponse.contentTypeHeader());
     }
 }

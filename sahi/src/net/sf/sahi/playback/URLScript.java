@@ -26,10 +26,10 @@ import java.net.MalformedURLException;
 public class URLScript extends SahiScript {
 
     public URLScript(final String url) {
-        super(url, new ArrayList(), url);
+        super(url, new ArrayList<String>(), url);
     }
 
-    public URLScript(final String url, final ArrayList parents) {
+    public URLScript(final String url, final ArrayList<String> parents) {
         super(url, parents, url);
     }
 
@@ -46,7 +46,7 @@ public class URLScript extends SahiScript {
         return null;
     }
 
-    SahiScript getNewInstance(final String scriptName, final ArrayList parents) {
+    SahiScript getNewInstance(final String scriptName, final ArrayList<String> parents) {
         String script = getFQN(scriptName);
         URLScript urlScript = new URLScript(script, parents);
         urlScript.parents = parents;

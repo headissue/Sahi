@@ -18,4 +18,5 @@
 package net.sf.sahi.util;
 
 public class FileIsDirectoryException extends RuntimeException {
+	private static final long serialVersionUID = -995408894200630655L;
 }

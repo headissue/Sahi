@@ -1,6 +1,6 @@
 /**
  * Sahi - Web Automation and Test Tool
- * 
+ *
  * Copyright  2006  V Narayan Raman
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -55,6 +55,7 @@ public class HttpFileResponse extends HttpResponse {
 
     private void setHeaders() {
         setFirstLine("HTTP/1.1 200 OK");
+        removeHeader("Content-Type");
         setHeader("Content-Type", MimeType.getMimeTypeOfFile(fileName));
         if (addCacheHeader) {
             setHeader("Expires", formatForExpiresHeader(new Date(

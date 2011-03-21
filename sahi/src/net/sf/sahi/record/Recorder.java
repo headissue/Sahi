@@ -81,7 +81,8 @@ public class Recorder {
         logger.fine("Record:" + cmd);
         try {
             out = new FileOutputStream(file, true);
-            out.write((cmd + "\n").getBytes());
+            out.write(cmd.getBytes("UTF8"));
+            out.write("\n".getBytes());
             out.close();
             out = null;
         } catch (IOException e) {

@@ -1,6 +1,6 @@
 /**
  * Sahi - Web Automation and Test Tool
- * 
+ *
  * Copyright  2006  V Narayan Raman
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,6 +17,7 @@
  */
 package net.sf.sahi.playback;
 
+import net.sf.sahi.config.Configuration;
 import net.sf.sahi.util.Utils;
 
 import java.io.File;
@@ -24,19 +25,31 @@ import java.util.ArrayList;
 
 public class FileScript extends SahiScript {
 
+    private String userDirRelativePath;
+
     public FileScript(String fileName) {
-        super(fileName, new ArrayList(), new File(fileName).getName());
+        super(fileName, new ArrayList<String>(), new File(fileName).getName());
     }
 
-    public FileScript(final String fileName, final ArrayList parents) {
+	private void setUserDirRelativePath(String fileName) {
+		String s = Utils.makePathOSIndependent(Utils.getAbsolutePath(fileName));
+        String userDirPath = Utils.makePathOSIndependent(Configuration.getUserDataDir());
+        if (s.startsWith(userDirPath)){
+			userDirRelativePath = s.substring(userDirPath.length());
+			if (userDirRelativePath.startsWith("/")) userDirRelativePath = userDirRelativePath.substring(1);
+        }
+	}
+
+    public FileScript(final String fileName, final ArrayList<String> parents) {
         super(fileName, parents, new File(fileName).getName());
     }
 
     protected void loadScript(final String fileName) {
+        setUserDirRelativePath(fileName);
         try {
-            setScript(new String(Utils.readFile(fileName)));
+            setScript(Utils.readFileAsString(fileName));
         } catch (Exception e) {
-            setScript("_log(\"Script: " + Utils.escapeDoubleQuotesAndBackSlashes(fileName) + " does not exist.\", \"failure\");\n");
+            setScript("throw \"Script: " + Utils.escapeDoubleQuotesAndBackSlashes(fileName) + " does not exist.\";\n");
         }
     }
 
@@ -44,12 +57,18 @@ public class FileScript extends SahiScript {
         if (scriptName.indexOf("http") == 0) {
             return scriptName;
         }
-        return Utils.getRelativeFile(new File(path), scriptName).getAbsolutePath();
+        return Utils.getAbsolutePath(Utils.getRelativeFile(new File(path), scriptName));
     }
 
-    SahiScript getNewInstance(final String scriptName, final ArrayList parents) {
+    SahiScript getNewInstance(final String scriptName, final ArrayList<String> parents) {
         FileScript fileScript = new FileScript(getFQN(scriptName), parents);
         fileScript.parents = parents;
         return fileScript;
     }
+    
+	protected String getDebugFilePath() {
+		if (userDirRelativePath != null)
+			return userDirRelativePath;
+		return super.getDebugFilePath();
+	}
 }

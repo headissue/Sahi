@@ -50,7 +50,8 @@ public class Script {
     }
 
     public static String makeIncludeALink(final String baseFile) {
-        String inputStr = new String(Utils.readFile(baseFile));
+        String inputStr = Utils.readFileAsString(baseFile);
+        inputStr = inputStr.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
         inputStr = LogViewer.highlight(inputStr, -1);
         String patternStr = "[\"'](.*[.]sah)[\"']";
         Pattern pattern = Pattern.compile(patternStr);
@@ -73,10 +74,10 @@ public class Script {
     }
 
     HttpResponse dummyFunctions(final HttpRequest request) {
-        ArrayList words = SahiScript.getKeyWords();
+        ArrayList<String> words = SahiScript.getKeyWords();
         StringBuffer sb = new StringBuffer();
-        for (Iterator iterator = words.iterator(); iterator.hasNext();) {
-            String word = (String) iterator.next();
+        for (Iterator<String> iterator = words.iterator(); iterator.hasNext();) {
+            String word = iterator.next();
             sb.append("var " + word + " = b;\n");
             sb.append("var _" + word + " = b;\n");
         }

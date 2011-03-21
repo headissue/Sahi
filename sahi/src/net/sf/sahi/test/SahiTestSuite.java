@@ -22,218 +22,402 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Semaphore;
+
+import net.sf.sahi.config.Configuration;
 import net.sf.sahi.issue.IssueCreator;
 import net.sf.sahi.issue.IssueReporter;
+import net.sf.sahi.report.Report;
 import net.sf.sahi.report.SahiReporter;
+import net.sf.sahi.rhino.RhinoScriptRunner;
+import net.sf.sahi.rhino.ScriptRunner;
 import net.sf.sahi.session.Session;
 import net.sf.sahi.session.Status;
+import net.sf.sahi.util.ProxySwitcher;
 import net.sf.sahi.util.Utils;
-import net.sf.sahi.command.Player;
-import net.sf.sahi.config.Configuration;
 
 public class SahiTestSuite {
 
-    private final String suitePath;
-    private final String base;
-    private List tests = new ArrayList();
-    private Map testsMap = new HashMap();
-    private int currentTestIndex = 0;
-    private final String sessionId;
-    private final String browser;
-    private String suiteName;
-    private int finishedTests = 0;
-    private List listReporter = new ArrayList();
-    private IssueReporter issueReporter;
-    private String browserOption;
-    private int availableThreads = 0;
-    private volatile boolean[] freeThreads;
-    private boolean killed = false;
-    private static HashMap suites = new HashMap();
+	private final String suitePath;
 
-    public SahiTestSuite(final String suitePath, final String base, final String browser, final String sessionId, final String browseroption) {
-        this.suitePath = suitePath;
-        this.base = base;
-        this.browser = browser;
-        this.sessionId = Utils.stripChildSessionId(sessionId);
-        this.browserOption = browseroption;
+	private final String base;
 
-        setSuiteName();
-        loadScripts();
-        suites.put(this.sessionId, this);
+	private List<TestLauncher> tests = new ArrayList<TestLauncher>();
+
+	private Map<String, TestLauncher> testsMap = new HashMap<String, TestLauncher>();
+
+	private int currentTestIndex = 0;
+
+	private final String sessionId;
+
+	private final String browser;
+
+	private String suiteName;
+
+	private List<TestLauncher> finishedTests = new ArrayList<TestLauncher>();
+
+	private List<SahiReporter> listReporter = new ArrayList<SahiReporter>();
+
+	private IssueReporter issueReporter;
+
+	private String browserOption;
+
+	private int availableThreads = 0;
+
+	private volatile boolean[] freeThreads;
+
+	private boolean killed = false;
+
+	private boolean isMultiThreaded;
+
+	private String browserProcessName;
+
+	private static HashMap<String, SahiTestSuite> suites = new HashMap<String, SahiTestSuite>();
+
+	private HashMap<TestLauncher, TestLauncher> completed = new HashMap<TestLauncher, TestLauncher>();
+
+	private Map<String, String> variables;
+
+	private long lastGenerationTime = 0;
+
+	private Semaphore lock = new Semaphore(1, true);
+
+	private String extraInfo;
+
+	private String initJS;
+
+	private boolean useSystemProxy;
+
+	public SahiTestSuite(final String suitePath, final String base,
+			final String browser, final String sessionId,
+			final String browseroption, String browserProcessName) {
+		this.suitePath = suitePath;
+		this.base = base;
+		this.browser = browser;
+		this.sessionId = Utils.stripChildSessionId(sessionId);
+		this.browserOption = browseroption;
+		this.browserProcessName = browserProcessName;
+		this.variables = new HashMap<String, String>();
+		setSuiteName();
+		loadScripts();
+		suites.put(this.sessionId, this);
+	}
+	
+	public Map<String, String> getInfo(){
+		Map<String, String> info = new HashMap<String, String>();
+		info.put("suitePath", suitePath);
+		info.put("base", base);
+		info.put("browser", browser);
+		info.put("sessionId", sessionId);
+		info.put("browserOption", browserOption);
+		info.put("browserProcessName", browserProcessName);
+		info.put("suiteName", suiteName);		
+		return info;		
+	}
+
+	public String getInfoJSON(){
+		Map<String, String> info = getInfo();
+		StringBuilder sb = new StringBuilder();
+		sb.append("{");
+		int count = 0;
+		for (Iterator<String> iterator = info.keySet().iterator(); iterator.hasNext();) {
+			if (count++ != 0) sb.append(",");
+			String key = (String) iterator.next();
+			sb.append(key);
+			sb.append(":");
+			sb.append("\"" + Utils.makeString((String) info.get(key)) + "\"");
+		}
+		sb.append("}");
+		return sb.toString();
+	}
+	
+	private void loadScripts() {
+		this.tests = new SuiteLoader(suitePath, base).getListTest();
+		System.out.println(">>>>>>                Tests size = " + this.tests.size());
+		for (Iterator<TestLauncher> iterator = tests.iterator(); iterator.hasNext();) {
+			TestLauncher launcher = (TestLauncher) iterator.next();
+			launcher.setSessionId(sessionId);
+			launcher.setBrowser(browser);
+			launcher.setBrowserOption(browserOption);
+			launcher.setBrowserProcessName(browserProcessName);
+			testsMap.put(launcher.getChildSessionId(), launcher);
+		}
+	}
+
+	public List<SahiReporter> getListReporter() {
+		return listReporter;
+	}
+
+	public static SahiTestSuite getSuite(final String sessionId) {
+		return (SahiTestSuite) suites.get(Utils.stripChildSessionId(sessionId));
+	}
+
+	private void executeTest(final int threadNo) {
+		TestLauncher test = (TestLauncher) tests.get(currentTestIndex);
+		test.setThreadNo(threadNo, isMultiThreaded);
+		Session session = Session.getInstance(test.getChildSessionId());
+		session.touch();
+		test.execute(session);
+		currentTestIndex++;
+	}
+
+	public void notifyComplete(final TestLauncher launcher) {
+		if (completed.containsKey(launcher)) return;
+		try {
+			Thread.sleep(Configuration.getTimeBetweenTestsInSuite());
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}		
+		notifyComplete2(launcher);
+		try {
+			generateSuiteReport(finishedTests, false);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private void notifyComplete2(final TestLauncher launcher) {
+		if (completed.containsKey(launcher))
+			return;
+		launcher.kill();
+		synchronized (this){
+			try {
+				completed.put(launcher, launcher);
+				finishedTests.add(launcher);
+				availableThreads++;
+				freeThreads[launcher.getThreadNo()] = true;
+			} finally {
+				this.notify();
+			}
+		}
+	}
+
+	private void setSuiteName() {
+		this.suiteName = Utils.makePathOSIndependent(suitePath);
+		int lastIndexOfSlash = suiteName.lastIndexOf("/");
+		if (lastIndexOfSlash != -1) {
+			this.suiteName = suiteName.substring(lastIndexOfSlash + 1);
+		}
+	}
+
+	private void markSuiteStatus() {
+		Status status = Status.SUCCESS;
+		Session session;
+		for (Iterator<TestLauncher> iterator = tests.iterator(); iterator.hasNext();) {
+			TestLauncher testLauncher = (TestLauncher) iterator.next();
+			RhinoScriptRunner scriptRunner = testLauncher.getScriptRunner();
+			if (scriptRunner == null || scriptRunner.hasErrors()) {
+				status = Status.FAILURE;
+				break;
+			}
+		}
+		session = Session.getInstance(this.sessionId);
+		session.setStatus(status);
+	}
+
+	public void run() {
+		Session session = Session.getInstance(this.sessionId);
+		session.setStatus(Status.RUNNING);
+		if (useSystemProxy) {
+			ProxySwitcher.setSahiAsProxy();
+		}
+		new Thread(new Culler(this)).start();
+		executeSuite();
+	}
+
+	public void finishCallBack() {
+		try {
+			markSuiteStatus();
+			generateSuiteReport(tests, true);
+			createIssues();
+			cullInactiveTests();
+		} finally {
+			if (useSystemProxy) {
+				ProxySwitcher.revertSystemProxy();
+			}
+			suites.remove(sessionId);
+		}
+	}
+
+	void cullInactiveTests() {
+		Iterator<String> keys = testsMap.keySet().iterator();
+		long now = System.currentTimeMillis();
+		long inactivityLimit = Configuration.getMaxInactiveTimeForScript();
+		while (keys.hasNext()) {
+			String sessionId = (String) keys.next();
+			Session session = Session.getExistingInstance(sessionId);
+			if (session == null) continue;
+			long lastActiveTime = session.lastActiveTime();
+			Status status = session.getStatus();
+			if (status != Status.SUCCESS && status != Status.FAILURE
+					&& status != Status.INITIAL
+					&& now - lastActiveTime > inactivityLimit) {
+				String message = "*** Forcefully terminating script. \nNo response from browser within expected time ("
+						+ inactivityLimit / 1000 + " seconds).";
+				System.out.println(message);
+				ScriptRunner scriptRunner = session.getScriptRunner();
+				scriptRunner.setStatus(Status.FAILURE);
+				Report report = scriptRunner.getReport();
+				if (report != null) {
+					report.addResult(message, "ERROR", "", "");
+				}
+			}
+		}
+	}
+
+	private void createIssues() {
+		Session session = Session.getInstance(sessionId);
+		if (Status.FAILURE.equals(session.getStatus()) && issueReporter != null) {
+			issueReporter.reportIssue(tests);
+		}
+	}
+
+	private synchronized void executeSuite() {
+		while (currentTestIndex < tests.size()) {
+			if (killed) {
+				return;
+			}
+			for (; availableThreads > 0 && currentTestIndex < tests.size(); availableThreads--) {
+				int freeThreadNo = getFreeThreadNo();
+				if (freeThreadNo != -1) {
+					freeThreads[freeThreadNo] = false;
+					this.executeTest(freeThreadNo);
+				}
+			}
+			try {
+				this.wait(600000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	private int getFreeThreadNo() {
+		for (int i = 0; i < freeThreads.length; i++) {
+			if (freeThreads[i]) {
+				return i;
+			}
+		}
+		return -1;
+	}
+
+	private void generateSuiteReport(List<TestLauncher> listOfTests, boolean force) {
+		try {
+			if (force) {
+				lock.acquire();
+			} else {
+				long now = System.currentTimeMillis();
+				if (now - lastGenerationTime < 5000) return;
+				lastGenerationTime = now;
+				if (!lock.tryAcquire()) return;
+			}
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		try{
+			for (Iterator<SahiReporter> iterator = listReporter.iterator(); iterator.hasNext();) {
+				SahiReporter reporter = (SahiReporter) iterator.next();
+				reporter.generateSuiteReport(listOfTests);
+			}
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		lock.release();
+	}
+
+	public void setAvailableThreads(final int availableThreads) {
+		this.availableThreads = availableThreads;
+		this.isMultiThreaded = availableThreads > 1;
+		freeThreads = new boolean[availableThreads];
+		int len = freeThreads.length;
+		for (int i = 0; i < len; i++) {
+			freeThreads[i] = true;
+		}
+	}
+
+	public void addReporter(final SahiReporter reporter) {
+		reporter.setSuiteName(suiteName);
+		listReporter.add(reporter);
+	}
+
+	public void addIssueCreator(final IssueCreator issueCreator) {
+		if (issueReporter == null) {
+			issueReporter = new IssueReporter(suiteName);
+		}
+		issueReporter.addIssueCreator(issueCreator);
+	}
+
+	synchronized boolean isRunning() {
+		return finishedTests.size() < tests.size() && !killed;
+	}
+
+	public void kill() {
+		System.out.println("Shutting down ...");
+		killed = true;
+	}
+
+    public String getVariable(final String name) {
+//    	System.out.println("get name="+name);
+//    	System.out.println("get value="+(String) (variables.get(name)));
+        return (String) (variables.get(name));
     }
 
-    private void loadScripts() {
-        this.tests = new SuiteLoader(suitePath, base).getListTest();
-        for (Iterator iterator = tests.iterator(); iterator.hasNext();) {
-            TestLauncher script = (TestLauncher) iterator.next();
-            script.setSessionId(sessionId);
-            script.setBrowser(browser);
-            script.setBrowserOption(browserOption);
-            testsMap.put(script.getChildSessionId(), script);
-        }
-    }
-
-    public List getListReporter() {
-        return listReporter;
-    }
-
-    public static SahiTestSuite getSuite(final String sessionId) {
-        return (SahiTestSuite) suites.get(Utils.stripChildSessionId(sessionId));
-    }
-
-    private void executeTest(final int threadNo) {
-        TestLauncher test = (TestLauncher) tests.get(currentTestIndex);
-        test.setThreadNo(threadNo);
-        test.execute();
-        currentTestIndex++;
-    }
-
-    public synchronized void notifyComplete(final String childSessionId) {
-        TestLauncher test = ((TestLauncher) (testsMap.get(childSessionId)));
-        test.stop();
-        try {
-            Thread.sleep(Configuration.getTimeBetweenTestsInSuite());
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        finishedTests++;
-        availableThreads++;
-        freeThreads[test.getThreadNo()] = true;
-        this.notify();
-    }
-
-    private void setSuiteName() {
-        this.suiteName = suitePath;
-        int lastIndexOfSlash = suitePath.lastIndexOf("/");
-        if (lastIndexOfSlash != -1) {
-            this.suiteName = suitePath.substring(lastIndexOfSlash + 1);
-        }
-    }
-
-    private void markSuiteStatus() {
-        Status status = Status.SUCCESS;
-        Session session;
-        for (Iterator iterator = tests.iterator(); iterator.hasNext();) {
-            TestLauncher testLauncher = (TestLauncher) iterator.next();
-            session = Session.getInstance(testLauncher.getChildSessionId());
-            if (Status.FAILURE.equals(session.getStatus())) {
-                status = Status.FAILURE;
-                break;
+    public void removeVariables(final String pattern) {
+        for (Iterator<String> iterator = variables.keySet().iterator(); iterator.hasNext();) {
+            String s = (String) iterator.next();
+            if (s.matches(pattern)) {
+                iterator.remove();
             }
         }
-        session = Session.getInstance(this.sessionId);
-        session.setStatus(status);
     }
 
-    public void run() {
-        Session session = Session.getInstance(this.sessionId);
-        session.setStatus(Status.RUNNING);
-        executeSuite();
-        waitForSuiteCompletion();
-        markSuiteStatus();
-        generateSuiteReport();
-        createIssues();
-        cullInactiveTests();
+    public void setVariable(final String name, final String value) {
+//    	System.out.println("set name="+name);
+//    	System.out.println("set value="+value);
+        variables.put(name, value);
     }
 
-    private void cullInactiveTests() {
-        Iterator keys = testsMap.keySet().iterator();
-        long now = System.currentTimeMillis();
-        long inactivityLimit = Configuration.getMaxInactiveTimeForScript();
-        while (keys.hasNext()) {
-            String sessionId = (String) keys.next();
-            Session session = Session.getInstance(sessionId);
-            long lastActiveTime = session.lastActiveTime();
-            if (session.getStatus() != Status.SUCCESS && session.getStatus() != Status.FAILURE && now - lastActiveTime > inactivityLimit) {
-                String message = "Forcefully terminating script. \nNo response from browser within expected time (" + inactivityLimit / 1000 + " seconds).";
-                System.out.println(message);
-                if (session.getReport() != null) {
-                    session.getReport().addResult(message, "ERROR", "", "");
-                }
-                new Player().stop(session);
-            }
-        }
-    }
+	public void setExtraInfo(String extraInfo) {
+		this.extraInfo = extraInfo;
+	}
+	
+	public String getExtraInfo(){
+		return this.extraInfo;
+	}
 
-    private void createIssues() {
-        Session session = Session.getInstance(sessionId);
-        if (Status.FAILURE.equals(session.getStatus()) && issueReporter != null) {
-            issueReporter.reportIssue(tests);
-        }
-    }
+	public void setInitJS(String initJS) {
+		this.initJS = initJS;		
+	}
 
-    private synchronized void executeSuite() {
-        while (currentTestIndex < tests.size()) {
-            if (killed) {
-                return;
-            }
-            for (; availableThreads > 0 && currentTestIndex < tests.size(); availableThreads--) {
-                int freeThreadNo = getFreeThreadNo();
-                if (freeThreadNo != -1) {
-                    freeThreads[freeThreadNo] = false;
-                    this.executeTest(freeThreadNo);
-                }
-            }
-            try {
-                this.wait();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-    }
+	public String getInitJS() {
+		return initJS;
+	}
 
-    private synchronized int getFreeThreadNo() {
-        for (int i = 0; i < freeThreads.length; i++) {
-            if (freeThreads[i]) {
-                return i;
-            }
-        }
-        return -1;
-    }
+	public void setUseSystemProxy(boolean useSystemProxy) {
+		this.useSystemProxy = useSystemProxy;
+	}
+}
 
-    private void waitForSuiteCompletion() {
-        while (finishedTests < tests.size() && !killed) {
-            synchronized (this) {
-                cullInactiveTests();
-                try {
-                    this.wait(2000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
+class Culler implements Runnable {
+	private SahiTestSuite suite;
 
-    private void generateSuiteReport() {
-        for (Iterator iterator = listReporter.iterator(); iterator.hasNext();) {
-            SahiReporter reporter = (SahiReporter) iterator.next();
-            reporter.generateSuiteReport(tests);
-        }
-    }
+	Culler(SahiTestSuite suite) {
+		this.suite = suite;
+	}
 
-    public void setAvailableThreads(final int availableThreads) {
-        this.availableThreads = availableThreads;
-        freeThreads = new boolean[availableThreads];
-        int len = freeThreads.length;
-        for (int i = 0; i < len; i++) {
-            freeThreads[i] = true;
-        }
-    }
+	public void run() {
+		waitForSuiteCompletion();
+	}
 
-    public void addReporter(final SahiReporter reporter) {
-        reporter.setSuiteName(suiteName);
-        listReporter.add(reporter);
-    }
-
-    public void addIssueCreator(final IssueCreator issueCreator) {
-        if (issueReporter == null) {
-            issueReporter = new IssueReporter(suiteName);
-        }
-        issueReporter.addIssueCreator(issueCreator);
-    }
-
-    public void kill() {
-        System.out.println("Shutting down ...");
-        killed = true;
-    }
+	private void waitForSuiteCompletion() {
+		while (suite.isRunning()) {
+			suite.cullInactiveTests();
+			try {
+				Thread.sleep(2000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+		suite.finishCallBack();
+	}
 }

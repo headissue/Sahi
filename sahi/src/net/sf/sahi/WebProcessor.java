@@ -58,6 +58,7 @@ public class WebProcessor implements Runnable {
 		} catch (FileIsDirectoryException dirEx) {
 			try {
 				if ("/".equals(uri)) uri = "/demo";
+				if (uri.endsWith("/")) uri = uri.substring(0, uri.length() - 1);
 				sendResponseToBrowser(new NoCacheHttpResponse(200, "OK", "<script>location.href='"+uri+"/index.htm'</script>"));
 			} catch (IOException e) {
 				logger.warning(dirEx.getMessage());

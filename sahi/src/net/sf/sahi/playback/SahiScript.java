@@ -17,9 +17,6 @@
  */
 package net.sf.sahi.playback;
 
-import net.sf.sahi.config.Configuration;
-import net.sf.sahi.util.Utils;
-
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -27,469 +24,660 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Properties;
+import java.util.Set;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import net.sf.sahi.config.Configuration;
+import net.sf.sahi.report.LogViewer;
+import net.sf.sahi.util.Utils;
+
 public abstract class SahiScript {
 
-    private static Logger logger = Configuration.getLogger("net.sf.sahi.playback.SahiScript");
-    private static ArrayList actionKeywords;
-    private static ArrayList normalKeywords;
-    protected String script;
-    private static final String PREFIX = "_sahi.schedule(\"";
-    private static final String CONJUNCTION = "\", \"";
-    private static final String SUFFIX = "\");";
-    private String filePath;
-    protected String scriptName;
-    protected ArrayList parents;
-    private String original = "";
-    private static final String REG_EXP_FOR_ADDING = getRegExp(false);
-    private static final String REG_EXP_FOR_STRIPPING = getRegExp(true);
-    private static final String REG_EXP_FOR_ACTIONS = getActionRegExp();
-    protected String path;
-    private String jsString;
+	private static Logger logger = Configuration
+			.getLogger("net.sf.sahi.playback.SahiScript");
 
-    public SahiScript(String filePath, ArrayList parents, String scriptName) {
-        this.filePath = filePath;
-        this.scriptName = scriptName;
-        this.parents = parents;
-        init(filePath);
-    }
+	private static ArrayList<String> actionKeywords;
 
-    protected void setScript(final String s) {
-        original = s;
-        jsString = modify(s);
-        script = appendFunction(jsString);//addJSEvalCode(jsString);
-    }
+	private static ArrayList<String> normalKeywords;
 
-    private String appendFunction(final String jsString) {
+	private static Pattern pattern_set;
 
-        StringBuffer buf = new StringBuffer();
+	private static Pattern pattern_popup_set;
 
-        buf.append("_sahi.scriptScope = function (){");
-        buf.append("\n\t_sahi.scriptScope.execute = function(s){eval(s);};\n\n");
-        buf.append("//Your code starts\n\n");
-        buf.append(jsString);
-        buf.append("\n\n//Your code ends\n\n}");
-        buf.append("\ntry{_sahi.scriptScope();}catch(e){_sahi.loadError = e; throw e;}");
+	protected String script;
 
-        return buf.toString();
-    }
+	private static final String PREFIX = "_sahi.schedule(\"";
 
-    public String jsString() {
-        return jsString;
-    }
+	private static final String CONJUNCTION = "\", \"";
 
-    static String addJSEvalCode(String str) {
-        StringBuffer sb = new StringBuffer();
-        sb.append("_sahi.execSteps = \"");
-        sb.append(Utils.makeString(str));
-        sb.append("\";\neval(_sahi.execSteps);");
-        return sb.toString();
-    }
+	private static final String SUFFIX = "\");";
 
-    public String modifiedScript() {
-        return script == null ? "" : script;
-    }
+	private String filePath;
 
-    String modify(String s) {
-        StringBuffer sb = new StringBuffer();
-        Iterator tokens = Utils.getTokens(s).iterator();
-        int lineNumber = 0;
-        while (tokens.hasNext()) {
-            lineNumber++;
-            String line = ((String) tokens.next()).trim();
-            if ("".equals(line)) {
-                continue;
-            }
-            if (line.startsWith("_include")) {
-                sb.append(processInclude(line));
-            } else if (line.startsWith("while")) {
-                sb.append(modifyWhile(line, lineNumber));
-            } else if (line.startsWith("if")) {
-                sb.append(modifyIf(line, lineNumber));
-            } else if (line.startsWith("_wait")) {
-                sb.append(modifyWait(line, lineNumber));
-            } else if (line.startsWith("_") && lineStartsWithActionKeyword(line)) {
-                sb.append(scheduleLine(line, lineNumber));
-            } else if (line.startsWith("_set")) {
-                sb.append(processSet(line, lineNumber));
-            } else {
-                sb.append(modifyLine(line));
-            }
-        }
-        String toString = sb.toString();
-        logger.fine(toString);
-        return toString;
-    }
+	protected String scriptName;
 
-    String processSet(String line, int lineNumber) {
-        String patternStr = "_set\\s*\\(\\s*([^,]*),\\s*(.*)\\)";
+	protected ArrayList<String> parents;
 
-        Pattern pattern = Pattern.compile(patternStr);
-        Matcher matcher = pattern.matcher(line);
-        boolean matchFound = matcher.find();
+	private String original = "";
 
-        if (!matchFound) {
-            return modifyLine(line);
-        } else {
-            String varName = matcher.group(1);
-            String varValue = matcher.group(2);
-            StringBuffer sb = new StringBuffer();
-            sb.append("var $sahi_cmdLen = _sahi.cmds.length+1;\r\n");
-            String dollarVarName = varName.startsWith("$") ? "\\" + varName : varName;
-            sb.append(scheduleLine("_sahi.handleSet('" + dollarVarName + "' + $sahi_cmdLen, " + varValue + ");", lineNumber, true));
-            sb.append(modifyLine(varName + "Temp = _getGlobal('" + varName + "' + _sahi.cmds.length);"));
-            sb.append(modifyLine("if (" + varName + "Temp) " + varName + " = " + varName + "Temp;"));
-            return sb.toString();
-        }
-    }
+	private static final Pattern REG_EXP_FOR_ADDING = Pattern.compile(getRegExp(false));
 
-    String modifyWait(String line, int lineNumber) {
-        int comma = line.indexOf(",");
-        if (comma == -1) {
-            return scheduleLine(line, lineNumber);
-        }
-        StringBuffer sb = new StringBuffer();
-        sb.append(line.substring(0, comma));
-        sb.append(", ");
-        int close = line.lastIndexOf(")");
-        if (close == -1) {
-            close = line.length();
-        }
-        sb.append("\"");
-        sb.append(separateVariables(line.substring(comma + 1, close).trim()));
-        sb.append("\");");
-        return scheduleLine(sb.toString(), lineNumber);
-    }
+	private static final Pattern REG_EXP_FOR_STRIPPING = Pattern.compile(getRegExp(true));
 
-    private String modifyLine(String line) {
-        StringBuffer sb = new StringBuffer();
-        sb.append(modifyFunctionNames(line));
-        sb.append("\r\n");
-        return sb.toString();
-    }
+	private static final Pattern REG_EXP_FOR_ACTIONS = Pattern.compile(getActionRegExp());
 
-    private String scheduleLine(String line, int lineNumber) {
-        return scheduleLine(line, lineNumber, true);
-    }
+	protected String path;
 
-    private String scheduleLine(String line, int lineNumber, boolean separate) {
-        StringBuffer sb = new StringBuffer();
-        sb.append(PREFIX);
-        if (separate) {
-            line = separateVariables(line);
-        }
-        sb.append(modifyFunctionNames(line));
-        sb.append(CONJUNCTION);
-        sb.append(Utils.escapeDoubleQuotesAndBackSlashes(filePath));
-        sb.append("&n=");
-        sb.append(lineNumber);
-        sb.append(SUFFIX);
-        sb.append("\r\n");
-        return sb.toString();
-    }
+	private String jsString;
 
-    static boolean lineStartsWithActionKeyword(String line) {
-        return line.matches(REG_EXP_FOR_ACTIONS);
-    }
+	private String browserJS;
 
-    private String processInclude(String line) {
-        final String include = getInclude(line);
-        if (include != null && !isRecursed(include)) {
-            ArrayList clone = (ArrayList) parents.clone();
-            clone.add(this.path);
-            return new ScriptFactory().getScript(getFQN(include), clone).jsString;
-        }
-        return "";
-    }
+	private String browserJSWithLineNumbers;
+	
+	private ArrayList<String> lineDebugInfo = new ArrayList<String>();
 
-    private boolean isRecursed(final String include) {
-        return parents.contains(getFQN(include));
-    }
+	static {
+		pattern_set = Pattern.compile("_set\\s*\\(.*");
+		pattern_popup_set = Pattern.compile("_popup\\s*\\(.*\\)\\s*[.]\\s*_set\\s*\\(.*");
+	}
+	
+	public SahiScript(String filePath, ArrayList<String> parents, String scriptName) {
+		this.filePath = filePath;
+		this.scriptName = scriptName;
+		this.parents = parents;
+		init(filePath);
+	}
 
-    abstract String getFQN(String scriptName);
+	protected void setScript(final String s) {
+		original = s;
+		browserJS = modifyFunctionNames(extractBrowserJS(s, false));
+		browserJSWithLineNumbers = modifyFunctionNames(extractBrowserJS(s, true));
+		jsString = modify(removeBrowserJS(s));
+		script = jsString;
+	}
 
-    static String getInclude(String line) {
-        final String re = ".*_include\\([\"|'](.*)[\"|']\\).*";
-        Pattern p = Pattern.compile(re);
-        Matcher m = p.matcher(line.trim());
-        if (m.matches()) {
-            return line.substring(m.start(1), m.end(1));
-        }
-        return null;
-    }
+	String removeBrowserJS(String s) {
+		StringBuffer sb = new StringBuffer(s);
+		int startIx = s.indexOf("<browser>");
+		while (startIx != -1) {
+			int endIx = s.indexOf("</browser>", startIx);
+			if (endIx == -1)
+				endIx = s.length();
+			else endIx = endIx  + 10;
+			String browserJSSnippet = s.substring(startIx, endIx);
+			browserJSSnippet = browserJSSnippet.replaceAll("[^\\n]", " ");
+			sb.replace(startIx, endIx, browserJSSnippet);
+			startIx = s.indexOf("<browser>", endIx);
+		}
+		return sb.toString();
+//		return s.replaceAll("(?s)<browser>.*?</browser>", "");
+	}
 
-    static String getActionRegExp() {
-        ArrayList keywords = getActionKeyWords();
-        return getActionRegExp(keywords);
-    }
+	String extractBrowserJS(String s, boolean addLineNumberInfo) {
+		StringBuffer sb = new StringBuffer(s);
+		int startIx = 0;//s.indexOf("<browser>");
+		while (startIx != -1) {
+			int endIx = s.indexOf("<browser>", startIx);
+			if (endIx == -1)
+				endIx = s.length();
+			else endIx= endIx+9;
+			String nonBrowserJSSnippet = s.substring(startIx, endIx);
+			nonBrowserJSSnippet = nonBrowserJSSnippet.replaceAll("[^\\n]", " ");
+			sb.replace(startIx, endIx, nonBrowserJSSnippet);
+			startIx = s.indexOf("</browser>", endIx);
+		}
+		String js = sb.toString();
+		if (!addLineNumberInfo) {
+	        return stripBlankLines(js);
+		} else
+			return LogViewer.addLineNumbers(js, filePath);
+	}
 
-    static String getActionRegExp(ArrayList keywords) {
-        StringBuffer sb = new StringBuffer();
-        int size = keywords.size();
-        sb.append("^(?:");
-        for (int i = 0; i < size; i++) {
-            String keyword = (String) keywords.get(i);
-            sb.append(keyword);
-            if (i != size - 1) {
-                sb.append("|");
-            }
-        }
-        sb.append(")\\s*\\(.*");
-        return sb.toString();
-    }
+	private String stripBlankLines(String js) {
+		String[] lines = js.split("\n");
+		StringBuffer sb2 = new StringBuffer();
+		int len = lines.length;
+		for (int i = 0; i < len; i++) {
+			String line = lines[i];
+			if ("".equals(line.trim())) continue;
+			sb2.append(line+"\n");
+		}
+		return sb2.toString();
+	}
 
-    public static String modifyFunctionNames(String unmodified) {
-        unmodified = stripSahiFromFunctionNames(unmodified);
-        return unmodified.replaceAll(REG_EXP_FOR_ADDING, "_sahi.$1$2");
-    }
+	String extractBrowserJS2(String s, boolean addLineNumberInfo) {
+		StringBuffer sb = new StringBuffer();
+		int startIx = s.indexOf("<browser>");
+		while (startIx != -1) {
+			int endIx = s.indexOf("</browser>", startIx);
+			if (endIx == -1)
+				endIx = s.length();
+			sb.append(s.substring(startIx + 9, endIx));
+			sb.append("\n");
+			startIx = s.indexOf("<browser>", endIx + 10);
+		}
+		String withoutLineNumbers = sb.toString();
+		return withoutLineNumbers;
+	}
 
-    public static String stripSahiFromFunctionNames(String unmodified) {
-        return unmodified.replaceAll(REG_EXP_FOR_STRIPPING, "$1$2");
-    }
+	public String jsString() {
+		return jsString;
+	}
 
-    static String getRegExp(boolean isForStripping) {
-        ArrayList keywords = getKeyWords();
-        return getRegExp(isForStripping, keywords);
-    }
+	static String addJSEvalCode(String str) {
+		StringBuffer sb = new StringBuffer();
+		sb.append("_sahi.execSteps = \"");
+		sb.append(Utils.makeString(str));
+		sb.append("\";\neval(_sahi.execSteps);");
+		return sb.toString();
+	}
 
-    static String getRegExp(boolean isForStripping, ArrayList keywords) {
-        StringBuffer sb = new StringBuffer();
-        int size = keywords.size();
-        if (isForStripping) {
-            sb.append("_sahi.");
-        }
-        sb.append("_?(");
-        for (int i = 0; i < size; i++) {
-            String keyword = (String) keywords.get(i);
-            sb.append(keyword);
-            if (i != size - 1) {
-                sb.append("|");
-            }
-        }
-        sb.append(")(\\s*\\()");
-        return sb.toString();
-    }
+	public String modifiedScript() {
+		return script == null ? "" : script;
+	}
 
-    public static ArrayList getActionKeyWords() {
-        if (actionKeywords == null) {
-            actionKeywords = loadActionKeyWords();
-        }
-        return actionKeywords;
-    }
+	String modify(String s) {
+		StringBuffer sb = new StringBuffer();
+		s = normalizeNewLinesForOSes(s);
+		Iterator<?> tokens = Utils.getTokens(s).iterator();
+		int lineNumber = 0;
+		while (tokens.hasNext()) {
+			lineNumber++;
+			String line = ((String) tokens.next());
+			if ("".equals(line)) {
+				continue;
+			}
+			boolean isInclude = false;
+			line = line.trim();
+			if (line.startsWith("_include")) {
+				SahiScript included = processInclude(line);
+				if (included != null) {
+					sb.append(included.jsString);
+					browserJS += included.browserJS;
+					browserJSWithLineNumbers += included.browserJSWithLineNumbers;
+					lineDebugInfo.addAll(included.lineDebugInfo);
+					isInclude = true;
+				}
+			} else if (line.contains("_condition")) {
+				sb.append(modifyCondition(line, lineNumber));
+			} else if (line.startsWith("_wait")) {
+				sb.append(modifyWait(line, lineNumber));
+			} else if (isSet(line)) {
+				sb.append(processSet(line, lineNumber));
+			} else if (line.startsWith("_")
+					&& lineStartsWithActionKeyword(line)) {
+				sb.append(scheduleLine(line, lineNumber));
+			} else {
+				sb.append(modifyLine(line));
+			}
+			if (!isInclude) lineDebugInfo.add(getDebugInfo(lineNumber));
+		}
+		String toString = sb.toString();
+		logger.fine(toString);
+		return toString;
+	}
 
-    static ArrayList loadActionKeyWords() {
-        ArrayList keywords = new ArrayList();
-        keywords.addAll(loadKeyWords("scheduler"));
-        return keywords;
-    }
+	String normalizeNewLinesForOSes(String s) {
+		return s.replace("\r\n", "\n").replace("\r", "\n");
+	}
 
-    public static ArrayList getKeyWords() {
-        if (normalKeywords == null) {
-            normalKeywords = loadKeyWords();
-        }
-        return normalKeywords;
-    }
+	boolean isSet(String line) {
+		return pattern_set.matcher(line).matches() || pattern_popup_set.matcher(line).matches();
+	}
 
-    static ArrayList loadKeyWords() {
-        ArrayList keywords = new ArrayList();
-        keywords.addAll(loadKeyWords("scheduler"));
-        keywords.addAll(loadKeyWords("normal"));
-        return keywords;
-    }
+	String processSet(String line, int lineNumber) {
+		String patternStr = "(.*)_set\\s*\\(\\s*([^,]*),\\s*(.*)\\)";
+		Pattern pattern = Pattern.compile(patternStr);
+		Matcher matcher = pattern.matcher(line);
+		boolean matchFound = matcher.find();
 
-    static ArrayList loadKeyWords(String type) {
-        ArrayList keywords = new ArrayList();
-        Properties fns = new Properties();
-        try {
-            fns.load(new FileInputStream("../config/" + type + "_functions.txt"));
-        } catch (Exception e) {
-        }
-        keywords.addAll(fns.keySet());
-        return keywords;
-    }
+		if (!matchFound) {
+			return modifyLine(line);
+		} else {
+			String popupPrefix = matcher.group(1);
+			String varName = matcher.group(2);
+			String varValue = matcher.group(3);
+			StringBuffer sb = new StringBuffer();
+			String tempVarName = varName.replaceAll("[$]", "\\\\\\$");
+//			System.out.println("tempVarName="+tempVarName);
+			sb.append(scheduleLine(popupPrefix + "_sahi.setServerVar('" + tempVarName + "', "+ varValue + ");", lineNumber, true));
+			sb.append(modifyLine(varName + " = _sahi.getServerVar('" + tempVarName + "');"));
+			return sb.toString();
+		}
+	}
 
-    String separateVariables(String s) {
-        StringBuffer sb = new StringBuffer();
-        char c = ' ';
-        boolean isVar = false;
-        boolean escaped = false;
-        boolean doubleQuoted = false;
-        boolean quoted = false;
-        int len = s.length();
-        int bracket = 0;
-        int square = 0;
+	String modifyWait(String line, int lineNumber) {
+		int comma = line.indexOf(",");
+		if (comma == -1) {
+			return convertToExecuteWait(scheduleLine(line, lineNumber));
+		}
+		StringBuffer sb = new StringBuffer();
+		sb.append(line.substring(0, comma));
+		sb.append(", ");
+		int close = line.lastIndexOf(")");
+		if (close == -1) {
+			close = line.length();
+		}
+		sb.append("\"");
+		sb.append(separateVariables(line.substring(comma + 1, close).trim()));
+		sb.append("\");");
+		return convertToExecuteWait(scheduleLine(sb.toString(), lineNumber));
+	}
 
-        for (int i = 0; i < len; i++) {
-            c = s.charAt(i);
-            if (c == '\\') {
-                escaped = !escaped;
-            }
-            if (!isVar && c == '$' && !escaped && i + 1 < len && Character.isJavaIdentifierStart(s.charAt(i + 1))) {
-                isVar = true;
-                bracket = 0;
-                square = 0;
-                sb.append("\"+s_v(");
-            }
-            if (isVar && !escaped && !(Character.isJavaIdentifierPart(c) || c == '.')) {
-                boolean append = false;
+	private String convertToExecuteWait(String s){
+		return s.replaceFirst("_sahi[.]schedule", "_sahi.executeWait");
+	}
+	
+	private String modifyLine(String line) {
+		StringBuffer sb = new StringBuffer();
+		sb.append(modifyFunctionNames(line));
+		sb.append("\r\n");
+		return sb.toString();
+	}
 
-                if (c == '"') {
-                    if (!(escaped || quoted)) {
-                        doubleQuoted = !doubleQuoted;
-                    }
-                } else if (c == '\'') {
-                    if (!(escaped || doubleQuoted)) {
-                        quoted = !quoted;
-                    }
-                } else if (!escaped && !quoted && !doubleQuoted) {
-                    if (c == '(') {
-                        bracket++;
-                    } else if (c == ')') {
-                        bracket--;
-                        if (bracket < 0) {
-                            append = true;
-                        }
-                    } else if (c == '[') {
-                        square++;
-                    } else if (c == ']') {
-                        square--;
-                        if (square < 0) {
-                            append = true;
-                        }
-                    } else {
-                        append = true;
-                    }
-                }
-                if (append) {
-                    sb.append(")+\"");
-                    isVar = false;
-                }
-            }
-            if (!isVar && (c == '\\' || c == '"')) {
-                sb.append('\\');
-            }
-            sb.append(c);
-            if (c != '\\') {
-                escaped = false;
-            }
-        }
-        return sb.toString();
-    }
+	private String scheduleLine(String line, int lineNumber) {
+		return scheduleLine(line, lineNumber, true);
+	}
 
-    String findCondition(String s) {
-        char c = ' ';
-        boolean escaped = false;
-        boolean doubleQuoted = false;
-        boolean quoted = false;
-        int len = s.length();
-        int bracket = 0;
+	private String scheduleLine(String line, int lineNumber, boolean separate) {
+		StringBuffer sb = new StringBuffer();
+		sb.append(PREFIX);
+		if (separate) {
+			line = separateVariables(line);
+		}
+		sb.append(modifyFunctionNames(line));
+		sb.append(CONJUNCTION);
+		sb.append(getDebugInfo(lineNumber));
+		sb.append(SUFFIX);
+		sb.append("\r\n");
+		return sb.toString();
+	}
 
-        int i = 0;
-        i = s.indexOf("_condition");
-        i = s.indexOf("(", i) + 1;
-        if (i == 0) {
-            return null;
-        }
-        int start = i;
-        int end = -1;
+	public String getDebugInfo(int lineNumber) {
+		StringBuffer sb = new StringBuffer();
+		sb.append(Utils.escapeDoubleQuotesAndBackSlashes(getDebugFilePath()));
+		sb.append("&n=");
+		sb.append(lineNumber);
+		return sb.toString();
+	}
 
-        for (; i < len; i++) {
-            c = s.charAt(i);
-            if (c == '\\') {
-                escaped = !escaped;
-            }
-            if (!escaped && !(Character.isJavaIdentifierPart(c) || c == '.')) {
-                if (c == '"') {
-                    if (!(escaped || quoted)) {
-                        doubleQuoted = !doubleQuoted;
-                    }
-                } else if (c == '\'') {
-                    if (!(escaped || doubleQuoted)) {
-                        quoted = !quoted;
-                    }
-                } else if (!escaped && !quoted && !doubleQuoted) {
-                    if (c == '(') {
-                        bracket++;
-                    } else if (c == ')') {
-                        bracket--;
-                        if (bracket < 0) {
-                            end = i;
-                            break;
-                        }
-                    }
-                }
-            }
-            if (c != '\\') {
-                escaped = false;
-            }
-        }
-        if (end == -1) {
-            return null;
-        }
-        return s.substring(start, end);
-    }
+	protected String getDebugFilePath() {
+		return filePath;
+	}
+	
+	public String getLineDebugInfo(int lineNumber) {
+		return (lineNumber != -1 && lineNumber < lineDebugInfo.size()) ? lineDebugInfo.get(lineNumber) : "";
+	}
+	
+	public static boolean lineStartsWithActionKeyword(String line) {
+		return REG_EXP_FOR_ACTIONS.matcher(line).matches();
+	}
 
-    public String modifyWhile(String s, int lineNumber) {
-        return modifyIfWhile(s, lineNumber, "while (true) {\r\n", "if (\"true\" != _sahi._getGlobal(\"condn\" + (_sahi.cmds.length))) break;//");
-    }
+	public static String modifySingleLine(String line) {
+		if (line.startsWith("_") && lineStartsWithActionKeyword(line)) {
+			StringBuilder sb = new StringBuilder();
+			sb.append(PREFIX);
+			sb.append(modifyFunctionNames(separateVariables(line)));
+			sb.append(SUFFIX);
+			return sb.toString();
+		} else {
+			return modifyFunctionNames(line);
+		}
+	}
 
-    public String modifyIf(String s, int lineNumber) {
-        return modifyIfWhile(s, lineNumber, "", "if (\"true\" == _sahi._getGlobal(\"condn\" +(_sahi.cmds.length))");
-    }
+	@SuppressWarnings("unchecked")
+	private SahiScript processInclude(String line) {
+		final String include = getInclude(line);
+		if (include != null && !isRecursed(include)) {
+			ArrayList<String> clone = (ArrayList<String>) parents.clone();
+			clone.add(this.path);
+			return new ScriptFactory().getScript(getFQN(include), clone);
+		}
+		return null;
+	}
 
-    public String modifyIfWhile(String s, int lineNumber, String prefix, String suffix) {
-        if (s.indexOf("_condition") == -1) {
-            return modifyLine(s);
-        }
-        String condition = findCondition(s);
-        if (condition == null) {
-            return modifyLine(s);
-        }
-        StringBuffer sb = new StringBuffer();
-        sb.append(prefix);
-        sb.append(scheduleLine("_sahi.saveCondition(" + condition + ");", lineNumber));
-        sb.append(suffix);
-        int end = s.indexOf(condition) + condition.length() + 1;
-        sb.append(s.substring(end));
-        return sb.toString();
-    }
+	private boolean isRecursed(final String include) {
+		return parents.contains(getFQN(include));
+	}
 
-    protected String read(final InputStream in) {
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        int c = ' ';
-        try {
-            while ((c = in.read()) != -1) {
-                out.write(c);
-            }
-        } catch (IOException ste) {
-            ste.printStackTrace();
-        }
-        return new String(out.toByteArray());
-    }
+	abstract String getFQN(String scriptName);
 
-    public String getScriptName() {
-        return scriptName;
-    }
+	static String getInclude(String line) {
+		final String re = ".*_include[\\s]*\\([\"|'](.*)[\"|']\\).*";
+		Pattern p = Pattern.compile(re);
+		Matcher m = p.matcher(line.trim());
+		if (m.matches()) {
+			return line.substring(m.start(1), m.end(1));
+		}
+		return null;
+	}
 
-    protected void init(final String url) {
-        this.path = url;
-        loadScript(url);
-    }
+	static String getActionRegExp() {
+		ArrayList<String> keywords = getActionKeyWords();
+		return getActionRegExp(keywords);
+	}
 
-    protected abstract void loadScript(String url);
+	static String getActionRegExp(ArrayList<String> keywords) {
+		StringBuffer sb = new StringBuffer();
+		int size = keywords.size();
+		sb.append("^(?:");
+		for (int i = 0; i < size; i++) {
+			String keyword = (String) keywords.get(i);
+			sb.append(keyword);
+			if (i != size - 1) {
+				sb.append("|");
+			}
+		}
+		sb.append(")\\s*\\(.*");
+		return sb.toString();
+	}
 
-    public String getOriginal() {
-        return original;
-    }
+	public static String modifyFunctionNames(String unmodified) {
+		unmodified = stripSahiFromFunctionNames(unmodified);
+		return REG_EXP_FOR_ADDING.matcher(unmodified).replaceAll("_sahi.$1$2");
+	}
 
-    public String getOriginalInHTML() {
-        return SahiScriptHTMLAdapter.createHTML(original);
-    }
+	public static String stripSahiFromFunctionNames(String unmodified) {
+		if (unmodified == null) return "";
+		return REG_EXP_FOR_STRIPPING.matcher(unmodified).replaceAll("$1$2");
+	}
 
-    public String getFilePath() {
-        return filePath;
-    }
+	static String getRegExp(boolean isForStripping) {
+		ArrayList<String> keywords = getKeyWords();
+		return getRegExp(isForStripping, keywords);
+	}
+
+	static String getRegExp(boolean isForStripping, ArrayList<String> keywords) {
+		StringBuffer sb = new StringBuffer();
+		int size = keywords.size();
+		if (isForStripping) {
+			sb.append("_sahi.");
+		}
+		sb.append("_?(");
+		for (int i = 0; i < size; i++) {
+			String keyword = (String) keywords.get(i);
+			sb.append(keyword);
+			if (i != size - 1) {
+				sb.append("|");
+			}
+		}
+		sb.append(")(\\s*\\()");
+		return sb.toString();
+	}
+
+	public static ArrayList<String> getActionKeyWords() {
+		if (actionKeywords == null) {
+			actionKeywords = loadActionKeyWords();
+		}
+		return actionKeywords;
+	}
+
+	static ArrayList<String> loadActionKeyWords() {
+		ArrayList<String> keywords = new ArrayList<String>();
+		keywords.addAll(loadKeyWords("scheduler"));
+		return keywords;
+	}
+
+	public static ArrayList<String> getKeyWords() {
+		if (normalKeywords == null) {
+			normalKeywords = loadKeyWords();
+		}
+		return normalKeywords;
+	}
+
+	static ArrayList<String> loadKeyWords() {
+		ArrayList<String> keywords = new ArrayList<String>();
+		keywords.addAll(loadKeyWords("scheduler"));
+		keywords.addAll(loadKeyWords("normal"));
+		return keywords;
+	}
+
+	@SuppressWarnings("unchecked")
+	static ArrayList<String> loadKeyWords(String type) {
+		ArrayList<String> keywords = new ArrayList();
+		Properties fns = new Properties();
+		try {
+			String typePath = Utils.concatPaths(Configuration.getConfigPath(), type + "_functions.txt");
+			fns.load(new FileInputStream(typePath));
+		} catch (Exception e) {
+		}
+		keywords.addAll((Set<String>)(Set)fns.keySet());
+		return keywords;
+	}
+
+	static String separateVariables(String s) {
+		StringBuffer sb = new StringBuffer();
+		char c = ' ';
+		boolean isVar = false;
+		boolean escaped = false;
+		boolean doubleQuoted = false;
+		boolean quoted = false;
+		int len = s.length();
+		int bracket = 0;
+		int square = 0;
+
+		for (int i = 0; i < len; i++) {
+			c = s.charAt(i);
+			if (c == '\\') {
+				escaped = !escaped;
+			} else if (c == '"') {
+				if (!(escaped || quoted)) {
+					doubleQuoted = !doubleQuoted;
+				}
+			} else if (c == '\'') {
+				if (!(escaped || doubleQuoted)) {
+					quoted = !quoted;
+				}
+			} else if (c == '$' && !isVar && !escaped && !quoted && !doubleQuoted && i + 1 < len
+					&& Character.isJavaIdentifierStart(s.charAt(i + 1))) {
+				isVar = true;
+				bracket = 0;
+				square = 0;
+				sb.append("\"+s_v(");
+			} else if (isVar && !escaped
+					&& !(Character.isJavaIdentifierPart(c) || c == '.')) {
+				boolean append = false;
+
+				if (!escaped && !quoted && !doubleQuoted) {
+					if (c == '(') {
+						bracket++;
+					} else if (c == ')') {
+						bracket--;
+						if (bracket < 0) {
+							append = true;
+						}
+					} else if (c == '[') {
+						square++;
+					} else if (c == ']') {
+						square--;
+						if (square < 0) {
+							append = true;
+						}
+					} else {
+						if (bracket > 0 && (c == ',' || Character.isWhitespace(c) || c == '/')){
+							append = false;
+						} else { 
+							append = true;
+						}
+					}
+				}
+				if (append) {
+					sb.append(")+\"");
+					isVar = false;
+				}
+			}
+			if (!isVar && (c == '\\' || c == '"')) {
+				sb.append('\\');
+			}
+			sb.append(c);
+			if (c != '\\') {
+				escaped = false;
+			}
+		}
+		if (isVar){ // $var was at the end. like $a==$b
+			sb.append(")+\"");
+			isVar = false;
+		}
+		return sb.toString();
+	}
+
+	String findCondition(String s) {
+		char c = ' ';
+		boolean escaped = false;
+		boolean doubleQuoted = false;
+		boolean quoted = false;
+		int len = s.length();
+		int bracket = 0;
+
+		int i = 0;
+		i = s.indexOf("_condition");
+		i = s.indexOf("(", i) + 1;
+		if (i == 0) {
+			return null;
+		}
+		int start = i;
+		int end = -1;
+
+		for (; i < len; i++) {
+			c = s.charAt(i);
+			if (c == '\\') {
+				escaped = !escaped;
+			}
+			if (!escaped && !(Character.isJavaIdentifierPart(c) || c == '.')) {
+				if (c == '"') {
+					if (!(escaped || quoted)) {
+						doubleQuoted = !doubleQuoted;
+					}
+				} else if (c == '\'') {
+					if (!(escaped || doubleQuoted)) {
+						quoted = !quoted;
+					}
+				} else if (!escaped && !quoted && !doubleQuoted) {
+					if (c == '(') {
+						bracket++;
+					} else if (c == ')') {
+						bracket--;
+						if (bracket < 0) {
+							end = i;
+							break;
+						}
+					}
+				}
+			}
+			if (c != '\\') {
+				escaped = false;
+			}
+		}
+		if (end == -1) {
+			return null;
+		}
+		return s.substring(start, end);
+	}
+
+//	public String modifyWhile(String s, int lineNumber) {
+//		return modifyIfWhile(s, lineNumber, "while (true) {\r\n",
+//				"if (\"true\" != _sahi.getServerVar(\"condn\")) {break;} ");
+//	}
+//
+//	public String modifyIf(String s, int lineNumber) {
+//		return modifyIfWhile(s, lineNumber, "",
+//				"if (\"true\" == _sahi.getServerVar(\"condn\")");
+//	}
+	public String modifyCondition(String s, int lineNumber) {
+		if (s.indexOf("_condition") == -1) {
+			return modifyLine(s);
+		}
+		String condition = findCondition(s);
+		if (condition == null) {
+			return modifyLine(s);
+		}
+		StringBuffer sb = new StringBuffer();		
+		String prefix = s.substring(0, s.indexOf(condition));
+		String suffix = s.substring(s.indexOf(condition) + condition.length());
+		sb.append(prefix);
+		String separated = "\"" + separateVariables(condition) + "\"";
+		sb.append(separated);
+//		System.out.println(separated);
+		sb.append(", \"" + getDebugInfo(lineNumber) + "\"");
+		sb.append(suffix);
+		return modifyFunctionNames(sb.toString());
+	}
+	
+//	public String modifyIfWhile(String s, int lineNumber, String prefix,
+//			String suffix) {
+//		if (s.indexOf("_condition") == -1) {
+//			return modifyLine(s);
+//		}
+//		String condition = findCondition(s);
+//		if (condition == null) {
+//			return modifyLine(s);
+//		}
+//		StringBuffer sb = new StringBuffer();
+//		sb.append(prefix);
+//		sb.append(scheduleLine("_sahi.saveCondition(" + condition + ");",
+//				lineNumber));
+//		sb.append(suffix);
+//		int end = s.indexOf(condition) + condition.length() + 1;
+//		sb.append(s.substring(end));
+//		return sb.toString();
+//	}
+
+	protected String read(final InputStream in) {
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		int c = ' ';
+		try {
+			while ((c = in.read()) != -1) {
+				out.write(c);
+			}
+		} catch (IOException ste) {
+			ste.printStackTrace();
+		}
+		return new String(out.toByteArray());
+	}
+
+	public String getScriptName() {
+		return scriptName;
+	}
+
+	protected void init(final String url) {
+		this.path = url;
+		loadScript(url);
+	}
+
+	protected abstract void loadScript(String url);
+
+	public String getOriginal() {
+		return original;
+	}
+
+	public String getOriginalInHTML() {
+		return SahiScriptHTMLAdapter.createHTML(original);
+	}
+
+	public String getFilePath() {
+		return filePath;
+	}
+
+	public String getBrowserJS() {
+		return browserJS;
+	}
+	
+	/*
+	 * Called from lib.js
+	 */
+	public void addIncludeInfo(SahiScript included){
+		browserJS += included.browserJS;
+		browserJSWithLineNumbers += included.browserJSWithLineNumbers;
+		lineDebugInfo.addAll(included.lineDebugInfo);
+	}
+
+	public static void main(String args[]){
+		System.out.println("x"+"<browser>aaa\nbb\ncc\n</browser>".replaceAll("[^\\n]", "")+"y");
+	}
+
+	public String getBrowserJSWithLineNumbers() {
+		return browserJSWithLineNumbers;
+	}
 }

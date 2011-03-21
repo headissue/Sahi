@@ -17,6 +17,8 @@
  */
 package net.sf.sahi.response;
 
+import net.sf.sahi.util.Utils;
+
 /**
  * User: nraman
  * Date: May 18, 2005
@@ -25,7 +27,7 @@ package net.sf.sahi.response;
 public class SimpleHttpResponse extends HttpResponse {
 
     public SimpleHttpResponse(final String dataStr) {
-        this(dataStr.getBytes());
+    	this(Utils.getBytes(dataStr));
     }
 
     public SimpleHttpResponse(final byte[] data) {

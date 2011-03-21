@@ -43,7 +43,7 @@ public class LicenseChanger {
                     return;
                 }
                 int endIx = s.indexOf("*/");
-                StringBuffer sb = new StringBuffer();
+                StringBuilder sb = new StringBuilder();
                 sb.append(s.substring(0, startIx));
                 sb.append(new String(Utils.readFile(LICENSE_FILE_PATH)));
                 sb.append(s.substring(endIx + 2));

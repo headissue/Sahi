@@ -28,11 +28,16 @@ public class Recorder {
     }
 
     public void record(final HttpRequest request) {
-        request.session().getRecorder().record(request.getParameter("cmd"));
+    	Session session = request.session();
+		if (session.isRecording())
+    		session.getRecorder().record(request.getParameter("step"));
     }
 
     public void stop(final HttpRequest request) {
-        request.session().getRecorder().stop();
+    	Session session = request.session();
+    	if (session.isRecording())
+    		session.getRecorder().stop();
+    	session.setIsRecording(false);
     }
 
     private void startRecorder(final HttpRequest request) {
@@ -45,6 +50,7 @@ public class Recorder {
         net.sf.sahi.record.Recorder recorder = session.getRecorder();
         recorder.setDir(dir);
         recorder.start(Utils.concatPaths(dir, fileName));
-        session.setVariable("sahi_record", "1");
+        session.setIsRecording(true);
+//        session.setVariable("sahi_record", "1");
     }
 }

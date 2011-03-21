@@ -1,6 +1,6 @@
 /**
  * Sahi - Web Automation and Test Tool
- * 
+ *
  * Copyright  2006  V Narayan Raman
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,12 +17,20 @@
  */
 package net.sf.sahi.util;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+
 import net.sf.sahi.config.Configuration;
 import net.sf.sahi.command.Command;
 
 public class URLParser {
 
-    public static String logFileNamefromURI(final String uri) {
+    public static String logFileNamefromURI(String uri) {
+    	try {
+			uri = URLDecoder.decode(uri, "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
         String fileName = getRelativeLogFile(uri);
         if ("".equals(fileName)) {
             return "";
@@ -39,7 +47,9 @@ public class URLParser {
     }
 
     public static String fileNamefromURI(final String uri) {
-        return Utils.concatPaths(Configuration.getHtdocsRoot(), uri.substring(uri.indexOf("_s_/") + 4));
+    	int questionIndex = uri.indexOf("?");
+    	if (questionIndex == -1) questionIndex = uri.length();
+        return Utils.concatPaths(Configuration.getHtdocsRoot(), uri.substring(uri.indexOf("_s_/") + 4, questionIndex));
     }
 
     public static String scriptFileNamefromURI(final String uri, final String token) {
@@ -49,12 +59,12 @@ public class URLParser {
         return Utils.concatPaths(Configuration.getScriptRoots()[0], fileName); //TODO FIX ME
     }
 
-    public static String getCommandFromUri(final String uri) {
-        int ix1 = uri.indexOf("/dyn/");
+    public static String getCommandFromUri(final String uri, String initialToken) {
+        int ix1 = uri.indexOf(initialToken);
         if (ix1 == -1) {
             return null;
         }
-        ix1 = ix1 + 5;
+        ix1 = ix1 + initialToken.length();
         int ix2 = uri.indexOf("/", ix1);
         int ix3 = uri.indexOf("?", ix1);
         int endIx = -1;

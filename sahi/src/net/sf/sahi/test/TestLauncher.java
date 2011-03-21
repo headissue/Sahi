@@ -17,155 +17,144 @@
  */
 package net.sf.sahi.test;
 
-import net.sf.sahi.config.Configuration;
-import net.sf.sahi.util.Utils;
-
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.logging.Logger;
 
+import net.sf.sahi.config.Configuration;
+import net.sf.sahi.playback.ScriptFactory;
+import net.sf.sahi.rhino.RhinoScriptRunner;
+import net.sf.sahi.session.Session;
+import net.sf.sahi.session.Status;
+import net.sf.sahi.util.Utils;
+
 /**
- * @author nraman
- *         Launches browser with test and kills it on completion
+ * @author nraman Launches browser with test and kills it on completion
  */
 public class TestLauncher {
 
-    private final String scriptName;
-    private final String startURL;
-    private String sessionId;
-    private String childSessionId;
-    private Process process;
-    private String browser;
-    private static Logger logger = Configuration.getLogger("net.sf.sahi.test.TestLauncher");
-    private String browserOption;
-    private int threadNo;
+	private final String scriptName;
 
-    public TestLauncher(final String scriptName, final String startURL) {
-        this.scriptName = scriptName;
-        this.startURL = startURL;
-    }
+	private final String startURL;
 
-    public void setSessionId(final String sessionId) {
-        this.sessionId = sessionId;
-        this.childSessionId = createChildSessionId();
-    }
+	private String sessionId;
 
-    public void setBrowser(final String browser) {
-        this.browser = browser;
-    }
+	private String childSessionId;
 
-    public void setBrowserOption(final String browserOption) {
-        this.browserOption = browserOption;
-    }
+	private String browser;
 
-    private String createChildSessionId() {
-        return sessionId + "sahix" + getRandomInt() + "x";
-    }
+	private static Logger logger = Configuration
+			.getLogger("net.sf.sahi.test.TestLauncher");
 
-    public String getStartURL() {
-        return startURL;
-    }
+	private String browserOption;
 
-    public String getScriptName() {
-        return scriptName;
-    }
+	private int threadNo;
 
-    public void execute() {
-        System.out.println("#### Running Script: " + scriptName);
+	@SuppressWarnings("unused")
+	private boolean isMultiThreaded;
+
+	private RhinoScriptRunner scriptRunner;
+
+	private String browserProcessName;
+
+	private BrowserLauncher browserLauncher;
+
+	private boolean useSystemProxy;
+
+	public TestLauncher(final String scriptName, final String startURL) {
+		this.scriptName = scriptName;
+		this.startURL = startURL;
+	}
+
+	public void setSessionId(final String sessionId) {
+		this.sessionId = sessionId;
+		this.childSessionId = createChildSessionId();
+	}
+
+	public void setBrowser(final String browser) {
+		this.browser = browser;
+	}
+
+	public void setBrowserOption(final String browserOption) {
+		this.browserOption = browserOption;
+	}
+
+	private String createChildSessionId() {
+		return sessionId + "sahix" + Utils.getUUID() + "x";
+	}
+
+	public String getStartURL() {
+		return startURL;
+	}
+
+	public String getScriptName() {
+		return scriptName;
+	}
+
+	public void execute(Session session) {
+		this.execute(session, true, true);
+	}
+	
+	public void execute(Session session, boolean async, boolean setDefaultReporters) {
+		System.out.println("#### Running Script: " + scriptName);
+        scriptRunner = new RhinoScriptRunner(new ScriptFactory().getScript(scriptName), session.getSuite(), this, setDefaultReporters);
+		session.setScriptRunner(scriptRunner);
         String url = addSessionId(getURL());
-        process = openURL(url);
-    }
+        browserOption = (browserOption == null) ? "" : browserOption.replaceAll("[$]threadNo", "" + threadNo)
+        		.replaceAll("[$]userDir", Configuration.getAbsoluteUserPath(".").replace('\\', '/'));
+		browserLauncher = new BrowserLauncher(browser, browserProcessName, browserOption, useSystemProxy);
+		browserLauncher.openURL(url);
+		if (async) scriptRunner.execute();
+		else scriptRunner.executeAndWait(); 
+	}
 
-    private String getURL() {
-        String cmd = null;
-        try {
-            cmd = "http://sahi.example.com/_s_/dyn/Player_auto?file=" + URLEncoder.encode(scriptName, "UTF8") + "&startUrl=" + URLEncoder.encode(startURL, "UTF8");
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-        return cmd;
-    }
+	private String getURL() {
+		String cmd = null;
+		try {
+			cmd = "http://" + Configuration.getCommonDomain() + "/_s_/dyn/Player_auto?file="
+					+ URLEncoder.encode(scriptName, "UTF8") + "&startUrl="
+					+ URLEncoder.encode(startURL, "UTF8");
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+		return cmd;
+	}
 
-    private int getRandomInt() {
-        return (int) (10000 * Math.random());
-    }
+	private String addSessionId(String url) {
+		return url + "&sahisid=" + childSessionId;
+	}
 
-    private String addSessionId(String url) {
-        return url + "&sahisid=" + childSessionId;
-    }
+	public void kill() {
+		System.out.println("Killing " + scriptName);
+		logger.fine("Killing " + scriptName);
+		browserLauncher.kill();
+	}
 
-    private Process openURL(final String url) {
-        String cmd = buildCommand(url);
-        logger.fine("cmd=" + cmd);
-        Process process = null;
-        try {
-            process = Runtime.getRuntime().exec(cmd.replaceAll("%20", " "));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return process;
-    }
+	public String getChildSessionId() {
+		return childSessionId;
+	}
 
-    private String buildCommand(final String url) {
-        if (Utils.isWindows()) {
-            return buildCommandForWindows(url);
-        } else {
-            return buildCommandForNonWindows(url);
-        }
-    }
+	public void setThreadNo(int threadNo, boolean isMultiThreaded) {
+		this.threadNo = threadNo;
+		this.isMultiThreaded = isMultiThreaded;
+	}
 
-    String buildCommandForWindows(final String url) {
-        String result;
-        result = "\"" + browser + "\" ";
-        if (!Utils.isBlankOrNull(browserOption)) {
-            result += browserOption.replaceAll("[$]threadNo", "" + threadNo);
-        }
-        result += " \"" + url + "\"";
-        return result;
-    }
+	public int getThreadNo() {
+		return threadNo;
+	}
 
-    String buildCommandForNonWindows(final String url) {
-        String result;
-        result = browser.replaceAll("[ ]+", "\\ ");
-        if (!Utils.isBlankOrNull(browserOption)) {
-            result += browserOption.replaceAll("[ ]+", "\\ ").replaceAll("[$]threadNo", "" + threadNo);
-        }
-        result += " " + url;
-        return result;
-    }
+	public Status getStatus() {
+		return scriptRunner.getScriptStatus();
+	}
+	
+	public RhinoScriptRunner getScriptRunner() {
+		return scriptRunner;
+	}
 
-    public void stop() {
-        System.out.println("Killing " + scriptName);
-        logger.fine("Killing " + scriptName);
-        try {
-            if (process != null) {
-                // if (isFirefox() && Utils.isWindows()) {
-                // try {
-                // Runtime.getRuntime().exec("taskkill /PID "+process.toString());
-                // } catch (IOException e) {
-                // e.printStackTrace();
-                // }
-                // }
-                process.destroy();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public String getChildSessionId() {
-        return childSessionId;
-    }
-
-//	private boolean isFirefox() {
-    // return browser.toLowerCase().indexOf("firefox") != -1;
-    //	}
-    public void setThreadNo(int threadNo) {
-        this.threadNo = threadNo;
-    }
-
-    public int getThreadNo() {
-        return threadNo;
-    }
+	public void setBrowserProcessName(String browserProcessName) {
+		this.browserProcessName = browserProcessName;
+	}
+	public void setUseSystemProxy(boolean useSystemProxy) {
+		this.useSystemProxy = useSystemProxy;
+	}
 }

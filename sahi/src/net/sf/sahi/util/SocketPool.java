@@ -18,84 +18,102 @@
 package net.sf.sahi.util;
 
 import java.io.IOException;
+import java.net.BindException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.LinkedList;
 import java.util.List;
-
+/**
+ * Unused
+ * @author Narayan Raman
+ *
+ */
 public class SocketPool {
 
-    private final List unused = new LinkedList();
-    private static int START_PORT = 13300;
-    private int lastPort;
+	private final List<Integer> unused = new LinkedList<Integer>();
 
-    public SocketPool(final int size) {
-        for (int i = 0; i < size; i++) {
-            returnToPool(START_PORT + i);
-        }
-        lastPort = START_PORT + size;
-    }
+	private static int START_PORT = 13300;
 
-    private Socket createSocket(final int port) throws IOException {
-        Socket socket = new Socket();
-        try {
-            socket.setReuseAddress(true);
-            socket.bind(new InetSocketAddress(port));
-        } catch (SocketException e) {
-            e.printStackTrace();
-        }
-        return socket;
-    }
+	private int lastPort;
 
-    Socket get() throws IOException {
-        Socket socket;
-        int port;
-        synchronized (unused) {
-            while (unused.isEmpty()) {
-                try {
-                    System.out.println("Waiting for socket");
-                    unused.wait();
-                } catch (InterruptedException e) {
-                    System.out.println("Interrupted!");
-                }
-            }
-            port = ((Integer) unused.remove(0)).intValue();
-        }
-        socket = createSocket(port);
-//		System.out.println("Get:     " + port);
-        return socket;
-    }
+	public SocketPool(final int size) {
+		for (int i = 0; i < size; i++) {
+			returnToPool(START_PORT + i);
+		}
+		lastPort = START_PORT + size;
+	}
 
-    public Socket get(final String host, final int port) throws IOException {
-        Socket socket = get();
-        try {
-//        	System.out.println("Trying: " + socket.getLocalPort());
-            socket.connect(new InetSocketAddress(host, port));
-        } catch (Exception e) {
-//        	e.printStackTrace();
-            lastPort++;
-            System.out.println("### Creating New Socket : " + lastPort);
-            socket = createSocket(lastPort);
-            socket.connect(new InetSocketAddress(host, port));
-        }
-        return socket;
-    }
+	private Socket createSocket(final int port) throws IOException {
+		Socket socket = new Socket();
+		try {
+			socket.setSoLinger(true, 0);
+			socket.setReuseAddress(true);
+			socket.bind(new InetSocketAddress(port));
+		} catch (SocketException e) {
+			e.printStackTrace();
+		}
+		return socket;
+	}
 
-    public void release(final Socket socket) {
-        try {
-            socket.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        returnToPool(socket.getLocalPort());
-    }
+	Socket get() throws IOException {
+		Socket socket;
+		int port;
+		synchronized (unused) {
+			while (unused.isEmpty()) {
+				try {
+					System.out.println("Waiting for socket");
+					unused.wait();
+				} catch (InterruptedException e) {
+					System.out.println("Interrupted!");
+				}
+			}
+			port = ((Integer) unused.remove(0)).intValue();
+			socket = createSocket(port);
+		}
+		// System.out.println("Get: " + port);
+		return socket;
+	}
 
-    void returnToPool(final int port) {
-//		System.out.println("returned to Pool " + port);
-        synchronized (unused) {
-            unused.add(unused.size(), new Integer(port));
-            unused.notifyAll();
-        }
-    }
+	public Socket get(final String host, final int port) throws IOException {
+		Socket socket = get();
+		try {
+			// System.out.println("Trying: " + socket.getLocalPort());
+			socket.connect(new InetSocketAddress(host, port));
+		} catch (BindException e) {
+			e.printStackTrace();
+			lastPort++;
+			System.out.println("### Creating New Socket : " + lastPort);
+			socket = createSocket(lastPort);
+			socket.connect(new InetSocketAddress(host, port));
+		} catch (IOException e){
+			System.out.println("Error while connecting to " + host+":"+port);
+			release(socket);
+			throw e;
+		}
+		return socket;
+	}
+
+	public void release(final Socket socket) {
+		try {
+			socket.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		// System.out.println("#socket.getLocalPort()="+socket.getLocalPort());
+		// System.out.println("#socket.isClosed()="+socket.isClosed());
+		// System.out.println("#socket.isBound()="+socket.isBound());
+		// System.out.println("#socket.isInputShutdown()="+socket.isInputShutdown());
+		// System.out.println("#socket.isOutputShutdown()="+socket.isOutputShutdown());
+		// System.out.println("#socket.isConnected()="+socket.isConnected());
+		returnToPool(socket.getLocalPort());
+	}
+
+	void returnToPool(final int port) {
+		// System.out.println("returned to Pool " + port);
+		synchronized (unused) {
+			unused.add(new Integer(port));
+			unused.notifyAll();
+		}
+	}
 }

@@ -21,7 +21,7 @@ import java.util.ArrayList;
 
 public class ScriptFactory {
 
-    public SahiScript getScript(final String fileName, final ArrayList parents) {
+    public SahiScript getScript(final String fileName, final ArrayList<String> parents) {
         if (fileName.indexOf("http://") == 0 || fileName.indexOf("https://") == 0) {
             return new URLScript(fileName, parents);
         }
@@ -29,6 +29,6 @@ public class ScriptFactory {
     }
 
     public SahiScript getScript(final String fileName) {
-        return getScript(fileName, new ArrayList());
+        return getScript(fileName, new ArrayList<String>());
     }
 }

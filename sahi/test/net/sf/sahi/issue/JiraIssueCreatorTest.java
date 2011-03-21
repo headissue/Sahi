@@ -1,5 +1,7 @@
 package net.sf.sahi.issue;
 
+import net.sf.sahi.config.Configuration;
+
 import org.apache.xmlrpc.client.XmlRpcClient;
 import org.apache.xmlrpc.client.XmlRpcClientConfigImpl;
 import org.jmock.Mock;
@@ -11,16 +13,35 @@ import java.util.Map;
 import java.net.URL;
 
 /**
+ * Sahi - Web Automation and Test Tool
+ * 
+ * Copyright  2006  V Narayan Raman
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+/**
  * User: dlewis
  * Date: Dec 11, 2006
  * Time: 12:38:08 PM
  */
 public class JiraIssueCreatorTest extends MockObjectTestCase {
-    private JiraIssueCreator issueCreator;
+	private static final long serialVersionUID = 5011390099624013522L;
+	private JiraIssueCreator issueCreator;
     Mock mockXmlRpcClient;
 
 
     protected void setUp() throws Exception {
+    	Configuration.init();
         super.setUp();
         if (mockXmlRpcClient == null) {
             mockXmlRpcClient = mock(XmlRpcClient.class);
@@ -47,7 +68,8 @@ public class JiraIssueCreatorTest extends MockObjectTestCase {
         issueCreator.initializeXmlRpcClient((XmlRpcClient)mockXmlRpcClient.proxy(),(XmlRpcClientConfigImpl)mockConfigImpl.proxy());
     }
 
-    public void testCreateIssue() throws Exception {
+    @SuppressWarnings("unchecked")
+	public void testCreateIssue() throws Exception {
         issueCreator.setIssueParams(new HashMap());
         mockXmlRpcClient.expects(once()).method("execute").with(eq("jira1.createIssue"), new Constraint() {
             public boolean eval(Object object) {
@@ -74,7 +96,8 @@ public class JiraIssueCreatorTest extends MockObjectTestCase {
         }
     }
 
-    public void testGetIssueParametersWithParameterFound() throws Exception {
+    @SuppressWarnings("unchecked")
+	public void testGetIssueParametersWithParameterFound() throws Exception {
         mockXmlRpcClient.expects(once()).method("execute").with(eq("jira1.getProjects"), ANYTHING).will(returnValue(new Object[]{getParamMap("Sahi Integration")}));
         mockXmlRpcClient.expects(once()).method("execute").with(eq("jira1.getIssueTypes"), ANYTHING).will(returnValue(new Object[]{getParamMap("Sahi Bug")}));
         mockXmlRpcClient.expects(once()).method("execute").with(eq("jira1.getPriorities"), ANYTHING).will(returnValue(new Object[]{getParamMap("Major")}));
@@ -88,8 +111,8 @@ public class JiraIssueCreatorTest extends MockObjectTestCase {
         assertTrue(issueParams.containsKey("components"));
     }
 
-    private Map getParamMap(String paramValue) {
-        Map map = new HashMap();
+    private Map<String, String> getParamMap(String paramValue) {
+        Map<String, String> map = new HashMap<String, String>();
         map.put("name", paramValue);
         return map;
     }

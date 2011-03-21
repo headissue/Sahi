@@ -18,20 +18,23 @@
 package net.sf.sahi.command;
 
 import java.lang.reflect.Method;
+import java.util.logging.Logger;
 
 import net.sf.sahi.request.HttpRequest;
 import net.sf.sahi.response.HttpResponse;
 import net.sf.sahi.response.NoCacheHttpResponse;
 import net.sf.sahi.util.ClassLoadHelper;
+import net.sf.sahi.util.Utils;
 
 public class CommandExecuter {
 
+	private static final Logger logger = Logger.getLogger("net.sf.sahi.command.CommandExecuter");
     private String commandMethod;
     private String commandClass;
     private final HttpRequest request;
     private static String DELIMITER = "_";
 
-    public CommandExecuter(String cmd, HttpRequest request) {
+    public CommandExecuter(String cmd, HttpRequest request, boolean isPro) {
         this.request = request;
         this.commandClass = cmd;
         this.commandMethod = "execute";
@@ -45,15 +48,16 @@ public class CommandExecuter {
     }
 
     public HttpResponse execute() {
-        Class clazz;
+        Class<?> clazz;
         try {
             clazz = ClassLoadHelper.getClass(commandClass);
             final Method method = clazz.getDeclaredMethod(commandMethod, new Class[]{HttpRequest.class});
             final Object returned = method.invoke(clazz.newInstance(), new Object[]{request});
             return returned == null ? new NoCacheHttpResponse() : (HttpResponse) returned;
         } catch (Exception e) {
-            e.printStackTrace();
-            return new NoCacheHttpResponse();
+        	logger.warning("commandClass = >"+commandClass + "< commandMethod = >" + commandMethod + "<");
+        	logger.warning(Utils.getStackTraceString(e));
+            return new NoCacheHttpResponse("SAHI_ERROR");
         }
     }
 

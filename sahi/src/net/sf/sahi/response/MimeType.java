@@ -21,6 +21,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 
+import net.sf.sahi.config.Configuration;
+
 public class MimeType {
 
     private static Properties properties;
@@ -29,7 +31,7 @@ public class MimeType {
     static {
         properties = new Properties();
         try {
-            properties.load(new FileInputStream("../config/mime-types.mapping"));
+            properties.load(new FileInputStream(Configuration.getMimeTypesMappingFile()));
         } catch (IOException e) {
             e.printStackTrace();
         }

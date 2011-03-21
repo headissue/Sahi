@@ -1,6 +1,6 @@
 /**
  * Sahi - Web Automation and Test Tool
- * 
+ *
  * Copyright  2006  V Narayan Raman
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,25 +17,48 @@
  */
 package net.sf.sahi.command;
 
+import java.io.UnsupportedEncodingException;
+
+import net.sf.sahi.config.Configuration;
+import net.sf.sahi.playback.SahiScript;
+import net.sf.sahi.playback.ScriptFactory;
 import net.sf.sahi.report.LogViewer;
 import net.sf.sahi.request.HttpRequest;
 import net.sf.sahi.response.HttpFileResponse;
 import net.sf.sahi.response.HttpResponse;
 import net.sf.sahi.response.NoCacheHttpResponse;
 import net.sf.sahi.response.SimpleHttpResponse;
+import net.sf.sahi.util.FileNotFoundRuntimeException;
 import net.sf.sahi.util.URLParser;
 import net.sf.sahi.util.Utils;
-import net.sf.sahi.config.Configuration;
 
 public class Log {
 
     public HttpResponse viewLogs(final HttpRequest request) {
         String fileName = URLParser.logFileNamefromURI(request.uri());
         if ("".equals(fileName)) {
-            return new NoCacheHttpResponse(LogViewer.getLogsList(Configuration.getPlayBackLogsRoot()));
+//        	long start = System.currentTimeMillis();
+            String logsList = LogViewer.getLogsList(Configuration.getPlayBackLogsRoot());
+//            System.out.println((System.currentTimeMillis() - start));
+			NoCacheHttpResponse response = new NoCacheHttpResponse(logsList);
+//            System.out.println((System.currentTimeMillis() - start));
+			return response;
         } else {
             return new HttpFileResponse(fileName, null, false, false);
         }
+    }
+
+    public HttpResponse getBrowserScript(final HttpRequest request) {
+        HttpResponse httpResponse;
+        String scriptPath = request.getParameter("href");
+        SahiScript script = new ScriptFactory().getScript(scriptPath);
+		if (script != null) {
+            httpResponse = new SimpleHttpResponse(LogViewer.highlight(script.getBrowserJSWithLineNumbers(), getLineNumber(request)));
+        } else {
+            httpResponse = new SimpleHttpResponse(
+                    "No Script has been set for playback.");
+        }
+        return httpResponse;
     }
 
     public HttpResponse highlight(final HttpRequest request) {
@@ -45,10 +68,22 @@ public class Log {
         if (href.startsWith("http://") || href.startsWith("https://")) {
             content = new String(Utils.readURL(href));
         } else {
-            content = new String(Utils.readFile(href));
+        	try{
+        		content = Utils.readFileAsString(Configuration.getAbsoluteUserPath(href));
+        	}catch(FileNotFoundRuntimeException e){
+        		content = "File ["+href+"] not found";
+        	}
         }
-        final SimpleHttpResponse response = new SimpleHttpResponse(content);
-        response.setData(LogViewer.highlight(new String(response.data()), lineNumber).getBytes());
+        content = content.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+        final SimpleHttpResponse response = new SimpleHttpResponse("");
+        String highlighted = LogViewer.highlight(content, lineNumber);
+        highlighted = ("<h4>" + href.replace("\\\\", "\\") + "</h4>").concat(highlighted);
+		try {
+			response.setData(highlighted.getBytes("UTF8"));
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+			response.setData(highlighted.getBytes());
+		}
         response.resetRawHeaders();
         return response;
     }
@@ -59,7 +94,7 @@ public class Log {
         try {
             i = Integer.parseInt(p);
         } catch (Exception e) {
-            
+
         }
         return i;
     }

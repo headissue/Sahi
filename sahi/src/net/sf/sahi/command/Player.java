@@ -17,87 +17,153 @@
  */
 package net.sf.sahi.command;
 
+import java.util.Properties;
+
 import net.sf.sahi.config.Configuration;
 import net.sf.sahi.playback.FileScript;
 import net.sf.sahi.playback.SahiScript;
 import net.sf.sahi.playback.ScriptFactory;
-import net.sf.sahi.report.HtmlReporter;
-import net.sf.sahi.report.Report;
+import net.sf.sahi.report.LogViewer;
+import net.sf.sahi.report.ResultType;
 import net.sf.sahi.request.HttpRequest;
 import net.sf.sahi.response.HttpFileResponse;
 import net.sf.sahi.response.HttpResponse;
 import net.sf.sahi.response.NoCacheHttpResponse;
 import net.sf.sahi.response.SimpleHttpResponse;
+import net.sf.sahi.rhino.RhinoScriptRunner;
+import net.sf.sahi.rhino.ScriptRunner;
 import net.sf.sahi.session.Session;
 import net.sf.sahi.session.Status;
-import net.sf.sahi.test.SahiTestSuite;
-
-import java.util.Properties;
+import net.sf.sahi.test.ProcessHelper;
+import net.sf.sahi.util.Utils;
 
 public class Player {
 
     public void stepWisePlay(final HttpRequest request) {
-        startPlayback(request.session(), false);
+        startPlayback(request.session(), false, "1");
     }
 
     public void start(final HttpRequest request) {
-        startPlayback(request.session(), true);
+        startPlayback(request.session(), true, "1");
     }
 
     public void stop(final HttpRequest request) {
         Session session = request.session();
-        stop(session);
+        if (session.getRecorder() != null) session.getRecorder().stop();
+        if (session.getScriptRunner() != null) session.getScriptRunner().stop();
     }
 
-    public void stop(final Session session) {
-        try {
-            session.getRecorder().stop();
-            session.getReport().generateTestReport();
-            Status testStatus = session.getReport().getTestSummary().hasFailed() ? Status.FAILURE : Status.SUCCESS;
-            session.setStatus(testStatus);
-        } catch (Exception e) {
-            e.printStackTrace();
-            session.setStatus(Status.FAILURE);
-        }
-        SahiTestSuite suite = SahiTestSuite.getSuite(session.id());
-        if (suite != null) {
-            suite.notifyComplete(session.id());
-        }
-    }
+//    public void stop(final Session session) {
+//        try {
+//            if (session.getRecorder() != null) session.getRecorder().stop();
+//            if (session.getScriptRunner() != null) session.getScriptRunner().stop();
+////            if (session.getReport() != null) {
+////            	session.getReport().generateTestReport();
+////	            Status testStatus = session.getReport().getTestSummary().hasFailed() ? Status.FAILURE : Status.SUCCESS;
+////	            session.setStatus(testStatus);
+////            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            session.getScriptRunner().setStatus(Status.FAILURE);
+//        }
+//        SahiTestSuite suite = SahiTestSuite.getSuite(session.id());
+//        if (suite != null) {
+//        	//System.out.println("Player.stop: "+session.id());
+//            suite.notifyComplete(session.id());
+//        }
+//    }
 
     public void setScriptFile(final HttpRequest request) {
         Session session = request.session();
+        String dir = request.getParameter("dir");
         String fileName = request.getParameter("file");
-        SahiScript script = new ScriptFactory().getScript(fileName);
-        session.setScript(script);
-        // session.setScript(new ScriptFactory().getScript(
-        // Configuration.getScriptFileWithPath(fileName)));
-        session.setReport(new Report(script.getScriptName(),
-                new HtmlReporter()));
-        startPlayback(session, true);
+        session.setIsWindowOpen("1".equals(request.getParameter("manual")));
+        String filePath = Utils.concatPaths(dir, fileName);
+        setScript(session, filePath);
     }
 
     public void setScriptUrl(final HttpRequest request) {
         Session session = request.session();
         String url = request.getParameter("url");
-        session.setScript(new ScriptFactory().getScript(url));
-        session.setReport(new Report(session.getScript().getScriptName(),
-                new HtmlReporter()));
-        startPlayback(session, true);
+        session.setIsWindowOpen("1".equals(request.getParameter("manual")));
+        setScript(session, url);
     }
 
-    private void startPlayback(final Session session, final boolean resetConditions) {
+    public void resetScript(final HttpRequest request) {
+        Session session = request.session();
+    	String scriptPath = session.getVariable("sahi_scriptPath");
+    	stop(request);
+    	setScript(session, scriptPath);
+    }
+    private void setScript(Session session, String scriptPath){
+        SahiScript script = new ScriptFactory().getScript(scriptPath);
+        RhinoScriptRunner scriptRunner = new RhinoScriptRunner(script);
+		session.setScriptRunner(scriptRunner);
+        startPlayback(session, true, "1");
+    }
+
+    private void startPlayback(final Session session, final boolean resetConditions, String paused) {
         if (resetConditions) {
             session.removeVariables(".*");
         }
-        session.setStatus(Status.RUNNING);
-        session.setVariable("sahi_play", "1");
-        session.setVariable("sahi_paused", "1");
+        ScriptRunner scriptRunner = session.getScriptRunner();
+		scriptRunner.setStatus(Status.RUNNING);
+		session.setIsPlaying(true);
+//        session.setVariable("sahi_play", "1");
+        session.setVariable("sahi_paused", paused);
+        session.setVariable("sahi_controller_tab", "playback");
+    	session.setVariable("sahi_scriptPath", scriptRunner.getScriptFilePath());
+        scriptRunner.execute();
+    }
+
+    public HttpResponse isPlaying(final HttpRequest request){
+        Session session = request.session();
+        return new SimpleHttpResponse(session.isPlaying() ? "1" : "0");
+//        ScriptRunner scriptRunner = session.getScriptRunner();
+//    	return new SimpleHttpResponse(scriptRunner != null && scriptRunner.getStatus() == Status.RUNNING ? "1" : "0");
+    }
+    public HttpResponse getCurrentStep(final HttpRequest request){
+        Session session = request.session();
+        ScriptRunner scriptRunner = session.getScriptRunner();
+        if (scriptRunner == null) return new SimpleHttpResponse("{'type':'WAIT'}");
+        String derivedName = request.getParameter("derivedName");
+        String windowName = request.getParameter("windowName");
+        String windowTitle = request.getParameter("windowTitle");
+        String domain = request.getParameter("domain");
+        String wasOpened = request.getParameter("wasOpened");
+        //System.out.println("scriptRunner="+scriptRunner);
+        return new SimpleHttpResponse(scriptRunner.getStepJSON(derivedName, windowName, windowTitle, domain, wasOpened));
+    }
+
+    public void markStepDone(final HttpRequest request){
+        Session session = request.session();
+        ScriptRunner scriptRunner = session.getScriptRunner();
+        String failureMessage = request.getParameter("failureMsg");
+        String type = request.getParameter("type");
+        scriptRunner.markStepDone(request.getParameter("stepId"), ResultType.getType(type), failureMessage);
+        session.set204(false);
+//        try{
+//        	new TestReporter().logTestResult(request);
+//        }catch(Exception e){
+//            e.printStackTrace();
+//        }
+    }
+
+    public HttpResponse check204(final HttpRequest request) {
+        Session session = request.session();
+        return new SimpleHttpResponse(""+session.is204());
+    }
+    
+    public void markStepInProgress(final HttpRequest request){
+        Session session = request.session();
+        ScriptRunner scriptRunner = session.getScriptRunner();
+        String type = request.getParameter("type");
+        scriptRunner.markStepInProgress(request.getParameter("stepId"), ResultType.getType(type));
     }
 
     public HttpResponse currentScript(final HttpRequest request) {
         Session session = request.session();
-        SahiScript script = session.getScript();
+        SahiScript script = getScript(session);
         if (script != null) {
             return new Script().view(script.getFilePath());
         } else {
@@ -106,11 +172,28 @@ public class Player {
         }
     }
 
+	private SahiScript getScript(Session session) {
+		RhinoScriptRunner scriptRunner = (RhinoScriptRunner) session.getScriptRunner();
+		return scriptRunner.getScript();
+	}
+
+    public HttpResponse currentBrowserScript(final HttpRequest request) {
+        Session session = request.session();
+        HttpResponse httpResponse;
+        if (session.getScriptRunner() != null && getScript(session) != null) {
+            httpResponse = new SimpleHttpResponse(LogViewer.highlight(getScript(session).getBrowserJS(), -1));
+        } else {
+            httpResponse = new SimpleHttpResponse(
+                    "No Script has been set for playback.");
+        }
+        return httpResponse;
+    }
+
     public HttpResponse currentParsedScript(final HttpRequest request) {
         Session session = request.session();
         HttpResponse httpResponse;
-        if (session.getScript() != null) {
-            httpResponse = new SimpleHttpResponse("<pre>" + session.getScript().modifiedScript().replaceAll("\\\\r",
+        if (getScript(session) != null) {
+            httpResponse = new SimpleHttpResponse("<pre>" + getScript(session).modifiedScript().replaceAll("\\\\r",
                     "").replaceAll("\\\\n", "<br>") + "</pre>");
         } else {
             httpResponse = new SimpleHttpResponse(
@@ -121,41 +204,82 @@ public class Player {
 
     public HttpResponse script(final HttpRequest request) {
         Session session = request.session();
-        String s = (session.getScript() != null) ? session.getScript().modifiedScript() : "";
+        ScriptRunner scriptRunner = session.getScriptRunner();
+		String s = null;
+		if (scriptRunner != null) {
+			if (scriptRunner.getScript() != null) {
+				s = scriptRunner.getScript().getBrowserJS(); // Sahi Script
+			} else {
+				s = scriptRunner.getBrowserJS(); // Other drivers
+			}
+		} 
+		if (s == null) s = "";
         return new NoCacheHttpResponse(s);
     }
 
-    public HttpResponse auto(final HttpRequest request) {
+    public HttpResponse auto2(final HttpRequest request) {
+    	ProcessHelper.setProcessStarted();
         Session session = request.session();
         String fileName = request.getParameter("file");
 
         final String scriptFileWithPath;
         scriptFileWithPath = fileName;
-        session.setScript(new FileScript(scriptFileWithPath));
+        RhinoScriptRunner scriptRunner = new RhinoScriptRunner(new FileScript(scriptFileWithPath));
+		session.setScriptRunner(scriptRunner);
+		session.setIsPlaying(true);
         String startUrl = request.getParameter("startUrl");
         session.setIsWindowOpen(false);
-
-        if (session.getSuite() != null) {
-            session.setReport(new Report(session.getScript().getScriptName(),
-                    session.getSuite().getListReporter()));
-        } else {
-            session.setReport(new Report(session.getScript().getScriptName(),
-                    new HtmlReporter()));
-        }
+        startPlayback(session, true, "0");
         return proxyAutoResponse(startUrl, session.id());
     }
 
-    public void success(final HttpRequest request) {
+    public HttpResponse auto(final HttpRequest request) {
+    	ProcessHelper.setProcessStarted();
         Session session = request.session();
+        String startUrl = request.getParameter("startUrl");
+        session.setIsWindowOpen(false);
+        session.setIsPlaying(true);
+        return proxyAutoResponse(startUrl, session.id());
+    }
+
+    public HttpResponse autoJava(final HttpRequest request) {
+    	ProcessHelper.setProcessStarted();
+        Session session = request.session();
+        String startUrl = request.getParameter("startUrl");
+        session.setIsWindowOpen(false);
+        session.removeVariables(".*");
+        session.setIsReadyForDriver(false); // will be toggled in Driver_initialized
+        return proxyAutoResponse(startUrl, session.id());
+    }
+
+    public void setRetries(final HttpRequest request) {
+    	ScriptRunner scriptRunner = request.session().getScriptRunner();
+    	if (scriptRunner != null)
+    	scriptRunner.setBrowserRetries(Integer.parseInt(request.getParameter("retries")));
+    }
+
+    public HttpResponse getRetries(final HttpRequest request) {
+    	ScriptRunner scriptRunner = request.session().getScriptRunner();
+    	return new SimpleHttpResponse(scriptRunner != null ? "" + scriptRunner.getBrowserRetries() : "-1");
+    }
+
+    public HttpResponse hasErrors(final HttpRequest request) {
+    	ScriptRunner scriptRunner = request.session().getScriptRunner();
+    	return new SimpleHttpResponse("" + scriptRunner.hasErrors());
+    }
+    
+    public void xsuccess(final HttpRequest request) {
+        Session session = request.session();
+        session.touch();
         SessionState state = new SessionState();
         state.setVar("sahi_retries", "0", session);
         state.setVar("sahi_not_my_win_retries", "0", session);
     }
 
-    private HttpFileResponse proxyAutoResponse(final String startUrl, final String sessionId) {
+    private HttpResponse proxyAutoResponse(final String startUrl, final String sessionId) {
         Properties props = new Properties();
         props.setProperty("startUrl", startUrl);
         props.setProperty("sessionId", sessionId);
-        return new HttpFileResponse(Configuration.getHtdocsRoot() + "spr/auto.htm", props, false, true);
+        return new NoCacheHttpResponse(new HttpFileResponse(Configuration.getHtdocsRoot() + "spr/auto.htm", props, false, true));
     }
 }

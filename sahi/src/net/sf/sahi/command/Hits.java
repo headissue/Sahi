@@ -27,7 +27,7 @@ import net.sf.sahi.response.NoCacheHttpResponse;
 
 public class Hits {
 
-    public static HashMap hits = new HashMap();
+    public static HashMap<String, Integer> hits = new HashMap<String, Integer>();
 
     public static void increment(final String key) {
         hits.put(key, new Integer(getCount(key) + 1));
@@ -42,11 +42,11 @@ public class Hits {
     }
 
     public HttpResponse print(final HttpRequest requestFromBrowser) {
-        final Set keySet = Hits.hits.keySet();
-        Iterator it = keySet.iterator();
+        final Set<String> keySet = Hits.hits.keySet();
+        Iterator<String> it = keySet.iterator();
         StringBuffer sb = new StringBuffer();
         while (it.hasNext()) {
-            String key = ((String) it.next());
+            String key = it.next();
             sb.append("<br>").append(key).append(" ").append(Hits.hits.get(key));
         }
         return new NoCacheHttpResponse(sb.toString());

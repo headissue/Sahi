@@ -29,7 +29,8 @@ import java.net.URL;
 import java.io.File;
 
 public class CommandInvokerTest extends MockObjectTestCase {
-    private CommandInvoker commandInvoker;
+	private static final long serialVersionUID = -8519265344249609705L;
+	private CommandInvoker commandInvoker;
     private final File HELPFILE = new File("help.txt");
 
     protected void setUp() throws Exception {

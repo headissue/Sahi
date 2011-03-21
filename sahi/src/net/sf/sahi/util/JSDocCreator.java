@@ -71,8 +71,8 @@ class Function {
 
     public String toString() {
 
-        // converted to use a StringBuffer
-        StringBuffer s = new StringBuffer();
+        // converted to use a StringBuilder
+        StringBuilder s = new StringBuilder();
         s.append("<br>");
         s.append(SahiScript.getActionKeyWords().contains(name) ? "This is a scheduler function." : "");
         s.append("<br><br>\n");
