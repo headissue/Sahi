@@ -1,6 +1,19 @@
-#if this does not work, try to run dos2unix on this file, or delete and reintroduce newlines.
-EXT_CLASS_PATH=;
-#EXT_CLASS_PATH=$EXT_CLASS_PATH:../extlib/mysql-connector-java-5.0.4-bin.jar;
-SAHI_CLASS_PATH=../lib/sahi.jar;
-MOZ_NO_REMOTE=1;
-java -classpath $EXT_CLASS_PATH:$SAHI_CLASS_PATH net.sf.sahi.Proxy;
+if [ ! $SAHI_HOME ] 
+then
+	export SAHI_HOME=..
+fi
+if [ ! $SAHI_USERDATA_DIR ]
+then
+	export SAHI_USERDATA_DIR_TMP=$SAHI_HOME/userdata
+else	
+	export SAHI_USERDATA_DIR_TMP=$SAHI_USERDATA_DIR
+fi	
+
+echo --------
+echo SAHI_HOME: $SAHI_HOME
+echo SAHI_USERDATA_DIR: $SAHI_USERDATA_DIR_TMP
+echo SAHI_EXT_CLASS_PATH: $SAHI_EXT_CLASS_PATH
+echo --------
+
+SAHI_CLASS_PATH=$SAHI_HOME/lib/sahi.jar:$SAHI_HOME/extlib/rhino/js.jar:$SAHI_HOME/extlib/apc/commons-codec-1.3.jar
+java -classpath $SAHI_EXT_CLASS_PATH:$SAHI_CLASS_PATH net.sf.sahi.Proxy "$SAHI_HOME" "$SAHI_USERDATA_DIR_TMP"
