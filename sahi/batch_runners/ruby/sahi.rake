@@ -2,8 +2,8 @@ require "local_build_properties/properties"
 
 desc 'Tasks for running Sahi tests. Create a <user_name>_props.rb file based on default_props.rb.'
 
-def sahi_test (browser, start_url)
-  cmd = "java -cp #{SAHI_DIR}/lib/ant-sahi.jar net.sf.sahi.test.TestRunner #{SAHI_SCRIPTS_DIR}/#{SAHI_TEST_SUITE} \"#{browser}\" #{start_url} default localhost 9999 1"
+def sahi_test (browser, browser_exe, browser_options, start_url)
+  cmd = "java -cp #{SAHI_DIR}/lib/ant-sahi.jar net.sf.sahi.test.TestRunner #{SAHI_SCRIPTS_DIR}/#{SAHI_TEST_SUITE} \"#{browser}\" #{start_url} default localhost 9999 1 #{browser_exe} \"#{browser_options}\""
   c = `#{cmd}`
   if /Status:FAILURE/ =~ c
     if cruise?
@@ -23,14 +23,14 @@ desc "Runs sahi tests on IE"
 task :sahi_tests_ie do
 #  Rake::Task[:start_proxy].invoke
   proxyon
-  sahi_test IE, START_URL
+  sahi_test IE, IE_EXE, IE_OPTIONS, START_URL
   proxyoff
 #  Rake::Task[:stop_proxy].invoke
 end
 
 desc "Runs sahi tests on Firefox"
 task :sahi_tests_ff do
-  sahi_test FIREFOX, START_URL
+  sahi_test FIREFOX, FIREFOX_EXE, FIREFOX_OPTIONS, START_URL
 end
 
 task :sahi_tests_qa do
