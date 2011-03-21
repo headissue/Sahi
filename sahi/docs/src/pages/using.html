@@ -138,57 +138,13 @@ Sahi to get your feet wet.<br>
 (<a href="#top">Top</a>) <br>
 <h4><a name="suites">Suites</a></h4>
 
-Multiple tests can be run through ant. For each test in the suite,
-the ant target opens a browser, runs the test and closes the
-browser, <br>
-The ant target specifies a suite file, say SuiteName.suite. <br>
-<br>
-The syntax of writing the suite file is:<br>
-<br>
-&lt;testName.sah&gt; &lt;absolute url or url relative to the
-baseurl in ant target&gt; <br>
-<br>
-eg.<br>
-test1.sah /startPageForTest1.jsp<br>
-test2.sah http://www.d2.com/startPageForTest2.htm<br>
-test3.sah abc/startPageForTest3.htm <br>
-<br>
-The ant target is like:
+Multiple tests can be run through ant or a batch file/shell script.<br>
+Read more <a href="http://sahi.co.in/w/Running+multiple+tests+in+batch+mode">here</a><br>
 
-<pre>
-    <b>&lt;taskdef name="sahi" classname="net.sf.sahi.ant.RunSahiTask" classpath="${basedir}/sahi/lib/ant-sahi.jar"&gt;
-        &lt;/taskdef&gt;
-
-        &lt;sahi suite="${basedir}/sahi/scripts/SuiteName.suite"
-        browser="C:\\Program Files\\Internet Explorer\\iexplore.exe"
-        baseurl="http://localhost:8888/path/"
-        /&gt;
-
-    </b>
-</pre>
-
-Read more on <a href="ant.html">Sahi Ant Target</a><br>
-<b>For details on running this target, please look at demo.xml in
-    sahi root folder</b><br>
-To run demo.xml, type "ant -f demo.xml"<br>
 (<a href="#top">Top</a>)
 <h4><a name="logging">Logging</a></h4>
 
 Logs are created in "logs/playback/" directory.<br>
-Log results can be accessed through the browser through
-        http://mydomain/_s_/logs/ <br>
+Log results can be accessed on the browser through http://localhost:9999/logs/ <br>
 (<a href="#top">Top</a>) <br>
-<h4>Running test from the console</h4>
-
-If you wish to run a script called "MySahiScript.sah" on a page
-        like say, http://<b>www.domain.com</b>/dir/page1.jsp do<br>
-<br>
-<pre>
-    "C:\Program Files\Mozilla Firefox\firefox.exe" "http://localproxy.sahi.co.in/_s_/dyn/Player_auto?file=<b>MySahiScript.sah</b>&amp;startUrl=<b>http://www.domain.com/dir/page1.jsp</b>"
-    <br>
-    Note that localproxy.sahi.co.in at the start of the URL is hardcoded, and should be used as is. Only the values in
-    bold need to be changed.
-</pre>
-
-<br>
 

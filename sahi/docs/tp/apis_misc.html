@@ -1,0 +1,173 @@
+==
+<style>
+table.api{width:740px;border: 1px solid #ccc;}
+td.label_col{width:60px;}
+</style>
+==
+
+h3. Functions available on browser and on proxy
+
+<table class="api">
+<tr><td class="label_col"> API </td><td> *_random(limit)* </td></tr>
+<tr><td> Notes </td><td> Returns a random number between 0 and limit. "Details":_random </td></tr>
+</table>
+
+<table class="api">
+<tr><td class="label_col"> API </td><td> *_scriptName()* </td></tr>
+<tr><td> Notes </td><td> Returns the name of the current script </td></tr>
+</table>
+
+<table class="api">
+<tr><td class="label_col"> API </td><td> *_scriptPath()* </td></tr>
+<tr><td> Notes </td><td> Returns the path of the current script </td></tr>
+</table>
+
+<table class="api">
+<tr><td class="label_col"> API </td><td> *_popup(identifier)* </td></tr>
+<tr><td> Identifier </td><td> windowName, windowTitle </td></tr>
+<tr><td> Notes </td><td> Returns a handle to the window. The identifier can be a regular expression. <br/>
+_popup() is used as a prefix to statements which need to be executed on another window. 
+Eg. 
+_popup("popWin")._click(_link("Click me"));
+_popup(/popWin.*/)._click(_link("Click me"));
+_popup("Window Title")._click(_link("Click me"));
+</td></tr>
+</table>
+
+
+<br><br><br>
+
+h3. Functions available on browser only 
+
+<table class="api">
+<tr><td class="label_col"> API </td><td> *_savedRandom(key)* </td></tr>
+<tr><td> Notes </td><td> Deprecated<br> Returns a previously saved random number agains that key. "Details":_savedRandom </td></tr>
+<tr><td> Related </td><td> "_resetSavedRandom":_resetSavedRandom </td></tr>
+</table>
+
+<table class="api">
+<tr><td class="label_col"> API </td><td> *_getGlobal(key)* </td></tr>
+<tr><td> Notes </td><td> Returns value stored against key. "Details":_getGlobal </td></tr>
+<tr><td> Related </td><td> "_setGlobal":_setGlobal </td></tr>
+</table>
+
+<br><br><br>
+
+h3. Functions available on proxy only
+
+<table class="api">
+<tr><td class="label_col"> API </td><td> *_logException(exception)* </td></tr>
+<tr><td> Notes </td><td> Logs an exception. Used in catch block of try-catch. "Details":exception-handling </td></tr>
+</table>
+
+<table class="api">
+<tr><td class="label_col"> API </td><td> *_logExceptionAsFailure(exception)* </td></tr>
+<tr><td> Notes </td><td> Logs an exception and stops execution. Used in catch block of try-catch. "Details":exception-handling </td></tr>
+</table>
+
+<table class="api">
+<tr><td class="label_col"> API </td><td> *_stopOnError()* </td></tr>
+<tr><td> Notes </td><td> Makes the script stop if an error occurs. This is the default behavior. </td></tr>
+</table>
+
+<table class="api">
+<tr><td class="label_col"> API </td><td> *_continueOnError()* </td></tr>
+<tr><td> Notes </td><td> Makes script continue inspite of errors. Can be turned off with _stopOnError()</td></tr>
+</table>
+
+<table class="api">
+<tr><td class="label_col"> API </td><td> *_setRecovery(fn)* </td></tr>
+<tr><td> Notes </td><td> Sets fn as recovery function. The function will be called before the script exists, 
+if and only if there is a failure in the script.
+It can be turned off with _removeRecovery(). "Details":_setrecovery-recovering-from-a-scenario-without-try-catch </td></tr>
+</table>
+
+<table class="api">
+<tr><td class="label_col"> API </td><td> *_removeRecovery(fn)* </td></tr>
+<tr><td> Notes </td><td> Removes any recovery function which was set via _setRecovery. 
+"Details":_setrecovery-recovering-from-a-scenario-without-try-catch </td></tr>
+</table>
+
+
+<table class="api">
+<tr><td class="label_col"> API </td><td> *_sessionInfo()* </td></tr>
+<tr><td> Notes </td><td> Returns information of the current session.
+The object has attribures:
+isRecording
+isPlaying
+isPaused
+sessionId
+ </td></tr>
+</table>
+
+<table class="api">
+<tr><td class="label_col"> API </td><td> *_suiteInfo()* </td></tr>
+<tr><td> Notes </td><td> Returns information of the current session.
+The object has attribures:
+suitePath: Path of suite
+base: Base url for suite
+browser: Browser executable path
+sessionId: SessionId of suite
+browserOption: browserOption passed to Suite
+browserProcessName: browserProcessName passed to Suite
+suiteName: name of suite
+ </td></tr>
+</table>
+
+<table class="api">
+<tr><td class="label_col"> API </td><td> *_userDataDir()* </td></tr>
+<tr><td> Notes </td><td> Returns the path to userdata.</td></tr>
+</table>
+
+<br>
+
+* *Working with database*
+
+<table class="api">
+<tr><td class="label_col"> API </td><td> *_getDB(driver, jdbcurl, username, password)* </td></tr>
+<tr><td> Notes </td><td> Returns a DB object which can be used to query the database. "Details":_getDB </td></tr>
+</table>
+
+<br>
+
+* *Working with files*
+
+<table class="api">
+<tr><td class="label_col"> API </td><td> *_readFile(filePath)* </td></tr>
+<tr><td> Notes </td><td> Reads a file at filePath and returns its contents as a string. "Details":_readFile </td></tr>
+</table>
+
+<table class="api">
+<tr><td class="label_col"> API </td><td> *_writeFile(text, filePath[, overwrite])* </td></tr>
+<tr><td> Notes </td><td> Writes the text into file at filePath. <br>
+if overwrite is true, the file contents are overwritten. <br>
+Default is false which will append text at the end.<br> 
+"Details":_writeFile </td></tr>
+</table>
+
+<table class="api">
+<tr><td class="label_col"> API </td><td> *_writeToFile(text, filePath[, overwrite])* </td></tr>
+<tr><td> Notes </td><td> Same as _writeFile </td></tr>
+</table>
+
+<table class="api">
+<tr><td class="label_col"> API </td><td> *_readCSVFile(filePath)* </td></tr>
+<tr><td> Notes </td><td> Reads a csv file and returns a 2 dimensional array of the contents. "Details":_readCSVFile </td></tr>
+</table>
+
+<table class="api">
+<tr><td class="label_col"> API </td><td> *_writeCSVFile(filePath)* </td></tr>
+<tr><td> Notes </td><td> Writes a 2 dimensional array into a file in CSV format.</td></tr>
+</table>
+
+<table class="api">
+<tr><td class="label_col"> API </td><td> *_deleteFile(filePath)* </td></tr>
+<tr><td> Notes </td><td> Deletes the file at filePath. </td></tr>
+</table>
+
+<table class="api">
+<tr><td class="label_col"> API </td><td> *_renameFile(oldFilePath, newFilePath)* </td></tr>
+<tr><td> Notes </td><td> Renames (or moves) a given file from oldFilePath to newFilePath. 
+If newFilePath already exists, it will be overwritten</td></tr>
+</table>
+

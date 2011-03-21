@@ -1,9 +1,9 @@
-Sahi Nightly Release @build@
+Sahi V3 Release @build@
 
 Requirements
 ------------
 
-* JRE 1.4 or above
+* JRE 1.5 or above
 * ant, log4j.jar and junit.jar if the module is to be rebuilt.
 
 License
@@ -15,6 +15,6 @@ Changes
 See changelog.txt
 
 Installation guide
-------------------                                              
+------------------
 Please refer to docs directory in release.
 
