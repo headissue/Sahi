@@ -329,6 +329,8 @@ public class HttpRequest extends StreamHandler {
 			sahiCookie = cookieString.substring(ix + "sahisid=".length(), endIx);
 			stripped = cookieString.substring(0, ix) + cookieString.substring(endIx + 1, length).trim();
 		}
+		stripped = stripped.trim();
+		if (stripped.endsWith(";")) stripped = stripped.substring(0, stripped.length()-1);
 		return stripped.trim();
 	}
 	

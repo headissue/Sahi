@@ -58,9 +58,9 @@ public class HttpRequestTest extends TestCase {
     
     public void testHandleSahiCookie() throws Exception {
 		checkCookie("a=b; sahisid=123; c=d", "a=b; c=d");
-		checkCookie("a=b; sahisid=123;", "a=b;");
+		checkCookie("a=b; sahisid=123;", "a=b");
 		checkCookie("sahisid=123; c=d", "c=d");
-		checkCookie("a=b; sahisid=123", "a=b;");
+		checkCookie("a=b; sahisid=123", "a=b");
 	}
 
 
