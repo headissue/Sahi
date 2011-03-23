@@ -527,7 +527,8 @@ Sahi.prototype.simulateKeyPressEvents = function (el, val, combo, append) {
     this.simulateKeyEvent([(isShift ? 16 : keyCode), 0], el, "keydown", combo);
     this.simulateKeyEvent([0, charCode], el, "keypress", combo);
     if (append && charCode!=10 && origVal == el.value) {
-        el.value += c;
+    	if (!this._isFF4() || (this._isFF4() && !(combo == "CTRL" || combo == "ALT")))
+    		el.value += c;
     }
     this.simulateKeyEvent([keyCode, 0], el, "keyup", combo);
 };
@@ -954,7 +955,7 @@ Sahi.prototype.setValue = function (el, val) {
     } 
     var prevVal = el.value;
     //if (!window.document.createEvent) el.value = val;
-    //this._focus(el);
+    if (this._isFF4()) this._focus(el); // test with textarea.sah
 
     if (el.type && (el.type == "hidden" || el.type == "range")){
     	el.value = val;
@@ -3129,6 +3130,7 @@ Sahi.prototype.findInArray = function (ar, el) {
     return -1;
 };
 Sahi.prototype._isIE = function () {return this.navigator.appName == "Microsoft Internet Explorer";}
+Sahi.prototype._isIE9 = function () {return /MSIE 9[.]/.test(this.navigator.userAgent);};
 Sahi.prototype._isFF3 = function () {return /Firefox\/3|Iceweasel\/3|Shiretoko\/3/.test(this.navigator.userAgent);};
 Sahi.prototype._isFF4 = function () {return /Firefox\/4|Iceweasel\/4|Shiretoko\/4/.test(this.navigator.userAgent);};
 Sahi.prototype._isFF = function () {return /Firefox|Iceweasel|Shiretoko/.test(this.navigator.userAgent);};
