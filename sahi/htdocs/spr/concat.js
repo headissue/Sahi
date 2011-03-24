@@ -619,7 +619,9 @@ Sahi.prototype.simulateClick = function (el, isRight, isDouble, combo) {
     this.simulateMouseEvent(el, "mouseover");
     this.simulateMouseEvent(el, "mousedown", isRight, false, combo);
     this.invokeLastBlur();
-    this.simulateMouseEvent(el, "focus");
+    if (!(this.isSafariLike() && (el.type == "checkbox" || el.type == "radio" || el.type == "button"))){
+    	this.simulateMouseEvent(el, "focus");
+    }
     this.simulateMouseEvent(el, "mouseup", isRight, false, combo);
     if (isRight) {
     	if (window.opera && window.opera.version() < 11){
@@ -651,7 +653,7 @@ Sahi.prototype.simulateClick = function (el, isRight, isDouble, combo) {
             		var done = false;
             		if (this.isCheckboxRadioSimulationRequired()) {
                         if (this.areTagNamesEqual(el.tagName, "INPUT")) {
-                            if (typeof el.checked == "boolean") {
+                            if (el.type == "radio" || el.type == "checkbox") {
                             	done = true;
                             	el.checked = (el.type == "radio") ? true : !el.checked;
                             	this.simulateMouseEvent(el, "change");
@@ -671,7 +673,7 @@ Sahi.prototype.simulateClick = function (el, isRight, isDouble, combo) {
 	    	try{
 		    	_sahi.simulateMouseEvent(el, "mousemove");
 		        _sahi.simulateMouseEvent(el, "mouseout");
-		        if (!(_sahi._isFF() || _sahi._isOpera()) && (el.type == "checkbox" || el.type == "radio")){
+		        if (!(_sahi._isFF() || _sahi._isIE9() || _sahi._isOpera()) && (el.type == "checkbox" || el.type == "radio")){
 		        	_sahi.simulateMouseEvent(el, "change");
 		        }
 		        _sahi.simulateMouseEvent(el, "blur");

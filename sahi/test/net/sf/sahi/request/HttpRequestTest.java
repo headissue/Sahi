@@ -61,6 +61,7 @@ public class HttpRequestTest extends TestCase {
 		checkCookie("a=b; sahisid=123;", "a=b");
 		checkCookie("sahisid=123; c=d", "c=d");
 		checkCookie("a=b; sahisid=123", "a=b");
+		checkCookie("a=b; e=f; sahisid=123; c=d; g=h", "a=b; e=f; c=d; g=h");
 	}
 
 

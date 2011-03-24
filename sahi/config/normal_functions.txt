@@ -79,8 +79,10 @@ _title
 _exists
 
 _isIE
+_isIE9
 _isFF
 _isFF3
+_isFF4
 _isChrome
 _isSafari
 _isOpera
