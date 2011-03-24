@@ -1,3 +1,4 @@
+<!DOCTYPE HTML>
 <html>
 <head><title>Event Sequence</title></head>
 <body>
@@ -8,6 +9,16 @@
 <table>
 <tr>
 <td style="width:500px;">
+<div>
+Events attach mode: <br/>
+<table><tr>
+<td><label><input type="radio" name="eventmode" onclick="setModeDirect()">Direct</label></td>
+<td><label><input type="radio" name="eventmode" onclick="setModeAddEventListener()"> addEventListener</label></td>
+<td><label><input type="radio" name="eventmode" onclick="setModeAttachEvent()"> attachEvent</label></td>
+<td><label><input type="radio" name="eventmode" onclick="setModeAuto()"> auto</label></td>
+</tr></table>
+</div>
+
 
 <div>
 Events to monitor: <br/>
@@ -66,6 +77,7 @@ Events to monitor: <br/>
 <hr/>
 <br/>
 
+<input type="button" value="Check All" onclick="checkAll()"> |
 <input type="button" value="Clear" onclick="$('logs').value=''"/><br/>
 <label><input type="checkbox" name="props" value="e.keyCode">keyCode</label>
 <label><input type="checkbox" name="props" value="e.charCode">charCode</label>
@@ -93,6 +105,39 @@ Events to monitor: <br/>
 
 
 <script>
+function addEventWithAddEventListener(el, ev, fn) {
+    if (!el) return;
+    el.addEventListener(ev, fn, true);
+};
+function addEventWithAttachEvent(el, ev, fn) {
+    if (!el) return;
+	el.attachEvent("on" + ev, fn);
+};
+function addEventDirect(el, ev, fn) {
+    if (!el) return;
+	el["on" + ev] = fn;
+};
+function addEventAuto(el, ev, fn) {
+    if (!el) return;
+    if (el.attachEvent) {
+        el.attachEvent("on" + ev, fn);
+    } else if (el.addEventListener) {
+        el.addEventListener(ev, fn, true);
+    }
+};
+var addEvent = addEventAuto;
+function setModeAddEventListener(){
+	addEvent = addEventWithAddEventListener;
+}
+function setModeAttachEvent(){
+	addEvent = addEventWithAttachEvent;
+}
+function setModeDirect(){
+	addEvent = addEventDirect;
+}
+function setModeAuto(){
+	addEvent = addEventAuto;
+}
 function getTarget (e) {
     var targ;
     if (!e) e = window.event;
@@ -123,7 +168,15 @@ function fn(s){
 		_last = s;
 	}
 }
-
+function checkAll(){
+	var inputs = document.getElementsByTagName("INPUT");
+	for (var i=0; i<inputs.length; i++){
+		var cb = inputs[i];
+		if (cb.type == "checkbox" && cb.name == "props") {
+			cb.checked = true;
+		}
+	}
+}
 function addEv(el, s){
 	addEvent(el, s, fn(s));
 }

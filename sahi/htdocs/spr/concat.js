@@ -705,24 +705,26 @@ Sahi.prototype.simulateMouseEventXY = function (el, type, x, y, isRight, isDoubl
     var isAlt = combo.indexOf("ALT")!=-1;
     var isMeta = combo.indexOf("META")!=-1;
     
-    if (!this._isIE()) {
-        if (this.isSafariLike()) {
-            var evt = el.ownerDocument.createEvent('HTMLEvents');
-            type = (isDouble ? "dbl" : "") + type;
-            evt.initEvent(type, true, true);
-            evt.clientX = x;
-            evt.clientY = y;
-            evt.pageX = x;
-            evt.pageY = y;
-            evt.screenX = x;
-            evt.screenY = y;
-            evt.button = isRight ? 2 : 0;
-            evt.which = isRight ? 3 : 1;
-            evt.ctrlKey = isCtrl;
-            evt.altKey = isAlt;
-            evt.metaKey = isMeta;            
-            evt.shiftKey = isShift;
-            el.dispatchEvent(evt);
+    if (!this._isIE() || this._isIE9()) {
+        if (this.isSafariLike() || this._isIE9()) {
+        	if (el.ownerDocument.createEvent) {
+	            var evt = el.ownerDocument.createEvent('HTMLEvents');
+	            type = (isDouble ? "dbl" : "") + type;
+	            evt.initEvent(type, true, true);
+	            evt.clientX = x;
+	            evt.clientY = y;
+	            evt.pageX = x;
+	            evt.pageY = y;
+	            evt.screenX = x;
+	            evt.screenY = y;
+	            evt.button = isRight ? 2 : 0;
+	            evt.which = isRight ? 3 : 1;
+	            evt.ctrlKey = isCtrl;
+	            evt.altKey = isAlt;
+	            evt.metaKey = isMeta;            
+	            evt.shiftKey = isShift;
+	            el.dispatchEvent(evt);
+        	}
         }
         else {
             // FF
@@ -745,7 +747,8 @@ Sahi.prototype.simulateMouseEventXY = function (el, type, x, y, isRight, isDoubl
             null);
             el.dispatchEvent(evt);
         }
-    } else {
+    } 
+    if (this._isIE()) {
         // IE
         var evt = el.ownerDocument.createEventObject();
         evt.clientX = x;
@@ -1035,23 +1038,26 @@ Sahi.prototype.simulateKeyEvent = function (codes, target, evType, combo) {
     var isAlt = combo.indexOf("ALT")!=-1;
     var isMeta = combo.indexOf("META")!=-1;
 
-    if (!this._isIE()) { // FF chrome safari opera
-        if (this.isSafariLike() || window.opera) {
-            var event = target.ownerDocument.createEvent('HTMLEvents');
-
-            var evt = event;
-            if (!window.opera){
-	            evt.bubbles = true;
-	            evt.cancelable = true;
-            }
-            evt.ctrlKey = isCtrl;
-            evt.altKey = isAlt;
-            evt.metaKey = isMeta;
-            evt.charCode = charCode;
-            evt.keyCode =  (evType == "keypress") ? charCode : keyCode;
-            evt.shiftKey = isShift;
-            evt.initEvent(evType, evt.bubbles, evt.cancelable);
-            target.dispatchEvent(evt);
+    if (!this._isIE() || this._isIE9()) { // FF chrome safari opera
+        if (this.isSafariLike() || window.opera || this._isIE9()) {
+        	if (target.ownerDocument.createEvent) {
+	            var event = target.ownerDocument.createEvent('HTMLEvents');
+	
+	            var evt = event;
+	            if (!window.opera){
+		            evt.bubbles = true;
+		            evt.cancelable = true;
+	            }
+	            evt.ctrlKey = isCtrl;
+	            evt.altKey = isAlt;
+	            evt.metaKey = isMeta;
+	            evt.charCode = charCode;
+	            evt.keyCode =  (evType == "keypress") ? charCode : keyCode;
+	            evt.shiftKey = isShift;
+	            evt.which = evt.keyCode;
+	            evt.initEvent(evType, evt.bubbles, evt.cancelable);
+	            target.dispatchEvent(evt);
+        	}
         } else { //FF
             var evt = new Object();
             evt.type = evType;
@@ -1070,7 +1076,8 @@ Sahi.prototype.simulateKeyEvent = function (codes, target, evType, combo) {
             evt.ctrlKey, evt.altKey, evt.shiftKey, evt.metaKey, evt.keyCode, evt.charCode);
             target.dispatchEvent(event);
         }
-    } else { // IE
+    } 
+    if (this._isIE()) { // IE
         var evt = target.ownerDocument.createEventObject();
         evt.type = evType;
         evt.bubbles = true;
