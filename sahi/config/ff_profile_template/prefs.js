@@ -83,3 +83,4 @@ user_pref("security.warn_viewing_mixed", false);
 user_pref("security.xpconnect.plugin.unrestricted", true);
 user_pref("extensions.checkUpdateSecurity", false);
 user_pref("browser.offline", false);
+user_pref("extensions.blocklist.enabled", false);
