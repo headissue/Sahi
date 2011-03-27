@@ -137,6 +137,8 @@ public class ProxyProcessor implements Runnable {
         TrafficLogger.createLoggerForThread(fileName, "modified", Configuration.isModifiedTrafficLoggingOn(), time);
 
         if (requestFromBrowser.isConnect()) {
+        	TrafficLogger.storeRequestHeader(requestFromBrowser.rawHeaders(), "unmodified");
+        	TrafficLogger.storeRequestBody(requestFromBrowser.data(), "unmodified");
             processConnect(requestFromBrowser);
         } else {
             if (handleDifferently(requestFromBrowser)) {
