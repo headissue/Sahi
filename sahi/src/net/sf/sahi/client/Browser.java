@@ -414,11 +414,31 @@ public class Browser extends BrowserElements {
 	/**
 	 * Simulates a mouse over on the given element
 	 * 
-	 * @param link
+	 * @param element
 	 * @throws ExecutionException
 	 */
-	public void mouseOver(ElementStub link) throws ExecutionException {
-		execute("_sahi._mouseOver(" + link + ")");		
+	public void mouseOver(ElementStub element) throws ExecutionException {
+		execute("_sahi._mouseOver(" + element + ")");		
+	}
+
+	/**
+	 * Simulates a mouse down on the given element
+	 * 
+	 * @param element
+	 * @throws ExecutionException
+	 */
+	public void mouseDown(ElementStub element) throws ExecutionException {
+		execute("_sahi._mouseDown(" + element + ")");		
+	}
+	
+	/**
+	 * Simulates a mouse up on the given element
+	 * 
+	 * @param element
+	 * @throws ExecutionException
+	 */
+	public void mouseUp(ElementStub element) throws ExecutionException {
+		execute("_sahi._mouseUp(" + element + ")");		
 	}
 
 
@@ -1023,6 +1043,15 @@ public class Browser extends BrowserElements {
 		final String countStr = new ElementStub("count", this, args).fetch();
 		return Integer.parseInt(countStr);
 	}
+
+	public void keyDown(ElementStub element, int keyCode, int charCode) {
+		execute("_sahi._keyDown(" + element + ", ["+ keyCode + ", " + charCode + "])");	
+	}
+
+	public void keyUp(ElementStub element, int keyCode, int charCode) {
+		execute("_sahi._keyUp(" + element + ", ["+ keyCode + ", " + charCode + "])");	
+	}
+	
 	
 }
 

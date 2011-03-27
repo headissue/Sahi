@@ -140,7 +140,7 @@ public class ElementStub {
 	public void dragAndDropOn(ElementStub dropElement) throws ExecutionException {
 		browser.dragDrop(this, dropElement);
 	}
-		
+	
 	/**
 	 * Performs a mouseover on this element.<br/>
 	 * Same as hover().<br/>
@@ -149,6 +149,24 @@ public class ElementStub {
 	 */
 	public void mouseOver() throws ExecutionException {
 		browser.mouseOver(this);
+	}	
+	
+	/**
+	 * Performs a mousedown on this element.<br/>
+	 * Internally calls browser.mouseDown(this);
+	 * @throws ExecutionException
+	 */
+	public void mouseDown() throws ExecutionException {
+		browser.mouseDown(this);
+	}
+	
+	/**
+	 * Performs a mouseup on this element.<br/>
+	 * Internally calls browser.mouseUp(this);
+	 * @throws ExecutionException
+	 */
+	public void mouseUp() throws ExecutionException {
+		browser.mouseUp(this);
 	}
 
 	/**
@@ -586,5 +604,26 @@ public class ElementStub {
 		} catch (Exception e) {
 			return 0;
 		}
+	}
+
+	/**
+	 * Performs a keyUp on this element.<br/>
+	 * Internally calls browser.keyUp;
+	 * @param keyCode
+	 * @param charCode
+	 */
+	public void keyUp(int keyCode, int charCode) {
+		browser.keyUp(this, keyCode, charCode);
+	}
+
+	
+	/**
+	 * Performs a keyDown on this element.<br/>
+	 * Internally calls browser.keyDown;
+	 * @param keyCode
+	 * @param charCode
+	 */
+	public void keyDown(int keyCode, int charCode) {
+		browser.keyDown(this, keyCode, charCode);
 	}
 }

@@ -87,12 +87,12 @@ public abstract class BrowserElements {
 	 * Defines a checkbox. <br/>
 	 * Usage: browser.checkbox(identifier)<br/>
 	 * HTML: {@code <input type="checkbox" name="name" id="id" value="value">}<br/>
-	 * Identifier: index, name, id<br/>
+	 * Identifier: index, name, id, className<br/>
 	 * <br/>
 	 * Example:<br/>
 	 * <code>browser.checkbox("Remember Me?").check()</code><br/>
 	 * 
-	 * @param Identifier: can be index, name, id 
+	 * @param Identifier: can be index, name, id, className 
 	 * @return a stub representing the element
 	 */
 	public ElementStub checkbox(Object... args) {return new ElementStub("checkbox", browser, args);}
@@ -141,12 +141,12 @@ public abstract class BrowserElements {
 	 * Defines a password field. <br/>
 	 * Usage: browser.password(identifier) <br/>
 	 * HTML: {@code <input type="password" name="name" id="id" value="value">}<br/>
-	 * Identifier: index, name, id<br/>
+	 * Identifier: index, name, id, className<br/>
 	 * <br/>
 	 * Example:<br/>
 	 * <code>browser.password(0).setValue("!abcd1234")</code><br/>
 	 * 
-	 * @param Identifier: can be index, name, id
+	 * @param Identifier: can be index, name, id, className
 	 * @return a stub representing the element
 	 */
 	public ElementStub password(Object... args) {return new ElementStub("password", browser, args);}
@@ -154,12 +154,12 @@ public abstract class BrowserElements {
 	 * Defines a radio button. <br/>
 	 * Usage: browser.radio(identifier) <br/>
 	 * HTML: {@code <input type="radio" name="name" id="id" value="value">}<br/>
-	 * Identifier: index, name, id<br/>
+	 * Identifier: index, name, id, className<br/>
 	 * <br/>
 	 * Example:<br/>
 	 * <code>browser.radio("Red").click()</code><br/>
 	 *  
-	 * @param Identifier: can be index, name, id
+	 * @param Identifier: can be index, name, id, className
 	 * @return a stub representing the element
 	 */
 	public ElementStub radio(Object... args) {return new ElementStub("radio", browser, args);}
@@ -167,13 +167,13 @@ public abstract class BrowserElements {
 	 * Defines a select on a drop down. <br/>
 	 * Usage: browser.select(identifier) <br/>
 	 * HTML: {@code <select name="name" id="id"></select>}<br/>
-	 * Identifier: index, name, id<br/>
+	 * Identifier: index, name, id, className<br/>
 	 * <br/>
 	 * Example:<br/>
 	 * <code>browser.select("colors").choose("red")</code><br/>
 	 * <code>browser.select("colors").choose(new String[]{"red", "blue"})</code><br/>
 	 *  
-	 * @param Identifier: can be index, name, id
+	 * @param Identifier: can be index, name, id, className
 	 * @return a stub representing the element
 	 */
 	public ElementStub select(Object... args) {return new ElementStub("select", browser, args);}
@@ -195,12 +195,12 @@ public abstract class BrowserElements {
 	 * Defines a textarea. <br/>
 	 * Usage: browser.textarea(identifier) <br/>
 	 * HTML: {@code <textarea name="name" id="id">text</textarea>}<br/>
-	 * Identifier: index, name, id<br/>
+	 * Identifier: index, name, id, className<br/>
 	 * <br/>
 	 * Example:<br/>
 	 * <code>browser.textarea("comments").setValue("A simple comment")</code><br/>
 	 * 
-	 * @param Identifier: can be index, name, id
+	 * @param Identifier: can be index, name, id, className
 	 * @return a stub representing the element
 	 */
 	public ElementStub textarea(Object... args) {return new ElementStub("textarea", browser, args);}
@@ -208,12 +208,12 @@ public abstract class BrowserElements {
 	 * Defines a textbox. <br/>
 	 * Usage: browser.textbox(identifier) <br/>
 	 * HTML: {@code <input type="textbox" name="name" id="id" value="value">}<br/>
-	 * Identifier: index, name, id<br/>
+	 * Identifier: index, name, id, className<br/>
 	 * <br/>
 	 * Example:<br/>
 	 * <code>browser.textbox("username").setValue("Admin")</code><br/>
 	 * 
-	 * @param Identifier: can be index, name, id
+	 * @param Identifier: can be index, name, id, className
 	 * @return a stub representing the element
 	 */
 	public ElementStub textbox(Object... args) {return new ElementStub("textbox", browser, args);}
@@ -397,14 +397,14 @@ public abstract class BrowserElements {
 	 * Defines a form's reset button. <br/>
 	 * Usage: browser.reset(identifier) <br/>
 	 * HTML: {@code <input type="reset" name="name" id="id" value="value">}<br/>
-	 * Identifier: index, name, id<br/>
+	 * Identifier: index, name, id, className<br/>
 	 * <br/>
 	 * Example:<br/>
 	 * <code>browser.reset("Start Over").click()</code><br/>
 	 * 
 	 * will click the reset button identified by "Start Over"
 	 *  
-	 * @param Identifier: can be index, name, id
+	 * @param Identifier: can be index, name, id, className
 	 * @return a stub representing the element
 	 */
 	public ElementStub reset(Object... args) {return new ElementStub("reset", browser, args);}
@@ -412,14 +412,14 @@ public abstract class BrowserElements {
 	 * Defines a file element <br/>
 	 * Usage: browser.file(identifier) <br/>
 	 * HTML: {@code <input type="file" name="name" id="id" value="value">}<br/>
-	 * Identifier: index, name, id<br/>
+	 * Identifier: index, name, id, className<br/>
 	 * <br/>
 	 * Example:<br/>
 	 * <code>browser.file("uploadme")</code><br/>
 	 * 
 	 * Use with setFile. Eg. <code>browser.file("uploadme").setFile("D:/my/file/path/file.txt")</code><br/>
 	 *  
-	 * @param Identifier: can be index, name, id
+	 * @param Identifier: can be index, name, id, className
 	 * @return a stub representing the element
 	 */
 	public ElementStub file(Object... args) {return new ElementStub("file", browser, args);}
@@ -724,7 +724,7 @@ public abstract class BrowserElements {
 	 * will find an input element of type "hidden" identified by "password"
 	 * 
 	 *  
-	 * @param Identifier: can be index, name, id 
+	 * @param Identifier: can be index, name, id, className 
 	 * @return a stub representing the element
 	 */
 	public ElementStub hidden(Object... args) {return new ElementStub("hidden", browser, args);}
@@ -878,12 +878,12 @@ public abstract class BrowserElements {
 	 * Defines a datebox. <br/>
 	 * Usage: browser.datebox(identifier) <br/>
 	 * HTML: {@code <input type="date" name="name" id="id" value="value">}<br/>
-	 * Identifier: index, name, id<br/>
+	 * Identifier: index, name, id, className<br/>
 	 * <br/>
 	 * Example:<br/>
 	 * <code>browser.datebox("today").setValue("2011-09-11")</code><br/>
 	 * 
-	 * @param Identifier: can be index, name, id
+	 * @param Identifier: can be index, name, id, className
 	 * @return a stub representing the element
 	 */
 	public ElementStub datebox(Object... args) {return new ElementStub("datebox", browser, args);}
@@ -892,12 +892,12 @@ public abstract class BrowserElements {
 	 * Defines a datetimebox. <br/>
 	 * Usage: browser.datetimebox(identifier) <br/>
 	 * HTML: {@code <input type="datetime" name="name" id="id" value="value">}<br/>
-	 * Identifier: index, name, id<br/>
+	 * Identifier: index, name, id, className<br/>
 	 * <br/>
 	 * Example:<br/>
 	 * <code>browser.datetimebox("today").setValue("2011-09-12T23:56Z")</code><br/>
 	 * 
-	 * @param Identifier: can be index, name, id
+	 * @param Identifier: can be index, name, id, className
 	 * @return a stub representing the element
 	 */
 	public ElementStub datetimebox(Object... args) {return new ElementStub("datetimebox", browser, args);}
@@ -906,12 +906,12 @@ public abstract class BrowserElements {
 	 * Defines a datetimelocalbox. <br/>
 	 * Usage: browser.datetimelocalbox(identifier) <br/>
 	 * HTML: {@code <input type="datetimelocal" name="name" id="id" value="value">}<br/>
-	 * Identifier: index, name, id<br/>
+	 * Identifier: index, name, id, className<br/>
 	 * <br/>
 	 * Example:<br/>
 	 * <code>browser.datetimelocalbox("today").setValue("2011-09-12T01:00")</code><br/>
 	 * 
-	 * @param Identifier: can be index, name, id
+	 * @param Identifier: can be index, name, id, className
 	 * @return a stub representing the element
 	 */
 	public ElementStub datetimelocalbox(Object... args) {return new ElementStub("datetimelocalbox", browser, args);}
@@ -920,12 +920,12 @@ public abstract class BrowserElements {
 	 * Defines a emailbox. <br/>
 	 * Usage: browser.emailbox(identifier) <br/>
 	 * HTML: {@code <input type="email" name="name" id="id" value="value">}<br/>
-	 * Identifier: index, name, id<br/>
+	 * Identifier: index, name, id, className<br/>
 	 * <br/>
 	 * Example:<br/>
 	 * <code>browser.emailbox("username").setValue("a@example.com")</code><br/>
 	 * 
-	 * @param Identifier: can be index, name, id
+	 * @param Identifier: can be index, name, id, className
 	 * @return a stub representing the element
 	 */
 	public ElementStub emailbox(Object... args) {return new ElementStub("emailbox", browser, args);}
@@ -934,12 +934,12 @@ public abstract class BrowserElements {
 	 * Defines a monthbox. <br/>
 	 * Usage: browser.monthbox(identifier) <br/>
 	 * HTML: {@code <input type="month" name="name" id="id" value="value">}<br/>
-	 * Identifier: index, name, id<br/>
+	 * Identifier: index, name, id, className<br/>
 	 * <br/>
 	 * Example:<br/>
 	 * <code>browser.monthbox("month").setValue("2011-01")</code><br/>
 	 * 
-	 * @param Identifier: can be index, name, id
+	 * @param Identifier: can be index, name, id, className
 	 * @return a stub representing the element
 	 */
 	public ElementStub monthbox(Object... args) {return new ElementStub("monthbox", browser, args);}
@@ -948,12 +948,12 @@ public abstract class BrowserElements {
 	 * Defines a numberbox. <br/>
 	 * Usage: browser.numberbox(identifier) <br/>
 	 * HTML: {@code <input type="number" name="name" id="id" value="value">}<br/>
-	 * Identifier: index, name, id<br/>
+	 * Identifier: index, name, id, className<br/>
 	 * <br/>
 	 * Example:<br/>
 	 * <code>browser.numberbox("points").setValue("1000")</code><br/>
 	 * 
-	 * @param Identifier: can be index, name, id
+	 * @param Identifier: can be index, name, id, className
 	 * @return a stub representing the element
 	 */
 	public ElementStub numberbox(Object... args) {return new ElementStub("numberbox", browser, args);}
@@ -962,26 +962,41 @@ public abstract class BrowserElements {
 	 * Defines a rangebox. <br/>
 	 * Usage: browser.rangebox(identifier) <br/>
 	 * HTML: {@code <input type="range" name="name" id="id" value="value" min="1" max="10">}<br/>
-	 * Identifier: index, name, id<br/>
+	 * Identifier: index, name, id, className<br/>
 	 * <br/>
 	 * Example:<br/>
 	 * <code>browser.rangebox("range").setValue("3")</code><br/>
 	 * 
-	 * @param Identifier: can be index, name, id
+	 * @param Identifier: can be index, name, id, className
 	 * @return a stub representing the element
 	 */
 	public ElementStub rangebox(Object... args) {return new ElementStub("rangebox", browser, args);}
 	
 	/**
+	 * Defines a searchbox. <br/>
+	 * Usage: browser.searchbox(identifier) <br/>
+	 * HTML: {@code <input type="search" name="name" id="id" value="value">}<br/>
+	 * Identifier: index, name, id, className<br/>
+	 * <br/>
+	 * Example:<br/>
+	 * <code>browser.searchbox("home").setValue("find me")</code><br/>
+	 * 
+	 * @param Identifier: can be index, name, id, className
+	 * @return a stub representing the element
+	 */
+	public ElementStub searchbox(Object... args) {return new ElementStub("searchbox", browser, args);}
+
+	
+	/**
 	 * Defines a telbox. <br/>
 	 * Usage: browser.telbox(identifier) <br/>
 	 * HTML: {@code <input type="tel" name="name" id="id" value="value">}<br/>
-	 * Identifier: index, name, id<br/>
+	 * Identifier: index, name, id, className<br/>
 	 * <br/>
 	 * Example:<br/>
 	 * <code>browser.telbox("home").setValue("1212192121")</code><br/>
 	 * 
-	 * @param Identifier: can be index, name, id
+	 * @param Identifier: can be index, name, id, className
 	 * @return a stub representing the element
 	 */
 	public ElementStub telbox(Object... args) {return new ElementStub("telbox", browser, args);}
@@ -990,12 +1005,12 @@ public abstract class BrowserElements {
 	 * Defines a timebox. <br/>
 	 * Usage: browser.timebox(identifier) <br/>
 	 * HTML: {@code <input type="time" name="name" id="id" value="value">}<br/>
-	 * Identifier: index, name, id<br/>
+	 * Identifier: index, name, id, className<br/>
 	 * <br/>
 	 * Example:<br/>
 	 * <code>browser.datebox("username").setValue("10:20:20.000")</code><br/>
 	 * 
-	 * @param Identifier: can be index, name, id
+	 * @param Identifier: can be index, name, id, className
 	 * @return a stub representing the element
 	 */
 	public ElementStub timebox(Object... args) {return new ElementStub("timebox", browser, args);}
@@ -1004,12 +1019,12 @@ public abstract class BrowserElements {
 	 * Defines a urlbox. <br/>
 	 * Usage: browser.urlbox(identifier) <br/>
 	 * HTML: {@code <input type="url" name="homepage" id="id" value="value">}<br/>
-	 * Identifier: index, name, id<br/>
+	 * Identifier: index, name, id, className<br/>
 	 * <br/>
 	 * Example:<br/>
 	 * <code>browser.urlbox("homepage").setValue("http://sahi.co.in/")</code><br/>
 	 * 
-	 * @param Identifier: can be index, name, id
+	 * @param Identifier: can be index, name, id, className
 	 * @return a stub representing the element
 	 */
 	public ElementStub urlbox(Object... args) {return new ElementStub("urlbox", browser, args);}
@@ -1018,12 +1033,12 @@ public abstract class BrowserElements {
 	 * Defines a weekbox. <br/>
 	 * Usage: browser.weekbox(identifier) <br/>
 	 * HTML: {@code <input type="week" name="name" id="id" value="value">}<br/>
-	 * Identifier: index, name, id<br/>
+	 * Identifier: index, name, id, className<br/>
 	 * <br/>
 	 * Example:<br/>
 	 * <code>browser.weekbox("week").setValue("2011-W04")</code><br/>
 	 * 
-	 * @param Identifier: can be index, name, id
+	 * @param Identifier: can be index, name, id, className
 	 * @return a stub representing the element
 	 */
 	public ElementStub weekbox(Object... args) {return new ElementStub("weekbox", browser, args);}

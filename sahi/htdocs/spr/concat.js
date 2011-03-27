@@ -79,7 +79,7 @@ var Sahi = function(){
     this.escapeUnicode = false;
     this.CHECK_REGEXP = /^\/.*\/i?$/;
     this.navigator = {"userAgent": navigator.userAgent, "appName": navigator.appName};
-    this.textboxTypes = ["text", "number", "password", "textarea", "date", "datetime", "datetime-local", "email", "month", "number", "range", "tel", "time", "url", "week" ];
+    this.textboxTypes = ["text", "number", "password", "textarea", "date", "datetime", "datetime-local", "email", "month", "number", "range", "search", "tel", "time", "url", "week" ];
 };
 Sahi.prototype.isBlankOrNull = function (s) {
     return (s == "" || s == null);
@@ -4049,6 +4049,7 @@ Sahi.prototype.prepareADs = function(){
 	this.addAD({tag: "INPUT", type: "month", event:"change", name: "_monthbox", attributes: ["name", "id", "index", "className"], action: "_setValue", value: "value"});
 	this.addAD({tag: "INPUT", type: "number", event:"change", name: "_numberbox", attributes: ["name", "id", "index", "className"], action: "_setValue", value: "value"});
 	this.addAD({tag: "INPUT", type: "range", event:"change", name: "_rangebox", attributes: ["name", "id", "index", "className"], action: "_setValue", value: "value"});
+	this.addAD({tag: "INPUT", type: "search", event:"change", name: "_searchbox", attributes: ["name", "id", "index", "className"], action: "_setValue", value: "value"});
 	this.addAD({tag: "INPUT", type: "tel", event:"change", name: "_telephonebox", attributes: ["name", "id", "index", "className"], action: "_setValue", value: "value"});
 	this.addAD({tag: "INPUT", type: "time", event:"change", name: "_timebox", attributes: ["name", "id", "index", "className"], action: "_setValue", value: "value"});
 	this.addAD({tag: "INPUT", type: "url", event:"change", name: "_urlbox", attributes: ["name", "id", "index", "className"], action: "_setValue", value: "value"});

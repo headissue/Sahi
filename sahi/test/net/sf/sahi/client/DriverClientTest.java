@@ -312,6 +312,17 @@ public class DriverClientTest extends SahiTestCase {
 		assertTrue(browser.textbox("req_username").exists());
 	}
 	
+	public void testGoogleDD() throws Exception {
+		browser.open();
+		browser.navigateTo("http://www.google.com");
+		browser.setValue(browser.textbox("q"), "sahi dow");
+		browser.waitFor(3000);
+		assertTrue(browser.cell("sahi download").isVisible());
+		browser.textbox("q").keyDown(40, 0);
+		browser.textbox("q").keyUp(40, 0);
+		assertEquals("sahi download", browser.textbox("q").getValue());
+	}
+	
 	public void testForumsExists() throws Exception {
 		browser.navigateTo("http://sahi.co.in/forums/");		
 		browser.link("Login").click();

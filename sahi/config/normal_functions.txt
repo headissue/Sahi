@@ -142,6 +142,7 @@ _emailbox
 _monthbox
 _numberbox
 _rangebox
+_searchbox
 _telbox
 _timebox
 _urlbox
