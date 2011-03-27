@@ -1,3 +1,16 @@
+28 Mar 2011
+-----------
+* Bugfixes
+	Fixed events on Webkit browsers 
+	Added request headers of CONNECT requests to traffic logs
+	
+* Features
+	Support for Internet Explorer 9 and Firefox 4
+	_isFF4() and _isIE9() added
+	added keyUp, keyDown, mouseUp, mouseDown to java APIs
+	Made JUnit log reporting better and easier to plugin with hudson
+	hudson.xml added as an example
+	
 13 Mar 2011
 -----------
 * Bugfixes 
