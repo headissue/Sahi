@@ -618,6 +618,12 @@ public class DriverClientTest extends SahiTestCase {
 		assertEquals("2009-W10", browser.weekbox("week2").getValue());
 	}
 	
+	public void testWikipedia() throws Exception {
+		browser.navigateTo("http://www.wikipedia.org");
+		browser.searchbox("search").setValue("sahi software");
+		browser.submit("  →  ").click();
+	}
+	
 	@Override
 	public void setBrowser() {
 		setBrowser("firefox");
