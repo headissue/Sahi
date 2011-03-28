@@ -34,7 +34,7 @@
 
 	<target name="compile" description="compile module sahi">
 		<mkdir dir="${sahi.output.dir}"/>
-		<javac destdir="${sahi.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}"
+		<javac includeantruntime="true"  destdir="${sahi.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}"
                memoryMaximumSize="${compiler.max.memory}" fork="true" srcdir="src" target="1.5">
 			<classpath>
 				<pathelement location="extlib/xmlrpc/xmlrpc-client-3.0.jar"/>
@@ -68,7 +68,7 @@
 
 	<target name="compile-test" description="compile module sahi test">
 		<mkdir dir="${sahi.output.dir}"/>
-		<javac destdir="${sahi.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}"
+		<javac includeantruntime="true" destdir="${sahi.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}"
                memoryMaximumSize="${compiler.max.memory}" fork="true" srcdir="test" target="1.5">
 			<classpath>
 				<pathelement location="extlib/ant/ant-testutil.jar"/>

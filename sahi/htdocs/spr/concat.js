@@ -2770,6 +2770,7 @@ Sahi.prototype.skipTill = function(n){
     while(true){
         var stepInfo = this.getCurrentStep();
         var stepId = stepInfo['stepId'];
+        if (stepId == null) return;
         if (lastStepId == stepId){
             continue;
         }

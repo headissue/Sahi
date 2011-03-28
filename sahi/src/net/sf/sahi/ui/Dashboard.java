@@ -97,7 +97,12 @@ public class Dashboard extends JFrame {
 		String scriptsPath = Configuration.getScriptRoots()[0];
 		if (scriptsPath.endsWith("/") || scriptsPath.endsWith("\\")) 
 			scriptsPath = scriptsPath.substring(0, scriptsPath.length() - 1);
-		LinkButton link2 = new LinkButton("Scripts", "\"" + scriptsPath + "\"");
+		LinkButton link2;
+		if (System.getProperty("os.name").startsWith("Windows")){
+			link2 = new LinkButton("Scripts", "explorer /e,\"" + scriptsPath + "\"");
+		} else {
+			link2 = new LinkButton("Scripts", "\"" + scriptsPath + "\"");
+		}
 		
 		JPanel buttonPane = new JPanel();
 		buttonPane.setBackground(new Color(255, 255, 255));
