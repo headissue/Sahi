@@ -32,6 +32,7 @@ user_pref("browser.preferences.advanced.selectedTabIndex", 3);
 user_pref("browser.preferences.privacy.selectedTabIndex", 0);
 user_pref("browser.rights.3.shown", true);
 user_pref("browser.safebrowsing.enabled", false);
+user_pref("browser.safebrowsing.malware.enabled", false);
 user_pref("browser.search.selectedEngine", "Google");
 user_pref("browser.search.update", false);
 user_pref("browser.sessionstore.enabled", false);
