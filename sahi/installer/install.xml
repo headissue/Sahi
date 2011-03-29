@@ -16,7 +16,8 @@
 		<variable name="install_name" value="sahi" />
 	</variables>
 	<guiprefs width="600" height="380" resizable="yes">
-		<laf name="metouia">
+		<laf name="liquid">
+			<param name="decorate.frames" value="yes" />
 			<os family="windows" />
 			<os family="unix" />
 			<os family="mac" />
