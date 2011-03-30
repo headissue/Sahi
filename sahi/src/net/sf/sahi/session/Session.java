@@ -78,6 +78,8 @@ public class Session {
 
 	private Map<String, Object> objectVariables = new HashMap<String, Object>();
 	private boolean is204;
+	static double playbackInactiveTimeout = Configuration.getMaxInactiveTimeForScript() * 1.5;
+	static double recorderInactiveTimeout = 20 * 60 * 1000; // 20 minutes
 	
 	static {
 		Timer stepTimer = new Timer();
@@ -271,13 +273,16 @@ public class Session {
     	return sb.toString();	
     }
 	
+	public double getInactiveTimeout(){
+		return isPlaying() ? playbackInactiveTimeout : recorderInactiveTimeout;
+	}
+	
 	public static void removeInactiveSessions(){
 		long timeNow = System.currentTimeMillis();
-		double inactiveTimeout = Configuration.getMaxInactiveTimeForScript() * 1.5;
 		try{
 			for (Iterator<Session> iterator = sessions.values().iterator(); iterator.hasNext();) {
 				Session s = (Session) iterator.next();
-				if (timeNow - s.lastActiveTime() > inactiveTimeout){
+				if (timeNow - s.lastActiveTime() > s.getInactiveTimeout()){
 					iterator.remove();
 				}
 			}

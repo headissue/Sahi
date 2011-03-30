@@ -46,4 +46,12 @@ public class SessionTest extends TestCase {
     	session.setIsRecording(false);
     	assertFalse(session.isRecording());
     }
+    
+    public void testRemoveInactiveDoesNotRemoveRecordingSessions() throws Exception {
+		session.setIsPlaying(true);
+		assertEquals(Session.playbackInactiveTimeout, session.getInactiveTimeout());
+		session.setIsPlaying(false);
+		assertEquals(Session.recorderInactiveTimeout, session.getInactiveTimeout());
+		
+	}
 }
