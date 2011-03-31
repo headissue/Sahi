@@ -64,14 +64,14 @@ public class JUnitFormatterTest extends TestCase {
 	}
 
 	public void testGetSummaryDataForEmptyList() {
-		String expected = "\n<testsuite errors=\"0\" failures=\"0\" name=\"null.test\" tests=\"1\" time=\"0.0\">\n<testcase name=\"test\" time=\"0.0\">";
+		String expected = "\n<testsuite errors=\"0\" failures=\"0\" name=\"null.test\" tests=\"1\" time=\"0.0\">\n<testcase classname=\"null.test\" name=\"test\" time=\"0.0\">";
 		TestSummary summary = new TestSummary();
 		summary.setScriptName("test");
 		assertEquals(expected, formatter.getSummaryData(summary));
 	}
 
 	public void testGetSummaryDataForAllTypes() {
-		String expected = "\n<testsuite errors=\"0\" failures=\"1\" name=\"null.test\" tests=\"1\" time=\"0.0\">\n<testcase name=\"test\" time=\"0.0\">";
+		String expected = "\n<testsuite errors=\"0\" failures=\"1\" name=\"null.test\" tests=\"1\" time=\"0.0\">\n<testcase classname=\"null.test\" name=\"test\" time=\"0.0\">";
 		assertEquals(expected, formatter.getSummaryData(ReportUtil
 				.getTestSummary()));
 	}
