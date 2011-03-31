@@ -75,7 +75,9 @@ public class JUnitFormatter implements Formatter {
                 Utils.escapeQuotesForXML(summary.getSuiteName() + "." + summary.getScriptName().replace(".sah", ""))).append(
                 "\" tests=\"").append(testCases).append(
                 "\" time=\"").append(new Double(summary.getTimeTaken())/1000).append("\">\n")
-                .append("<testcase name=\"").append(
+                .append("<testcase classname=\"").append(
+                        Utils.escapeQuotesForXML(summary.getSuiteName() + "." + summary.getScriptName().replace(".sah", ""))).append(
+                		"\" name=\"").append(
                         Utils.escapeQuotesForXML(summary.getScriptName())).append(
                 "\" time=\"").append(new Double(summary.getTimeTaken())/1000).append("\">");
 
