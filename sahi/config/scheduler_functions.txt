@@ -68,3 +68,4 @@ _simulateMouseEvent
 _simulateMouseEventXY
 _mouseDown
 _mouseUp
+_setStrictVisibilityCheck

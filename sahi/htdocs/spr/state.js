@@ -44,6 +44,7 @@ try {
     _sahi.commonDomain = "$commonDomain";
     _sahi.ignorableIdsPattern = new RegExp('$ignorableIdsPattern');
     _sahi.chromeExplicitCheckboxRadioToggle = $chromeExplicitCheckboxRadioToggle;
+    _sahi.strictVisibilityCheck = $strictVisibilityCheck;
     // Pro start
 } catch(e) {
 }

@@ -417,6 +417,13 @@ Sahi.prototype.checkVisible = function (el) {
         throw "" + el + " is not visible";
     }
 };
+Sahi.prototype.checkElementVisible = function (el) {
+    return this.strictVisibilityCheck ? this._isVisible(el) : true;
+}
+Sahi.prototype._setStrictVisibilityCheck = function(b){
+	this.setServerVar("strictVisibilityCheck", b);
+	this.strictVisibilityCheck = b;
+}
 Sahi.prototype._isVisible = function (el) {
     try{
         if (el == null) return false;
@@ -1852,7 +1859,7 @@ Sahi.prototype.findFormElementByIndex = function (ix, win, type, res, tagName) {
     els = this.isWithinBounds(els);
     for (var j = 0; j < els.length; j++) {
         var el = els[j];
-        if (el != null && this.areEqualTypes(this.getElementType(el), type)) {
+        if (el != null && this.areEqualTypes(this.getElementType(el), type) && this.checkElementVisible(el)) {
             res.cnt++;
             if (res.cnt == ix) {
                 res.element = el;
@@ -1892,8 +1899,9 @@ Sahi.prototype.findElementHelper = function (id, win, type, res, param, tagName)
         var els = this.getElementsByTagName(tagName, doc);
         els = this.isWithinBounds(els);
         for (var j = 0; j < els.length; j++) {
-            if (this.areEqualTypes(this.getElementType(els[j]), type) && this.areEqual(els[j], param, id)) {
-                res.element = els[j];
+        	var el = els[j];
+            if (this.areEqualTypes(this.getElementType(el), type) && this.areEqual(el, param, id) && this.checkElementVisible(el)) {
+                res.element = el;
                 res.found = true;
                 return res;
             }
@@ -1906,10 +1914,11 @@ Sahi.prototype.findElementHelper = function (id, win, type, res, param, tagName)
         els = this.getElementsByTagName(tagName, this.getDoc(win));
         els = this.isWithinBounds(els);
         for (var j = 0; j < els.length; j++) {
-            if (this.areEqualTypes(this.getElementType(els[j]), type) && this.areEqual(els[j], param, fetch)) {
+        	var el = els[j];
+        	if (this.areEqualTypes(this.getElementType(el), type) && this.areEqual(el, param, fetch) && this.checkElementVisible(el)) {
                 res.cnt++;
                 if (res.cnt == ix || ix == -1) {
-                    res.element = els[j];
+                    res.element = el;
                     res.found = true;
                     return res;
                 }
@@ -1933,7 +1942,7 @@ Sahi.prototype.findElementIxHelper = function (id, type, toMatch, win, res, para
     if (res && res.found) return res;
     var els = this.getElementsByTagName(tagName, this.getDoc(win));
     for (var j = 0; j < els.length; j++) {
-        if (this.areEqualTypes(this.getElementType(els[j]), type) && this.areEqual(els[j], param, id)) {
+        if (this.areEqualTypes(this.getElementType(els[j]), type) && this.areEqual(els[j], param, id) && this.checkElementVisible(els[j])) {
             res.cnt++;
             if (els[j] == toMatch) {
                 res.found = true;
@@ -2122,7 +2131,7 @@ Sahi.prototype.isWithinBounds = function (tags){
 	return filtered;
 }
 Sahi.prototype.withinOffset = function(actual, left, right, offset){
-	return actual >= (left - offset) && actual <= (right + offset); 
+	return actual >= (left - offset) && actual < (right + offset); 
 //	return Math.abs(a - b) <= offset; 
 }
 
@@ -2141,7 +2150,7 @@ Sahi.prototype.findTagHelper = function (id, win, type, res, param) {
             for (var i = 0; i < tags.length; i++) {
                 if (this.areEqual(tags[i], param, fetch)) {
                 	var el = tags[i];
-                	if (param == "sahiText" && (this.innerMost(el, fetch, type) != el)){
+                	if ((param == "sahiText" && (this.innerMost(el, fetch, type) != el)) || !this.checkElementVisible(el)){
                 		continue;
                 	}
                     res.cnt++;
@@ -2172,7 +2181,7 @@ Sahi.prototype.findTagIxHelper = function (id, toMatch, win, type, res, param) {
     var tags = this.getElementsByTagName(type, this.getDoc(win));
     if (tags) {
         for (var i = 0; i < tags.length; i++) {
-            if (param == null || this.areEqual(tags[i], param, id)) {
+            if ((param == null || this.areEqual(tags[i], param, id)) && this.checkElementVisible(tags[i])) {
                 res.cnt++;
                 if (tags[i] == toMatch) {
                     res.found = true;

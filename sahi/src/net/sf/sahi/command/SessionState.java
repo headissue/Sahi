@@ -67,6 +67,7 @@ public class SessionState {
         props.setProperty("commonDomain", "" + Configuration.getCommonDomain());
         props.setProperty("chromeExplicitCheckboxRadioToggle", "" + Configuration.getChromeExplicitCheckboxRadioToggle());
         props.setProperty("ignorableIdsPattern", Configuration.getIgnorableIdsPattern());
+        props.setProperty("strictVisibilityCheck", "" + session.getVariable("strictVisibilityCheck"));
         
 
         String waitCondition = session.getVariable("waitCondition");
