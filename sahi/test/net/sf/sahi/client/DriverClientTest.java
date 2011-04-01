@@ -29,8 +29,8 @@ import net.sf.sahi.config.Configuration;
  * 
  */
 public class DriverClientTest extends SahiTestCase {
-	protected String baseURL = "http://gramam";
-//	protected String baseURL = "http://sahi.co.in";
+//	protected String baseURL = "http://gramam";
+	protected String baseURL = "http://sahi.co.in";
 	private static final long serialVersionUID = 5492057299341976253L;
 	
 	public void xtestZK(){
