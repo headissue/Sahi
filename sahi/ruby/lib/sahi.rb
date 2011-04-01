@@ -187,9 +187,15 @@ module Sahi
     end
 
     # sets the speed of execution. The speed is specified in milli seconds
-    def set_speed(ms)
+    def speed=(ms)
       exec_command("setSpeed", {"speed"=>ms})
     end
+
+    # sets strict visibility check. If true, Sahi APIs ignores elements which are not visible
+    def strict_visibility_check=(check)
+      execute_step("_sahi._setStrictVisibilityCheck(#{check})")
+    end
+
 
     # represents a popup window. The name is either the window name or its title.
     def popup(name)

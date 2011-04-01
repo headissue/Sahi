@@ -10,7 +10,7 @@ class SahiDriverTest < Test::Unit::TestCase
 
   def teardown
     if @browser
-      @browser.set_speed(100)
+      @browser.set_speed = 100
       @browser.close
       sleep(1)
     end
@@ -32,7 +32,7 @@ class SahiDriverTest < Test::Unit::TestCase
   end
 
   def test_ZK
-    @browser.set_speed(200)
+    @browser.speed = 200
     @browser.navigate_to("http://www.zkoss.org/zkdemo/userguide/")
     @browser.div("Hello World").click
     @browser.span("Pure Java").click
@@ -470,6 +470,15 @@ class SahiDriverTest < Test::Unit::TestCase
 	assert_equal(2, els2.size());
 	assert_equal("group 1 link3", els2[0].text);
 	assert_equal("group 1 link4", els2[1].text);
+  end
+  
+  def test_strict_visible()
+  	@browser.navigate_to("#{@base_url}/demo/strict_visible.htm")
+	assert_equal("b", @browser.textbox("q[1]").value)
+	@browser.strict_visibility_check = true
+	assert_equal("c", @browser.textbox("q[1]").value)
+	@browser.strict_visibility_check = true
+	assert_equal("b", @browser.textbox("q[1]").value)
   end
 
 end
