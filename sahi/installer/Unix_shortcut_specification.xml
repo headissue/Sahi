@@ -3,13 +3,13 @@
 <shortcuts>
 <skipIfNotSupported/>
   <programGroup defaultName="Sahi"
-  location="applications"/>
+  location="Applications"/>
 	<shortcut
      name="Start Sahi"
-     programGroup="yes"
+     programGroup="no"
      desktop="no"
-     applications="no"
-     startMenu="yes"
+     applications="yes"
+     startMenu="no"
      startup="no"
      target="$INSTALL_PATH/userdata/bin/start_dashboard.sh"
      commandLine=""
