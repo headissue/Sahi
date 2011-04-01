@@ -32,7 +32,7 @@ li {margin:10px}
 </style>
 <script>
 function init(){
-	var tabGroup = new TabGroup("tabGroup", ["tbrowser_types", "tuserdata", "texclude_inject", "tdownload_urls", "tdownload_contenttypes"], "tbrowser_types");
+	var tabGroup = new TabGroup("tabGroup", ["tbrowser_types", "tuserdata", "texclude_inject", "tdownload_urls", "tdownload_contenttypes", "tblock_ssl_domains"], "tbrowser_types");
 }
 //TabGroup Start
 function $(id){
@@ -148,6 +148,8 @@ function save(){
 <a href="#" id="texclude_inject" onclick="loadFile('exclude_inject.txt');">exclude_inject.txt</a><br/>
 <a href="#" id="tdownload_urls" onclick="loadFile('download_urls.txt');">download_urls.txt</a><br/>
 <a href="#" id="tdownload_contenttypes" onclick="loadFile('download_contenttypes.txt');">download_contenttypes.txt</a><br/>
+<a href="#" id="tblock_ssl_domains" onclick="loadFile('block_ssl_domains.txt');">block_ssl_domains.txt</a><br/>
+
 
 <div style="background-color:lightblue;margin:50px 20px 10px 0px;padding:10px">
 <div id="tbrowser_typesbox" class="content" style="display:none">
@@ -160,7 +162,7 @@ is advisable to use the defaults provided and only change the paths where needed
 <div id="tuserdatabox" class="content" style="display:none">
 <h2>userdata.properties</h2>
 Sahi can be configured using two files:
-<ol>
+<ol style="margin:5px;padding:5px;">
 <li>sahi/userdata/config/ userdata.properties</li>
 <li>sahi/config/sahi.properties (<a href="/_s_/dyn/ConfigureUI_view?fileName=config/sahi.properties&useBase=true" target="_blank">View</a>)</li>
 </ol>
@@ -188,6 +190,13 @@ If Sahi is unable to detect a request as a download, you can force it to downloa
 <h2>download_contenttypes.txt</h2>
 Sahi automatically downloads and saves files into sahi/usedata/temp/downloads directory. 
 If Sahi is unable to detect a request as a download, you can force it to download the file by adding relevant content-types to this file. 
+</div>
+
+<div id="tblock_ssl_domainsbox" style="display:none">
+<h2>block_ssl_domains.txt</h2>
+If a domain is added here, any HTTPS calls to this domain will return a 404 error.
+Browsers like firefox make HTTPS requests to addons.mozilla.org and sb-ssl.google.com which can hang playback. 
+Adding these domains to block_ssl_domains.txt will prevent hangs.
 </div>
 
 </div>
