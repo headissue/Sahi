@@ -171,15 +171,36 @@ public class ProxyProcessor implements Runnable {
 
     private void processConnect(HttpRequest requestFromBrowser) {
         try {
+        	if (isBlockableDomain(requestFromBrowser.host())){
+        		client.getOutputStream().write(("HTTP/1.0 404 NOT FOUND\r\n\r\n").getBytes());
+        		client.close();
+        		return;
+        	}
             client.getOutputStream().write(("HTTP/1.0 200 OK\r\n\r\n").getBytes());
             SSLSocket sslSocket = new SSLHelper().convertToSecureServerSocket(client,
                     requestFromBrowser.host());
             ProxyProcessor delegatedProcessor = new ProxyProcessor(sslSocket);
             delegatedProcessor.run();
         } catch (IOException e) {
+        	try {
+				client.close();
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
             e.printStackTrace();
         }
     }
+
+	private boolean isBlockableDomain(String host) {
+        String[] list = Configuration.getBlockableSSLDomainsList();
+        for (int i = 0; i < list.length; i++) {
+            String pattern = list[i];
+            if (host.matches(pattern.trim())) {
+                return true;
+            }
+        }
+        return false;
+	}
 
 
     private void processLocally(String uri, final HttpRequest requestFromBrowser) throws IOException {

@@ -414,6 +414,8 @@ public class Configuration {
 	private static String overriddenControllerMode;
 
 	private static String[] downloadURLList;
+	
+	private static String[] blockableSSLDomainList;
 
 	public static void enableKeepAlive() {
 		enableKeepAlive++;
@@ -473,6 +475,13 @@ public class Configuration {
 			downloadURLList = getNonBlankLines(Utils.readCachedFileIfExists(Utils.concatPaths(userDataDir, "config/download_urls.txt")));
 		}
 		return downloadURLList;
+	}
+
+	public static String[] getBlockableSSLDomainsList() {
+		if (blockableSSLDomainList == null) {
+			blockableSSLDomainList = getNonBlankLines(Utils.readCachedFileIfExists(Utils.concatPaths(userDataDir, "config/block_ssl_domains.txt")));
+		}
+		return blockableSSLDomainList;
 	}
 
 	protected static String[] getNonBlankLines(byte[] b) {

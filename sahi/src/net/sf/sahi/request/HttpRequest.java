@@ -143,6 +143,10 @@ public class HttpRequest extends StreamHandler {
 	}
 
 	void setUri() {
+		if (isConnect()) {
+			uri = "";
+			return;
+		}
 		String withHost = firstLine().substring(firstLine().indexOf(" "),
 				firstLine().lastIndexOf(" ")).trim();
 		uri = stripHostName(withHost, host, isSSL());
