@@ -895,7 +895,20 @@ public class Browser extends BrowserElements {
 	public void setSpeed(int interval) {
 		execCommand("setSpeed", new QueryStringBuilder().add("speed", ""+interval));
 	}
-
+	
+	/**
+	 * Sets strict visibility check.<br/>
+	 * If true, Sahi APIs will ignore hidden elements.<br/>
+	 * Useful when similar widgets are generated but only one widget is displayed at any time <br/>
+	 * 
+	 * Can set to true globally from sahi.properties/userdata.properties by setting <br/>
+	 * element.visibility_check.strict=true<br/>
+	 * 
+	 * @param boolean
+	 */
+	public void setStrictVisibilityCheck(boolean check) {
+		execute("_sahi._setStrictVisibilityCheck(" + check + ")");
+	}
 	/**
 	 * Returns true if the element contains the input text
 	 * 

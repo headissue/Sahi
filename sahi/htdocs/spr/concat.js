@@ -418,7 +418,9 @@ Sahi.prototype.checkVisible = function (el) {
     }
 };
 Sahi.prototype.checkElementVisible = function (el) {
-    return this.strictVisibilityCheck ? this._isVisible(el) : true;
+	if (!this.strictVisibilityCheck) return true;
+	if (el.type && el.type == "hidden") return true;
+    return this._isVisible(el);
 }
 Sahi.prototype._setStrictVisibilityCheck = function(b){
 	this.setServerVar("strictVisibilityCheck", b);

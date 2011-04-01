@@ -29,8 +29,8 @@ import net.sf.sahi.config.Configuration;
  * 
  */
 public class DriverClientTest extends SahiTestCase {
-//	protected String baseURL = "http://gramam";
-	protected String baseURL = "http://sahi.co.in";
+	protected String baseURL = "http://gramam";
+//	protected String baseURL = "http://sahi.co.in";
 	private static final long serialVersionUID = 5492057299341976253L;
 	
 	public void xtestZK(){
@@ -622,6 +622,25 @@ public class DriverClientTest extends SahiTestCase {
 		browser.navigateTo("http://www.wikipedia.org");
 		browser.searchbox("search").setValue("sahi software");
 		browser.submit("  →  ").click();
+	}
+	
+	public void testStrictVisibility() throws Exception {
+		browser.navigateTo(baseURL + "/demo/strict_visible.htm");
+		assertTrue(browser.textbox("q").exists());
+		assertTrue(browser.textbox("q[1]").exists());
+		assertFalse(browser.textbox("q[1]").isVisible());
+		assertTrue(browser.textbox("q[2]").exists());
+		
+		browser.setStrictVisibilityCheck(true);
+		assertTrue(browser.textbox("q").exists());
+		assertTrue(browser.textbox("q[1]").exists());
+		assertFalse(browser.textbox("q[2]").exists());
+		
+		browser.setStrictVisibilityCheck(false);
+		assertTrue(browser.textbox("q").exists());
+		assertTrue(browser.textbox("q[1]").exists());
+		assertFalse(browser.textbox("q[1]").isVisible());
+		assertTrue(browser.textbox("q[2]").exists());
 	}
 	
 	@Override
