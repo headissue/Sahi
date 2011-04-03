@@ -1,3 +1,14 @@
+04 Apr 2011
+-----------
+* Bugfixes
+	RightClick and DoubleClick simulation made better
+	Errors if caught, do not fail tests
+
+* Features
+	_setStrictVisibilityCheck added. If true, Sahi APIs will look at visible elements only.
+	Blocked unnecessary https calls via block_ssl_domains.txt (fix for FF hang due to safe-browse and addons update)
+
+
 28 Mar 2011
 -----------
 * Bugfixes
