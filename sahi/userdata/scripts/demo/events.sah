@@ -153,5 +153,5 @@ function testTextboxRightClick(){
 	_click(document.body);
 	_assertEqual($browserEventSeq.textboxrightclick, _getValue(_textarea("logs")));	
 }
-_runUnitTests(["testDivRightClick", "testTextboxRightClick"]);
+_runUnitTests();
 
