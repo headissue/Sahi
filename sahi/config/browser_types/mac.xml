@@ -17,6 +17,6 @@
 		<options> </options>  
 		<processName>Safari</processName> 
 		<useSystemProxy>true</useSystemProxy> 
-		<capacity>5</capacity>  
+		<capacity>1</capacity>  
 	</browserType>
 </browserTypes>

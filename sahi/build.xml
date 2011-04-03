@@ -367,6 +367,8 @@
 				<include name="collect.sah"/>
 				<include name="executeTimeout.sah"/>
 				<include name="readURL.sah"/>
+				<include name="sencha_combobox.sah"/>
+				<include name="strict_visible.sah"/>
 			</fileset>
 		</copy>
 		<copy todir="${temp.dir}/extlib">

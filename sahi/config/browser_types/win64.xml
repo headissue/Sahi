@@ -74,7 +74,7 @@
 		<options> </options>  
 		<processName>safari.exe</processName> 
 		<useSystemProxy>true</useSystemProxy> 
-		<capacity>5</capacity>  
+		<capacity>1</capacity>  
 	</browserType>
 	
 	<browserType> 
