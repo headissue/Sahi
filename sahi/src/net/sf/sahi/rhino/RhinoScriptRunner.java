@@ -232,7 +232,7 @@ public class RhinoScriptRunner extends ScriptRunner implements Runnable {
 	}
 
 	public void setHasError(){
-		setStatus(Status.ERROR);
+		setStatus(Status.FAILURE);
 	}	
 	
 	public void logExceptionWithLineNumber(String message, int lineNumber, boolean isFailure){

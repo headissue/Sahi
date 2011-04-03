@@ -480,13 +480,13 @@ Sahi.prototype._click = function (el, combo) {
 Sahi.prototype._doubleClick = function (el, combo) {
     this.checkNull(el, "_doubleClick");
     this.checkVisible(el);
-    this.simulateClick(el, false, true, combo);
+    this.simulateDoubleClick(el, false, true, combo);
 };
 
 Sahi.prototype._rightClick = function (el, combo) {
     this.checkNull(el, "_rightClick");
     this.checkVisible(el);
-    this.simulateClick(el, true, false, combo);
+    this.simulateRightClick(el, true, false, combo);
 };
 
 Sahi.prototype._mouseOver = function (el, combo) {
@@ -607,6 +607,97 @@ Sahi.prototype.isCheckboxRadioSimulationRequired = function(){
 		return this.chromeExplicitCheckboxRadioToggle;
 	}
 	return this.isSafariLike();
+};
+Sahi.prototype.simulateDoubleClick = function (el, isRight, isDouble, combo) {
+    var n = el;
+    var callBlur = true;
+    if (this._isFF() || this.isSafariLike() || this._isOpera()) {
+    	this.simulateMouseEvent(el, "mousemove");
+	    this.simulateMouseEvent(el, "mouseover");
+	    this.simulateMouseEvent(el, "mousedown", isRight, false, combo);
+	    this.invokeLastBlur();
+	    callBlur = this.isFocusableFormElement(el);
+	    if (callBlur)  this.simulateEvent(el, "focus");
+	    this.simulateMouseEvent(el, "mouseup", isRight, false, combo);
+	    this.simulateMouseEvent(el, "click", isRight, false, combo);
+	    this.simulateMouseEvent(el, "mousedown", isRight, isDouble, combo);
+	    this.simulateMouseEvent(el, "mouseup", isRight, isDouble, combo);
+	    this.simulateMouseEvent(el, "click", isRight, isDouble, combo);
+	    this.simulateMouseEvent(el, "dblclick", isRight, isDouble, combo);
+    } else if (this._isIE() && !this._isIE9()){
+	    this.simulateMouseEvent(el, "mousemove");
+	    this.simulateMouseEvent(el, "mouseover");
+	    this.simulateMouseEvent(el, "mousedown", isRight, false, combo);
+	    this.invokeLastBlur();
+	    this.simulateMouseEvent(el, "focus");
+	    this.simulateMouseEvent(el, "mouseup", isRight, false, combo);
+	    this.simulateMouseEvent(el, "click", isRight, false, combo);
+	    this.simulateMouseEvent(el, "mouseup", isRight, false, combo);	
+	    this.simulateMouseEvent(el, "dblclick", isRight, isDouble, combo);
+    } else if (this._isIE9()) {
+    	this.simulateMouseEvent(el, "mousemove");
+	    this.simulateMouseEvent(el, "mouseover");
+	    this.simulateMouseEvent(el, "mousedown", isRight, false, combo);
+	    this.invokeLastBlur();
+	    this.simulateMouseEvent(el, "focus");
+	    this.simulateMouseEvent(el, "mouseup", isRight, false, combo);
+	    this.simulateMouseEvent(el, "click", isRight, false, combo);
+	    this.simulateMouseEvent(el, "mousedown", isRight, isDouble, combo);
+	    this.simulateMouseEvent(el, "mouseup", isRight, isDouble, combo);
+	    this.simulateMouseEvent(el, "click", isRight, isDouble, combo);
+	    this.simulateMouseEvent(el, "dblclick", isRight, isDouble, combo);
+    } 
+    if (callBlur){
+		this.setLastBlurFn(function(){
+	    	try{
+		    	_sahi.simulateMouseEvent(el, "mousemove");
+		        _sahi.simulateMouseEvent(el, "mouseout");
+		        if (!(_sahi._isFF() || _sahi._isIE9() || _sahi._isOpera()) && (el.type == "checkbox" || el.type == "radio")){
+		        	_sahi.simulateEvent(el, "change");
+		        }
+		        _sahi.simulateEvent(el, "blur");
+	    	}catch(e){}
+	    });
+    }    
+};
+Sahi.prototype.simulateRightClick = function (el, isRight, isDouble, combo) {
+    var n = el;
+    var callBlur = true;
+    if (this._isFF() || this.isSafariLike() || this._isOpera()) {
+    	this.simulateMouseEvent(el, "mousemove");
+	    this.simulateMouseEvent(el, "mouseover");
+	    this.simulateMouseEvent(el, "mousedown", isRight, false, combo);
+	    this.invokeLastBlur();
+	    callBlur = this.isFocusableFormElement(el);
+	    if (callBlur)  this.simulateEvent(el, "focus");
+	    this.simulateMouseEvent(el, "mouseup", isRight, false, combo);
+	    this.simulateMouseEvent(el, "contextmenu", isRight, false, combo);
+    } else if (this._isIE()){
+	    this.simulateMouseEvent(el, "mousemove");
+	    this.simulateMouseEvent(el, "mouseover");
+	    this.simulateMouseEvent(el, "mousedown", isRight, false, combo);
+	    this.invokeLastBlur();
+	    this.simulateMouseEvent(el, "focus");
+	    this.simulateMouseEvent(el, "mouseup", isRight, false, combo);
+	    this.simulateMouseEvent(el, "contextmenu", isRight, false, combo);
+    }
+    if (callBlur){
+		this.setLastBlurFn(function(){
+	    	try{
+		    	_sahi.simulateMouseEvent(el, "mousemove");
+		        _sahi.simulateMouseEvent(el, "mouseout");
+		        if (!(_sahi._isFF() || _sahi._isIE9() || _sahi._isOpera()) && (el.type == "checkbox" || el.type == "radio")){
+		        	_sahi.simulateEvent(el, "change");
+		        }
+		        _sahi.simulateEvent(el, "blur");
+	    	}catch(e){}
+	    });
+    }    
+};
+Sahi.prototype.isFocusableFormElement = function(el){
+	if (!this.isFormElement(el)) return false;
+	if (this.isSafariLike() && (el.type == "checkbox" || el.type == "radio" || el.type == "button")) return false;
+	return true;
 }
 Sahi.prototype.simulateClick = function (el, isRight, isDouble, combo) {
     var n = el;
@@ -628,64 +719,55 @@ Sahi.prototype.simulateClick = function (el, isRight, isDouble, combo) {
     this.simulateMouseEvent(el, "mouseover");
     this.simulateMouseEvent(el, "mousedown", isRight, false, combo);
     this.invokeLastBlur();
-    if (!(this.isSafariLike() && (el.type == "checkbox" || el.type == "radio" || el.type == "button"))){
-    	this.simulateMouseEvent(el, "focus");
-    }
+    var focusBlur = this.isFocusableFormElement(el);
+    if (focusBlur) this.simulateEvent(el, "focus");
     this.simulateMouseEvent(el, "mouseup", isRight, false, combo);
-    if (isRight) {
-    	if (window.opera && window.opera.version() < 11){
-    		this.simulateMouseEvent(el, "click", isRight, isDouble, combo);
-    	}else{
-    		this.simulateMouseEvent(el, "contextmenu", isRight, isDouble, combo);
-    	}
-    } else {
-        try {
-            if (this._isIE() && !isDouble && el && (this.areTagNamesEqual(el.tagName, "LABEL") || 
-            		(link != null) ||
-            		(el.type && (el.type == "submit"
-                    || el.type == "reset" || el.type == "image"
-                    || el.type == "checkbox" || el.type == "radio")))) {
-            		if (link != null) {
-            	        this.markStepDone(this.currentStepId, this.currentType);	
-            		}
-                    el.click();
-            } else {
-            	if (window.opera && !isDouble){
-            		// for opera single clicks don't simulate click event; 
-            		// Ignoring old comment, seems click is required now. 01 Nov 2010
-            		this.simulateMouseEvent(el, "click", isRight, isDouble, combo);
-            		if (this.areTagNamesEqual(el.tagName, "INPUT") && (el.type == "radio" || el.type == "checkbox")) {
-            			this.simulateMouseEvent(el, "change");
-            		}
-            	}
-            	else {
-            		var done = false;
-            		if (this.isCheckboxRadioSimulationRequired()) {
-                        if (this.areTagNamesEqual(el.tagName, "INPUT")) {
-                            if (el.type == "radio" || el.type == "checkbox") {
-                            	done = true;
-                            	el.checked = (el.type == "radio") ? true : !el.checked;
-                            	this.simulateMouseEvent(el, "change");
-                            	this.simulateMouseEvent(el, "click", isRight, isDouble, combo);
-                            } 
-                        }
-                    } 
-                    if (!done) this.simulateMouseEvent(el, "click", isRight, isDouble, combo);
-            	}
-            }
-        } catch(e) {
+    try {
+        if (this._isIE() && el && (this.areTagNamesEqual(el.tagName, "LABEL") || 
+        		(link != null) ||
+        		(el.type && (el.type == "submit"
+                || el.type == "reset" || el.type == "image"
+                || el.type == "checkbox" || el.type == "radio")))) {
+        		if (link != null) {
+        	        this.markStepDone(this.currentStepId, this.currentType);	
+        		}
+                el.click();
+        } else {
+        	if (window.opera){
+        		// for opera single clicks don't simulate click event; 
+        		// Ignoring old comment, seems click is required now. 01 Nov 2010
+        		this.simulateMouseEvent(el, "click", isRight, isDouble, combo);
+        		if (this.areTagNamesEqual(el.tagName, "INPUT") && (el.type == "radio" || el.type == "checkbox")) {
+        			this.simulateEvent(el, "change");
+        		}
+        	}
+        	else {
+        		var done = false;
+        		if (this.isCheckboxRadioSimulationRequired()) {
+                    if (this.areTagNamesEqual(el.tagName, "INPUT")) {
+                        if (el.type == "radio" || el.type == "checkbox") {
+                        	done = true;
+                        	el.checked = (el.type == "radio") ? true : !el.checked;
+                        	this.simulateEvent(el, "change");
+                        	this.simulateMouseEvent(el, "click", isRight, isDouble, combo);
+                        } 
+                    }
+                } 
+                if (!done) this.simulateMouseEvent(el, "click", isRight, isDouble, combo);
+        	}
         }
+    } catch(e) {
     }
 
-    if (!this.isSafariLike()){
+    if (focusBlur){
 		this.setLastBlurFn(function(){
 	    	try{
 		    	_sahi.simulateMouseEvent(el, "mousemove");
 		        _sahi.simulateMouseEvent(el, "mouseout");
 		        if (!(_sahi._isFF() || _sahi._isIE9() || _sahi._isOpera()) && (el.type == "checkbox" || el.type == "radio")){
-		        	_sahi.simulateMouseEvent(el, "change");
+		        	_sahi.simulateEvent(el, "change");
 		        }
-		        _sahi.simulateMouseEvent(el, "blur");
+		        _sahi.simulateEvent(el, "blur");
 	    	}catch(e){}
 	    });
     }
@@ -716,11 +798,11 @@ Sahi.prototype.simulateMouseEventXY = function (el, type, x, y, isRight, isDoubl
     var isAlt = combo.indexOf("ALT")!=-1;
     var isMeta = combo.indexOf("META")!=-1;
     
-    if (!this._isIE() || this._isIE9()) {
-        if (this.isSafariLike() || this._isIE9()) {
+    if (!this._isIE() || (this._isIE9() && !(type == "click" && isDouble))) {
+        if (this.isSafariLike() || this._isIE9() || this._isOpera()) {
         	if (el.ownerDocument.createEvent) {
 	            var evt = el.ownerDocument.createEvent('HTMLEvents');
-	            type = (isDouble ? "dbl" : "") + type;
+	            type = type;
 	            evt.initEvent(type, true, true);
 	            evt.clientX = x;
 	            evt.clientY = y;
@@ -730,6 +812,7 @@ Sahi.prototype.simulateMouseEventXY = function (el, type, x, y, isRight, isDoubl
 	            evt.screenY = y;
 	            evt.button = isRight ? 2 : 0;
 	            evt.which = isRight ? 3 : 1;
+	            evt.detail = isDouble ? 2 : (type == "contextmenu" ? 0 : 1);
 	            evt.ctrlKey = isCtrl;
 	            evt.altKey = isAlt;
 	            evt.metaKey = isMeta;            
@@ -741,11 +824,11 @@ Sahi.prototype.simulateMouseEventXY = function (el, type, x, y, isRight, isDoubl
             // FF
             var evt = el.ownerDocument.createEvent("MouseEvents");
             evt.initMouseEvent(
-            (isDouble ? "dbl" : "") + type,
+            type,
             true, //can bubble
-            true,
-            el.ownerDocument.defaultView,
-            (isDouble ? 2 : 1),
+            true, //cancelable
+            el.ownerDocument.defaultView, //view
+            (isDouble ? 2 : 1), //detail
             x, //screen x
             y, //screen y
             x, //client x
@@ -754,8 +837,9 @@ Sahi.prototype.simulateMouseEventXY = function (el, type, x, y, isRight, isDoubl
             isAlt,
             isShift,
             isMeta,
-            isRight ? 2 : 0,
-            null);
+            isRight ? 2 : 0, //button
+            null//relatedTarget
+            );
             el.dispatchEvent(evt);
         }
     } 
@@ -771,7 +855,7 @@ Sahi.prototype.simulateMouseEventXY = function (el, type, x, y, isRight, isDoubl
         if (type == "mousedown" || type == "mouseup" || type == "mousemove"){
         	evt.button = isRight ? 2 : 1;
         }
-        el.fireEvent("on" + (isDouble ? "dbl" : "") + type, evt);
+        el.fireEvent("on" + type, evt);
         evt.cancelBubble = true;
     }
 };
@@ -1022,6 +1106,7 @@ Sahi.prototype.simulateEvent = function (target, evType) {
     if (!this._isIE()) {
         var evt = new Object();
         evt.type = evType;
+        evt.button = 0;
         evt.bubbles = true;
         evt.cancelable = true;
         if (!target) return;

@@ -2,6 +2,7 @@ package net.sf.sahi.rhino;
 
 import junit.framework.TestCase;
 import net.sf.sahi.config.Configuration;
+import net.sf.sahi.session.Status;
 
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.JavaScriptException;
@@ -121,5 +122,26 @@ public class ScriptRunnerTest extends TestCase {
 	
 	public void testSahiException(){
 		evaluate("throw new SahiException('Step took too long')");
+	}
+	
+	public void testFailureIncrementsErrorCount() throws Exception {
+		ScriptRunner scriptRunner = new RhinoScriptRunner("");
+		final int errorCount = scriptRunner.errorCount();
+		scriptRunner.setStatus(Status.FAILURE);
+		assertEquals(errorCount + 1, scriptRunner.errorCount());
+	}	
+	
+	public void testErrorDoesNotIncrementErrorCount() throws Exception {
+		ScriptRunner scriptRunner = new RhinoScriptRunner("");
+		final int errorCount = scriptRunner.errorCount();
+		scriptRunner.setStatus(Status.ERROR);
+		assertEquals(errorCount, scriptRunner.errorCount());
+	}
+	
+	public void testSetHasErrorIncrementsErrorCount() throws Exception {
+		RhinoScriptRunner scriptRunner = new RhinoScriptRunner("");
+		final int errorCount = scriptRunner.errorCount();
+		scriptRunner.setHasError();
+		assertEquals(errorCount + 1, scriptRunner.errorCount());
 	}
 }

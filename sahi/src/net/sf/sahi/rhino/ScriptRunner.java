@@ -203,7 +203,7 @@ public class ScriptRunner {
 	}
 
 	public void setStatus(Status status) {
-		if (status == Status.FAILURE || status == Status.ERROR) {
+		if (status == Status.FAILURE) {
 			errorCount++;
 		}
 		this.status = status;

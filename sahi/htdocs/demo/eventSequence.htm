@@ -22,6 +22,7 @@ Events attach mode: <br/>
 
 <div>
 Events to monitor: <br/>
+<form>
 <table><tr>
 <td><label><input type="checkbox" name="events" value="mouseover"> mouseover</label></td>
 <td><label><input type="checkbox" name="events" value="mousemove"> mousemove</label></td>
@@ -30,6 +31,7 @@ Events to monitor: <br/>
 <td><label><input type="checkbox" name="events" value="mouseup" checked="checked"> mouseup</label></td>
 <td><label><input type="checkbox" name="events" value="mousedown" checked="checked"> mousedown</label></td>
 <td><label><input type="checkbox" name="events" value="click" checked="checked"> click</label></td>
+<td><label><input type="checkbox" name="events" value="dblclick" checked="checked"> dblclick</label></td>
 <td><label><input type="checkbox" name="events" value="contextmenu" checked="checked"> contextmenu</label></td>
 </tr><tr>
 <td><label><input type="checkbox" name="events" value="focus" checked="checked"> focus</label></td>
@@ -42,6 +44,8 @@ Events to monitor: <br/>
 </tr>
 </table>
 <input type="button" value="Add event listeners" onclick="addEvListeners()">
+<input type="reset" value="Reset">
+</form>
 </div>
 
 
@@ -76,8 +80,8 @@ Events to monitor: <br/>
 <br/>
 <hr/>
 <br/>
-
-<input type="button" value="Check All" onclick="checkAll()"> |
+<form>
+<input type="button" value="Check All" onclick="checkAll()"> | <input type="reset" value="Reset"> | 
 <input type="button" value="Clear" onclick="$('logs').value=''"/><br/>
 <label><input type="checkbox" name="props" value="e.keyCode">keyCode</label>
 <label><input type="checkbox" name="props" value="e.charCode">charCode</label>
@@ -97,12 +101,13 @@ Events to monitor: <br/>
 <label><input type="checkbox" name="props" value="e.button">e.button</label>
 <label><input type="checkbox" name="props" value="e.which">e.which</label>
 <label><input type="checkbox" name="props" value="e.type">e.type</label>
+<label><input type="checkbox" name="props" value="e.detail">e.detail</label>
 <label><input type="checkbox" name="props" value="el.value">el.value</label>
 </br>
 
 <br/>
 <textarea id="logs" style="width:1024px;height:300px"></textarea>
-
+</form>
 
 <script>
 function addEventWithAddEventListener(el, ev, fn) {
@@ -154,6 +159,7 @@ function fn(s){
 	return function(e){
 		if (!e) e = window.event;
 		if (_last == s) return;
+		//_sahi._debug(_sahi.list(e));
 		var el = getTarget(e);
 		var msg = "\n" + el.id + ":" + s;
 
@@ -213,6 +219,53 @@ function redraw(){
 	$("redrawable").innerHTML = $("redrawable").innerHTML; 	
 }
 
+function storeState(){
+	var states = [];
+	var inputs = document.getElementsByTagName("INPUT");
+	for (var i=0; i<inputs.length; i++){
+		var cb = inputs[i];
+		if (cb.type == "checkbox" || cb.type == "radio") {
+			states[i] = cb.checked;
+		}
+	}
+	createCookie("eventstate", states.join("|"));
+}
+
+function restoreState(){
+	var s = readCookie("eventstate");
+	if (s == null) return;
+	var states = s.split("|");
+	var inputs = document.getElementsByTagName("INPUT");
+	for (var i=0; i<states.length; i++){
+		var cb = inputs[i];
+		if (cb.type == "checkbox" || cb.type == "radio") {
+			cb.checked = states[i] == "true";
+		}
+	}
+}
+
+function createCookie(name,value,days) {
+	if (days) {
+		var date = new Date();
+		date.setTime(date.getTime()+(days*24*60*60*1000));
+		var expires = "; expires="+date.toGMTString();
+	}
+	else var expires = "";
+	document.cookie = name+"="+value+expires+"; path=/";
+}
+
+function readCookie(name) {
+	var nameEQ = name + "=";
+	var ca = document.cookie.split(';');
+	for(var i=0;i < ca.length;i++) {
+		var c = ca[i];
+		while (c.charAt(0)==' ') c = c.substring(1,c.length);
+		if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+	}
+	return null;
+}
+restoreState();
+window.onbeforeunload = storeState;
 </script>
 
 
