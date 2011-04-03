@@ -207,7 +207,6 @@ public class ScriptRunner {
 			errorCount++;
 		}
 		this.status = status;
-
 	}
 
 	public Status getStatus() {
