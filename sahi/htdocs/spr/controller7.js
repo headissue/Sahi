@@ -592,6 +592,12 @@ function demoAction(el) {
 		setDebugValue("// Single line comment"); 
 	} else if (el.value == "comment2") {
 		setDebugValue("/* Multiline \n Comment */");
+	} else if (el.value == "svon") {
+		setDebugValue("_setStrictVisibilityCheck(true);");
+		evaluateExpr();
+	} else if (el.value == "svoff") {
+		setDebugValue("_setStrictVisibilityCheck(false);");
+		evaluateExpr();
 	} else {
 		setDebugValue(el.value + "(" + $("accessor").value + ");");
 		evaluateExpr();
