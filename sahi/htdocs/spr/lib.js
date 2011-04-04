@@ -801,7 +801,7 @@ Sahi.prototype.makeFetchAPIs = function(){
 	            "_containsHTML", "_getText", "_getCellText", "_getSelectedText", 
 	            "_lastAlert", "_lastPrompt", "_lastConfirm", "_style", "_cookie", 
 	            "_position", "_rteHTML", "_rteText", "_isVisible", 
-	            "_contains", "_title", "_exists", "_isIE", "_isIE9", "_isFF", "_isFF3", "_isFF4", "_isChrome", "_isSafari",
+	            "_contains", "_title", "_exists", "_isIE", "_isIE9", "_isFF", "_isFF3", "_isFF4", "_isChrome", "_isSafari", "_isOpera",
 	            "_lastDownloadedFileName", "_prompt", "_confirm", "_count"];
 	for (var i=0; i<apis.length; i++){
 		var api = apis[i];
