@@ -1,3 +1,0 @@
-_setFile(document.form1.f1, "C:\\testFileUpload.txt");
-_click(_submit("Submit"));
-

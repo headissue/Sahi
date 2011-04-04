@@ -1,5 +1,0 @@
-_click(_link("Link Test"));
-_click(_link("link without href"));
-_assertNotNull(_textbox("t1"));
-_assertEqual("Clicked", _textbox("t1").value);
-_click(_link("Back"));
