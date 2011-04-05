@@ -89,12 +89,14 @@ public class BrowserTypesLoader {
 		for (Iterator<String> iterator = browserTypes.keySet().iterator(); iterator.hasNext();) {
 			BrowserType browserType = browserTypes.get(iterator.next());
 			final String expanded = Utils.expandSystemProperties(browserType.path());
+			if(!browserType.force()){
 			File browser = new File(expanded);
 			if (!browser.exists()) {
 				if (printMessage) {
 					System.out.println(browserType.displayName()
 							+ " was not found at " + expanded);
 				}
+			}
 			} else {
 				availableBrowserTypes.put(browserType.name(), browserType);
 			}
