@@ -2,7 +2,6 @@ _navigateTo("/demo/formTest.htm");
 function checkTA($value, $expected){
 	if (!$expected) $expected = $value;
 	_setValue(_textarea("ta1"), $value);
-//	_assert($expected == _textarea("ta1").value);
 	_assertEqual($expected, _textarea("ta1").value);
 }
 

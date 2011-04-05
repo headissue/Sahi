@@ -369,6 +369,7 @@
 				<include name="readURL.sah"/>
 				<include name="sencha_combobox.sah"/>
 				<include name="strict_visible.sah"/>
+				<include name="close_window.sah"/>
 			</fileset>
 		</copy>
 		<copy todir="${temp.dir}/extlib">
@@ -437,8 +438,7 @@
 		<replace file="${temp.dir}/docs/releasenotes.txt" token="@build@" value="${TODAY_IN}"/>
 	</target>
 
-	<target name="installer">
-		<antcall target="prepare-src-zip"/>
+	<target name="installer" depends="prepare-zip">
 		<taskdef name="izpack" classpath="extlib/izpack/standalone-compiler411.jar;extlib/izpack/standalone-compiler.jar" classname="com.izforge.izpack.ant.IzPackTask" />
 		<izpack input="installer/install.xml" output="deploy/install_sahi_v35_${DSTAMP}.jar" installertype="standard" basedir="${temp.dir}" izpackdir="." />
 	</target>
@@ -555,8 +555,7 @@
 				</fileset>
 			</batchtest>
 		</junit>
-		<antcall target="report-gen">
-		</antcall>
+		<antcall target="report-gen" />
 		<delete file="bin/junittestrun.out" failonerror="false"/>
 		<fail message="JUnit tests failed. MAKE SURE THAT junit.jar AND log4j.jar ARE PRESENT IN {sahi}/extlib/ FOLDER"
               if="junit.failed"/>
