@@ -438,7 +438,7 @@
 		<replace file="${temp.dir}/docs/releasenotes.txt" token="@build@" value="${TODAY_IN}"/>
 	</target>
 
-	<target name="installer" depends="prepare-zip">
+	<target name="installer" depends="prepare-src-zip">
 		<taskdef name="izpack" classpath="extlib/izpack/standalone-compiler411.jar;extlib/izpack/standalone-compiler.jar" classname="com.izforge.izpack.ant.IzPackTask" />
 		<izpack input="installer/install.xml" output="deploy/install_sahi_v35_${DSTAMP}.jar" installertype="standard" basedir="${temp.dir}" izpackdir="." />
 	</target>
