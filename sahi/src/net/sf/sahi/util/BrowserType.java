@@ -13,18 +13,19 @@ public class BrowserType {
 	protected String displayName;
 	protected String icon;
 	protected boolean useSystemProxy;
+	protected boolean force;
 	
 	public BrowserType(String browserName, String browserPath,
 			String browserOptions, String browserProcessToKill, int capacity, 
-			String displayName, String icon, boolean useSystemProxy) {
+			String displayName, String icon, boolean useSystemProxy, boolean force) {
 				populateFields(browserName, browserPath, browserOptions,
 						browserProcessToKill, capacity, displayName, icon,
-						useSystemProxy);
+						useSystemProxy,force);
 	}
 
 	private void populateFields(String browserName, String browserPath,
 			String browserOptions, String browserProcessToKill, int capacity, 
-			String displayName, String icon, boolean useSystemProxy) {
+			String displayName, String icon, boolean useSystemProxy, boolean force) {
 				this.name = browserName;
 				this.path = browserPath;
 				this.options = browserOptions;
@@ -33,6 +34,7 @@ public class BrowserType {
 				this.displayName = displayName;
 				this.icon = icon;
 				this.useSystemProxy = useSystemProxy;
+				this.force = force;
 	}
 	
 	public BrowserType(Element xmlEl) {
@@ -40,6 +42,7 @@ public class BrowserType {
 		String path = getTextFromXMLNode("path", xmlEl);
 		String options = getTextFromXMLNode("options", xmlEl);
 		String processName = getTextFromXMLNode("processName", xmlEl);
+		String force = getTextFromXMLNode("force", xmlEl);
 		
 		int capacity1 = 1;
 		try {
@@ -53,7 +56,7 @@ public class BrowserType {
 		 
 		populateFields(name, path, options, processName, capacity1,
 				getTextFromXMLNode("displayName", xmlEl), getTextFromXMLNode("icon", xmlEl), 
-				"true".equals(getTextFromXMLNode("useSystemProxy", xmlEl)));	
+				"true".equals(getTextFromXMLNode("useSystemProxy", xmlEl)),"true".equals(force));	
 	}
 
 	
@@ -119,6 +122,10 @@ public class BrowserType {
 
 	public boolean useSystemProxy() {
 		return this.useSystemProxy;
+	}
+	
+	public boolean force() {
+		return this.force;
 	}
 }
 
