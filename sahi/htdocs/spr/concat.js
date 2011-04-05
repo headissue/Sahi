@@ -569,14 +569,16 @@ Sahi.prototype._keyUp = function (el, codes, combo) {
     this.simulateKeyEvent(((typeof codes == "number")? [codes, 0] : codes), el, "keyup", combo);
 };
 Sahi.prototype._closeWindow = function (win) {
-	if (win) {
-		win.close();
-	} else {
+	if (!win) {
 		try {
-			_sahi_top.window.close();
+			win = _sahi_top.window;
 		} catch (e) {
-			window.close();
+			win = window;
 		}
+	}
+	if (win) {
+		win.open("", "_self");
+		win.close();
 	}
 };
 //Sahi.prototype._readFile = function (fileName) {
