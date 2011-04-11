@@ -76,7 +76,7 @@ public class HtmlFormatter implements Formatter {
     }
 
     public String getSummaryHeader() {
-        return "<table><tr><td>Test</td><td>Total Steps</td><td>Failures</td><td>Errors</td><td>Success Rate</td><td>Time Taken (ms)</td></tr>";
+        return "<table class='summary'><tr><td>Test</td><td>Total Steps</td><td>Failures</td><td>Errors</td><td>Success Rate</td><td>Time Taken (ms)</td></tr>";
     }
 
     public String getSummaryData(TestSummary summary) {
