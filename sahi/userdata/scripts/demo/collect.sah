@@ -31,3 +31,6 @@ _assertEqual("group 1 link3", _getText($els[0]));
 _assertEqual("group 1 link4", _getText($els[1]));
 
 
+var $els = _collect("_link", "/group 333/", _in(_div("div1")));
+var $len = $els.length;
+_assertEqual(0, $len);
