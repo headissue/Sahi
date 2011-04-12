@@ -206,6 +206,10 @@ public class SahiTestSuite {
 			this.suiteName = suiteName.substring(lastIndexOfSlash + 1);
 		}
 	}
+	
+	public String getSuiteName(){
+		return this.suiteName;
+	}
 
 	private void markSuiteStatus() {
 		Status status = Status.SUCCESS;

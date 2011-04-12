@@ -3,8 +3,6 @@
  */
 package net.sf.sahi.report;
 
-import net.sf.sahi.util.Utils;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
