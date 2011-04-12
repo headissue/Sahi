@@ -18,6 +18,8 @@
 package net.sf.sahi.command;
 
 import java.io.IOException;
+
+import net.sf.sahi.config.Configuration;
 import net.sf.sahi.issue.JiraIssueCreator;
 import net.sf.sahi.report.HtmlReporter;
 import net.sf.sahi.report.JunitReporter;
@@ -123,22 +125,30 @@ public class Suite {
     }
 
     private void setReporters(final SahiTestSuite suite, final HttpRequest request) {
+		final String defaultLogDir = Configuration.appendLogsRoot(suite.getLogFolderName());
         String logDir = request.getParameter("junit");
         if (logDir != null) {
-        	if (!logDir.equals("")) logDir = net.sf.sahi.config.Configuration.getAbsoluteUserPath(logDir);
+        	logDir = getLogDir(defaultLogDir, logDir);
+        	suite.setJunitLogDir(logDir);
             suite.addReporter(new JunitReporter(logDir));
         }
         logDir = request.getParameter("html");
         if (logDir != null) {
-        	if (!logDir.equals("")) logDir = net.sf.sahi.config.Configuration.getAbsoluteUserPath(logDir);
+        	logDir = getLogDir(defaultLogDir, logDir);
+        	suite.setHtmlLogDir(logDir);
             suite.addReporter(new HtmlReporter(logDir));
         }
         logDir = request.getParameter("tm6");
         if (logDir != null) {
-        	if (!logDir.equals("")) logDir = net.sf.sahi.config.Configuration.getAbsoluteUserPath(logDir);
+        	logDir = getLogDir(defaultLogDir, logDir);
+        	suite.setTM6LogDir(logDir);
             suite.addReporter(new TM6Reporter(logDir));
         }
     }
+
+	private String getLogDir(final String defaultLogDir, String logDir) {
+		return logDir.equals("") ? defaultLogDir : net.sf.sahi.config.Configuration.getAbsoluteUserPath(logDir);
+	}
 
     public void kill(final HttpRequest request) {
         Session session = request.session();

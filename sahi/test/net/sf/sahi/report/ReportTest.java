@@ -57,13 +57,13 @@ public class ReportTest extends TestCase {
 	 */
 
 	public void testSummarizeResultsForEmptyList() {
-		TestSummary summary = report.summarizeResults();
+		TestSummary summary = report.summarizeResults("");
 		assertEquals(0, summary.getSteps());
 	}
 
 	public void testSummarizeResultsForAllTypes() {
 		report.addResult(ReportUtil.getListResult());
-		TestSummary summary = report.summarizeResults();
+		TestSummary summary = report.summarizeResults("");
 		assertEquals(3, summary.getSteps());
 		assertEquals(1, summary.getFailures());
 		assertEquals(0, summary.getErrors());

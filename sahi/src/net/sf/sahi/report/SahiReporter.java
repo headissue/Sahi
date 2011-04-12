@@ -91,7 +91,7 @@ public abstract class SahiReporter {
                 if (report == null) {
                     continue;
                 }
-                TestSummary summary = report.getTestSummary();
+                TestSummary summary = report.getTestSummary(scriptRunner.getLogFileNameBase());
                 if (summary != null) {
                     summary.setAddLink(true);
                     suiteWriter.write(formatter.getSummaryData(summary));
@@ -113,9 +113,9 @@ public abstract class SahiReporter {
         return new BufferedWriter(new OutputStreamWriter(new FileOutputStream(logFile), "UTF8"));
     }
 
-    public void generateTestReport(Report report) {
+    public void generateTestReport(Report report, String logFileNameBase) {
         try {
-            TestSummary summary = report.getTestSummary();
+            TestSummary summary = report.getTestSummary(logFileNameBase);
             summary.setSuiteName(suiteName);
 			String logFileName = summary.getLogFileName();
             if (new File(logFileName).exists()) return;

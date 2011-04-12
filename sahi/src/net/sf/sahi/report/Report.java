@@ -94,12 +94,12 @@ public class Report {
         listResult.add(new TestResult(message, type, debugInfo, failureMsg));
     }
 
-    public TestSummary summarizeResults() {
+    public TestSummary summarizeResults(String logFileNameBase) {
         TestSummary summary = new TestSummary();
         boolean fail = false;
         summary.setScriptName(scriptName);
         summary.setSteps(listResult.size());
-        summary.setLogFileName(Utils.createLogFileName(scriptName));
+        summary.setLogFileName(logFileNameBase);
         if (listResult.size() == 0) fail = true;
         else{
 	        for (Iterator<TestResult> iter = listResult.iterator(); iter.hasNext();) {
@@ -120,9 +120,9 @@ public class Report {
         return summary;
     }
 
-    public TestSummary getTestSummary() {
+    public TestSummary getTestSummary(String logFileNameBase) {
         if (testSummary == null) {
-            testSummary = summarizeResults();
+            testSummary = summarizeResults(logFileNameBase);
         }
         return testSummary;
     }
@@ -131,10 +131,10 @@ public class Report {
         this.testSummary = testSummary;
     }
 
-    public void generateTestReport() {
+    public void generateTestReport(String logFileTS) {
         for (Iterator<SahiReporter> iterator = listReporter.iterator(); iterator.hasNext();) {
             SahiReporter reporter = iterator.next();
-            reporter.generateTestReport(this);
+            reporter.generateTestReport(this, logFileTS);
         }
     }
 

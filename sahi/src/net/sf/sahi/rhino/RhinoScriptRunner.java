@@ -7,6 +7,7 @@ import net.sf.sahi.playback.SahiScript;
 import net.sf.sahi.report.HtmlReporter;
 import net.sf.sahi.report.Report;
 import net.sf.sahi.report.ResultType;
+import net.sf.sahi.session.Session;
 import net.sf.sahi.session.Status;
 import net.sf.sahi.test.SahiTestSuite;
 import net.sf.sahi.test.TestLauncher;
@@ -73,6 +74,12 @@ public class RhinoScriptRunner extends ScriptRunner implements Runnable {
 		this.js = "_sahi.start();" + jsString;
 	}
 
+	
+	public void setSession(Session session) {
+		super.setSession(session);
+		this.logFileNameBase = Utils.createLogFileName(script.getScriptName()); //Utils.getFormattedDateForFile();
+	}
+	
 	public void execute() {
 		new Thread(this).start();
 	}
@@ -251,7 +258,7 @@ public class RhinoScriptRunner extends ScriptRunner implements Runnable {
 		super.stop();
 		try{
 			report.stopTimer();
-			report.generateTestReport();
+			report.generateTestReport(getLogFileNameBase());
 		}catch(Exception e){
 			e.printStackTrace();
 		}

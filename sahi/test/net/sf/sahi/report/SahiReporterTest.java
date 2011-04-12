@@ -77,7 +77,7 @@ public class SahiReporterTest extends MockObjectTestCase {
 
         Report report = new Report("",new ArrayList<SahiReporter>());
         report.setTestSummary(new TestSummary());
-        reporter.generateTestReport(report);
+        reporter.generateTestReport(report, "");
     }
 
     public void testGetLogDirForNullLogDir() {

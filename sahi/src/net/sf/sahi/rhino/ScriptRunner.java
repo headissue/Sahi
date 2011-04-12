@@ -62,6 +62,7 @@ public class ScriptRunner {
 	private boolean inProgress;
 	private Session session;
 	private String browserJS;
+	protected String logFileNameBase;
 	
 	public ScriptRunner() {
 		super();
@@ -380,7 +381,11 @@ public class ScriptRunner {
 	public Session getSession(){
 		return this.session;
 	}	
-    class StepInProgressMonitor extends TimerTask {
+
+	public String getLogFileNameBase() {
+		return logFileNameBase;
+	}
+	class StepInProgressMonitor extends TimerTask {
         private ScriptRunner runner;
         private String stepId;
         private ResultType type;

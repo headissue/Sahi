@@ -88,6 +88,12 @@ public class SahiTestSuite {
 
 	private boolean useSystemProxy;
 
+	private String logFolderName;
+
+	private String junitLogDir;
+	private String htmlLogDir;
+	private String tm6LogDir;
+
 	public SahiTestSuite(final String suitePath, final String base,
 			final String browser, final String sessionId,
 			final String browseroption, String browserProcessName) {
@@ -100,6 +106,7 @@ public class SahiTestSuite {
 		this.variables = new HashMap<String, String>();
 		setSuiteName();
 		loadScripts();
+		this.logFolderName = Utils.createLogFileName(suiteName);
 		suites.put(this.sessionId, this);
 	}
 	
@@ -396,6 +403,35 @@ public class SahiTestSuite {
 	public void setUseSystemProxy(boolean useSystemProxy) {
 		this.useSystemProxy = useSystemProxy;
 	}
+
+	public String getLogFolderName() {
+		return logFolderName;
+	}
+
+	public void setJunitLogDir(String logDir) {
+		this.junitLogDir = logDir;
+	}
+
+	public String getJunitLogDir(){
+		return junitLogDir;
+	}
+	
+	public void setHtmlLogDir(String logDir) {
+		this.htmlLogDir = logDir;
+	}
+
+	public String getHtmlLogDir(){
+		return htmlLogDir;
+	}
+	
+	public void setTM6LogDir(String logDir) {
+		this.tm6LogDir = logDir;
+	}
+	
+	public String getTM6LogDir(){
+		return tm6LogDir;
+	}
+	
 }
 
 class Culler implements Runnable {
