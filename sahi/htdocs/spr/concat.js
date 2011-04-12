@@ -4232,7 +4232,7 @@ Sahi.prototype.loadScript = function(src, id){
 
 Sahi.prototype.setLastHTMLSnapShotFile = function(filePath){
 	try{
-		var $htmlUnitViewer = new Packages.co.sahi.SahiHTMLUnit();
+		var $htmlUnitViewer = new Packages.com.pushtotest.sahi.SahiHTMLUnit();
 		if($htmlUnitViewer){
 			if(filePath){
 				var $file = new Packages.java.io.File(filePath);
