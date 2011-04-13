@@ -98,7 +98,7 @@ public class HtmlFormatterTest extends TestCase {
     }
 
     public void testGetSummaryHeader() {
-        String expected = "<table><tr><td>Test</td><td>Total Steps</td><td>Failures</td><td>Errors</td><td>Success Rate</td><td>Time Taken (ms)</td></tr>";
+        String expected = "<table class='summary'><tr><td>Test</td><td>Total Steps</td><td>Failures</td><td>Errors</td><td>Success Rate</td><td>Time Taken (ms)</td></tr>";
         assertEquals(expected, formatter.getSummaryHeader());
     }
 
