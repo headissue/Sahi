@@ -643,8 +643,15 @@ public class DriverClientTest extends SahiTestCase {
 		assertTrue(browser.textbox("q[2]").exists());
 	}
 	
+	public void testForumTest() throws Exception {
+		browser.navigateTo("http://sahi.co.in/");
+		browser.link("Community").click();
+		browser.link("http://sahi.co.in/forums/").click();
+		browser.link("Login").click();
+	}
+	
 	@Override
 	public void setBrowser() {
-		setBrowser("firefox");
+		setBrowser("ie");
 	}		
 }
