@@ -543,9 +543,15 @@
 			</classpath>
 			<formatter type="brief" usefile="file" />
 			<formatter type="xml" />
-			<batchtest fork="yes" failureProperty="junit.failed" todir="${userdata.dir}/temp/junit/tests">
+			<batchtest fork="true" failureProperty="junit.failed" todir="${userdata.dir}/temp/junit/tests">
+				<fileset dir="test">
+					<include name="net/**/RunSahiTaskTest.java"/>
+				</fileset>
+			</batchtest>
+			<batchtest fork="false" failureProperty="junit.failed" todir="${userdata.dir}/temp/junit/tests">
 				<fileset dir="test">
 					<include name="net/**/*Test.java"/>
+					<exclude name="net/**/RunSahiTaskTest.java"/>
 					<exclude name="net/**/client/Driver*Test.java"/>
 					<exclude name="net/**/client/SahiTestCase.java"/>
 					<exclude name="net/**/client/MockURLTest.java"/>
