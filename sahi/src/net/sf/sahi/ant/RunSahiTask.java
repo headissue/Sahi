@@ -44,6 +44,7 @@ public class RunSahiTask extends Task {
     private CreateIssue createIssue;
     private List<Report> listReport = new ArrayList<Report>();
 	private String browserType;
+	private String singleSession;
 
     public void setBrowserOption(String browserOption) {
         this.browserOption = browserOption;
@@ -77,7 +78,15 @@ public class RunSahiTask extends Task {
     	return this.browserType;
     }
 
-    public void execute() throws BuildException {
+    public void setSingleSession(String singleSession) {
+		this.singleSession = singleSession;
+	}
+
+	public String getSingleSession() {
+		return singleSession;
+	}
+
+	public void execute() throws BuildException {
         if (stop != null) {
             stopServer();
             return;
@@ -106,6 +115,7 @@ public class RunSahiTask extends Task {
 	            testRunner = new TestRunner(suite, browser, baseURL,
 	                    sahiHost, sahiPort, threads, browserOption, browserProcessName, listReport, createIssue);
         	}
+        	testRunner.setIsSingleSession("true".equals(singleSession));
             status = testRunner.execute();
         } catch (Exception e) {
             e.printStackTrace();

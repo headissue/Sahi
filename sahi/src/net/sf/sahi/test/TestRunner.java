@@ -167,7 +167,7 @@ public class TestRunner {
 		return true;
 	}
 
-	private void setIsSingleSession(boolean isSingleSession) {
+	public void setIsSingleSession(boolean isSingleSession) {
 		this.isSingleSession = isSingleSession;
 	}
 
