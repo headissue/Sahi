@@ -14,5 +14,6 @@ export SCRIPTS_PATH=scripts/$1
 export BROWSER=$3
 export START_URL=$2
 export THREADS=5
-java -cp $SAHI_HOME/lib/ant-sahi.jar net.sf.sahi.test.TestRunner -test $SCRIPTS_PATH -browserType "$BROWSER" -baseURL $START_URL -host localhost -port 9999 -threads $THREADS
+export SINGLE_SESSION=false
+java -cp $SAHI_HOME/lib/ant-sahi.jar net.sf.sahi.test.TestRunner -test $SCRIPTS_PATH -browserType "$BROWSER" -baseURL $START_URL -host localhost -port 9999 -threads $THREADS -useSingleSession $SINGLE_SESSION
 fi
