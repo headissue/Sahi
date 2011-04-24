@@ -69,6 +69,7 @@ var Sahi = function(){
     };
     this.lastStepId = 0;
     this.strictVisibilityCheck = false; 
+    this.isSingleSession = false;
     this.ADs = [];
     this.controllerURL = "/_s_/spr/controller7.htm";
     this.controllerHeight = 550;
@@ -2966,9 +2967,11 @@ Sahi.prototype.ex = function (isStep) {
         var type = stepInfo['type'];
         if (type == "STOP") {
             this.showStopPlayingMessage();
-            this.topSahi()._isPlaying = false;
-            //this.stopPlaying();
-            return;
+            if (!this.isSingleSession) {
+	            this.topSahi()._isPlaying = false;
+	            //this.stopPlaying();
+	            return;
+            }
         }
         var step = stepInfo['step'];
         // this._debug(this.getPopupName() + "::" + type+"::"+ new Date());

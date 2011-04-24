@@ -61,14 +61,16 @@ public class TestLauncher {
 
 	private boolean useSystemProxy;
 
+	private boolean isSingleSession;
+
 	public TestLauncher(final String scriptName, final String startURL) {
 		this.scriptName = scriptName;
 		this.startURL = startURL;
 	}
 
-	public void setSessionId(final String sessionId) {
+	public void setSessionId(final String sessionId, String childSessionId) {
 		this.sessionId = sessionId;
-		this.childSessionId = createChildSessionId();
+		this.childSessionId = childSessionId;
 	}
 
 	public void setBrowser(final String browser) {
@@ -77,10 +79,6 @@ public class TestLauncher {
 
 	public void setBrowserOption(final String browserOption) {
 		this.browserOption = browserOption;
-	}
-
-	private String createChildSessionId() {
-		return sessionId + "sahix" + Utils.getUUID() + "x";
 	}
 
 	public String getStartURL() {
@@ -99,35 +97,24 @@ public class TestLauncher {
 		System.out.println("#### Running Script: " + scriptName);
         scriptRunner = new RhinoScriptRunner(new ScriptFactory().getScript(scriptName), session.getSuite(), this, setDefaultReporters);
 		session.setScriptRunner(scriptRunner);
-        String url = addSessionId(getURL());
-        browserOption = (browserOption == null) ? "" : browserOption.replaceAll("[$]threadNo", "" + threadNo)
-        		.replaceAll("[$]userDir", Configuration.getAbsoluteUserPath(".").replace('\\', '/'));
-		browserLauncher = new BrowserLauncher(browser, browserProcessName, browserOption, useSystemProxy);
-		browserLauncher.openURL(url);
+        if (!isSingleSession) {
+	        launchBrowser();
+        }
 		if (async) scriptRunner.execute();
-		else scriptRunner.executeAndWait(); 
+		else scriptRunner.executeAndWait(); // seems not to be used? 
 	}
 
-	private String getURL() {
-		String cmd = null;
-		try {
-			cmd = "http://" + Configuration.getCommonDomain() + "/_s_/dyn/Player_auto?file="
-					+ URLEncoder.encode(scriptName, "UTF8") + "&startUrl="
-					+ URLEncoder.encode(startURL, "UTF8");
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-		}
-		return cmd;
-	}
-
-	private String addSessionId(String url) {
-		return url + "&sahisid=" + childSessionId;
+	private void launchBrowser() {
+		browserOption = (browserOption == null) ? "" : browserOption.replaceAll("[$]threadNo", "" + threadNo)
+				.replaceAll("[$]userDir", Configuration.getAbsoluteUserPath(".").replace('\\', '/'));
+		browserLauncher = new BrowserLauncher(browser, browserProcessName, browserOption, useSystemProxy);
+		browserLauncher.openURL(browserLauncher.getPlayerAutoURL(childSessionId, startURL, isSingleSession));
 	}
 
 	public void kill() {
 		System.out.println("Killing " + scriptName);
 		logger.fine("Killing " + scriptName);
-		browserLauncher.kill();
+		if (!isSingleSession) browserLauncher.kill();
 	}
 
 	public String getChildSessionId() {
@@ -156,5 +143,9 @@ public class TestLauncher {
 	}
 	public void setUseSystemProxy(boolean useSystemProxy) {
 		this.useSystemProxy = useSystemProxy;
+	}
+
+	public void setIsSingleSession(boolean isSingleSession) {
+		this.isSingleSession = isSingleSession;
 	}
 }

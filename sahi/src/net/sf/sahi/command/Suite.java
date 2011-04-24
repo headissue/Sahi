@@ -35,6 +35,10 @@ import net.sf.sahi.util.BrowserTypesLoader;
 
 public class Suite {
 	
+	public void startSingleSession(final HttpRequest request) {
+		start(request);
+	}
+	
     public void start(final HttpRequest request) {
     	if (request.getParameter("browserType") != null) {
     		startPreconfiguredBrowser(request);
@@ -47,13 +51,10 @@ public class Suite {
         String browserOption = request.getParameter("browserOption");
         String browserProcessName = request.getParameter("browserProcessName");
         String threads = request.getParameter("threads");
-        String systemProxy = request.getParameter("useSystemProxy");
-        Boolean useSystemProxy = false;
-        if(systemProxy != null){
-        	useSystemProxy = ("true".equals(systemProxy)) ? true : false;
-        }
+        boolean isSingleSession = "true".equals(request.getParameter("useSingleSession"));
+        boolean useSystemProxy = "true".equals(request.getParameter("useSystemProxy"));
         launch(suitePath, base, browser, session.id(), 
-        		browserOption, browserProcessName, threads, useSystemProxy, request);
+        		browserOption, browserProcessName, threads, useSystemProxy, isSingleSession, request);
         
     }
     
@@ -63,12 +64,13 @@ public class Suite {
     	Session session = request.session();
         String suitePath = request.getParameter("suite");
         String base = request.getParameter("base");
+        boolean isSingleSession = "true".equals(request.getParameter("useSingleSession"));
         final int threads = getThreads(request.getParameter("threads"), browserType.capacity());
-        
+
         // launches browser with pre configured browser settings
         if(browserType != null){
 	        launch(suitePath, base, browserType.path(), session.id(), browserType.options(), 
-	        		browserType.processName(), ""+threads, browserType.useSystemProxy(), request);
+	        		browserType.processName(), ""+threads, browserType.useSystemProxy(), isSingleSession, request);
         }
     }
 
@@ -83,33 +85,44 @@ public class Suite {
     
     private void launch(String suitePath, String base, String browser, 
     		String sessionId, String browserOption, String browserProcessName, 
-    		String threadCapacity, boolean useSystemProxy, HttpRequest request){
-    	final SahiTestSuite suite = new SahiTestSuite(net.sf.sahi.config.Configuration.getAbsoluteUserPath(suitePath),
-    			base, browser, sessionId, browserOption, browserProcessName);
-        int threads = 1;
-        try {
-            threads = Integer.parseInt(threadCapacity);
-        } catch (Exception e) {
-        }
-        suite.setAvailableThreads(threads);
-        suite.setUseSystemProxy(useSystemProxy);
-        try {
-			net.sf.sahi.config.Configuration.copyProfiles();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-        suite.setExtraInfo(request.getParameter("extraInfo"));
-        suite.setInitJS(request.getParameter("initJS"));
-        setReporters(suite, request);
-        setIssueCreators(suite, request);
-        new Thread(){
+    		String threadCapacity, boolean useSystemProxy, boolean isSingleSession, HttpRequest request){
+    	final SahiTestSuite suite = prepareSuite(suitePath, base, browser, sessionId, browserOption, 
+    			browserProcessName, threadCapacity, useSystemProxy, isSingleSession, request);
+        runSuite(suite);
+    }
+
+	private void runSuite(final SahiTestSuite suite) {
+		new Thread(){
         	@Override
         	public void run() {
         		suite.run();
         	}
         }.start();
-    }
-    
+	}
+
+	private SahiTestSuite prepareSuite(String suitePath, String base, String browser, String sessionId,
+			String browserOption, String browserProcessName, String threadCapacity, boolean useSystemProxy,
+			boolean isSingleSession, HttpRequest request) {
+		final SahiTestSuite suite = new SahiTestSuite(net.sf.sahi.config.Configuration.getAbsoluteUserPath(suitePath),
+				base, browser, sessionId, browserOption, browserProcessName, isSingleSession);
+		int threads = 1;
+		try {
+			threads = Integer.parseInt(threadCapacity);
+		} catch (Exception e) {}
+		suite.setAvailableThreads(threads);
+		suite.setUseSystemProxy(useSystemProxy);
+		try {
+			net.sf.sahi.config.Configuration.copyProfiles();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		suite.setExtraInfo(request.getParameter("extraInfo"));
+		suite.setInitJS(request.getParameter("initJS"));
+		setReporters(suite, request);
+		setIssueCreators(suite, request);
+		return suite;
+	}
+
     private void setIssueCreators(final SahiTestSuite suite, final HttpRequest request) {
         String propFile = request.getParameter("jira");
         if (propFile != null) {

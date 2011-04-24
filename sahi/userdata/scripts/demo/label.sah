@@ -1,3 +1,4 @@
+_navigateTo("/demo/");
 _click(_link("Label Page"));
 _assertNotTrue(_checkbox("c1").checked);
 _click(_label("abcd"));

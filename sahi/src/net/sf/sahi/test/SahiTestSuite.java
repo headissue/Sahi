@@ -83,26 +83,27 @@ public class SahiTestSuite {
 	private Semaphore lock = new Semaphore(1, true);
 
 	private String extraInfo;
-
 	private String initJS;
-
 	private boolean useSystemProxy;
-
+	private boolean isSingleSession;
 	private String logFolderName;
 
 	private String junitLogDir;
 	private String htmlLogDir;
 	private String tm6LogDir;
 
+	private String singleSessionChildSessionId;
+
 	public SahiTestSuite(final String suitePath, final String base,
 			final String browser, final String sessionId,
-			final String browseroption, String browserProcessName) {
+			final String browseroption, String browserProcessName, boolean isSingleSession) {
 		this.suitePath = suitePath;
 		this.base = base;
 		this.browser = browser;
 		this.sessionId = Utils.stripChildSessionId(sessionId);
 		this.browserOption = browseroption;
 		this.browserProcessName = browserProcessName;
+		this.isSingleSession = isSingleSession;
 		this.variables = new HashMap<String, String>();
 		setSuiteName();
 		loadScripts();
@@ -140,13 +141,15 @@ public class SahiTestSuite {
 	
 	private void loadScripts() {
 		this.tests = new SuiteLoader(suitePath, base).getListTest();
+		singleSessionChildSessionId = Utils.addChildSessionId(sessionId);
 		System.out.println(">>>>>>                Tests size = " + this.tests.size());
 		for (Iterator<TestLauncher> iterator = tests.iterator(); iterator.hasNext();) {
 			TestLauncher launcher = (TestLauncher) iterator.next();
-			launcher.setSessionId(sessionId);
+			launcher.setSessionId(sessionId, isSingleSession ? singleSessionChildSessionId : Utils.addChildSessionId(sessionId));
 			launcher.setBrowser(browser);
 			launcher.setBrowserOption(browserOption);
 			launcher.setBrowserProcessName(browserProcessName);
+			launcher.setIsSingleSession(isSingleSession);
 			testsMap.put(launcher.getChildSessionId(), launcher);
 		}
 	}
@@ -284,6 +287,11 @@ public class SahiTestSuite {
 	}
 
 	private synchronized void executeSuite() {
+		BrowserLauncher browserLauncher = null;
+		if (isSingleSession) {
+			browserLauncher = new BrowserLauncher(browser, browserProcessName, browserOption, useSystemProxy);
+			browserLauncher.openURL(browserLauncher.getPlayerAutoURL(singleSessionChildSessionId, base, isSingleSession));
+		}
 		while (currentTestIndex < tests.size()) {
 			if (killed) {
 				return;
@@ -300,6 +308,9 @@ public class SahiTestSuite {
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
+		}
+		if (isSingleSession) {
+			browserLauncher.kill();
 		}
 	}
 
@@ -435,7 +446,6 @@ public class SahiTestSuite {
 	public String getTM6LogDir(){
 		return tm6LogDir;
 	}
-	
 }
 
 class Culler implements Runnable {

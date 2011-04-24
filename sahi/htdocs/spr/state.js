@@ -45,6 +45,7 @@ try {
     _sahi.ignorableIdsPattern = new RegExp('$ignorableIdsPattern');
     _sahi.chromeExplicitCheckboxRadioToggle = $chromeExplicitCheckboxRadioToggle;
     _sahi.strictVisibilityCheck = $strictVisibilityCheck;
+    _sahi.isSingleSession = $isSingleSession;
     // Pro start
 } catch(e) {
 }

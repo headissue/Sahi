@@ -239,6 +239,7 @@ public class Player {
         String startUrl = request.getParameter("startUrl");
         session.setIsWindowOpen(false);
         session.setIsPlaying(true);
+        session.setVariable("isSingleSession", request.getParameter("isSingleSession"));
         return proxyAutoResponse(startUrl, session.id());
     }
 

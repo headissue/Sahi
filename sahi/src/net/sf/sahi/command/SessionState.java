@@ -68,7 +68,7 @@ public class SessionState {
         props.setProperty("chromeExplicitCheckboxRadioToggle", "" + Configuration.getChromeExplicitCheckboxRadioToggle());
         props.setProperty("ignorableIdsPattern", Configuration.getIgnorableIdsPattern());
         props.setProperty("strictVisibilityCheck", "" + session.getVariable("strictVisibilityCheck"));
-        
+        props.setProperty("isSingleSession",  "" + session.getVariable("isSingleSession"));
 
         String waitCondition = session.getVariable("waitCondition");
         if (Utils.isBlankOrNull(waitCondition)) {

@@ -71,7 +71,7 @@ public class TestRunner {
 
     private final String threads;
 
-    private String sessionId = null;
+    protected String sessionId = null;
 
     private String browserOption;
     private CreateIssue createIssue;
@@ -84,6 +84,8 @@ public class TestRunner {
 	private String initJS;
 
 	private String browserType;
+
+	private boolean isSingleSession;
 
     public static void main(String[] args) {
         try {
@@ -158,8 +160,15 @@ public class TestRunner {
 		if (map.get("extraInfo") != null) {
 			testRunner.setInitJS(map.get("extraInfo"));
 		}
+		if (map.get("useSingleSession") != null) {
+			testRunner.setIsSingleSession("true".equals(map.get("useSingleSession")));
+		}
 		System.out.println(testRunner.execute());
 		return true;
+	}
+
+	private void setIsSingleSession(boolean isSingleSession) {
+		this.isSingleSession = isSingleSession;
 	}
 
 	private static String getTestName(final HashMap<String, String> map) {
@@ -193,6 +202,7 @@ public class TestRunner {
         System.out.println(" -htmlLog \t\ttrue or false. Enable or disable html logs");
         System.out.println(" -htmlLogDir \t\tpath to html log dir. If not specified, uses default location in userdata/logs");
         System.out.println(" -initJS \t\tAny javascript which would be executed before every script");
+        System.out.println(" -useSingSession \t\ttrue or false. Execute all scripts sequentially in a single browser session. Default is false.");
         System.out.println(" -extraInfo \t\tAny extra info that may be accessed using _extraInfo()");
         
         System.out.println("--- OR ---");
@@ -297,9 +307,14 @@ public class TestRunner {
 	}
 
     public String execute() throws IOException, InterruptedException {
-        this.sessionId = Utils.generateId();
+    	return execute("start");
+    }
+	
+    public String execute(String command) throws IOException, InterruptedException {
+        if (this.sessionId == null)
+        	this.sessionId = Utils.generateId();
         StringBuffer urlStr = new StringBuffer(200).append("http://").append(sahiHost).append(":").append(port).append(
-                "/_s_/dyn/Suite_start?suite=").append(encode(suiteName))
+                "/_s_/dyn/Suite_" + command + "?suite=").append(encode(suiteName))
                 .append("&base=").append(encode(base))
                 .append("&threads=").append(encode(threads))
                 .append("&sahisid=").append(encode(this.sessionId));
@@ -321,7 +336,10 @@ public class TestRunner {
         if(this.initJS != null){
         	urlStr.append("&initJS=").append(encode(this.initJS));
         }
-
+        System.out.println("this.isSingleSession == " + this.isSingleSession);
+        if(this.isSingleSession){
+        	urlStr.append("&useSingleSession=").append(this.isSingleSession);
+        }        
         if (listReport == null || listReport.size() == 0) {
             addReport(new Report("html", null));
         }

@@ -1,5 +1,8 @@
 package net.sf.sahi.test;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+
 import net.sf.sahi.config.Configuration;
 import net.sf.sahi.util.ProxySwitcher;
 import net.sf.sahi.util.Utils;
@@ -93,4 +96,17 @@ public class BrowserLauncher {
 		}
 	}
 
+	String getPlayerAutoURL(String childSessionId, String startURL, boolean isSingleSession) {
+		String cmd = null;
+		try {
+			cmd = "http://" + Configuration.getCommonDomain() + "/_s_/dyn/Player_auto"
+					+ "?startUrl=" + URLEncoder.encode(startURL, "UTF8")
+					+ "&sahisid=" + childSessionId
+					+ "&isSingleSession=" + isSingleSession;
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+		return cmd;
+	}
+	
 }

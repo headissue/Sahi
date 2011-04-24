@@ -363,6 +363,10 @@ public class Utils {
 		return input.replaceAll("\"", "\\\\\"");
 	}
 
+	public static String addChildSessionId(String sessionId) {
+		return sessionId + "sahix" + Utils.getUUID() + "x";
+	}
+
 	public static String stripChildSessionId(final String sessionId) {
 		return sessionId.replaceFirst("sahix[^x]+x", "");
 	}
