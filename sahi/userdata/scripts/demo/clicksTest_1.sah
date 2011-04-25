@@ -5,7 +5,7 @@ _assertEqual("[DOUBLE_CLICK]", _textarea("t2").value);
 _click(_button("Clear"));
 
 _doubleClick(_button("dbl click me"));
-_assertEqual("[DOUBLE_CLICK]", _textarea("t2").value);
+_assertEqual("[DOUBLE_CLIC1K]", _textarea("t2").value);
 _click(_button("Clear"));
 
 _click(_button("click me"));
