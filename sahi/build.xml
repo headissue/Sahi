@@ -475,6 +475,7 @@
 			<fileset dir="classes">
 				<exclude name="net/sf/sahi/ant/**.*"/>
 				<exclude name="net/sf/sahi/test/TestRunner.*"/>
+				<exclude name="net/sf/sahi/test/SingleSessionTestRunner.*"/>
 			</fileset>
 			<manifest>
 				<attribute name="Built-By" value="Narayan Raman"/>
@@ -500,6 +501,7 @@
 				<include name="net/sf/sahi/util/FileIsDirectoryException.*"/>
 				<include name="net/sf/sahi/util/FileNotFoundRuntimeException.*"/>
 				<include name="net/sf/sahi/test/TestRunner.*"/>
+				<include name="net/sf/sahi/test/SingleSessionTestRunner.*"/>
 				<include name="net/sf/sahi/test/ShutDownHook.*"/>
 			</fileset>
 		</jar>
@@ -558,6 +560,7 @@
 					<exclude name="net/**/client/NTLMBrowserTest.java"/>
 					<exclude name="net/**/client/MingleTest.java"/>
 					<exclude name="net/**/test/TestRunnerTest.java"/>
+					<exclude name="net/**/test/SingleSessionTestRunnerTest.java"/>
 				</fileset>
 			</batchtest>
 		</junit>
