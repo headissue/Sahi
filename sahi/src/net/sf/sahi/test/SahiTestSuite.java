@@ -94,6 +94,8 @@ public class SahiTestSuite {
 
 	private String singleSessionChildSessionId;
 
+	private BrowserLauncher singleSessionBrowserLauncher;
+
 	public SahiTestSuite(final String suitePath, final String base,
 			final String browser, final String sessionId,
 			final String browseroption, String browserProcessName, boolean isSingleSession) {
@@ -101,12 +103,13 @@ public class SahiTestSuite {
 		this.base = base;
 		this.browser = browser;
 		this.sessionId = Utils.stripChildSessionId(sessionId);
+		this.singleSessionChildSessionId = Utils.addChildSessionId(sessionId);
+
 		this.browserOption = browseroption;
 		this.browserProcessName = browserProcessName;
 		this.isSingleSession = isSingleSession;
 		this.variables = new HashMap<String, String>();
 		setSuiteName();
-		loadScripts();
 		this.logFolderName = Utils.createLogFileName(suiteName);
 		suites.put(this.sessionId, this);
 	}
@@ -139,19 +142,22 @@ public class SahiTestSuite {
 		return sb.toString();
 	}
 	
-	private void loadScripts() {
+	public void loadScripts() {
 		this.tests = new SuiteLoader(suitePath, base).getListTest();
-		singleSessionChildSessionId = Utils.addChildSessionId(sessionId);
 		System.out.println(">>>>>>                Tests size = " + this.tests.size());
 		for (Iterator<TestLauncher> iterator = tests.iterator(); iterator.hasNext();) {
 			TestLauncher launcher = (TestLauncher) iterator.next();
-			launcher.setSessionId(sessionId, isSingleSession ? singleSessionChildSessionId : Utils.addChildSessionId(sessionId));
-			launcher.setBrowser(browser);
-			launcher.setBrowserOption(browserOption);
-			launcher.setBrowserProcessName(browserProcessName);
-			launcher.setIsSingleSession(isSingleSession);
+			prepareTestLauncher(launcher);
 			testsMap.put(launcher.getChildSessionId(), launcher);
 		}
+	}
+
+	private void prepareTestLauncher(TestLauncher launcher) {
+		launcher.setSessionId(sessionId, isSingleSession ? singleSessionChildSessionId : Utils.addChildSessionId(sessionId));
+		launcher.setBrowser(browser);
+		launcher.setBrowserOption(browserOption);
+		launcher.setBrowserProcessName(browserProcessName);
+		launcher.setIsSingleSession(isSingleSession);
 	}
 
 	public List<SahiReporter> getListReporter() {
@@ -287,11 +293,7 @@ public class SahiTestSuite {
 	}
 
 	private synchronized void executeSuite() {
-		BrowserLauncher browserLauncher = null;
-		if (isSingleSession) {
-			browserLauncher = new BrowserLauncher(browser, browserProcessName, browserOption, useSystemProxy);
-			browserLauncher.openURL(browserLauncher.getPlayerAutoURL(singleSessionChildSessionId, base, isSingleSession));
-		}
+		launchBrowserForSingleSession();
 		while (currentTestIndex < tests.size()) {
 			if (killed) {
 				return;
@@ -309,11 +311,35 @@ public class SahiTestSuite {
 				e.printStackTrace();
 			}
 		}
+		killBrowserForSingleSession();
+	}
+
+	public void launchBrowserForSingleSession() {
 		if (isSingleSession) {
-			browserLauncher.kill();
+			singleSessionBrowserLauncher = new BrowserLauncher(browser, browserProcessName, browserOption, useSystemProxy);
+			singleSessionBrowserLauncher.openURL(singleSessionBrowserLauncher.getPlayerAutoURL(singleSessionChildSessionId, base, isSingleSession));
 		}
 	}
 
+	public Status executeTestForSingleSession(String testName, String startURL){
+		TestLauncher testLauncher = new TestLauncher(testName, startURL);
+		prepareTestLauncher(testLauncher);
+		testLauncher.setThreadNo(0, isMultiThreaded);
+		Session session = Session.getInstance(testLauncher.getChildSessionId());
+		session.touch();
+		tests.add(testLauncher);
+		testLauncher.execute(session, false, true);
+		return testLauncher.getStatus();
+	}
+
+	public void killBrowserForSingleSession() {
+		if (isSingleSession) {
+			singleSessionBrowserLauncher.kill();
+			finishCallBack();
+		}
+	}
+
+	
 	private int getFreeThreadNo() {
 		for (int i = 0; i < freeThreads.length; i++) {
 			if (freeThreads[i]) {

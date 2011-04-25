@@ -17,8 +17,6 @@
  */
 package net.sf.sahi.test;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.logging.Logger;
 
 import net.sf.sahi.config.Configuration;
@@ -26,7 +24,6 @@ import net.sf.sahi.playback.ScriptFactory;
 import net.sf.sahi.rhino.RhinoScriptRunner;
 import net.sf.sahi.session.Session;
 import net.sf.sahi.session.Status;
-import net.sf.sahi.util.Utils;
 
 /**
  * @author nraman Launches browser with test and kills it on completion

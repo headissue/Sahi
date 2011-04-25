@@ -65,9 +65,9 @@ public class TestRunner {
 
     private final String base;
 
-    private final String sahiHost;
+    protected final String sahiHost;
 
-    private final String port;
+    protected final String port;
 
     private final String threads;
 
@@ -313,7 +313,43 @@ public class TestRunner {
     public String execute(String command) throws IOException, InterruptedException {
         if (this.sessionId == null)
         	this.sessionId = Utils.generateId();
-        StringBuffer urlStr = new StringBuffer(200).append("http://").append(sahiHost).append(":").append(port).append(
+        String urlStr = buildURL(command);
+
+
+        try {
+            Thread thread = new Thread(new ShutDownHook(sahiHost, port, sessionId));
+            Runtime.getRuntime().addShutdownHook(thread);
+            System.out.println("Added shutdown hook.");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        System.out.println(urlStr);
+        URL url = new URL(urlStr);
+        InputStream in = url.openStream();
+        in.close();
+        return getStatus();
+    }
+
+	protected String getStatus() throws InterruptedException {
+		String status;
+        int retries = 0;
+        while (true) {
+            Thread.sleep(2000);
+            status = getSuiteStatus(sessionId);
+            if ("SUCCESS".equals(status) || "FAILURE".equals(status)) {
+                break;
+            } else if ("RETRY".equals(status)) {
+                if (retries++ == 10) {
+                    status = "FAILURE";
+                    break;
+                }
+            }
+        }
+        return status;
+	}
+
+	protected String buildURL(String command) throws UnsupportedEncodingException {
+		StringBuffer urlStr = new StringBuffer(200).append("http://").append(sahiHost).append(":").append(port).append(
                 "/_s_/dyn/Suite_" + command + "?suite=").append(encode(suiteName))
                 .append("&base=").append(encode(base))
                 .append("&threads=").append(encode(threads))
@@ -353,35 +389,8 @@ public class TestRunner {
                 urlStr.append(encode(createIssue.getPropertiesFile()));
             }
         }
-
-
-        try {
-            Thread thread = new Thread(new ShutDownHook(sahiHost, port, sessionId));
-            Runtime.getRuntime().addShutdownHook(thread);
-            System.out.println("Added shutdown hook.");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        System.out.println(urlStr);
-        URL url = new URL(urlStr.toString());
-        InputStream in = url.openStream();
-        in.close();
-        String status;
-        int retries = 0;
-        while (true) {
-            Thread.sleep(2000);
-            status = getSuiteStatus(sessionId);
-            if ("SUCCESS".equals(status) || "FAILURE".equals(status)) {
-                break;
-            } else if ("RETRY".equals(status)) {
-                if (retries++ == 10) {
-                    status = "FAILURE";
-                    break;
-                }
-            }
-        }
-        return status;
-    }
+		return urlStr.toString();
+	}
 
     private String getSuiteStatus(String sessionId) {
         String status;
@@ -398,13 +407,14 @@ public class TestRunner {
             status = sb.toString();
             in.close();
         } catch (Exception e) {
+        	e.printStackTrace();
             System.out.println("Exception while connecting to Sahi proxy to check status. Retrying ...");
             status = "RETRY";
         }
         return status;
     }
 
-    private static String encode(String s) throws UnsupportedEncodingException {
+    protected static String encode(String s) throws UnsupportedEncodingException {
         return URLEncoder.encode(s, "UTF8");
     }
 

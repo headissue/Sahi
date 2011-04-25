@@ -27,6 +27,7 @@ import net.sf.sahi.report.TM6Reporter;
 import net.sf.sahi.request.HttpRequest;
 import net.sf.sahi.response.HttpResponse;
 import net.sf.sahi.response.NoCacheHttpResponse;
+import net.sf.sahi.response.SimpleHttpResponse;
 import net.sf.sahi.session.Session;
 import net.sf.sahi.session.Status;
 import net.sf.sahi.test.SahiTestSuite;
@@ -36,13 +37,38 @@ import net.sf.sahi.util.BrowserTypesLoader;
 public class Suite {
 	
 	public void startSingleSession(final HttpRequest request) {
-		start(request);
+		final SahiTestSuite suite = getSuite(request);
+		suite.launchBrowserForSingleSession();
+	}
+	
+	public SimpleHttpResponse executeTestInSingleSession(final HttpRequest request) {
+		Session session = request.session();
+		final SahiTestSuite suite = session.getSuite();
+		Status status = suite.executeTestForSingleSession(request.getParameter("testName"), request.getParameter("startURL"));
+		return new SimpleHttpResponse(status.getName());
+	}
+	
+	public void stopSingleSession(final HttpRequest request) {
+		Session session = request.session();
+		final SahiTestSuite suite = session.getSuite();
+		suite.killBrowserForSingleSession();
 	}
 	
     public void start(final HttpRequest request) {
-    	if (request.getParameter("browserType") != null) {
-    		startPreconfiguredBrowser(request);
-    		return;
+    	final SahiTestSuite suite = getSuite(request);
+    	suite.loadScripts();
+		runSuite(suite);
+    }
+
+    public void startPreconfiguredBrowser(final HttpRequest request){
+    	final SahiTestSuite suite = getPreconfiguredBrowserSuite(request);
+    	suite.loadScripts();
+    	runSuite(suite);
+    }
+
+	private SahiTestSuite getSuite(final HttpRequest request) {
+		if (request.getParameter("browserType") != null) {
+			return getPreconfiguredBrowserSuite(request);
     	}
         Session session = request.session();
         String suitePath = request.getParameter("suite");
@@ -53,13 +79,14 @@ public class Suite {
         String threads = request.getParameter("threads");
         boolean isSingleSession = "true".equals(request.getParameter("useSingleSession"));
         boolean useSystemProxy = "true".equals(request.getParameter("useSystemProxy"));
-        launch(suitePath, base, browser, session.id(), 
-        		browserOption, browserProcessName, threads, useSystemProxy, isSingleSession, request);
-        
-    }
+        final SahiTestSuite suite = prepareSuite(suitePath, base, browser, session.id(), browserOption, 
+				browserProcessName, threads, useSystemProxy, isSingleSession, request);
+		return suite;
+	}
     
-    public void startPreconfiguredBrowser(final HttpRequest request){
-    	BrowserTypesLoader browserLoader = new BrowserTypesLoader();
+	private SahiTestSuite getPreconfiguredBrowserSuite(final HttpRequest request) {
+		SahiTestSuite suite = null;
+		BrowserTypesLoader browserLoader = new BrowserTypesLoader();
     	BrowserType browserType = browserLoader.getBrowserType(request);
     	Session session = request.session();
         String suitePath = request.getParameter("suite");
@@ -69,10 +96,11 @@ public class Suite {
 
         // launches browser with pre configured browser settings
         if(browserType != null){
-	        launch(suitePath, base, browserType.path(), session.id(), browserType.options(), 
-	        		browserType.processName(), ""+threads, browserType.useSystemProxy(), isSingleSession, request);
+	        suite = prepareSuite(suitePath, base, browserType.path(), session.id(), browserType.options(), 
+					browserType.processName(), (""+threads), browserType.useSystemProxy(), isSingleSession, request);
         }
-    }
+        return suite;
+	}
 
 	private int getThreads(String threadsStr, int capacity) {
 		int threads = 1;
@@ -83,15 +111,7 @@ public class Suite {
         return (threads < capacity) ? threads : capacity;
 	}
     
-    private void launch(String suitePath, String base, String browser, 
-    		String sessionId, String browserOption, String browserProcessName, 
-    		String threadCapacity, boolean useSystemProxy, boolean isSingleSession, HttpRequest request){
-    	final SahiTestSuite suite = prepareSuite(suitePath, base, browser, sessionId, browserOption, 
-    			browserProcessName, threadCapacity, useSystemProxy, isSingleSession, request);
-        runSuite(suite);
-    }
-
-	private void runSuite(final SahiTestSuite suite) {
+    private void runSuite(final SahiTestSuite suite) {
 		new Thread(){
         	@Override
         	public void run() {
