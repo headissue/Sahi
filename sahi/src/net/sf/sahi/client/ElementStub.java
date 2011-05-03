@@ -142,6 +142,18 @@ public class ElementStub {
 	}
 	
 	/**
+	 * Drags the element and drops it at the given x, y coordinate.
+	 * 
+	 * @param dropElement Element to be dropped on
+	 * @param x X coordinate
+	 * @param y Y coordinate
+	 * @throws ExecutionException
+	 */
+	public void dragAndDropOn(int x, int y) throws ExecutionException {
+		browser.dragDropXY(this, x, y);
+	}
+	
+	/**
 	 * Performs a mouseover on this element.<br/>
 	 * Same as hover().<br/>
 	 * Internally calls browser.mouseOver(this);

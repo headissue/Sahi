@@ -453,6 +453,17 @@ public class Browser extends BrowserElements {
 		execute("_sahi._dragDrop(" + dragElement + ", " + dropElement + ")");	
 	}
 		
+	/**
+	 * Simulates a drag and drop event
+	 * 
+	 * @param dragElement Element to drag
+	 * @param x X coordinate
+	 * @param y Y coordinate
+	 * @throws ExecutionException
+	 */
+	public void dragDropXY(ElementStub dragElement, int x, int y) throws ExecutionException {
+		execute("_sahi._dragDropXY(" + dragElement + ", " + x + "," + y + ")");	
+	}
 	
 	/**
 	 * Fetches the value of any DOM property
