@@ -127,8 +127,13 @@ public class HTMLModifierFilter extends StreamFilter {
 	}
 
     private int getTagEndIndex(String s) {
+    	int scriptStartIx = s.indexOf("<script");
+    	int scriptEndIx = s.indexOf("</script");
+    	if (scriptEndIx == -1) scriptEndIx = s.length();
         int htmlIx = getTagEndIndex(s, "<html");
+        if (scriptStartIx != -1 && scriptStartIx < htmlIx  && htmlIx < scriptEndIx) htmlIx = -1;
         int headIx = getTagEndIndex(s, "<head");
+        if (scriptStartIx != -1 && scriptStartIx < headIx  && headIx < scriptEndIx) headIx = -1;
         int ix = (isXHTML &&  headIx != -1) ? headIx : htmlIx;
         return ix;
     }
