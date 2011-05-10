@@ -370,6 +370,8 @@
 				<include name="sencha_combobox.sah"/>
 				<include name="strict_visible.sah"/>
 				<include name="close_window.sah"/>
+				<include name="dragDrop.sah"/>
+				<include name="dragDropXY.sah"/>
 			</fileset>
 		</copy>
 		<copy todir="${temp.dir}/extlib">
