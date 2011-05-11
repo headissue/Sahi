@@ -14,7 +14,7 @@ import net.sf.sahi.util.Utils;
  */
 public class SingleSessionTestRunner extends TestRunner {
 	public SingleSessionTestRunner(String sessionName, String browserType, String base) {
-		super(sessionName, browserType, base, "1");
+		super(sessionName, browserType, Utils.replaceLocalhostWithMachineName(base), "1");
 		setIsSingleSession(true);
 		this.sessionId = Utils.generateId();
 	}
