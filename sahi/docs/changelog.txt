@@ -1,3 +1,19 @@
+17 May 2011
+-----------
+* Bugfixes
+        Modified browser paths and prcocess name for Mac & Linux to render the browser correctly
+	_closeWindow bug is fixed for IE.
+	Preventing recording of random clicks
+	Bug fix in _canvas and _click API
+
+* Features
+        Added force check for verifying the browser paths at Sahi startup in MacOS.
+        Log file names are more accessible from script.
+	Added a forum test for sanity.
+	Added SingleSessionTestRunner.java, Single Session implementation is for running multiple tests in a single session as sequential test.
+	Added dragdropXY method in java.
+	Modified domainfix as configurable
+
 04 Apr 2011
 -----------
 * Bugfixes
