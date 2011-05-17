@@ -2,6 +2,7 @@
 
 <shortcuts>
   <skipIfNotSupported/>
+  <defaultCurrentUser/>
   <programGroup defaultName="Sahi"
                 location="startMenu"/>
   <shortcut

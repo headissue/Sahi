@@ -14,6 +14,7 @@
 
 	<variables>
 		<variable name="install_name" value="sahi" />
+		<variable name="DesktopShortcutCheckboxEnabled" value="true" />
 	</variables>
 	<guiprefs width="600" height="380" resizable="yes">
 		<laf name="liquid">
