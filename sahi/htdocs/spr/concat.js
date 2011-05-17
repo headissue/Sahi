@@ -727,14 +727,16 @@ Sahi.prototype.simulateClick = function (el, isRight, isDouble, combo) {
     this.simulateMouseEvent(el, "mouseup", isRight, false, combo);
     try {
         if (this._isIE() && el && (this.areTagNamesEqual(el.tagName, "LABEL") || 
-        		(link != null) ||
-        		(el.type && (el.type == "submit"
-                || el.type == "reset" || el.type == "image"
-                || el.type == "checkbox" || el.type == "radio")))) {
-        		if (link != null) {
-        	        this.markStepDone(this.currentStepId, this.currentType);	
-        		}
-                el.click();
+            		(link != null) ||
+            		(el.type && (el.type == "submit"
+                    || el.type == "reset" || el.type == "image"
+                    || el.type == "checkbox" || el.type == "radio")))) {
+    		if (link != null) {
+    	        this.markStepDone(this.currentStepId, this.currentType);
+    	        if (this.trim((""+link.href)).indexOf("javascript:") != 0) el.click(); 
+    		} else {
+    			el.click();
+    		}
         } else {
         	if (window.opera){
         		// for opera single clicks don't simulate click event; 
@@ -3296,7 +3298,7 @@ Sahi.prototype.sendToServer = function (url) {
         var rand = (new Date()).getTime() + Math.floor(Math.random() * (10000));
         var http = this.createRequestObject();
         url = url + (url.indexOf("?") == -1 ? "?" : "&") + "t=" + rand;
-        url = url + "&sahisid=" + escape(this.sid);
+        url = url + "&sahisid=" + encodeURIComponent(this.sid);
         var post = url.substring(url.indexOf("?") + 1);
         url = url.substring(0, url.indexOf("?"));
         http.open("POST", url, false);
@@ -4058,7 +4060,7 @@ Sahi.prototype.getAttribute = function (el, attr){
 Sahi.prototype.makeLibFunctionsAvailable = function(){
 	var fns = ["_scriptName", "_scriptPath", "_suiteInfo", "_userDataDir", 
 	           "_sessionInfo", "_userDataPath", "_readFile", "_readCSVFile", 
-	           "_readURL", "_scriptStatus", "_stackTrace"];
+	           "_readURL", "_scriptStatus", "_stackTrace", "_selectWindow"];
 	for (var i=0; i<fns.length; i++){		
 		this.addRhinoFn(fns[i]);
 	}
@@ -4181,6 +4183,7 @@ Sahi.prototype.prepareADs = function(){
 	this.addAD({tag: "CODE", type: null, event:"click", name: "_code", attributes: ["sahiText", "id", "className", "index"], action: "_click", value: "sahiText"});
 	this.addAD({tag: "BLOCKQUOTE", type: null, event:"click", name: "_blockquote", attributes: ["sahiText", "id", "className", "index"], action: "_click", value: "sahiText"});
 	
+	this.addAD({tag: "CANVAS", type: null, event:"click", name: "_canvas", attributes: ["sahiText", "id", "className", "index"], action: "_click", value: "sahiText"});
 };
 Sahi.prototype.getAssertions = function(accs, info){
 	var a = [this.language.ASSERT_EXISTS, this.language.ASSERT_VISIBLE];

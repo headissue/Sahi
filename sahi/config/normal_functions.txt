@@ -149,3 +149,4 @@ _urlbox
 _weekbox
 _count
 _collect
+_canvas
