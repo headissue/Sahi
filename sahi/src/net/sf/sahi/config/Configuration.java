@@ -409,6 +409,39 @@ public class Configuration {
 		return exclusionList;
 	}
 
+	public static String getDomainFixInfo() {
+		if (domainFixInfo == null){
+			StringBuilder sb = new StringBuilder();
+			sb.append("{");
+			boolean start = true;
+			File file = new File(Utils.concatPaths(userDataDir, "config/domainfix.txt"));
+			String[] lines = (file.exists()) ? getNonBlankLines(Utils.readCachedFile(file)) : new String[0];
+			for (int i = 0; i < lines.length; i++) {
+				String line = lines[i];
+				if (line.startsWith("#")) continue;
+				String[] split = line.split("[\\s]+");
+				String key = split[0];
+				String value = key;
+				if (split.length == 1) {
+					value = split[1];
+				} else {
+					int ix = value.lastIndexOf(".", value.lastIndexOf(".")-1);
+					if (ix != -1) value = value.substring(ix+1);
+				} 
+				if (start) {
+					start = false;
+				} else {
+					sb.append(",");
+				}
+				key = key.replace(".", "[.]").replace("*", ".*");
+				sb.append("'" + key + "': '" + value + "'");
+			}
+			sb.append("}");
+			domainFixInfo = sb.toString();
+		}
+		return domainFixInfo;
+	}
+	
 	static int enableKeepAlive = 0;
 
 	private static String overriddenControllerMode;
@@ -416,6 +449,8 @@ public class Configuration {
 	private static String[] downloadURLList;
 	
 	private static String[] blockableSSLDomainList;
+
+	private static String domainFixInfo;
 
 	public static void enableKeepAlive() {
 		enableKeepAlive++;

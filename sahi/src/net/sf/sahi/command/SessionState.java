@@ -39,6 +39,13 @@ public class SessionState {
     public HttpResponse isPlaying(final HttpRequest request){
     	Session session = request.session();
         return new SimpleHttpResponse(session.isPlaying() ? "1" : "0");    	
+    }   
+    
+    public HttpResponse domainfix(final HttpRequest request){
+    	String domainFixInfo = Configuration.getDomainFixInfo();
+		Properties props = new Properties();
+		props.setProperty("domainInfo", domainFixInfo);
+		return new HttpFileResponse(Configuration.getHtdocsRoot() + "spr/domainfix.js", props, false, true);
     }
     
     public HttpResponse isRecording(final HttpRequest request){

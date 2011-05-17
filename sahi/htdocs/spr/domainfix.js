@@ -13,12 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-var d = window.document.domain;
-if (d){
-	var ix = d.lastIndexOf(".");
-	ix = d.lastIndexOf(".", ix-1);
-	if (ix!=-1){
-	    //document.domain = d.substring(ix+1);
+(function(){
+	var d = document.domain;
+	//alert("$domainInfo");
+	var info = $domainInfo;
+	if (d){
+		for (var k in info) {
+			if (new RegExp(k).test(d)) {
+				window.document.domain = info[k];
+				break;
+			} 
+		}
 	}
-}
+})();
 __sahiDebug__("domainfix.js: end");
