@@ -1,6 +1,7 @@
-_navigateTo("http://www.extjs.com/deploy/dev/examples/feed-viewer/view.html");
+_navigateTo("http://dev.sencha.com/deploy/ext-4.0.0/examples/feed-viewer/feed-viewer.html");
+//_navigateTo("http://www.extjs.com/deploy/dev/examples/feed-viewer/view.html");
 
-_click(_span("ExtJS.com Forums"));
+_click(_div("Sencha Forums"));
 var $author;
 _set($author, _getText(_span("author[1]")));
 _click(_div("topic[1]"));
@@ -10,7 +11,14 @@ var $topic2;
 _set($topic2, _getText(_bold(2)));
 _doubleClick(_bold($topic2));
 
+_assertExists(_heading3("post-title[1]"));
+_assert(_isVisible(_heading3("post-title[1]")));
+_assertEqual($topic2, _getText(_heading3("post-title[1]")));
+
+/*
 _assertExists(_span("x-tab-strip-text [1]"));
 _assert(_isVisible(_span("x-tab-strip-text [1]")));
 _assertEqual($topic2, _getText(_span("x-tab-strip-text [1]")));
-_link(0, _near(_span("ExtJS header sorting sorts the Store records[1]")));
+*/
+
+_click(_link("Close Tab"));
