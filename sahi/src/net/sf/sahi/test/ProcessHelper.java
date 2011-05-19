@@ -68,6 +68,7 @@ public class ProcessHelper {
 			process = Utils.executeAndGetProcess(tokens);
 			new Thread(new PIDGatherer(allPIDsBefore)).start();
 		} catch (Exception e) {
+			lock.release();
 			e.printStackTrace();
 		}
 
