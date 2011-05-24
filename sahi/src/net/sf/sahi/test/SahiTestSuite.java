@@ -168,7 +168,7 @@ public class SahiTestSuite {
 		return (SahiTestSuite) suites.get(Utils.stripChildSessionId(sessionId));
 	}
 
-	private void executeTest(final int threadNo) {
+	private void executeTest(final int threadNo) throws Exception {
 		TestLauncher test = (TestLauncher) tests.get(currentTestIndex);
 		test.setThreadNo(threadNo, isMultiThreaded);
 		Session session = Session.getInstance(test.getChildSessionId());
@@ -221,7 +221,7 @@ public class SahiTestSuite {
 	}
 
 	private void markSuiteStatus() {
-		Status status = Status.SUCCESS;
+		Status status = finishedTests.size() > 0 ? Status.SUCCESS : Status.FAILURE;
 		Session session;
 		for (Iterator<TestLauncher> iterator = tests.iterator(); iterator.hasNext();) {
 			TestLauncher testLauncher = (TestLauncher) iterator.next();
@@ -293,7 +293,13 @@ public class SahiTestSuite {
 	}
 
 	private synchronized void executeSuite() {
-		launchBrowserForSingleSession();
+		try {
+			launchBrowserForSingleSession();
+		} catch (Exception e1) {
+			//e1.printStackTrace();
+			abort();
+			return;
+		}
 		while (currentTestIndex < tests.size()) {
 			if (killed) {
 				return;
@@ -302,7 +308,12 @@ public class SahiTestSuite {
 				int freeThreadNo = getFreeThreadNo();
 				if (freeThreadNo != -1) {
 					freeThreads[freeThreadNo] = false;
-					this.executeTest(freeThreadNo);
+					try {
+						this.executeTest(freeThreadNo);
+					} catch (Exception e) {
+						abort();
+						return;
+					}
 				}
 			}
 			try {
@@ -314,14 +325,19 @@ public class SahiTestSuite {
 		killBrowserForSingleSession();
 	}
 
-	public void launchBrowserForSingleSession() {
+	private void abort() {
+		kill();
+		finishCallBack();
+	}
+
+	public void launchBrowserForSingleSession() throws Exception {
 		if (isSingleSession) {
 			singleSessionBrowserLauncher = new BrowserLauncher(browser, browserProcessName, browserOption, useSystemProxy);
 			singleSessionBrowserLauncher.openURL(singleSessionBrowserLauncher.getPlayerAutoURL(singleSessionChildSessionId, base, isSingleSession));
 		}
 	}
 
-	public Status executeTestForSingleSession(String testName, String startURL){
+	public Status executeTestForSingleSession(String testName, String startURL) throws Exception{
 		TestLauncher testLauncher = new TestLauncher(testName, startURL);
 		prepareTestLauncher(testLauncher);
 		testLauncher.setThreadNo(0, isMultiThreaded);

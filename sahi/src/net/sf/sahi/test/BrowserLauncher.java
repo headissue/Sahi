@@ -42,7 +42,7 @@ public class BrowserLauncher {
 		this.useProxy = useProxy;
 	}
 
-	public ProcessHelper openURL(final String url) {
+	public ProcessHelper openURL(final String url) throws Exception {
 		if (useProxy) 
 			ProxySwitcher.setSahiAsProxy();
 		String cmd = buildCommand(url);
@@ -95,7 +95,7 @@ public class BrowserLauncher {
 			e.printStackTrace();
 		}
 	}
-
+	
 	String getPlayerAutoURL(String childSessionId, String startURL, boolean isSingleSession) {
 		String cmd = null;
 		try {
@@ -109,4 +109,5 @@ public class BrowserLauncher {
 		return cmd;
 	}
 	
+
 }

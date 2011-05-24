@@ -47,23 +47,23 @@ public class Driver {
     	Configuration.setControllerMode(mode);
     }
     
-    public void launchAndRecord(final HttpRequest request) {
+    public void launchAndRecord(final HttpRequest request) throws Exception {
     	launchBrowser(request);
     	record(request);
     }
     
-    public void launchAndPlayback(final HttpRequest request) {
+    public void launchAndPlayback(final HttpRequest request) throws Exception {
     	launchBrowser(request);
     }
 
-	private void launchBrowser(final HttpRequest request) {
+	private void launchBrowser(final HttpRequest request) throws Exception {
         String browser = request.getParameter("browser");
         String browserOption = request.getParameter("browserOption");
         String browserProcessName = request.getParameter("browserProcessName");
         launch(browser, browserProcessName, browserOption, "true".equals(request.getParameter("useSystemProxy")), request);
 	}
 	
-	public void launchPreconfiguredBrowser(final HttpRequest request){
+	public void launchPreconfiguredBrowser(final HttpRequest request) throws Exception{
     	BrowserTypesLoader browserLoader = new BrowserTypesLoader();
     	BrowserType browserType = browserLoader.getBrowserType(request);
         
@@ -74,7 +74,7 @@ public class Driver {
         }
 	}
 	
-	private void launch(String browser, String browserProcessName, String browserOption, boolean useProxy, HttpRequest request){
+	private void launch(String browser, String browserProcessName, String browserOption, boolean useProxy, HttpRequest request) throws Exception{
 		
     	Session session = request.session();
         
@@ -90,11 +90,10 @@ public class Driver {
 		String url = "http://" + Configuration.getCommonDomain() + "/_s_/dyn/Driver_start?sahisid="
 			+ session.id()
 			+ "&startUrl="
-			+ Utils.encode("http://" + Configuration.getCommonDomain() + "/_s_/dyn/Driver_initialized?startUrl="+Utils.encode(startUrl));
-
+			+ Utils.encode("http://" + Configuration.getCommonDomain() + "/_s_/dyn/Driver_initialized?startUrl="+Utils.encode(startUrl));    	
     	launcher.openURL(url);        
         session.setLauncher(launcher);
-	}
+	}   
 	
     public void kill(final HttpRequest request) {
     	Session session = request.session();
@@ -256,7 +255,7 @@ public class Driver {
 		}
 	}	
 	
-	public void enableIEProxy(final HttpRequest request){
+	public void enableIEProxy(final HttpRequest request){	
 		ProxySwitcher.setSahiAsProxy();
 //		toggleIEProxy(true);
 	}

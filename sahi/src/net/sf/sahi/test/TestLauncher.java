@@ -86,11 +86,11 @@ public class TestLauncher {
 		return scriptName;
 	}
 
-	public void execute(Session session) {
+	public void execute(Session session) throws Exception {
 		this.execute(session, true, true);
 	}
 	
-	public void execute(Session session, boolean async, boolean setDefaultReporters) {
+	public void execute(Session session, boolean async, boolean setDefaultReporters) throws Exception {
 		System.out.println("#### Running Script: " + scriptName);
         scriptRunner = new RhinoScriptRunner(new ScriptFactory().getScript(scriptName), session.getSuite(), this, setDefaultReporters);
 		session.setScriptRunner(scriptRunner);
@@ -100,8 +100,8 @@ public class TestLauncher {
 		if (async) scriptRunner.execute();
 		else scriptRunner.executeAndWait(); // seems not to be used? 
 	}
-
-	private void launchBrowser() {
+	
+	private void launchBrowser() throws Exception {
 		browserOption = (browserOption == null) ? "" : browserOption.replaceAll("[$]threadNo", "" + threadNo)
 				.replaceAll("[$]userDir", Configuration.getAbsoluteUserPath(".").replace('\\', '/'));
 		browserLauncher = new BrowserLauncher(browser, browserProcessName, browserOption, useSystemProxy);

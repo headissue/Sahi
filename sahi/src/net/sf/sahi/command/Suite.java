@@ -34,14 +34,13 @@ import net.sf.sahi.test.SahiTestSuite;
 import net.sf.sahi.util.BrowserType;
 import net.sf.sahi.util.BrowserTypesLoader;
 
-public class Suite {
-	
-	public void startSingleSession(final HttpRequest request) {
+public class Suite {	
+	public void startSingleSession(final HttpRequest request) throws Exception {
 		final SahiTestSuite suite = getSuite(request);
 		suite.launchBrowserForSingleSession();
 	}
 	
-	public SimpleHttpResponse executeTestInSingleSession(final HttpRequest request) {
+	public SimpleHttpResponse executeTestInSingleSession(final HttpRequest request) throws Exception {
 		Session session = request.session();
 		final SahiTestSuite suite = session.getSuite();
 		Status status = suite.executeTestForSingleSession(request.getParameter("testName"), request.getParameter("startURL"));
@@ -59,7 +58,7 @@ public class Suite {
     	suite.loadScripts();
 		runSuite(suite);
     }
-
+    
     public void startPreconfiguredBrowser(final HttpRequest request){
     	final SahiTestSuite suite = getPreconfiguredBrowserSuite(request);
     	suite.loadScripts();

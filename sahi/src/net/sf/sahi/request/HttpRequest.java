@@ -287,6 +287,7 @@ public class HttpRequest extends StreamHandler {
 		if (this.session == null){
 			String sessionId;
 			sessionId = getParameter("sahisid");
+//			sessionId = "SAHI_HARDCODED_IDsahixSAHI_CHILD_IDx"; // Change in Utils too
 			if (finest){
 				logger.finest("SessionId from parameter:" + sessionId);
 			}
@@ -337,7 +338,7 @@ public class HttpRequest extends StreamHandler {
 		if (stripped.endsWith(";")) stripped = stripped.substring(0, stripped.length()-1);
 		return stripped.trim();
 	}
-	
+
 	public String sahiCookie(){
 		return sahiCookie;
 	}

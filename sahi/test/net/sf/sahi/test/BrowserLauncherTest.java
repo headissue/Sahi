@@ -47,7 +47,7 @@ public class BrowserLauncherTest extends TestCase {
                 browserLauncher.buildCommandForNonWindows(launchURL));
     }
 
-    public void ytestFirefoxFirstLaunchAndKill() throws InterruptedException, IOException {
+    public void ytestFirefoxFirstLaunchAndKill() throws Exception {
     	String pathname = "D:/sahi/sf/sahi_993/userdata/browser/ff/profiles/sahi9";
 		Utils.deleteDir(new File(pathname));
     	FileUtils.copyDir("D:/sahi/sf/sahi_993/config/ff_profile_template", pathname);

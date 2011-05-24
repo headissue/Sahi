@@ -21,7 +21,7 @@ import junit.framework.TestCase;
  */
 public class ProcessHelperTest extends TestCase {
 	private static final long serialVersionUID = -268318881994670816L;
-	public void xtestFirefoxKill() throws InterruptedException {
+	public void xtestFirefoxKill() throws Exception {
 		for (int i = 0; i < 100; i++) {
 			String cmd = "\"C:\\Program Files\\Mozilla Firefox\\firefox.exe\" -profile \"D:/sahi_v2/browser/ff/profiles/sahi0\"";
 			ProcessHelper ph = new ProcessHelper(cmd, "firefox.exe");

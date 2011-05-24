@@ -36,8 +36,6 @@ public class ProcessHelper {
 
 	private ArrayList<String> pids;
 
-	private Process process;
-
 	private String imageName;
 
 	public ProcessHelper(String cmd, String imageName) {
@@ -50,7 +48,7 @@ public class ProcessHelper {
 
 	private static boolean hasProcessStarted; 
 
-	public void execute() {
+	public void execute() throws Exception {
 		try {
 			try {
 				lock.acquire();
@@ -65,11 +63,11 @@ public class ProcessHelper {
 //			for (int i = 0; i < tokens.length; i++) {
 //				System.out.println(tokens[i]);
 //			}
-			process = Utils.executeAndGetProcess(tokens);
+			Utils.executeAndGetProcess(tokens);
 			new Thread(new PIDGatherer(allPIDsBefore)).start();
 		} catch (Exception e) {
 			lock.release();
-			e.printStackTrace();
+			throw e;
 		}
 
 	}
