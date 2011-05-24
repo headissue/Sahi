@@ -733,10 +733,8 @@ Sahi.prototype.simulateClick = function (el, isRight, isDouble, combo) {
                     || el.type == "checkbox" || el.type == "radio")))) {
     		if (link != null) {
     	        this.markStepDone(this.currentStepId, this.currentType);
-    	        if (this.trim((""+link.href)).indexOf("javascript:") != 0) el.click(); 
-    		} else {
-    			el.click();
     		}
+    		el.click();
         } else {
         	if (window.opera){
         		// for opera single clicks don't simulate click event; 
@@ -2804,7 +2802,7 @@ Sahi.prototype.areWindowsLoaded = function (win) {
                 }
             }
             if (win.document && this.getElementsByTagName("frameset", win.document).length == 0)
-                return this.loaded;
+                return (this._isIE() && (win.document.readyState == "complete")) || this.loaded;
             else return true;
         }
     }
