@@ -70,6 +70,10 @@ function testImageOnclickCanChangeHref(){
 	_assert(location.href.indexOf("tableTest.htm") != -1); // goes to tableTest
 }
 
+function testIframeLoadedViaLinkClickDoesNotStopTest(){
+	_click(_link("click here"));
+	_click(_link("Link Test")); 
+}
 
 _runUnitTests();
 // Test using base tag and page loading target as the iframe

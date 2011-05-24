@@ -104,6 +104,18 @@ Image with onclick="this.parentNode.href='tableTest.htm'":<br/>
 <a href="index.htm"><img src="add.gif" id="imageWithOnclickChangingHref" onclick="this.parentNode.href='tableTest.htm'"></a> 
 <br/><br/>
 
+<script type="text/javascript"> 
+
+function loadintoIframe(iframeid, url) {
+	if (document.getElementById)
+		document.getElementById(iframeid).src = url
+}
+
+</script>
+<br/><br/>
+<iframe id="myframe" src="clickCombo.htm" style="overflow:visible; width:350px; display:block"></iframe><br/><br/>
+<a href="javascript:loadintoIframe('myframe','index.htm')">click here</a></b> 
+<br/><br/>
 <a href="index.htm">Back</a>
 </body>
 </html>
