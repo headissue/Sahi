@@ -43,6 +43,9 @@ public class Suite {
 	public SimpleHttpResponse executeTestInSingleSession(final HttpRequest request) throws Exception {
 		Session session = request.session();
 		final SahiTestSuite suite = session.getSuite();
+		String initJS = request.getParameter("initJS");
+		System.out.println("Setting initJS" + initJS);
+		suite.setInitJS(initJS);
 		Status status = suite.executeTestForSingleSession(request.getParameter("testName"), request.getParameter("startURL"));
 		return new SimpleHttpResponse(status.getName());
 	}
