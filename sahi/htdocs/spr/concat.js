@@ -3370,6 +3370,7 @@ Sahi.prototype.reAttachSahi = function (win) {
     if (fs && fs.length > 0) {
         for (var i = 0; i < fs.length; i++) {
             try{
+            	if (this._isHTMLUnit() && fs[i].location.href && fs[i].location.href.indexOf(".gif") != -1) continue;
             	this.reAttachSahi(fs[i]);
             }catch(e){}
         }
