@@ -21,6 +21,7 @@ package net.sf.sahi.util;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -69,7 +70,10 @@ public class Utils {
 			int totalBytesRead = 0;
 			byte[] buffer = new byte[contentLength];
 			while (totalBytesRead < contentLength) {
-				int bytesRead = bin.read(buffer, totalBytesRead, contentLength - totalBytesRead);
+				int bytesRead = -1;
+				try{
+					bytesRead = bin.read(buffer, totalBytesRead, contentLength - totalBytesRead);
+				}catch(EOFException e){}
 				if (bytesRead == -1) {
 					break;
 				}
@@ -84,7 +88,10 @@ public class Utils {
 				byte[] buffer = new byte[BUFFER_SIZE];
 
 				while (true) {
-					int bytesRead = bin.read(buffer);
+					int bytesRead = -1;
+					try{
+						bytesRead = bin.read(buffer);
+					}catch(EOFException e){}
 					if (bytesRead == -1) {
 						break;
 					}
