@@ -132,6 +132,9 @@ function loadFile(fileName){
 }
 function save(){
 	try{
+		var saveInfo = document.getElementById('saveInfo');
+		saveInfo.style.display='block';
+		setTimeout("saveInfo.style.display='none'",3000);
 	sahiSendToServer("/_s_/dyn/ConfigureUI_saveFile?fileName="+encodeURIComponent(g_file)+
 			"&contents="+encodeURIComponent($("editor").value));
 	}catch(e){alert(e)}
@@ -200,6 +203,7 @@ Adding these domains to block_ssl_domains.txt will prevent hangs.
 </div>
 
 </div>
+<div style="display:none;background:#F8FFA1;border:solid 1px red;margin:30px 20px 10px 0px;padding:10px" id="saveInfo"> Your configuration has been saved. Please restart Sahi</div>
 </div>
 </td><td>
 <div style="float:left;width:770px;height:800px;line-height:22px;">
