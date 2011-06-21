@@ -93,6 +93,7 @@ public class HttpModifiedResponse2 extends HttpResponse {
     }
 
     private boolean isXHTML() {
+    	if (Configuration.forceTreatAsXHTML()) return true;
         String s = getSampleContent();
         return s.indexOf("<?xml") != -1 || s.indexOf("<!doctype") != -1;
     }

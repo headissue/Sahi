@@ -788,4 +788,7 @@ public class Configuration {
 	public static String getIgnorableIdsPattern() {
 		return getUserProperty("recorder.ignorable_ids.pattern", "^z_").trim();
 	}
+	public static boolean forceTreatAsXHTML() {
+		return "true".equals(getUserProperty("sahi.inject.force_treat_as_xhtml"));
+	}
 }
