@@ -53,7 +53,7 @@ public class Suite {
 	public void stopSingleSession(final HttpRequest request) {
 		Session session = request.session();
 		final SahiTestSuite suite = session.getSuite();
-		suite.killBrowserForSingleSession();
+		suite.killBrowserForSingleSession(true);
 	}
 	
     public void start(final HttpRequest request) {

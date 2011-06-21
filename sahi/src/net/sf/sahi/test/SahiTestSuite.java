@@ -322,7 +322,7 @@ public class SahiTestSuite {
 				e.printStackTrace();
 			}
 		}
-		killBrowserForSingleSession();
+		killBrowserForSingleSession(false);
 	}
 
 	private void abort() {
@@ -348,10 +348,11 @@ public class SahiTestSuite {
 		return testLauncher.getStatus();
 	}
 
-	public void killBrowserForSingleSession() {
+	public void killBrowserForSingleSession(boolean isSingleTest) {
 		if (isSingleSession) {
 			singleSessionBrowserLauncher.kill();
-			finishCallBack();
+			if(isSingleTest)
+				finishCallBack();
 		}
 	}
 
