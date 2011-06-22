@@ -2,10 +2,15 @@ package net.sf.sahi.ui;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
@@ -52,6 +57,10 @@ public class Dashboard extends JFrame {
 	private JPanel masterPanel;
 
 	private int browserTypesHeight;
+	
+	private JLabel trafficLabel;
+
+	private boolean isTrafficEnabled;
 
 	public Dashboard() {
 		try {
@@ -63,9 +72,10 @@ public class Dashboard extends JFrame {
         startProxy();
 		buildUI();
 		addOnExit();
-		final Dimension dashboardSize = new Dimension(200, 225 + 35 + browserTypesHeight);
+		final Dimension dashboardSize = new Dimension(200, 225 + 50 + browserTypesHeight);
 		setSize(dashboardSize);
 		setPreferredSize(dashboardSize);
+		refreshTrafficLink();
 		setVisible(true);
 	}
 
@@ -86,8 +96,8 @@ public class Dashboard extends JFrame {
 		masterPanel.add(getLinksPanel1());
 		masterPanel.add(Box.createRigidArea(new Dimension(120, 2)));
 		masterPanel.add(getLinksPanel2());
-//		masterPanel.add(Box.createRigidArea(new Dimension(120, 15)));
-//		masterPanel.add(getSahiButtons());
+		masterPanel.add(Box.createRigidArea(new Dimension(120, 2)));
+		masterPanel.add(getLinksPanel3());
 		add(masterPanel);
 		
 	}
@@ -117,6 +127,7 @@ public class Dashboard extends JFrame {
 		LinkButton link3 = new LinkButton("Logs", "http://localhost:9999/logs/");
 		LinkButton link4 = new LinkButton("DB Logs", "http://localhost:9999//_s_/dyn/pro/DBReports");
 		
+		
 		JPanel buttonPane = new JPanel();
 		buttonPane.setBackground(new Color(255, 255, 255));
 		buttonPane.setLayout(new BoxLayout(buttonPane, BoxLayout.LINE_AXIS));
@@ -131,6 +142,45 @@ public class Dashboard extends JFrame {
 		}
 		
 		return buttonPane;
+	}
+	
+	private Component getLinksPanel3() {		
+		trafficLabel = new JLabel();
+		trafficLabel.setBorder(BorderFactory.createEmptyBorder(2,2,2,2));
+		trafficLabel.setHorizontalAlignment(JButton.LEADING); 
+		trafficLabel.addMouseListener(new MouseListener() {
+			public void mouseReleased(MouseEvent arg0) {}
+			public void mousePressed(MouseEvent arg0) {}
+			public void mouseExited(MouseEvent arg0) {}
+			public void mouseEntered(MouseEvent arg0) {}
+			public void mouseClicked(MouseEvent arg0) {
+				setTrafficLink(!isTrafficEnabled);
+				setTrafficLog((isTrafficEnabled) ? false : true);
+			}
+		});
+		trafficLabel.addMouseMotionListener(new MouseMotionListener() {
+			public void mouseMoved(MouseEvent arg0) {
+				trafficLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
+			}
+			public void mouseDragged(MouseEvent arg0) {}
+		});
+		
+		JPanel buttonPane = new JPanel();
+		buttonPane.setBackground(new Color(255, 255, 255));
+		buttonPane.setLayout(new FlowLayout());
+		buttonPane.add(trafficLabel);
+		
+		return buttonPane;
+	}
+	
+	private void setTrafficLink(boolean isTrafficEnabled){
+		this.isTrafficEnabled = isTrafficEnabled;
+		trafficLabel.setText(((isTrafficEnabled) ? "<html><a href=''><font color='blue'>Enable Traffic Logs</font></a></html>" : 
+			                                       "<html><a href=''><font color='red'>Disable Traffic Logs</font></a></html>"));
+	}
+	
+	private void refreshTrafficLink(){
+		setTrafficLink(!(Configuration.isModifiedTrafficLoggingOn() || Configuration.isUnmodifiedTrafficLoggingOn()));
 	}
 
 	private Component getLogo() {
@@ -236,6 +286,10 @@ public class Dashboard extends JFrame {
         }
     }
 	
+	private void setTrafficLog(boolean flag){
+		Configuration.setModifiedTrafficLogging(flag);
+		Configuration.setUnmodifiedTrafficLogging(flag);
+	}	
 
 	private void stopProxy() {
 		currentInstance.stop();

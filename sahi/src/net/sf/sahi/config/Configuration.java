@@ -644,6 +644,14 @@ public class Configuration {
 	public static boolean isUnmodifiedTrafficLoggingOn() {
 		return "true".equals(getUserProperty("debug.traffic.log.unmodified"));
 	}
+	
+	public static void setModifiedTrafficLogging(boolean flag) {
+		userProperties.setProperty("debug.traffic.log.modified", "" + flag);
+	}
+
+	public static void setUnmodifiedTrafficLogging(boolean flag) {
+		userProperties.setProperty("debug.traffic.log.unmodified", "" + flag);
+	}
 
 	public static void main(String args[]){
 		String[] scriptRoots = Configuration.getScriptRoots();
