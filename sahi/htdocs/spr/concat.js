@@ -4183,9 +4183,10 @@ Sahi.prototype.prepareADs = function(){
 	this.addAD({tag: "STRONG", type: null, event:"click", name: "_strong", attributes: ["encaps_A", "sahiText", "id", "className", "index"], action: "_click", value: "sahiText"});
 	this.addAD({tag: "PRE", type: null, event:"click", name: "_preformatted", attributes: ["sahiText", "id", "className", "index"], action: "_click", value: "sahiText"});
 	this.addAD({tag: "CODE", type: null, event:"click", name: "_code", attributes: ["sahiText", "id", "className", "index"], action: "_click", value: "sahiText"});
-	this.addAD({tag: "BLOCKQUOTE", type: null, event:"click", name: "_blockquote", attributes: ["sahiText", "id", "className", "index"], action: "_click", value: "sahiText"});
-	
+	this.addAD({tag: "BLOCKQUOTE", type: null, event:"click", name: "_blockquote", attributes: ["sahiText", "id", "className", "index"], action: "_click", value: "sahiText"});	
 	this.addAD({tag: "CANVAS", type: null, event:"click", name: "_canvas", attributes: ["sahiText", "id", "className", "index"], action: "_click", value: "sahiText"});
+	this.addAD({tag: "ABBR", type: null, event:"click", name: "_abbr", attributes: ["encaps_A", "sahiText", "id", "className", "index"], action: "_click", value: "sahiText"});
+
 };
 Sahi.prototype.getAssertions = function(accs, info){
 	var a = [this.language.ASSERT_EXISTS, this.language.ASSERT_VISIBLE];
