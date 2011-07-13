@@ -18,6 +18,7 @@
 
 package net.sf.sahi;
 
+import java.io.EOFException;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -145,7 +146,13 @@ public class RemoteRequestProcessor {
 					if (logger.isLoggable(Level.FINE)){
 						logger.fine("Using GZIPInputStream");
 					}
-					inputStreamFromHost = new GZIPInputStream(inputStreamFromHost);
+					try {
+						inputStreamFromHost = new GZIPInputStream(inputStreamFromHost);
+					} catch (IOException ioe) {
+			    		if (logger.isLoggable(Level.WARNING)){
+							logger.warning(Utils.getStackTraceString(ioe));
+						}
+					}
 				}
 				if (responseCode >= 500 && !requestFromBrowser.isAjax()){
 					if (logger.isLoggable(Level.FINE)){
