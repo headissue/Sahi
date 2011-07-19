@@ -26,6 +26,6 @@ public class ConfigureUI {
 		final String fileName = request.getParameter("fileName");
 		final boolean useBase = "true".equals(request.getParameter("useBase"));
 		final String path = useBase ?  Configuration.getAbsolutePath(fileName) : Configuration.getAbsoluteUserPath(fileName);
-		return new SimpleHttpResponse(new String(Utils.readFile(path)).replace("\r\n", "\n").replace("\n", "<br/>"));
+		return new SimpleHttpResponse(new String(Utils.readFileAsString(path)).replace("\r\n", "\n").replace("\n", "<br/>"));
 	}
 }

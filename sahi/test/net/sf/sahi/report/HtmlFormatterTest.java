@@ -89,9 +89,9 @@ public class HtmlFormatterTest extends TestCase {
 
     public void testGetHeader() {
         String expected = new StringBuffer("<head><meta http-equiv=\"content-type\" content=\"text/html; charset=UTF-8\" />\n<style>\n").append(
-                new String(Utils.readFile(Configuration
+                new String(Utils.readFileAsString(Configuration
                         .getPlaybackLogCSSFileName(true)))).append(
-                new String(Utils.readFile(Configuration
+                new String(Utils.readFileAsString(Configuration
                         .getConsolidatedLogCSSFileName(true)))).append(
                 "</style></head>\n").toString();
         assertEquals(expected, formatter.getHeader());

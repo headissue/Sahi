@@ -77,7 +77,7 @@ public class SuiteLoader {
 
 
     private void processSuiteFile() {
-        String contents = new String(Utils.readFile(Configuration.getAbsoluteUserPath(suitePath)));
+        String contents = new String(Utils.readFileAsString(Configuration.getAbsoluteUserPath(suitePath)));
         StringTokenizer tokens = new StringTokenizer(contents, "\n");
         while (tokens.hasMoreTokens()) {
             String line = tokens.nextToken();

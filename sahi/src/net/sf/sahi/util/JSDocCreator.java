@@ -37,7 +37,7 @@ public class JSDocCreator {
             }
             out = new FileOutputStream(file, false);
 
-            String content = new String(Utils.readFile(Utils.concatPaths(Configuration.getHtdocsRoot(), "spr/concat.js")));
+            String content = new String(Utils.readFileAsString(Utils.concatPaths(Configuration.getHtdocsRoot(), "spr/concat.js")));
             StringTokenizer tokenizer = new StringTokenizer(content, "\n");
             while (tokenizer.hasMoreTokens()) {
                 String line = tokenizer.nextToken().trim();

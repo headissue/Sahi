@@ -276,7 +276,8 @@ public class Configuration {
 	}
 
 	public static String getRhinoLibJS() {
-		return new String(Utils.readFile(Utils.concatPaths(getHtdocsRoot(), "spr/lib.js")));
+		return new String(Utils.readFileAsString(Utils.concatPaths(getHtdocsRoot(),
+				"spr/lib.js")));
 	}
 
 	public static boolean isKeepAliveEnabled() {

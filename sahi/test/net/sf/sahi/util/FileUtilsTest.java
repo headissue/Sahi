@@ -60,7 +60,7 @@ public class FileUtilsTest extends TestCase {
         String destFile = dest + file1;
         FileUtils.copyFile(src+file1, destFile);
         assertTrue(new File(destFile).exists());
-        assertEquals(content, new String(Utils.readFile(destFile)));
+        assertEquals(content, new String(Utils.readFileAsString(destFile)));
     }
 
 

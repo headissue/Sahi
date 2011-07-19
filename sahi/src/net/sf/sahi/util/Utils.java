@@ -231,6 +231,10 @@ public class Utils {
 		}
 		return false;
 	}
+	
+	public static String readFileAsString(final File file) {
+		return getString(readFile(file));
+	}
 
 	public static String readFileAsString(final String fileName) {
 		return getString(readFile(fileName));

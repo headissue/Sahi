@@ -43,8 +43,8 @@ public class HTMLModifierFilter extends StreamFilter {
     }
 
 	private static void initializeInjects() {
-		INJECT_TOP = new String(Utils.readFile(Configuration.getInjectTop())).replace("$commonDomain", Configuration.getCommonDomain());
-        INJECT_BOTTOM = new String(Utils.readFile(Configuration.getInjectBottom()));
+		INJECT_TOP = new String(Utils.readFileAsString(Configuration.getInjectTop())).replace("$commonDomain", Configuration.getCommonDomain());
+        INJECT_BOTTOM = new String(Utils.readFileAsString(Configuration.getInjectBottom()));
         INJECT_TOP_SSL = makeHTTPS(INJECT_TOP);
         INJECT_BOTTOM_SSL = makeHTTPS(INJECT_BOTTOM);
 	}

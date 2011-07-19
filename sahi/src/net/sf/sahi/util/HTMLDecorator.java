@@ -31,7 +31,7 @@ public class HTMLDecorator {
     }
 
     private static void skin(final String layoutFile, final String pagesPath, final String outputPath) {
-        final String layout = new String(Utils.readFile(layoutFile));
+        final String layout = new String(Utils.readFileAsString(layoutFile));
         File pagesDir = new File(pagesPath);
         if (pagesDir.exists() && pagesDir.isDirectory()) {
             File[] files = pagesDir.listFiles();
@@ -51,7 +51,7 @@ public class HTMLDecorator {
             System.out.println(file.getName());
             StringBuffer sb = new StringBuffer(layout);
 
-            final String fileContents = new String(Utils.readFile(file));
+            final String fileContents = new String(Utils.readFileAsString(file));
             String title = getTitle(fileContents);
             replaceToken(sb, "@title@", title);
             replaceToken(sb, "@content@", fileContents);

@@ -91,7 +91,7 @@ public class ControllerUI {
     }
     
     public HttpResponse getChangeLog(final HttpRequest request){
-    	String dataStr = new String(Utils.readFile(Configuration.getChangeLogFilePath()));
+    	String dataStr = new String(Utils.readFileAsString(Configuration.getChangeLogFilePath()));
     	dataStr = dataStr.replace("\r\n", "\n").replace("\r", "\n").replace("\n", "<br/>");
     	dataStr = dataStr.replace("\t", "&nbsp;&nbsp;&nbsp;&nbsp;");
 		return new NoCacheHttpResponse(dataStr);

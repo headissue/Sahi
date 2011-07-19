@@ -35,7 +35,7 @@ public class LicenseChanger {
                 changeLicense(file);
             }
         } else if (f.getName().endsWith(".java") || f.getName().endsWith(".js")) {
-            String s = new String(Utils.readFile(f));
+            String s = new String(Utils.readFileAsString(f));
             if (s.indexOf("Copyright  2006  V Narayan Raman") != -1 && s.indexOf("LicenseChanger") == -1) {
                 System.out.println(f.getName());
                 int startIx = s.indexOf("/**");
@@ -45,7 +45,7 @@ public class LicenseChanger {
                 int endIx = s.indexOf("*/");
                 StringBuilder sb = new StringBuilder();
                 sb.append(s.substring(0, startIx));
-                sb.append(new String(Utils.readFile(LICENSE_FILE_PATH)));
+                sb.append(new String(Utils.readFileAsString(LICENSE_FILE_PATH)));
                 sb.append(s.substring(endIx + 2));
                 //String newS = s.replaceAll("[$]GPL_License[$]", new String(Utils.readFile("C:\\my\\sahi\\config\\gpl_inc.txt")));
                 FileOutputStream fos = new FileOutputStream(f);

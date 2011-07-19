@@ -49,8 +49,8 @@ public class HtmlFormatter implements Formatter {
 
     public String getHeader() {
         return new StringBuffer("<head><meta http-equiv=\"content-type\" content=\"text/html; charset=UTF-8\" />\n<style>\n").append(
-                new String(Utils.readFile(Configuration.getPlaybackLogCSSFileName(true)))).append(
-                new String(Utils.readFile(Configuration.getConsolidatedLogCSSFileName(true)))).append(
+                new String(Utils.readFileAsString(Configuration.getPlaybackLogCSSFileName(true)))).append(
+                new String(Utils.readFileAsString(Configuration.getConsolidatedLogCSSFileName(true)))).append(
                 "</style></head>\n").toString();
     }
 
