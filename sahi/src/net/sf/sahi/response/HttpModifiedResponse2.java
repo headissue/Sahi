@@ -103,7 +103,7 @@ public class HttpModifiedResponse2 extends HttpResponse {
             return false;
         }
         String contentType = contentTypeHeader();
-        if (contentType != null && contentType.toLowerCase().indexOf("text/html") != -1) {
+        if (contentType != null && (contentType.toLowerCase().indexOf("text/html") != -1 || contentType.toLowerCase().indexOf("application/xhtml+xml") != -1)) {
             return true;
         }
         if (contentType == null || contentType.toLowerCase().indexOf("text/plain") != -1 || contentType.toLowerCase().indexOf("text/xml") != -1) {

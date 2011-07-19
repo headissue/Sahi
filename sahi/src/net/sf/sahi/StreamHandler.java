@@ -18,6 +18,8 @@
 
 package net.sf.sahi;
 
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -98,18 +100,21 @@ public abstract class StreamHandler {
     }
 
     private void setRawHeaders(InputStream in) throws IOException {
-        StringBuilder sb = new StringBuilder();
-        byte prev = ' ';
+    	ByteArrayOutputStream byteArOut = new ByteArrayOutputStream();
+		BufferedOutputStream bout = new BufferedOutputStream(byteArOut);
+		byte prev = ' ';
         byte c;
         while ((c = (byte) in.read()) != -1) {
-            sb.append((char) c);
+        	bout.write(c);
             if (c == '\r' && prev == '\n') {
-                sb.append((char) in.read());
+            	bout.write((char) in.read());
                 break;
             }
             prev = c;
         }
-        rawHeaders = sb.toString().getBytes();
+		bout.flush();
+		bout.close();
+		rawHeaders = byteArOut.toByteArray();
     }
 
     private void setHeaders(String s, boolean handleFirstLineSpecially) {
@@ -149,7 +154,13 @@ public abstract class StreamHandler {
         }
         sb.append(headers.toString());
         sb.append("\r\n");
-        return sb.toString().getBytes();
+//        try {
+			return sb.toString().getBytes();
+//		} catch (UnsupportedEncodingException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//			return sb.toString().getBytes();
+//		}
     }
 
     public void setHeader(final String key, final String value) {
