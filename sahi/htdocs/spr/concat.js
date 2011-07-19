@@ -3244,7 +3244,7 @@ Sahi.prototype._isIE = function () {return this.navigator.appName == "Microsoft 
 Sahi.prototype._isIE9 = function () {return /MSIE 9[.]/.test(this.navigator.userAgent);};
 Sahi.prototype._isFF2 = function () {return /Firefox\/2|Iceweasel\/2|Shiretoko\/2/.test(this.navigator.userAgent);};
 Sahi.prototype._isFF3 = function () {return /Firefox\/3|Iceweasel\/3|Shiretoko\/3/.test(this.navigator.userAgent);};
-Sahi.prototype._isFF4 = function () {return /Firefox\/4|Iceweasel\/4|Shiretoko\/4|/.test(this.navigator.userAgent);};
+Sahi.prototype._isFF4 = function () {return /Firefox\/4|Iceweasel\/4|Shiretoko\/4/.test(this.navigator.userAgent);};
 Sahi.prototype._isFF5 = function () {return /Firefox\/5|Iceweasel\/5|Shiretoko\/5/.test(this.navigator.userAgent);};
 Sahi.prototype._isFF4Plus = function () {return (this._isFF() && !this._isFF2() && !this._isFF3());};
 Sahi.prototype._isFF = function () {return /Firefox|Iceweasel|Shiretoko/.test(this.navigator.userAgent);};
