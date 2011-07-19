@@ -1,3 +1,13 @@
+19 Jul 2011
+-----------
+*Bugfixes
+	_setValue fixed for Firefox 5. 
+	Fix for ZLIB EOFException error
+	
+*Features
+	_abbr API added
+	Traffic Logs can now be enabled from the Dashboard
+
 25 May 2011
 -----------
 * Bugfixes
