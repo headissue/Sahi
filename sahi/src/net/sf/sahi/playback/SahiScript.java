@@ -260,9 +260,8 @@ public abstract class SahiScript {
 		if (close == -1) {
 			close = line.length();
 		}
-		sb.append("\"");
-		sb.append(separateVariables(line.substring(comma + 1, close).trim()));
-		sb.append("\");");
+		sb.append(line.substring(comma + 1, close).trim());
+		sb.append(");");
 		return convertToExecuteWait(scheduleLine(sb.toString(), lineNumber));
 	}
 

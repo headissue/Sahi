@@ -277,8 +277,10 @@ public class SahiScriptTest extends TestCase {
 //    }
 
     public void testWait(){
-        assertEquals("_sahi.executeWait(\"_sahi._wait(1000, \\\"_sahi._byId(\\\\\\\"abc\\\\\\\")\\\");\", \"scrName&n=12\");\r\n", testScript.modifyWait("_wait(1000, _byId(\"abc\"))", 12));
-        assertEquals("_sahi.executeWait(\"_sahi._wait(1000, \\\"_sahi._byId(\\\"+s_v(\"+s_v($abc)+\")+\\\")\\\");\", \"scrName&n=12\");\r\n", testScript.modifyWait("_wait(1000, _byId($abc))", 12));
+    	assertEquals("_sahi.executeWait(\"_sahi._wait(1000)\", \"scrName&n=5\");\r\n", testScript.modifyWait("_wait(1000)", 5));
+    	assertEquals("_sahi.executeWait(\"_sahi._wait(1000, _sahi._byId(\\\"abc\\\"));\", \"scrName&n=5\");\r\n", testScript.modifyWait("_wait(1000, _byId(\"abc\"))", 5));
+    	assertEquals("_sahi.executeWait(\"_sahi._wait(1000, \"+s_v($BYID_ABC)+\");\", \"scrName&n=5\");\r\n", testScript.modifyWait("_wait(1000, $BYID_ABC)", 5));
+    	assertEquals("_sahi.executeWait(\"_sahi._wait(1000, _sahi._exists(\"+s_v($BYID_ABC)+\"));\", \"scrName&n=5\");\r\n", testScript.modifyWait("_wait(1000, _exists($BYID_ABC))", 5));
     }
 
 	public void testProcessSet() {
