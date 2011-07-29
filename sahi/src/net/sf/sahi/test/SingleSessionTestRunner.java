@@ -5,7 +5,6 @@ package net.sf.sahi.test;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-
 import net.sf.sahi.util.Utils;
 
 /**
@@ -40,7 +39,6 @@ public class SingleSessionTestRunner extends TestRunner {
         	.append("&testName=").append(encode(testName))
         	.append("&startURL=").append(encode(""))
         	.append("&initJS=").append((initJS == null) ? "" : encode(initJS));
-            
         return new String(Utils.readURL(urlStr.toString()));
 	}
 	
@@ -48,7 +46,21 @@ public class SingleSessionTestRunner extends TestRunner {
 		this.initJS = initJS;
 	}
 	
-	public String getInitJS(){
+	public void setInitJS(HashMap<String, Object> variableHashMap){
+		StringBuilder sb = new StringBuilder();
+		for (Iterator<String> iterator = variableHashMap.keySet().iterator(); iterator.hasNext();) {
+			String key = iterator.next();
+			sb.append("var " + key).append(" = ").append(getJSValue(variableHashMap.get(key))).append(";");
+		}
+		this.initJS = sb.toString();
+	}
+	
+	private Object getJSValue(Object object) {
+		if (object instanceof String) return "\"" + Utils.escapeDoubleQuotesAndBackSlashes((String)object) + "\"";
+		return object.toString();
+	}
+	
+	public String getInitJs(){
 		return this.initJS;
 	}
 
