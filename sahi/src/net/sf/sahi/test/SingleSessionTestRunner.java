@@ -5,6 +5,9 @@ package net.sf.sahi.test;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
+import java.util.Iterator;
+
 import net.sf.sahi.util.Utils;
 
 /**
