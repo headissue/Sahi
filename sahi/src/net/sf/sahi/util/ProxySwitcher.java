@@ -19,7 +19,7 @@ public class ProxySwitcher {
 	}
 
 	public synchronized static void revertSystemProxy(boolean force) {
-		counter--;
+		if (counter > 0) counter--;
 		if (force) counter = 0;
 		if (counter == 0) execCommand(toolsBasePath + "/proxy_config.exe original");
 	}

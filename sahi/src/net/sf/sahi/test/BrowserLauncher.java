@@ -43,8 +43,9 @@ public class BrowserLauncher {
 	}
 
 	public ProcessHelper openURL(final String url) throws Exception {
-		if (useProxy) 
-			ProxySwitcher.setSahiAsProxy();
+		if (useProxy){
+			toggleProxy(true);
+		}	
 		String cmd = buildCommand(url);
 		//System.out.println(">>>> " + cmd);
 		cmd = cmd.replaceAll("%20", " ").replaceAll("[&]", "__SahiAmpersandSahi__");
@@ -53,7 +54,28 @@ public class BrowserLauncher {
 		cmd = Utils.expandSystemProperties(cmd);
 		process = new ProcessHelper(cmd, browserProcessName);
 		process.execute();
+		addShutDownHook();
 		return process;
+	}
+
+	private void addShutDownHook() {
+		ProcessExitDetector processExitDetector = new ProcessExitDetector(process.getActiveProcess());
+	    processExitDetector.addProcessListener(new ProcessListener() {
+	        public void processFinished(Process process) {
+	        	if (useProxy){
+	        		toggleProxy(false);
+	        	}
+	        }
+	    });
+	    processExitDetector.start();
+	}
+	
+	private void toggleProxy(boolean selected) {
+		if (selected){
+			ProxySwitcher.setSahiAsProxy();
+		} else {
+			ProxySwitcher.revertSystemProxy();
+		}
 	}
 
 	private String buildCommand(final String url) {

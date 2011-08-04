@@ -33,6 +33,7 @@ import net.sf.sahi.util.Utils;
 public class ProcessHelper {
 	private static final Logger logger = Logger.getLogger("net.sf.sahi.test.ProcessHelper");
 	private String cmd;
+	private Process process;
 
 	private ArrayList<String> pids;
 
@@ -63,13 +64,18 @@ public class ProcessHelper {
 //			for (int i = 0; i < tokens.length; i++) {
 //				System.out.println(tokens[i]);
 //			}
-			Utils.executeAndGetProcess(tokens);
+			process = Utils.executeAndGetProcess(tokens);
 			new Thread(new PIDGatherer(allPIDsBefore)).start();
+			
 		} catch (Exception e) {
 			lock.release();
 			throw e;
 		}
 
+	}
+	
+	protected Process getActiveProcess(){
+		return this.process;
 	}
 
 	class PIDGatherer implements Runnable{
