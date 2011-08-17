@@ -23,8 +23,8 @@
 _sahi._isRecording = false;
 function recordNavigateTo(){
 	var url = document.getElementById("_sahi_ignore_url").value;
+	if (url.indexOf("http://") != 0 && url.indexOf("https://") != 0) url = "http://" + url;
 	recordNavigateTo2(url);
-
 }
 function recordNavigateTo2(url){
 	_sahi.recordStep(_sahi.getNavigateToScript(url));
