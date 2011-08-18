@@ -369,10 +369,10 @@ Sahi.prototype.start = function(){
     }
 };
 Sahi.prototype._execute = function (cmd, isSync, timeout) {
-	if (isSync == null) isSync = false;
+	isSync = ""+isSync == "true";
 	if (timeout == null) timeout = 5*60*1000;
 	return net.sf.sahi.util.Utils.executeCommand(cmd, isSync, timeout);
-}
+};
 Sahi.prototype._dynamicInclude = function ($fileName) {
 	var thisPath = this._scriptPath().replace(/\\/g, "/");
 	var filePath = "" + net.sf.sahi.util.Utils.concatPaths(thisPath, $fileName);
