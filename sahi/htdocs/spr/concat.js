@@ -355,7 +355,135 @@ Sahi.prototype._dragDrop = function (draggable, droppable, offsetX, offsetY) {
     var y = pos[1];
     x = x + (offsetX ? offsetX : 1);
     y = y + (offsetY ? offsetY : 1); // test http://www.snook.ca/technical/mootoolsdragdrop/
-    this._dragDropXY(draggable, x, y);
+    this.dragDropXYCommon(draggable, droppable, x, y);
+};
+Sahi.prototype.dragDropXYCommon = function (draggable, droppable, x, y, isRelative) {
+	
+	var dataTransfer = new SahiDTProxy();
+	
+    this.simulateMouseEvent(draggable, "mouseover");
+    this.simulateMouseEvent(draggable, "mousemove");
+    
+    
+    this.simulateMouseEvent(draggable, "mousedown");
+    this.simulateMouseEvent(draggable, "mousemove");
+    this.simulateDragEvent(draggable, "dragstart", dataTransfer);
+    this.simulateDragEvent(draggable, "drag", dataTransfer);
+    var addX = 0, addY = 0;
+    if (isRelative){
+        var pos = this.findClientPos(draggable);
+        addX = pos[0];
+        addY = pos[1];
+        if (!x) x = 0;
+        if (!y) y = 0;
+        x += addX;
+        y += addY;
+    }else{
+        if (!x) x = this.findClientPos(draggable)[0];
+        if (!y) y = this.findClientPos(draggable)[1];
+    }
+
+//    x = x - this.getScrollOffsetX();
+//    y = y - this.getScrollOffsetY();
+    this.simulateMouseEventXY(draggable, "mousemove", x, y);
+    this.simulateDragEventXY(draggable, "drag", x, y, dataTransfer);
+    if (droppable) this.simulateDragEventXY(droppable, "dragenter", x, y, dataTransfer);
+    this.simulateDragEventXY(draggable, "drag", x, y, dataTransfer);
+    if (droppable) this.simulateDragEventXY(droppable, "dragover", x, y, dataTransfer);
+    this.simulateMouseEventXY(draggable, "mouseup", x, y);
+    if (droppable) this.simulateDragEventXY(droppable, "drop", x, y, dataTransfer);
+    this.simulateDragEventXY(draggable, "dragend", x, y, dataTransfer);
+    this.simulateMouseEventXY(draggable, "click", x, y);
+    this.simulateMouseEventXY(draggable, "mousemove", x, y);
+    this.simulateMouseEventXY(draggable, "mouseout", x, y);
+};
+
+Sahi.prototype.simulateDragEvent = function (el, type, dataTransfer, combo) {
+    var xy = this.findClientPos(el);
+    var x = xy[0];
+    var y = xy[1];
+    this.simulateDragEventXY(el, type, xy[0], xy[1], dataTransfer, combo);
+}
+Sahi.prototype.simulateDragEventXY = function (el, type, x, y, dataTransfer, combo) {
+	var isRight = false;
+	var isDouble = false;
+	if (!combo) combo = "";
+    var isShift = combo.indexOf("SHIFT")!=-1;
+    var isCtrl = combo.indexOf("CTRL")!=-1;
+    var isAlt = combo.indexOf("ALT")!=-1;
+    var isMeta = combo.indexOf("META")!=-1;
+    
+    if (this._isIE()) {
+    	var evt = el.ownerDocument.createEventObject();
+        evt.clientX = x;
+        evt.clientY = y;
+        evt.ctrlKey = isCtrl;
+        evt.altKey = isAlt;
+        evt.metaKey = isMeta;            
+        evt.shiftKey = isShift;
+        if (type == "mousedown" || type == "mouseup" || type == "mousemove"){
+        	evt.button = isRight ? 2 : 1;
+        }
+        //evt.dataTransfer = dataTransfer;
+        el.fireEvent("on" + type, evt);
+        evt.cancelBubble = true;    	
+	} else if (this._isFF()) {
+        var evt = el.ownerDocument.createEvent("DragEvents");
+        evt.initDragEvent(
+        type,
+        true, //can bubble
+        true, //cancelable
+        el.ownerDocument.defaultView, //view
+        (isDouble ? 2 : 1), //detail
+        x, //screen x
+        y, //screen y
+        x, //client x
+        y, //client y
+        isCtrl,
+        isAlt,
+        isShift,
+        isMeta,
+        isRight ? 2 : 0, //button
+        null,//relatedTarget
+        dataTransfer
+        );
+        el.dispatchEvent(evt);
+    } else if (this._isChrome()) {
+        var evt = el.ownerDocument.createEvent("HTMLEvents");
+        evt.initEvent(
+        type,
+        true, //can bubble
+        true, //cancelable
+        el.ownerDocument.defaultView, //view
+        (isDouble ? 2 : 1), //detail
+        x, //screen x
+        y, //screen y
+        x, //client x
+        y, //client y
+        isCtrl,
+        isAlt,
+        isShift,
+        isMeta,
+        isRight ? 2 : 0, //button
+        null//relatedTarget
+        );
+        evt.dataTransfer = dataTransfer;
+        el.dispatchEvent(evt);
+    }
+}
+var SahiDTProxy = function(){
+	this.data = {};
+};
+SahiDTProxy.prototype.setData = function(df, d){
+	this.data[df] = d;
+	return true;
+};
+SahiDTProxy.prototype.getData = function(df){
+	return this.data[df];
+};
+SahiDTProxy.prototype.clearData = function(df){
+	if (df) delete this.data[df];
+	else this.data = {};
 };
 Sahi.prototype.addBorder = function(el){
     el.style.border = "1px solid red";
