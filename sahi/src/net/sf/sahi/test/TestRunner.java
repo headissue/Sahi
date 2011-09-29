@@ -279,7 +279,7 @@ public class TestRunner {
         this.suiteName = suiteName;
         this.browser = null;
         this.browserType = browserType;
-        this.base = base;
+        this.base = Utils.replaceLocalhostWithMachineName(base);
         this.sahiHost = sahiHost;
         this.port = port;
         this.threads = threads;
