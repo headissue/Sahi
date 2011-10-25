@@ -158,7 +158,7 @@ public class TestRunner {
 			testRunner.setInitJS(map.get("initJS"));
 		}
 		if (map.get("extraInfo") != null) {
-			testRunner.setInitJS(map.get("extraInfo"));
+			testRunner.setExtraInfo(map.get("extraInfo"));
 		}
 		if (map.get("useSingleSession") != null) {
 			testRunner.setIsSingleSession("true".equals(map.get("useSingleSession")));
