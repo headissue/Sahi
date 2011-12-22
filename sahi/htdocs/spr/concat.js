@@ -850,7 +850,7 @@ Sahi.prototype.simulateDragEventXY = function (el, type, x, y, dataTransfer, com
         	evt.button = isRight ? 2 : 1;
         }
         //evt.dataTransfer = dataTransfer;
-        el.fireEvent("on" + type, evt);
+        el.fireEvent(this.getEventTypeName(type), evt);
         evt.cancelBubble = true;    	
 	} else if (this._isFF()) {
         var evt = el.ownerDocument.createEvent("DragEvents");
@@ -960,7 +960,7 @@ Sahi.prototype.simulateMouseEventXY = function (el, type, x, y, isRight, isDoubl
         if (type == "mousedown" || type == "mouseup" || type == "mousemove"){
         	evt.button = isRight ? 2 : 1;
         }
-        el.fireEvent("on" + type, evt);
+        el.fireEvent(this.getEventTypeName(type), evt);
         evt.cancelBubble = true;
     }
 };
@@ -1224,7 +1224,7 @@ Sahi.prototype.simulateEvent = function (target, evType) {
         evt.bubbles = true;
         evt.cancelable = true;
         evt.cancelBubble = true;
-        target.fireEvent("on" + evType, evt);
+        target.fireEvent(this.getEventTypeName(evType), evt);
     }
 };
 Sahi.prototype.getKeyCode = function (charCode){
@@ -1293,8 +1293,11 @@ Sahi.prototype.simulateKeyEvent = function (codes, target, evType, combo) {
         evt.shiftKey = isShift; //c.toUpperCase().charCodeAt(0) == evt.charCode;
         evt.shiftLeft = isShift;
         evt.cancelBubble = true;
-        target.fireEvent("on" + evType, evt);
+        target.fireEvent(this.getEventTypeName(evType), evt);
     }
+};
+Sahi.prototype.getEventTypeName = function (type) {
+	return ((typeof MooTools) == "object") ? type : ("on" + type); 
 };
 Sahi.prototype._simulateMouseEvent = Sahi.prototype.simulateMouseEvent;
 Sahi.prototype._simulateMouseEventXY = Sahi.prototype.simulateMouseEventXY;
