@@ -14,6 +14,7 @@ _assertEqual("null", _textbox("tx").value);
 
 _click(_link("Iframe"));
 _assertEqual("null", _textbox("tx").value);
+_wait(1000);
 _assertExists(_textbox("tx[1]"));
 _assertEqual("null", _textbox("tx[1]").value);
 
@@ -35,6 +36,8 @@ _popup("another")._click(_link("_top"));
 _popup("another")._assertEqual("GOT IT", _textbox("tx").value);
 
 _popup("another")._click(_link("Iframe"));
+_wait(3000);
 _popup("another")._assertExists(_textbox("tx[1]"));
+_wait(3000);
 _popup("another")._assertEqual("null", _textbox("tx[1]").value);
 

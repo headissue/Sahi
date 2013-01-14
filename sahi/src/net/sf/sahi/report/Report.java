@@ -53,6 +53,7 @@ public class Report {
     public String getScriptName() {
         return scriptName;
     }
+    
 
     public void setScriptName(String scriptName) {
         this.scriptName = scriptName;
@@ -147,4 +148,7 @@ public class Report {
 	public long getTimeTaken() {
 		return this.endTime - this.startTime;
 	}	
+	public long getStartTime(){
+		return this.startTime;
+	}
 }

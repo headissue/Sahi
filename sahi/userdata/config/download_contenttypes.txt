@@ -4,3 +4,4 @@ doc
 application/vnd.ms
 application/ms
 application/octet-stream
+application/pdf

@@ -16,6 +16,30 @@ function testFileSingle(){
 	_assertContainsText("Single", _span("type"));
 }
 
+function testFileSingleWithSetFile2(){
+	_setFile2(_file("file"), "scripts/demo/uploadme.txt");
+	_click(_submit("Submit Single"));
+	_assertExists(_span("size"));
+	_assertContainsText("0.3046875 Kb", _span("size"));
+	_assertContainsText("Single", _span("type"));
+}
+
+function testFileSingleWith3rdParam(){
+	_setFile(_file("file4"), "scripts/demo/uploadme.txt", "fileUpload.php");
+	_click(_submit("Submit Single"));
+	_assertExists(_span("size"));
+	_assertContainsText("0.3046875 Kb", _span("size"));
+	_assertContainsText("Single", _span("type"));
+}
+
+function testFileSingleWith3rdParamWithSetFile2(){
+	_setFile2(_file("file4"), "scripts/demo/uploadme.txt", "fileUpload.php");
+	_click(_submit("Submit Single"));
+	_assertExists(_span("size"));
+	_assertContainsText("0.3046875 Kb", _span("size"));
+	_assertContainsText("Single", _span("type"));
+}
+
 function testWithTypeChange(){
 	_setFile(_file("file"), "scripts/demo/uploadme.txt");
 	if (_isIE()){
@@ -24,6 +48,14 @@ function testWithTypeChange(){
 		_call(_file("file").type = "text");
 	}
 	_setValue(_textbox("file"), "scripts/demo/uploadme.txt");
+	_click(_submit("Submit Single"));
+	_assertExists(_span("size"));
+	_assertContainsText("0.3046875 Kb", _span("size"));
+	_assertContainsText("Single", _span("type"));
+}
+
+function testSetFile2WithTypeChange(){
+	_setFile2(_file("file"), "scripts/demo/uploadme.txt");
 	_click(_submit("Submit Single"));
 	_assertExists(_span("size"));
 	_assertContainsText("0.3046875 Kb", _span("size"));
@@ -44,4 +76,17 @@ function testFileMulti(){
 	_assertContainsText("0.32421875 Kb", _span("size[1]"));	
 }
 
+function testFileMultiWithSetFile2(){
+	_setFile2(_file("file[]"), "scripts/demo/uploadme.txt");
+	_setFile2(_file("file[]"), "scripts/demo/uploadme2.txt");
+	_click(_submit("Submit Array"));
+	
+	_assertContainsText("Array", _span("type"));
+
+	_assertContainsText("uploadme.txt", _span("file"));
+	_assertContainsText("0.3046875 Kb", _span("size"));		
+	
+	_assertContainsText("uploadme2.txt", _span("file[1]"));
+	_assertContainsText("0.32421875 Kb", _span("size[1]"));	
+}
 _runUnitTests();

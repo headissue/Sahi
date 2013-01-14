@@ -85,7 +85,8 @@ public class RemoteRequestProcessor {
 
     public HttpResponse processHttp(HttpRequest requestFromBrowser, boolean modify) {
     	try {
-    		ThreadLocalMap.put("session", requestFromBrowser.session());
+    		Session session = requestFromBrowser.session();
+			ThreadLocalMap.put("session", session);
 
     		TrafficLogger.storeRequestHeader(requestFromBrowser.rawHeaders(), "unmodified");
     		TrafficLogger.storeRequestBody(requestFromBrowser.data(), "unmodified");
@@ -148,9 +149,7 @@ public class RemoteRequestProcessor {
 					try {
 						inputStreamFromHost = new GZIPInputStream(inputStreamFromHost);
 					} catch (IOException ioe) {
-			    		if (logger.isLoggable(Level.WARNING)){
-							logger.warning(Utils.getStackTraceString(ioe));
-						}
+						// happens for redirects etc. where there is no body. Ignore
 					}
 				}
 				if (responseCode >= 500 && !requestFromBrowser.isAjax()){
@@ -169,10 +168,9 @@ public class RemoteRequestProcessor {
 					TrafficLogger.storeResponseBody(response.data(), "unmodified");
 				}
 				
-				if (requestFromBrowser.isAjax() && responseCode > 300 && responseCode < 306){
+				if (requestFromBrowser.isAjax() && responseCode > 300 && responseCode < 308){
 					String redirectedTo = response.getLastSetValueOfHeader("Location");
-					if (redirectedTo != null) requestFromBrowser.session().addAjaxRedirect(redirectedTo);
-					
+					if (redirectedTo != null) session.addAjaxRedirect(redirectedTo);
 				}
 				
 				if (isGZIP) {
@@ -193,37 +191,56 @@ public class RemoteRequestProcessor {
 				String contentTypeHeader = response.contentTypeHeader();
 				boolean downloadContentType = isDownloadContentType(contentTypeHeader);
 				boolean attachment = response.isAttachment();
+
+				String fileName = null;
+				boolean contentDispositionForcesDownload = false;
+			
+				if (fileName == null)  fileName = requestFromBrowser.fileName();
+				
 				boolean downloadURL = isDownloadURL(urlStr);
 				if (logger.isLoggable(Level.FINER)){
 					logger.finer("downloadURL = " + downloadURL);
 					logger.finer("response.isAttachment() = " + attachment);
+					logger.finer("fileName = " + fileName);
 					logger.finer("contentTypeHeader = " + contentTypeHeader);
 					logger.finer("downloadContentType = " + downloadContentType);
 					logger.finer("Content-Disposition=" + response.getLastSetValueOfHeader("Content-Disposition"));
 				}
 				if (responseCode == 200
 						&& (downloadContentType || 
-								attachment || 
+								contentDispositionForcesDownload || 
 								downloadURL)) {
 					if (logger.isLoggable(Level.INFO)){
-						logger.info("Calling downloadFile");
-						logger.info(requestFromBrowser.url());
-						logger.info("downloadURL = " + downloadURL);
-						logger.info("response.isAttachment() = " + attachment);
-						logger.info("contentTypeHeader = " + contentTypeHeader);
-						logger.info("downloadContentType = " + downloadContentType);
-						logger.info("Content-Disposition=" + response.getLastSetValueOfHeader("Content-Disposition"));
+						StringBuilder sb = new StringBuilder();
+						sb.append("\n-- Calling downloadFile --\n");
+						sb.append(requestFromBrowser.url());
+						sb.append("\ndownloadURL = " + downloadURL);
+						sb.append("\nresponse.isAttachment() = " + attachment);
+						sb.append("\nfileName = " + fileName);
+						sb.append("\ncontentTypeHeader = " + contentTypeHeader);
+						sb.append("\ndownloadContentType = " + downloadContentType);
+						sb.append("\nContent-Disposition=" + response.getLastSetValueOfHeader("Content-Disposition"));
+						sb.append("\ncontentDispositionForcesDownload = " + contentDispositionForcesDownload);
+						sb.append("\n--");
+						logger.info(sb.toString());
 					}
-					downloadFile(requestFromBrowser, response);
-					return new NoContentResponse();
+					downloadFile(requestFromBrowser, response, fileName);
+					if (session.sendHTMLResponseAfterFileDownload()) {
+						response = getWrappedResponse(getFileDownloadedResponse(fileName));
+					} else {
+						session.set204(true);
+						return new NoContentResponse();
+					}
 				}
 				response = addFilters(requestFromBrowser, modify, response, responseCode);
 			}
 			if (responseCode == 204){
-				requestFromBrowser.session().set204(true);
+				session.set204(true);
 			}
 //			Can be used to induce a delay in playback for testing Sahi
-//			Thread.sleep(10000);
+//			if (requestFromBrowser.url().contains("DropDownListExample.swf")) {
+//				Thread.sleep(10000);
+//			}
             return response;
     	} catch (Exception e) {
     		if (logger.isLoggable(Level.WARNING)){
@@ -261,7 +278,8 @@ public class RemoteRequestProcessor {
 			streamingResponse.addFilter(new ChunkedFilter());
 			return streamingResponse;
 		} else {
-			if (modify && !requestFromBrowser.isExcluded() && !requestFromBrowser.session().isAjaxRedirect(requestFromBrowser.url())) {
+			final Session session = requestFromBrowser.session();
+			if (modify && !requestFromBrowser.isExcluded() && !session.isAjaxRedirect(requestFromBrowser.url())) {
 				return new HttpModifiedResponse2(response, requestFromBrowser.isSSL(), requestFromBrowser.fileExtension(), responseCode);
 			}
 		}
@@ -321,22 +339,19 @@ public class RemoteRequestProcessor {
 		return wwwAuthenticate.substring(0, ix).trim().toLowerCase();
 	}
 
-	private void downloadFile(HttpRequest requestFromBrowser, HttpResponse response) {
-		String fileName = requestFromBrowser.fileName();
+	private void downloadFile(HttpRequest requestFromBrowser, HttpResponse response, String fileName) {
 		Session session = requestFromBrowser.session();
 		save(response, requestFromBrowser.session().id() + "__" + fileName);
 		if (logger.isLoggable(Level.INFO)){
-			logger.info("Setting download_lastFile = " + fileName);
-			logger.info("Session Id: " + session.id());
+			logger.info("Setting download_lastFile = " + fileName + "\nSession Id: " + session.id());
 		}
 		session.setVariable("download_lastFile", fileName);
-		session.set204(true);
 	}
 
 
     public void save(HttpResponse response, final String fileName) {
     	if (logger.isLoggable(Level.INFO)){
-    		logger.info("Downloading " + fileName + " to temp directory: " + Configuration.tempDownloadDir());
+    		logger.info("Downloading " + fileName + " to temp directory:\n" + Configuration.tempDownloadDir());
     	}
         try {
             File file = new File(Configuration.tempDownloadDir(), fileName);
@@ -369,15 +384,29 @@ public class RemoteRequestProcessor {
     }
 
     protected boolean isDownloadContentType(String contentType) {
-        if (contentType == null || contentType.equals("")) {
+        Pattern pattern = Configuration.getDownloadContentTypesRegExp();
+        return isMatchingContentTypes(contentType, pattern);
+    }
+
+	private boolean isMatchingContentTypes(String contentType, Pattern p) {
+		if (contentType == null || contentType.equals("")) {
             return false;
         }
         contentType = contentType.toLowerCase();
 //        System.out.println(Configuration.getDownloadContentTypesRegExp());
-        Pattern p = Configuration.getDownloadContentTypesRegExp();
         return p.matcher(contentType).matches();
-    }
+	}
 
+
+	private HttpResponse getFileDownloadedResponse(String fileName) {
+		Properties props = new Properties();
+		props.put("fileName", "" + fileName);
+		
+		return new HttpFileResponse(
+				Configuration.getHtdocsRoot() + "spr/downloaded.htm",
+				props, false, true);
+	}
+	
     private HttpResponse get5xxResponse(int responseCode, InputStream inputStreamFromHost) {
 		Properties props = new Properties();
 		props.put("responseCode", "" + responseCode);

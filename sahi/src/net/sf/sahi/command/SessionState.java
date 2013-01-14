@@ -53,6 +53,18 @@ public class SessionState {
         return new SimpleHttpResponse(session.isRecording() ? "1" : "0");    	
     }
     
+	private String getXHRReadyStatesToWaitFor(Session session) {
+		String states = session.getXHRReadyStatesToWaitFor();
+		if (states == null) states = Configuration.xhrReadyStatesToWaitFor();
+		return states;
+	}
+	
+	public void setXHRReadyStatesToWaitFor(final HttpRequest request) {
+		final String states = request.getParameter("states");
+		System.out.println(states);
+		request.session().setXHRReadyStatesToWaitFor(states);
+	}
+    
     public HttpResponse execute(final HttpRequest request) {
         Session session = request.session();
         Properties props = new Properties();
@@ -68,7 +80,7 @@ public class SessionState {
         props.setProperty("maxRetries", "" + Configuration.getMaxReAttemptsOnError());
         props.setProperty("maxWaitForLoad", "" + Configuration.getMaxCyclesForPageLoad());
         props.setProperty("strictVisibilityCheck", "" + Configuration.isStrictVisibilityCheckEnabled());
-        props.setProperty("waitReadyStates", Configuration.xhrReadyStatesToWaitFor());
+        props.setProperty("waitReadyStates", getXHRReadyStatesToWaitFor(session));
         props.setProperty("controllerMode", "" + Configuration.getControllerMode());
         props.setProperty("escapeUnicode", "" + Configuration.getEscapeUnicode());
         props.setProperty("commonDomain", "" + Configuration.getCommonDomain());

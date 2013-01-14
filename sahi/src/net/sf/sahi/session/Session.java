@@ -58,6 +58,8 @@ public class Session {
 
 	private Map<String, String> variables;
 
+	private String xhrReadyStatesToWaitFor;
+	
 	private MockResponder mockResponder = new MockResponder();
 
 	private Report report;
@@ -65,6 +67,8 @@ public class Session {
 	private long timestamp = System.currentTimeMillis();
 
 	private ScriptRunner scriptRunner;
+	
+	private boolean sendHTMLResponseAfterFileDownload = false;
 
 	private Map<String, RequestCredentials> requestCredentials = new HashMap<String, RequestCredentials>();
 
@@ -98,7 +102,6 @@ public class Session {
 	public void setReport(final Report report) {
 		this.report = report;
 	}
-
 	public static void removeInstance(final String sessionId) {
 		sessions.remove(sessionId);
 	}
@@ -134,6 +137,13 @@ public class Session {
 		return isWindowOpen;
 	}
 
+	public boolean sendHTMLResponseAfterFileDownload() {
+		return this.sendHTMLResponseAfterFileDownload;
+	}
+	public void setSendHTMLResponseAfterFileDownload(boolean b) {
+		this.sendHTMLResponseAfterFileDownload = b;
+	}
+	
 	public Recorder getRecorder() {
 		if (this.recorder == null) {
 			this.recorder = new Recorder();
@@ -328,4 +338,13 @@ public class Session {
 		}
 		return is204;
 	}
+	
+	public String getXHRReadyStatesToWaitFor() {
+		return xhrReadyStatesToWaitFor;
+	}
+	
+	public void setXHRReadyStatesToWaitFor(String states) {
+		this.xhrReadyStatesToWaitFor = states;
+	}
+
 }

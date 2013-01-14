@@ -85,3 +85,6 @@ user_pref("security.xpconnect.plugin.unrestricted", true);
 user_pref("extensions.checkUpdateSecurity", false);
 user_pref("browser.offline", false);
 user_pref("extensions.blocklist.enabled", false);
+user_pref("toolkit.telemetry.prompted", 2);
+user_pref("toolkit.telemetry.rejected", true);
+user_pref("toolkit.startup.max_resumed_crashes", 999999999);

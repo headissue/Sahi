@@ -24,6 +24,7 @@ function checkVisible(){
 _click(_link("Visible Test"));
 checkVisible();
 _navigateTo("/demo/iframesTest.htm");
+_wait(2000);
 _click(_link("Visible Test[1]"));
 checkVisible();
 

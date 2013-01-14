@@ -2,22 +2,11 @@
  * Sahi - Web Automation and Test Tool
  *
  * Copyright  2006  V Narayan Raman
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
  */
 
 __sahiDebug__("concat.js: start");
 var Sahi = function(){
+	// if triggerType is set to mousedown, textbox _setValues will be recorded AFTER button clicks. Is wrong
     this.triggerType = "click";
     this.cmds = new Array();
     this.cmdDebugInfo = new Array();
@@ -68,24 +57,43 @@ var Sahi = function(){
         '\\': '\\\\'
     };
     this.lastStepId = 0;
-    this.strictVisibilityCheck = false; 
+    this.strictVisibilityCheck = false;
     this.isSingleSession = false;
     this.ADs = [];
     this.controllerURL = "/_s_/spr/controller7.htm";
     this.controllerHeight = 550;
-    this.controllerWidth = 460
+    this.controllerWidth = 480
     this.recorderClass = "Recorder";
     this.stabilityIndex = this.STABILITY_INDEX;
-    this.xyoffsets = new Object();
+    this.xyoffsets = new Sahi.Dict();
     this.escapeUnicode = false;
     this.CHECK_REGEXP = /^\/.*\/i?$/;
     this.navigator = {"userAgent": navigator.userAgent, "appName": navigator.appName};
     this.textboxTypes = ["text", "number", "password", "textarea", "date", "datetime", "datetime-local", "email", "month", "number", "range", "search", "tel", "time", "url", "week" ];
+    this.isOREnabled = false;
+    this.browserType = "";
 };
 Sahi.prototype.isBlankOrNull = function (s) {
     return (s == "" || s == null);
 };
+Sahi.Dict = function(){
+	this.keys = [];
+	this.values = [];
+	this.put = function (k,v) {
+		this.keys.push(k);
+		this.values.push(v);
+	}
+	this.get = function (k){
+		for (var i=0; i<this.keys.length; i++) {
+			if (this.keys[i] === k) return this.values[i];
+		}
+	}
+}
 Sahi.BLUR_TIMEOUT = 5000;
+Sahi.DRAG_DROP_SPEED = 1;
+Sahi.DRAG_DROP_SEGMENTS = 200;
+Sahi.DRAG_DROP_WAVER = 1;
+Sahi.DRAG_DROP_MAX_HOVER_AT_END = 5;
 Sahi.prototype.storeDiagnostics = function(){
 	if (this.diagnostics) return;
     this.diagnostics = new Object();
@@ -190,8 +198,16 @@ Sahi.prototype.mockDialogs = function (win) {
 var _sahi = new Sahi();
 var tried = false;
 var _sahi_top = window.top;
-var _sahi_parent = window.parent;
+_sahi.selfWin = window;
+_sahi.windowWin = window;
+_sahi.parentWin = window.parent;
 
+Sahi.prototype.self = function () {
+	return _sahi.selfWin;
+}
+Sahi.prototype.parent = function () {
+	return _sahi.parentWin;
+}
 Sahi.prototype.top = function () {
     //Hack for frames named "top"
 	try{
@@ -200,10 +216,10 @@ Sahi.prototype.top = function () {
 		return _sahi_top;
 	}catch(e){
 		var p = window;
-		while (p != p._sahi_parent){
+		while (p != p._sahi.parent()){
 			try{
-				var y = p._sahi_parent.location.href; // test
-				p = p._sahi_parent;
+				var y = p._sahi.parent().location.href; // test
+				p = p._sahi.parent();
 			}catch(e){
 				return p;
 			}
@@ -348,14 +364,14 @@ Sahi.prototype.linkClick = function (e) {
     }
 };
 Sahi.prototype._dragDrop = function (draggable, droppable, offsetX, offsetY) {
+	if (this.isFlexObj(draggable)) {
+		droppable.setAsDroppable();
+		return draggable.dragDrop();
+	}
+	this.fork();
     this.checkNull(draggable, "_dragDrop", 1, "draggable");
     this.checkNull(droppable, "_dragDrop", 2, "droppable");
-    var pos = this.findClientPos(droppable);
-    var x = pos[0];
-    var y = pos[1];
-    x = x + (offsetX ? offsetX : 1);
-    y = y + (offsetY ? offsetY : 1); // test http://www.snook.ca/technical/mootoolsdragdrop/
-    this.dragDropXYCommon(draggable, droppable, x, y);
+    this.dragDropXYCommon(draggable, droppable, offsetX, offsetY, "DROP_RELATIVE");
 };
 Sahi.prototype.addBorder = function(el){
     el.style.border = "1px solid red";
@@ -366,18 +382,22 @@ Sahi.prototype.getScrollOffsetY = function(){
 	if (window.pageYOffset) return window.pageYOffset;
 	if (window.scrollY) return window.scrollY;
 	return 0;
-}
+};
 Sahi.prototype.getScrollOffsetX = function(){
 	if (document.body.scrollLeft) return document.body.scrollLeft;
 	if (document.documentElement && document.documentElement.scrollLeft) return document.documentElement.scrollLeft;
 	if (window.pageXOffset) return window.pageXOffset;
 	if (window.scrollX) return window.scrollX;
 	return 0;
-}
+};
 Sahi.prototype._dragDropXY = function (draggable, x, y, isRelative) {
+	this.fork();
+	if (this.isFlexObj(draggable)) {
+		return draggable.dragDropXY(x, y);
+	}
     this.checkNull(draggable, "_dragDropXY", 1, "draggable");
-	return this.dragDropXYCommon(draggable, null, x, y, isRelative);
-}
+	return this.dragDropXYCommon(draggable, null, x, y, isRelative ? "DRAG_RELATIVE" : false);
+};
 
 var SahiDTProxy = function(){
 	this.data = {};
@@ -393,50 +413,146 @@ SahiDTProxy.prototype.clearData = function(df){
 	if (df) delete this.data[df];
 	else this.data = {};
 };
-Sahi.prototype.dragDropXYCommon = function (draggable, droppable, x, y, isRelative) {
+Sahi.DragDropper = function(draggable, droppable, offsetX, offsetY, isRelative){
+	this.draggable = draggable;
+	this.droppable = droppable;
+	this.offsetX = offsetX;
+	this.offsetY = offsetY;
+	this.isRelative = isRelative;
+	this.start = function() {
+		//_sahi._alert(_sahi.findClientPos(this.droppable));
+		this.dataTransfer = new SahiDTProxy();
+		
+	    _sahi.simulateMouseEvent(this.draggable, "mouseover");
+	    _sahi.simulateMouseEvent(this.draggable, "mousemove");
+	    
+	    
+	    _sahi.simulateMouseEvent(this.draggable, "mousedown");
+	    _sahi.simulateMouseEvent(this.draggable, "mousemove");
+	    _sahi.simulateDragEvent(this.draggable, "dragstart", this.dataTransfer);
+	    _sahi.simulateDragEvent(this.draggable, "drag", this.dataTransfer);
+	    var initPos = _sahi.findClientPos(this.draggable);
+	    this.initPos = initPos;
+	    this.initX = initPos[0];
+	    this.initY = initPos[1];
+	    this.destX = 0;
+	    this.destY = 0;
+	    this.stage = 0;
+	    this.segments = Sahi.DRAG_DROP_SEGMENTS;
+	    this.endHoverCount = 0;
+	    this.lastMovedEl = null;
+	}
+	this.execute = function() {
+		this.start();
+		this.proceed();
+	}
+	this.proceed = function() {
+		if (this.stage < this.segments) {
+			this.stage++;
+			this.move(this.stage);
+			var o = this;
+			window.setTimeout(function(){o.proceed()}, Sahi.DRAG_DROP_SPEED);
+		} else {
+			if (this.endHoverCount++ < Sahi.DRAG_DROP_MAX_HOVER_AT_END) {
+				this.move(this.stage);
+				var o = this;
+				window.setTimeout(function(){o.proceed()}, Sahi.DRAG_DROP_SPEED);				
+			} else {
+				this.finish();
+				_sahi.afterEval();
+			}
+		}
+	}
 	
-	var dataTransfer = new SahiDTProxy();
+	this.move = function(i) {
+		// recalculate the dest coordinates because it shifts if a containing div scrolls.
+    	// Digite: 895227
+		var pos = [0,0];
+    	if (this.isRelative == "DRAG_RELATIVE") {
+            var pos = this.initPos;
+    	} else if (this.isRelative == "DROP_RELATIVE") {
+            var pos = _sahi.findClientPos(this.droppable);
+    	}
+        this.destX = pos[0] + (this.offsetX ? this.offsetX : 0);
+        this.destY = pos[1] + (this.offsetY ? this.offsetY : 0);    	
+    	var x1 = Math.floor(this.initX + i*(this.destX-this.initX)/this.segments);
+    	var y1 = Math.floor(this.initY + i*(this.destY-this.initY)/this.segments + (i%2==0?Sahi.DRAG_DROP_WAVER:0)) ;    
+    	var el2 = document.elementFromPoint(x1, y1);
+    	if (el2 != null) {
+    		try {
+    			if (this.lastMovedEl != el2) {
+    				if (this.lastMovedEl) {
+    		    		_sahi.simulateMouseEventXY(this.lastMovedEl, "mouseout", x1, y1);
+    					_sahi.simulateDragEventXY(this.lastMovedEl, "dragleave", x1, y1, this.dataTransfer);
+    				}
+					_sahi.simulateMouseEventXY(el2, "mouseenter", x1, y1);
+					_sahi.simulateMouseEventXY(el2, "mousemove", x1, y1);
+					_sahi.simulateMouseEventXY(el2, "mouseover", x1, y1);
+					_sahi.simulateMouseEventXY(el2, "mousemove", x1, y1);
+    				_sahi.simulateDragEventXY(el2, "dragenter", x1, y1, this.dataTransfer);
+//    		    	_sahi._highlight(el2);
+//    				
+    				this.lastMovedEl = el2;
+    			}
+//    			_sahi._debug(this.initX + " " + this.destX +  " " + x1 + " " + y1);
+	    		try{
+	    			_sahi.simulateMouseEventXY(this.draggable, "mousemove", x1, y1);
+	    			_sahi.simulateMouseEventXY(el2, "mousemove", x1, y1);
+	    		}catch(e){
+	    			_sahi._debug(e);
+	    		}
+	    		_sahi.simulateDragEventXY(this.draggable, "drag", x1, y1, this.dataTransfer);
+	    		_sahi.simulateDragEventXY(el2, "dragover", x1, y1, this.dataTransfer);
+	    		//_sahi._highlight(el2);
+    		}catch(e){
+    			_sahi._debug(e);
+    		}
+    	}
+	}
 	
-    this.simulateMouseEvent(draggable, "mouseover");
-    this.simulateMouseEvent(draggable, "mousemove");
-    
-    
-    this.simulateMouseEvent(draggable, "mousedown");
-    this.simulateMouseEvent(draggable, "mousemove");
-    this.simulateDragEvent(draggable, "dragstart", dataTransfer);
-    this.simulateDragEvent(draggable, "drag", dataTransfer);
-    var addX = 0, addY = 0;
-    if (isRelative){
-        var pos = this.findClientPos(draggable);
-        addX = pos[0];
-        addY = pos[1];
-        if (!x) x = 0;
-        if (!y) y = 0;
-        x += addX;
-        y += addY;
-    }else{
-        if (!x) x = this.findClientPos(draggable)[0];
-        if (!y) y = this.findClientPos(draggable)[1];
-    }
-
-//    x = x - this.getScrollOffsetX();
-//    y = y - this.getScrollOffsetY();
-    this.simulateMouseEventXY(draggable, "mousemove", x, y);
-    this.simulateDragEventXY(draggable, "drag", x, y, dataTransfer);
-    if (droppable) this.simulateDragEventXY(droppable, "dragenter", x, y, dataTransfer);
-    this.simulateDragEventXY(draggable, "drag", x, y, dataTransfer);
-    if (droppable) this.simulateDragEventXY(droppable, "dragover", x, y, dataTransfer);
-    this.simulateMouseEventXY(draggable, "mouseup", x, y);
-    if (droppable) this.simulateDragEventXY(droppable, "drop", x, y, dataTransfer);
-    this.simulateDragEventXY(draggable, "dragend", x, y, dataTransfer);
-    this.simulateMouseEventXY(draggable, "click", x, y);
-    this.simulateMouseEventXY(draggable, "mousemove", x, y);
-    this.simulateMouseEventXY(draggable, "mouseout", x, y);
-};
+	this.finish = function() {
+	    var x = this.destX;
+	    var y = this.destY;
+	    
+	    if (this.droppable) { 
+	    	_sahi.simulateMouseEventXY(this.droppable, "mousemove", x, y);
+	    }
+	    _sahi.simulateMouseEventXY(this.draggable, "mousemove", x, y);
+	    _sahi.simulateDragEventXY(this.draggable, "drag", x, y, this.dataTransfer);
+	    if (this.droppable && this.lastMovedEl != this.droppable) {
+	    	_sahi.simulateMouseEventXY(this.lastMovedEl, "mouseout", x, y);
+			_sahi.simulateDragEventXY(this.lastMovedEl, "dragleave", x, y, this.dataTransfer);
+	    	_sahi.simulateDragEventXY(this.droppable, "dragenter", x, y, this.dataTransfer);
+	    	_sahi.simulateMouseEventXY(this.droppable, "mouseover", x, y);
+	    }
+	    _sahi.simulateDragEventXY(this.draggable, "drag", x, y, this.dataTransfer);
+	    //this._alert('2');
+	    if (this.droppable) { 
+	    	_sahi.simulateDragEventXY(this.droppable, "dragover", x, y, this.dataTransfer);
+	    	_sahi.simulateMouseEventXY(this.droppable, "mouseup", x, y); // needed
+	    }
+	    // draggable mouseup should be after droppable mouseup. http://gramam/extjs/examples/dd/field-to-grid-dd.html
+	    // Not necessary.
+	    _sahi.simulateMouseEventXY(this.draggable, "mouseup", x, y); 
+	    if (this.droppable) _sahi.simulateDragEventXY(this.droppable, "drop", x, y, this.dataTransfer);
+	    try {
+		    _sahi.simulateDragEventXY(this.draggable, "dragend", x, y, this.dataTransfer);
+		    _sahi.simulateMouseEventXY(this.draggable, "click", x, y);
+		    _sahi.simulateMouseEventXY(this.draggable, "mousemove", x, y);
+		    _sahi.simulateMouseEventXY(this.draggable, "mouseout", x, y);
+	    } catch (e) {
+	    	_sahi._debug(e);
+	    	// Ignore. Can happen sometimes on IE. Digite issue 786516
+	    }
+	}
+}
+Sahi.prototype.dragDropXYCommon = function (draggable, droppable, offsetX, offsetY, isRelative) {
+	new Sahi.DragDropper(draggable, droppable, offsetX, offsetY, isRelative).execute();
+}
 Sahi.prototype.checkNull = function (el, fnName, paramPos, paramName) {
-    if (el == null) {
+    if (el == null || !this._exists(el)) {
     	var error = new Error("The " +
-        (paramPos==1?"first ":paramPos==2?"second ":paramPos==3?"third ":"") +
+    	        (paramPos==1?"first ":paramPos==2?"second ":paramPos==3?"third ":"") +
     	        "parameter passed to " + fnName + " was not found on the browser")
     	error.isSahiError = true;
         throw error;
@@ -457,6 +573,7 @@ Sahi.prototype._setStrictVisibilityCheck = function(b){
 	this.strictVisibilityCheck = b;
 }
 Sahi.prototype._isVisible = function (el) {
+	if (this.isFlexObj(el)) return el.isVisible();
     try{
         if (el == null) return false;
         var elOrig = el;
@@ -477,6 +594,8 @@ Sahi.prototype._isVisible = function (el) {
     } catch(e){return false;}
 };
 Sahi.prototype._exists = function(el){
+	if (this.isFlexObj(el)) return el.exists();
+	if (this.isApplet(el)) return el.exists();
 	return el != null;
 }
 Sahi.prototype.isStyleDisplay = function(el){
@@ -502,26 +621,31 @@ Sahi.prototype.setLastBlurFn = function(fn){
 	this.lastBlurTimeout = window.setTimeout(this.wrap(this.invokeLastBlur), Sahi.BLUR_TIMEOUT);
 }
 Sahi.prototype._click = function (el, combo) {
-    this.checkNull(el, "_click");
+	this.checkNull(el, "_click");
     this.checkVisible(el);
-    this.simulateClick(el, false, false, combo);
+    if (this.isApplet(el))	return el.click();
+    if (this.isFlexObj(el)) return el.click();
+	this.simulateClick(el, false, false, combo);
 };
 
 Sahi.prototype._doubleClick = function (el, combo) {
     this.checkNull(el, "_doubleClick");
     this.checkVisible(el);
+	if (this.isFlexObj(el)) return el.doubleClick();
     this.simulateDoubleClick(el, false, true, combo);
 };
 
 Sahi.prototype._rightClick = function (el, combo) {
     this.checkNull(el, "_rightClick");
     this.checkVisible(el);
+	if (this.isFlexObj(el)) return el.rightClick();
     this.simulateRightClick(el, true, false, combo);
 };
 
 Sahi.prototype._mouseOver = function (el, combo) {
     this.checkNull(el, "_mouseOver");
     this.checkVisible(el);
+    if (this.isFlexObj(el)) return el.mouseOver();
     this.simulateMouseEvent(el, "mousemove");
     this.simulateMouseEvent(el, "mouseover");
     
@@ -534,9 +658,11 @@ Sahi.prototype._mouseOver = function (el, combo) {
     });    
 };
 Sahi.prototype._mouseDown = function (el, isRight, combo) {
+	if (this.isFlexObj(el)) return el.mouseDown();
 	this.simulateMouseEvent(el, "mousedown", isRight, false, combo);	
 }
 Sahi.prototype._mouseUp = function (el, isRight, combo) {
+	if (this.isFlexObj(el)) return el.mouseUp();
 	this.simulateMouseEvent(el, "mouseup", isRight, false, combo);	
 }
 Sahi.prototype._keyPress = function (el, val, combo) {
@@ -564,7 +690,11 @@ Sahi.prototype.simulateKeyPressEvents = function (el, val, combo, append) {
     var isShift = (charCode >= 65 && charCode <= 90);
     if (isShift) combo = "" + combo + "|SHIFT|";
     this.simulateKeyEvent([(isShift ? 16 : keyCode), 0], el, "keydown", combo);
-    this.simulateKeyEvent([0, charCode], el, "keypress", combo);
+    if (this.isSafariLike()) {
+    	this.simulateKeyEvent([keyCode, charCode], el, "keypress", combo);    	
+    } else {
+    	this.simulateKeyEvent([0, charCode], el, "keypress", combo);
+    }
     if (append && charCode!=10 && origVal == el.value) {
     	if (!this._isFF4Plus() || (this._isFF4Plus() && !(combo == "CTRL" || combo == "ALT")))
         el.value += c;
@@ -576,7 +706,6 @@ Sahi.prototype._keyPressEvent = function (el, codes, combo) {
     this.checkVisible(el);        
     this.simulateKeyEvent(((typeof codes == "object") ? codes : [0, codes]), el, "keypress", combo);
 };
-
 Sahi.prototype._focus = function (el) {
     try{
     	el.focus();
@@ -611,6 +740,15 @@ Sahi.prototype._closeWindow = function (win) {
 		win.close();
 	}
 };
+Sahi.prototype._activeElement = function (win) {
+	if (!win) win = this.top();
+	var el = win.document.activeElement;
+	var tagLC = el.tagName.toLowerCase();
+	if (tagLC == "iframe" || tagLC == "frame"){
+		return this._activeElement(el.contentWindow);
+	}
+	return el;
+}
 //Sahi.prototype._readFile = function (fileName) {
 //	return this._evalOnRhino("_readFile("+this.quotedEscapeValue(fileName)+")");
 //};
@@ -634,6 +772,7 @@ Sahi.dB = function (driver, jdbcurl, username, password, sahi) {
         return eval(sahi._callServer("net.sf.sahi.plugin.DBClient_execute", qs));
     };
 };
+
 Sahi.prototype.isCheckboxRadioSimulationRequired = function(){
 	if (this._isChrome()) {
 		return this.chromeExplicitCheckboxRadioToggle;
@@ -656,21 +795,23 @@ Sahi.prototype.simulateDoubleClick = function (el, isRight, isDouble, combo) {
 	    this.simulateMouseEvent(el, "mouseup", isRight, isDouble, combo);
 	    this.simulateMouseEvent(el, "click", isRight, isDouble, combo);
 	    this.simulateMouseEvent(el, "dblclick", isRight, isDouble, combo);
-    } else if (this._isIE() && !this._isIE9()){
+    } else if (this._isIE() && !this._isIE9PlusStrictMode()){
 	    this.simulateMouseEvent(el, "mousemove");
 	    this.simulateMouseEvent(el, "mouseover");
 	    this.simulateMouseEvent(el, "mousedown", isRight, false, combo);
 	    this.invokeLastBlur();
+	    if (this._isIE()) this.simulateEvent(el, "focusin");
 	    this.simulateMouseEvent(el, "focus");
 	    this.simulateMouseEvent(el, "mouseup", isRight, false, combo);
 	    this.simulateMouseEvent(el, "click", isRight, false, combo);
 	    this.simulateMouseEvent(el, "mouseup", isRight, false, combo);	
 	    this.simulateMouseEvent(el, "dblclick", isRight, isDouble, combo);
-    } else if (this._isIE9()) {
+    } else if (this._isIE9PlusStrictMode()) {
     	this.simulateMouseEvent(el, "mousemove");
 	    this.simulateMouseEvent(el, "mouseover");
 	    this.simulateMouseEvent(el, "mousedown", isRight, false, combo);
 	    this.invokeLastBlur();
+	    if (this._isIE()) this.simulateEvent(el, "focusin");
 	    this.simulateMouseEvent(el, "focus");
 	    this.simulateMouseEvent(el, "mouseup", isRight, false, combo);
 	    this.simulateMouseEvent(el, "click", isRight, false, combo);
@@ -684,9 +825,10 @@ Sahi.prototype.simulateDoubleClick = function (el, isRight, isDouble, combo) {
 	    	try{
 		    	_sahi.simulateMouseEvent(el, "mousemove");
 		        _sahi.simulateMouseEvent(el, "mouseout");
-		        if (!(_sahi._isFF() || _sahi._isIE9() || _sahi._isOpera()) && (el.type == "checkbox" || el.type == "radio")){
+		        if (!(_sahi._isFF() || _sahi._isIE9PlusStrictMode() || _sahi._isOpera()) && (el.type == "checkbox" || el.type == "radio")){
 		        	_sahi.simulateEvent(el, "change");
 		        }
+			    if (_sahi._isIE()) _sahi.simulateEvent(el, "focusout");
 		        _sahi.simulateEvent(el, "blur");
 	    	}catch(e){}
 	    });
@@ -701,7 +843,9 @@ Sahi.prototype.simulateRightClick = function (el, isRight, isDouble, combo) {
 	    this.simulateMouseEvent(el, "mousedown", isRight, false, combo);
 	    this.invokeLastBlur();
 	    callBlur = this.isFocusableFormElement(el);
-	    if (callBlur)  this.simulateEvent(el, "focus");
+	    if (callBlur)  {
+	    	this.simulateEvent(el, "focus");
+	    }
 	    this.simulateMouseEvent(el, "mouseup", isRight, false, combo);
 	    this.simulateMouseEvent(el, "contextmenu", isRight, false, combo);
     } else if (this._isIE()){
@@ -709,6 +853,7 @@ Sahi.prototype.simulateRightClick = function (el, isRight, isDouble, combo) {
 	    this.simulateMouseEvent(el, "mouseover");
 	    this.simulateMouseEvent(el, "mousedown", isRight, false, combo);
 	    this.invokeLastBlur();
+	    this.simulateEvent(el, "focusin");
 	    this.simulateMouseEvent(el, "focus");
 	    this.simulateMouseEvent(el, "mouseup", isRight, false, combo);
 	    this.simulateMouseEvent(el, "contextmenu", isRight, false, combo);
@@ -718,9 +863,10 @@ Sahi.prototype.simulateRightClick = function (el, isRight, isDouble, combo) {
 	    	try{
 		    	_sahi.simulateMouseEvent(el, "mousemove");
 		        _sahi.simulateMouseEvent(el, "mouseout");
-		        if (!(_sahi._isFF() || _sahi._isIE9() || _sahi._isOpera()) && (el.type == "checkbox" || el.type == "radio")){
+		        if (!(_sahi._isFF() || _sahi._isIE9PlusStrictMode() || _sahi._isOpera()) && (el.type == "checkbox" || el.type == "radio")){
 		        	_sahi.simulateEvent(el, "change");
 		        }
+			    if (_sahi._isIE()) _sahi.simulateEvent(el, "focusout");
 		        _sahi.simulateEvent(el, "blur");
 	    	}catch(e){}
 	    });
@@ -752,7 +898,10 @@ Sahi.prototype.simulateClick = function (el, isRight, isDouble, combo) {
     this.simulateMouseEvent(el, "mousedown", isRight, false, combo);
     this.invokeLastBlur();
     var focusBlur = this.isFocusableFormElement(el);
-    if (focusBlur) this.simulateEvent(el, "focus");
+    if (focusBlur) {
+    	if (this._isIE()) this.simulateEvent(el, "focusin");
+    	this.simulateEvent(el, "focus");
+    }
     this.simulateMouseEvent(el, "mouseup", isRight, false, combo);
     try {
         if (this._isIE() && el && (this.areTagNamesEqual(el.tagName, "LABEL") || 
@@ -766,11 +915,11 @@ Sahi.prototype.simulateClick = function (el, isRight, isDouble, combo) {
     		el.click();
         } else {
         	if (window.opera){
-        		// for opera single clicks don't simulate click event; 
+        		// for opera single clicks don't simulate click event;
         		// Ignoring old comment, seems click is required now. 01 Nov 2010
         		this.simulateMouseEvent(el, "click", isRight, isDouble, combo);
         		if (this.areTagNamesEqual(el.tagName, "INPUT") && (el.type == "radio" || el.type == "checkbox")) {
-        			this.simulateEvent(el, "change");
+    			this.simulateEvent(el, "change");
         		}
         	}
         	else {
@@ -779,26 +928,26 @@ Sahi.prototype.simulateClick = function (el, isRight, isDouble, combo) {
                     if (this.areTagNamesEqual(el.tagName, "INPUT")) {
                         if (el.type == "radio" || el.type == "checkbox") {
                         	done = true;
-                        	el.checked = (el.type == "radio") ? true : !el.checked;
-                        	this.simulateEvent(el, "change");
+                            el.checked = (el.type == "radio") ? true : !el.checked;
+                    	this.simulateEvent(el, "change");
                         	this.simulateMouseEvent(el, "click", isRight, isDouble, combo);
                         } 
                     }
-                } 
+                }            		
                 if (!done) this.simulateMouseEvent(el, "click", isRight, isDouble, combo);
         	}
         }
     } catch(e) {
     }
-
     if (focusBlur){
 		this.setLastBlurFn(function(){
 	    	try{
 		    	_sahi.simulateMouseEvent(el, "mousemove");
 		        _sahi.simulateMouseEvent(el, "mouseout");
-		        if (!(_sahi._isFF() || _sahi._isIE9() || _sahi._isOpera()) && (el.type == "checkbox" || el.type == "radio")){
+		        if (!(_sahi._isFF() || _sahi._isIE9PlusStrictMode() || _sahi._isOpera()) && (el.type == "checkbox" || el.type == "radio")){
 		        	_sahi.simulateEvent(el, "change");
 		        }
+		        if (_sahi._isIE()) _sahi.simulateEvent(el, "focusout");
 		        _sahi.simulateEvent(el, "blur");
 	    	}catch(e){}
 	    });
@@ -810,7 +959,7 @@ Sahi.prototype.simulateClick = function (el, isRight, isDouble, combo) {
 Sahi.prototype.getWebkitVersion = function(){
 	var exp = /AppleWebKit\/(.*) \(/;
     exp.test(this.navigator.userAgent);
-	return RegExp.$1
+	return RegExp.$1;
 }
 Sahi.prototype.getChromeBrowserVersion = function(){
 	var exp = /Chrome\/(.*) /;
@@ -903,11 +1052,11 @@ Sahi.prototype.simulateMouseEventXY = function (el, type, x, y, isRight, isDoubl
     var isAlt = combo.indexOf("ALT")!=-1;
     var isMeta = combo.indexOf("META")!=-1;
     
-    if (!this._isIE() || (this._isIE9() && !(type == "click" && isDouble))) {
-        if (this.isSafariLike() || this._isIE9() || this._isOpera()) {
+    if (!this._isIE() || (this._isIE9PlusStrictMode() && !(type == "click" && isDouble))) {
+        if (this.isSafariLike() || this._isIE9PlusStrictMode() || this._isOpera()) {
         	if (el.ownerDocument.createEvent) {
 	            var evt = el.ownerDocument.createEvent('HTMLEvents');
-	            type = type;
+		            type = type;
 	            evt.initEvent(type, true, true);
 	            evt.clientX = x;
 	            evt.clientY = y;
@@ -923,7 +1072,7 @@ Sahi.prototype.simulateMouseEventXY = function (el, type, x, y, isRight, isDoubl
 	            evt.metaKey = isMeta;            
 	            evt.shiftKey = isShift;
 	            el.dispatchEvent(evt);
-        	}
+	        }
         }
         else {
             // FF
@@ -948,7 +1097,7 @@ Sahi.prototype.simulateMouseEventXY = function (el, type, x, y, isRight, isDoubl
             el.dispatchEvent(evt);
         }
     } 
-    if (this._isIE()) {
+    if (this.checkForDuplicateEventsOnIE9Plus(el, type)) {
         // IE
         var evt = el.ownerDocument.createEventObject();
         evt.clientX = x;
@@ -964,10 +1113,15 @@ Sahi.prototype.simulateMouseEventXY = function (el, type, x, y, isRight, isDoubl
         evt.cancelBubble = true;
     }
 };
+Sahi.prototype.checkForDuplicateEventsOnIE9Plus = function(el, type){
+	if (!this._isIE()) return false;
+	if (!this._isIE9Plus()) return true;
+	return ((el["on" + type] == null) || (el["on" + type] != null && !this._isIE9PlusStrictMode()));
+}
 Sahi.prototype.addOffset = function(el, origin){
 	var x=origin[0];
 	var y=origin[1];
-    var offsets = this.xyoffsets[el];
+    var offsets = this.xyoffsets.get(el);
     if (offsets){
     	var ox = offsets[0];
     	var width = parseInt(this._style(el, "width"));
@@ -984,9 +1138,18 @@ Sahi.prototype.addOffset = function(el, origin){
 
 Sahi.pointTimer = 0;
 Sahi.prototype._highlight = function (el) {
+	if (this.isFlexObj(el)) return el.highlight();
+	if (this.isApplet(el))	return el.highlight();
+	if (Sahi.lastUnhighlight) {
+		Sahi.lastUnhighlight();
+		window.clearTimeout(Sahi.unhighlightTimer);
+	}
     var oldBorder = el.style.border;
+    var oldOutline = el.style.outline;
     el.style.border = "1px solid red";
-    window.setTimeout(function(){el.style.border = oldBorder;}, 2000);
+    el.style.outline = "1px solid red";
+    Sahi.lastUnhighlight = function(){_sahi._alert(oldBorder);el.style.border = oldBorder;el.style.outline = oldOutline;Sahi.lastUnhighlight=null;}
+    Sahi.unhighlightTimer = window.setTimeout(Sahi.lastUnhighlight, 1000);
 };
 Sahi.prototype._position = function (el){
     return this.findPos(el);
@@ -998,9 +1161,14 @@ Sahi.prototype.findPosY = function (obj){
     return this.findPos(obj)[1];
 };
 Sahi.prototype.findClientPos = function (el){
-	var xy = this.findPos(el);
-//	alert(xy[1] +" " + (xy[1]-this.getScrollOffsetY()));
-	return [xy[0]-this.getScrollOffsetX(), xy[1]-this.getScrollOffsetY()];
+	if (typeof el.getBoundingClientRect == "function") {
+		var r = el.getBoundingClientRect();
+		return this.addOffset(el, [r.left, Math.round(r.top)]); // trying clientRect for now. Remove below code later.
+	} else {
+		var xy = this.findPos(el);
+	//	alert(xy[1] +" " + (xy[1]-this.getScrollOffsetY()));
+		return [xy[0]-this.getScrollOffsetX(), xy[1]-this.getScrollOffsetY()];
+	}
 }
 Sahi.prototype.findPos = function (el, isClient){
 	var obj = el;
@@ -1011,7 +1179,7 @@ Sahi.prototype.findPos = function (el, isClient){
         {
             if (this.areTagNamesEqual(obj.tagName, "MAP")){
             	var res = this.getBlankResult();
-            	obj = this.findTagHelper("#"+obj.name, this.getWindow(obj), "IMG", res, "useMap").element;
+            	obj = this.findTagHelper("#"+obj.name, this.getDomRelAr(this.getWindow(obj)), "IMG", res, "useMap").element;
             	if (obj == null) break;
             }
             var wasStatic = null;
@@ -1134,7 +1302,9 @@ Sahi.prototype._type = function (el, val) {
 
 Sahi.prototype._setValue = function (el, val) {
 	if (val == null) return;
-    this.invokeLastBlur();
+	if (this.isApplet(el)) return el.setValue(val);
+	if (this.isFlexObj(el)) return el.setValue(val);
+	this.invokeLastBlur();
 	this.setValue(el, val);
 };
 Sahi.prototype.shouldAppend = function (el) {
@@ -1148,21 +1318,24 @@ Sahi.prototype.setValue = function (el, val) {
 //    try{
 //    	this.getWindow(el).focus();
 //    }catch(e){}
+    if (this._isIE()) this.simulateEvent(el, "focusin");
     this.simulateEvent(el, "focus");
     
     val = "" + val;
     var ua = this.navigator.userAgent.toLowerCase();
     if (ua.indexOf("windows") != -1) {
     	val = val.replace(/\r/g, '');
-    	if (!this._isFF()) val = val.replace(/\n/g, '\r\n');
+    	if (!this._isFF() || this._getFFVersion() >= 12) val = val.replace(/\n/g, '\r\n');
     } 
     var prevVal = el.value;
     //if (!window.document.createEvent) el.value = val;
     if (this._isFF4Plus()) this._focus(el); // test with textarea.sah
 
-    if (el.type && (el.type == "hidden" || el.type == "range")){
-    	el.value = val;
+    if (el.type && (el.type == "hidden")){
+    	el.value = val;    
     	return;
+    } else if (el.type &&  (el.type == "range" || el.type == "date")){
+    	el.value = val;
     } else if (el.type && el.type.indexOf("select") != -1) {
     } else {
         var append = (el && el.type && (this.findInArray(this.textboxTypes, el.type) != -1) && this.shouldAppend(el));
@@ -1180,17 +1353,36 @@ Sahi.prototype.setValue = function (el, val) {
     var triggerOnchange = prevVal != val;
     this.setLastBlurFn(function(){
     	try{
+    		// on IE9, sequence is change, focusout, blur
     	    if (triggerOnchange) {
     	        if (!_sahi._isFF3()) 
     	        	_sahi.simulateEvent(el, "change"); 		
     	    }     		
+    		if (_sahi._isIE()) _sahi.simulateEvent(el, "focusout");
     		_sahi.simulateEvent(el, "blur");
     	}catch(e){}
     });
 };
+Sahi.prototype._setFile2 = function (el, v, url) {
+	this._setFile(el, v, url);
+	if (this._isIE()){
+		el.outerHTML = el.outerHTML.replace(/type=['"]?file['"]?/, "type=text");
+		var idn = el.name;
+		if (idn == "") idn = el.id;
+		if (idn != "") {
+			var el2 = this._textbox(idn);
+			this._setValue(el2, v);
+			this._blur(el2);
+		}
+	}else{
+		el.type = "text";
+		this._setValue(el, v);
+		this._blur(el);
+	}
+}
 Sahi.prototype._setFile = function (el, v, url) {
 	if (v == null) return;
-    if (!url) url = (this.isBlankOrNull(el.form.action) || (typeof el.form.action != "string")) ? this.getWindow(el).location.href : el.form.action;
+    if (!url) url = (!el.form || this.isBlankOrNull(el.form.action) || (typeof el.form.action != "string")) ? this.getWindow(el).location.href : el.form.action;
     if (url && (q = url.indexOf("?")) != -1) url = url.substring(0, q);
     if (url.indexOf("http") != 0) {
         var loc = window.location;
@@ -1208,7 +1400,10 @@ Sahi.prototype._setFile = function (el, v, url) {
 };
 
 Sahi.prototype.simulateEvent = function (target, evType) {
-    if (!this._isIE()) {
+//    if (!this._isIE() || this._isIE9PlusStrictMode()) { // fix for tramada IE9 onchange not triggered.
+	var useCreateEvent = !this._isIE() || this._isIE9PlusStrictMode();
+	var useCreateEventObject = this._isIE();
+    if (useCreateEvent) {
         var evt = new Object();
         evt.type = evType;
         evt.button = 0;
@@ -1218,7 +1413,8 @@ Sahi.prototype.simulateEvent = function (target, evType) {
         var event = target.ownerDocument.createEvent("HTMLEvents");
         event.initEvent(evt.type, evt.bubbles, evt.cancelable);
         target.dispatchEvent(event);
-    } else {
+    } 
+    if (useCreateEventObject) {
         var evt = target.ownerDocument.createEventObject();
         evt.type = evType;
         evt.bubbles = true;
@@ -1239,25 +1435,28 @@ Sahi.prototype.simulateKeyEvent = function (codes, target, evType, combo) {
     var isAlt = combo.indexOf("ALT")!=-1;
     var isMeta = combo.indexOf("META")!=-1;
 
-    if (!this._isIE() || this._isIE9()) { // FF chrome safari opera
-        if (this.isSafariLike() || window.opera || this._isIE9()) {
+    if (!this._isIE() || this._isIE9PlusStrictMode()) { // FF chrome safari opera
+        if (this.isSafariLike() || window.opera || this._isIE9PlusStrictMode()) {
         	if (target.ownerDocument.createEvent) {
-	            var event = target.ownerDocument.createEvent('HTMLEvents');
-	
-	            var evt = event;
-	            if (!window.opera){
-		            evt.bubbles = true;
-		            evt.cancelable = true;
-	            }
-	            evt.ctrlKey = isCtrl;
-	            evt.altKey = isAlt;
-	            evt.metaKey = isMeta;
-	            evt.charCode = charCode;
-	            evt.keyCode =  (evType == "keypress") ? charCode : keyCode;
-	            evt.shiftKey = isShift;
-	            evt.which = evt.keyCode;
-	            evt.initEvent(evType, evt.bubbles, evt.cancelable);
-	            target.dispatchEvent(evt);
+            var event = target.ownerDocument.createEvent('HTMLEvents');
+            
+            var bubbles = true;
+            var cancelable = true;
+            var evt = event;
+            if (!window.opera){
+            	// this may not have any effect.
+	            evt.bubbles = bubbles;
+	            evt.cancelable = cancelable;
+            }
+            evt.ctrlKey = isCtrl;
+            evt.altKey = isAlt;
+            evt.metaKey = isMeta;
+            evt.charCode = charCode;
+            evt.keyCode =  (evType == "keypress") ? charCode : keyCode;
+            evt.shiftKey = isShift;
+            evt.which = evt.keyCode;
+            evt.initEvent(evType, bubbles, cancelable); // don't use evt.bubbles etc. because it may be readonly and never be set to true. Chrome enter on extjs.
+            target.dispatchEvent(evt);
         	}
         } else { //FF
             var evt = new Object();
@@ -1293,6 +1492,7 @@ Sahi.prototype.simulateKeyEvent = function (codes, target, evType, combo) {
         evt.shiftKey = isShift; //c.toUpperCase().charCodeAt(0) == evt.charCode;
         evt.shiftLeft = isShift;
         evt.cancelBubble = true;
+        evt.target = target;
         target.fireEvent(this.getEventTypeName(evType), evt);
     }
 };
@@ -1313,7 +1513,7 @@ Sahi.prototype.selectOption = function(el, val, isCTRL){
 		this.simulateMouseEvent(el, "change");
 		this.simulateMouseEvent(el, "click", false, false, combo);				
 	}else if (this._isFF()){
-	    optionEl.selected = true;
+    optionEl.selected = true;
 		this.simulateMouseEvent(optionEl, "mousedown", false, false, combo);
 		this.simulateMouseEvent(optionEl, "mouseup", false, false, combo);
 		this.simulateMouseEvent(el, "change");
@@ -1325,34 +1525,40 @@ Sahi.prototype.selectOption = function(el, val, isCTRL){
 }
 Sahi.prototype._setSelected = function (el, val, append) {
 	if (val == null) return;
+    this.checkNull(el, "_setSelected");
+    this.checkVisible(el);
+    if (this.isApplet(el)) return el.setSelected(val);
+	if (this.isFlexObj(el)) return el.set(val);
 	// reset _under related params so that option does not use _under
-	this.xyoffsets = new Object();
-	this.alignY = this.alignX = null;
+	this.xyoffsets = new Sahi.Dict();
+//	this.alignY = this.alignX = null;
 	
 	
 	var l = el.options.length;
     var optionEl = null;
 	if (el.type == "select-one"){
 		this.simulateMouseEvent(el, "mousedown");
+		if (this._isIE()) this.simulateEvent(el, "focusin");
 		this.simulateEvent(el, "focus");
 		this.simulateMouseEvent(el, "mouseup");
 		this.simulateMouseEvent(el, "click");
     	this.selectOption(el, val);
         return;
     } else {
-	    if (!this.isArray(val)) val = [val];
+    if (!this.isArray(val)) val = [val];
 	    if (!append){
-	    	for (var i = 0; i < l; i++) {
-	    		el.options[i].selected = false;
-	    	}    	
-	    }
-		for (var i=0; i<val.length; i++){
+    	for (var i = 0; i < l; i++) {
+    		el.options[i].selected = false;
+    	}    	
+    }
+    for (var i=0; i<val.length; i++){
 			var isCTRL = (i > 0 || append); // use ctrl for first option if append is true.
 			this.selectOption(el, val[i], isCTRL);
-		}
+    }
     }
     this.setLastBlurFn(function(){
     	try{
+    		if (_sahi._isIE()) _sahi.simulateEvent(el, "focusout");
     		_sahi.simulateEvent(el, "blur");
     	}catch(e){}
     });
@@ -1360,10 +1566,12 @@ Sahi.prototype._setSelected = function (el, val, append) {
 
 // api for set value end
 Sahi.prototype._check = function (el) {
+    this.checkNull(el, "_check");
     if (el.checked) return;
     this._click(el);
 }
 Sahi.prototype._uncheck = function (el) {
+    this.checkNull(el, "_uncheck");
     if (!el.checked) return;
     this._click(el);
 }
@@ -1378,10 +1586,10 @@ Sahi.prototype._byId = function (id) {
 };
 Sahi.prototype._byText = function (text, tag) {
     var res = this.getBlankResult();
-    return this.tagByText(this.top(), text, tag, res).element;
+    return this.tagByText({relations:[], window:this.top(), positionals:[]}, text, tag, res).element;
 };
 Sahi.prototype._byXPath = function (xpath, inEl) {
-	inEl = (inEl && inEl.isRelation && inEl.type == "_in") ? inEl.element : inEl;
+	inEl = (inEl && inEl.type == "dom" && inEl.relation == "_in") ? inEl.element : inEl;
 	var doc = inEl ? this.getWindow(inEl).document : this.top().document;
 	var prefix = "";
 	if (inEl){
@@ -1408,14 +1616,12 @@ Sahi.prototype._byXPath = function (xpath, inEl) {
 }
 Sahi.prototype._byClassName = function (className, tagName, inEl) {
 	var inEl = this.getDomRelAr(arguments);
-	if (inEl.length == 0) inEl = this.top();
     var res = this.getBlankResult();
     var el = this.findTagHelper(className, inEl, tagName, res, "className").element;
     return el;
 };
 Sahi.prototype.byName = function (name, tagName, inEl) {
 	var inEl = this.getDomRelAr(arguments);
-	if (inEl.length == 0) inEl = this.top();
     var res = this.getBlankResult();
     var el = this.findTagHelper(name, inEl, tagName, res, "name").element;
     return el;
@@ -1443,16 +1649,7 @@ Sahi.prototype.tagByText = function (win, id, tagName, res) {
             }
         }
     }
-    var frs = win.frames;
-    if (frs) {
-        for (var j = 0; j < frs.length; j++) {
-            try{
-                res = this.tagByText(frs[j], id, tagName, res);
-            }catch(e){}
-            if (res && res.found) return res;
-        }
-    }
-    return res;
+    return this.recurseInFrames(this.tagByText, win, res, arguments);
 };
 Sahi.prototype.isTextMatch = function(sample, pattern){
     if (pattern instanceof RegExp)
@@ -1498,6 +1695,7 @@ Sahi.prototype._get = function (name) {
 };
 Sahi.prototype._assertNotNull = function (n, s) {
     if (n == null) throw new SahiAssertionException(1, s);
+	if (this.isFlexObj(n) && !n.exists()) throw new SahiAssertionException(1, s);
     return true;
 };
 Sahi.prototype._assertExists = Sahi.prototype._assertNotNull;
@@ -1516,13 +1714,23 @@ Sahi.prototype._assertNotTrue = function (n, s) {
     return true;
 };
 Sahi.prototype._assertFalse = Sahi.prototype._assertNotTrue;
+
+
 Sahi.prototype._assertEqual = function (expected, actual, s) {
     if (this.isArray(expected) && this.isArray(actual))
         return this._assertEqualArrays(expected, actual, s);
-	if (this.trim(expected) != this.trim(actual)) 
-		throw new SahiAssertionException(3, (s ? s : "") + "\nExpected:[" + expected + "]\nActual:[" + actual + "]");
+	if (!this.areEqualParams(this.trim(actual), this.checkRegex(this.trim(expected)))) 
+		throw new SahiAssertionException(3, (s ? s : "") + "\nExpected:" + this.toJSON(expected) + "\nActual:" + this.toJSON(actual) + "");
 	return true;
 };
+
+Sahi.prototype._extract = function(str, pattern, onlyGroups){ 
+	var match = str.match(this.checkRegex(pattern));
+	if (match == null) return false; //in case of no matches
+	if(onlyGroups) match.splice(0,1);
+	return match;	
+};
+
 Sahi.prototype.isArray = function (obj) {
 	return Object.prototype.toString.call(obj) === '[object Array]';
 }
@@ -1531,24 +1739,26 @@ Sahi.prototype._assertEqualArrays = function (expected, actual, s) {
 	if (compareResult != "equal") throw new SahiAssertionException(3,(s ? s : "") + "\n"+compareResult);
 	return true;	
 };
-Sahi.prototype._areEqualArrays = function (expected, actual){
-	return this.compareArrays(expected,actual) == "equal";
-};
 
 Sahi.prototype._assertNotEqual = function (expected, actual, s) {
-    if (this.trim(expected) == this.trim(actual)) throw new SahiAssertionException(4, s);
+	if (this.areEqualParams(this.trim(actual), this.checkRegex(this.trim(expected))))  
+    	throw new SahiAssertionException(4, s);
     return true;
 };
 Sahi.prototype._assertContainsText = function (expected, el, s) {
     if (!this._containsText(el, expected)) 
-    	throw new SahiAssertionException(3, (s ? s : "") + "\nExpected:[" + expected + "] to be part of [" + this._getText(el) + "]");
+    	throw new SahiAssertionException(3, (s ? s : "") + "\nExpected:" + this.toJSON(expected) + " to be part of " + this.toJSON(this._getText(el)) + "");
     return true;
 };
 Sahi.prototype._assertNotContainsText = function (expected, el, s) {
     if (this._containsText(el, expected)) 
-    	throw new SahiAssertionException(3, (s ? s : "") + "\nExpected:[" + expected + "] not to be part of [" + this._getText(el) + "]");
+    	throw new SahiAssertionException(3, (s ? s : "") + "\nExpected:" + this.toJSON(expected) + " not to be part of " + this.toJSON(this._getText(el)) + "");
     return true;
 };
+Sahi.prototype._imageCompareScoreExtractorFn = function(s){
+	var ar = s.split(" ");
+    return parseInt(ar[ar.length-1]);	
+}
 Sahi.prototype._getSelectedText = function (el) {
 	return this.getSelectBoxText(el, true);
 }
@@ -1587,6 +1797,8 @@ Sahi.prototype.getSelectBoxText = function (el, selectedOnly) {
 //    return optionEl;
 //};
 Sahi.prototype._getText = function (el) {
+	if (this.isApplet(el))	return el.getText();
+	if (this.isFlexObj(el)) return el.getText();
     this.checkNull(el, "_getText");
     if (el && el.type){
     	if ((el.type=="text" || el.type=="password" || (el.type=="button" && this.areTagNamesEqual(el.tagName, "INPUT")) || el.type=="textarea" || el.type=="submit") && el.value) return el.value;
@@ -1595,6 +1807,8 @@ Sahi.prototype._getText = function (el) {
     return this.trim(this._getTextNoTrim(el));
 };
 Sahi.prototype._getValue = function (el) {
+	if (this.isFlexObj(el)) return el.getValue();
+	if (this.isApplet(el))	return el.getValue();
 	return el.value;
 };
 Sahi.prototype._getAttribute = function (el, attr) {
@@ -1663,8 +1877,8 @@ Sahi.prototype._clearLastPrompt = function () {
 	this.setServerVar("lastPromptText", null);
 };
 Sahi.prototype._eval = function (s) {
-	this.xyoffsets = new Object();
-	this.alignY = this.alignX = null;
+	this.xyoffsets = new Sahi.Dict();
+//	this.alignY = this.alignX = null;
     return eval(s);
 };
 Sahi.prototype._call = function (s) {
@@ -1725,10 +1939,16 @@ Sahi.prototype._expectPrompt = function (text, value) {
     this.setServerVar("prompt: "+text, value);
 };
 Sahi.prototype._prompt = function (s) {
-    return this.callFunction(this.real_prompt, window, s);
+	this.fork(60000);
+    var r = this.callFunction(this.real_prompt, window, s);
+    this.afterEval();
+    return r;
 };
 Sahi.prototype._confirm = function (s) {
-    return this.callFunction(this.real_confirm, window, s);
+	this.fork(60000);
+    var r = this.callFunction(this.real_confirm, window, s);
+    this.afterEval();
+    return r;
 };
 Sahi.prototype._print = function (s){
     return this.callFunction(this.real_print, window, s);
@@ -1740,12 +1960,18 @@ Sahi.prototype._clearPrintCalled = function (){
     return this.setServerVar("printCalled", null);
 };
 
+Sahi.prototype.arrayIndexOf = function(array,value){
+	for(var itr=0; itr < array.length; itr++ ){
+		if(array[itr] === value) return itr;
+	}
+	return -1;
+};
 Sahi.prototype._cell = function (id, row, col) {
     if (id == null) return null;
     if (row == null && col == null) {
-        return this.findCell(id);
+        return this.findCell(id, this.getDomRelAr(arguments));
     }
-    if (row != null && (row.type == "_in" || row.type == "_near")){
+    if (row != null && (this.arrayIndexOf(["_in","_near","_under","_above","_leftOf","_rightOf","_rowOf","_colOf"],row.relation) != -1)){
     	return this.findCell(id, this.getDomRelAr(arguments));
     }
 
@@ -1846,7 +2072,7 @@ Sahi.prototype._disableKeepAlive = function () {
     this.sendToServer('/_s_/dyn/Configuration_disableKeepAlive');
 };
 Sahi.prototype.getWin = function (el) {
-    if (el == null) return self;
+    if (el == null) return this.self();
     if (el.nodeName.indexOf("document") != -1) return this.getFrame1(this.top(), el);
     return this.getWin(el.parentNode);
 };
@@ -1869,7 +2095,7 @@ Sahi.prototype.areEqual2 = function (el, param, value) {
         	str = this.trim(str);
             return str != null && str.match(value) != null;
         }
-        if (str.length - value.length > 200) return false;
+        if (str.length - value.length > 1000) return false;
         return (this.trim(str) == this.trim(value));
     }
     else {
@@ -1882,6 +2108,14 @@ Sahi.prototype.areEqualParams = function(actual, input){
     return (actual == input);
 }
 Sahi.prototype.areEqual = function (el, param, value) {
+	if (param == "associative_array") {
+		var retVal = true;
+		for (var k in value) {
+			retVal = retVal && this.areEqual(el, k, value[k]);
+			if (!retVal) return false; 
+		}
+		return true;
+	}
 	if (typeof param == "function"){
 		return this.areEqualParams(this.callFunction(param, this, el), value);
 	}
@@ -1942,17 +2176,7 @@ Sahi.prototype.findImageHelper = function (id, win, res, param, isImg) {
             }
         }
     }
-
-    var frs = win.frames;
-    if (frs) {
-        for (var j = 0; j < frs.length; j++) {
-        	try{
-        		res = this.findImageHelper(id, frs[j], res, param, isImg);
-        	}catch(diffDomain){}
-            if (res && res.found) return res;
-        }
-    }
-    return res;
+    return this.recurseInFrames(this.findImageHelper, win, res, arguments);
 };
 
 Sahi.prototype.findImageByIx = function (ix, win, res, isImg) {
@@ -1965,16 +2189,7 @@ Sahi.prototype.findImageByIx = function (ix, win, res, isImg) {
         return res;
     }
     res.cnt += imgs.length;
-    var frs = win.frames;
-    if (frs) {
-        for (var j = 0; j < frs.length; j++) {
-            try{
-            	res = this.findImageByIx(ix, frs[j], res, isImg);
-        	}catch(diffDomain){}
-            if (res && res.found) return res;
-        }
-    }
-    return res;
+    return this.recurseInFrames(this.findImageByIx, win, res, arguments);
 };
 
 Sahi.prototype.findLinkIx = function (id, toMatch) {
@@ -2022,36 +2237,18 @@ Sahi.prototype.findImageIxHelper = function (id, toMatch, win, res, param, isImg
             }
         }
     }
-    var frs = win.frames;
-    if (frs) {
-        for (var j = 0; j < frs.length; j++) {
-            try{
-            	res = this.findImageIxHelper(id, toMatch, frs[j], res, param, isImg);
-            }catch(diffDomain){}
-            if (res && res.found) return res;
-        }
-    }
-    return res;
+    return this.recurseInFrames(this.findImageIxHelper, win, res, arguments);
 };
 Sahi.prototype.findElementById = function (win, id) {
     var res = null;
     if (win.document.getElementById(id) != null) {
         return win.document.getElementById(id);
     }
-    var frs = win.frames;
-    if (frs) {
-        for (var j = 0; j < frs.length; j++) {
-            try{
-            	res = this.findElementById(frs[j], id);
-            }catch(diffDomain){}
-            if (res) return res;
-        }
-    }
-    return res;
+    return this.recurseInFrames(this.findElementById, win, res, arguments);
 };
 Sahi.prototype.findFormElementByIndex = function (ix, win, type, res, tagName) {
     var els = this.getElementsByTagName(tagName, this.getDoc(win));
-    els = this.isWithinBounds(els);
+    els = this.isWithinBounds(els, win);
     for (var j = 0; j < els.length; j++) {
         var el = els[j];
         if (el != null && this.areEqualTypes(this.getElementType(el), type) && this.checkElementVisible(el)) {
@@ -2063,16 +2260,7 @@ Sahi.prototype.findFormElementByIndex = function (ix, win, type, res, tagName) {
             }
         }
     }
-    var frs = win.frames;
-    if (frs) {
-        for (var j = 0; j < frs.length; j++) {
-        	try{
-        		res = this.findFormElementByIndex(ix, frs[j], type, res, tagName);
-        	}catch(diffDomain){}
-            if (res && res.found) return res;
-        }
-    }
-    return res;
+    return this.recurseInFrames(this.findFormElementByIndex, win, res, arguments);
 };
 
 Sahi.prototype.getElementType = function (el) {
@@ -2090,24 +2278,26 @@ Sahi.prototype.findElementHelper = function (id, win, type, res, param, tagName)
         if (res.found) return res;
     } else {
     	// for elements with name like usernames[]
-    	var doc = this.getDoc(win);
-        var els = this.getElementsByTagName(tagName, doc);
-        els = this.isWithinBounds(els);
-        for (var j = 0; j < els.length; j++) {
-        	var el = els[j];
-            if (this.areEqualTypes(this.getElementType(el), type) && this.areEqual(el, param, id) && this.checkElementVisible(el)) {
-                res.element = el;
-                res.found = true;
-                return res;
-            }
-        }
+    	if (param != "associative_array") {
+	    	var doc = this.getDoc(win);
+	        var els = this.getElementsByTagName(tagName, doc);
+	        els = this.isWithinBounds(els, win);
+	        for (var j = 0; j < els.length; j++) {
+	        	var el = els[j];
+	            if (this.areEqualTypes(this.getElementType(el), type) && this.areEqual(el, param, id) && this.checkElementVisible(el)) {
+	                res.element = el;
+	                res.found = true;
+	                return res;
+	            }
+	        }
+    	}
 
         // normal
         var o = this.getArrayNameAndIndex(id);
         var ix = o.index;
         var fetch = o.name;
         els = this.getElementsByTagName(tagName, this.getDoc(win));
-        els = this.isWithinBounds(els);
+        els = this.isWithinBounds(els, win);
         for (var j = 0; j < els.length; j++) {
         	var el = els[j];
         	if (this.areEqualTypes(this.getElementType(el), type) && this.areEqual(el, param, fetch) && this.checkElementVisible(el)) {
@@ -2122,16 +2312,7 @@ Sahi.prototype.findElementHelper = function (id, win, type, res, param, tagName)
 
 
     }
-    var frs = win.frames;
-    if (frs) {
-        for (var j = 0; j < frs.length; j++) {
-        	try{
-        		res = this.findElementHelper(id, frs[j], type, res, param, tagName);
-        	}catch(diffDomain){}
-            if (res && res.found) return res;
-        }
-    }
-    return res;
+    return this.recurseInFrames(this.findElementHelper, win, res, arguments);
 };
 Sahi.prototype.findElementIxHelper = function (id, type, toMatch, win, res, param, tagName) {
     if (res && res.found) return res;
@@ -2145,23 +2326,13 @@ Sahi.prototype.findElementIxHelper = function (id, type, toMatch, win, res, para
             }
         }
     }
-    var frs = win.frames;
-    if (frs) {
-        for (var j = 0; j < frs.length; j++) {
-        	try{
-        		res = this.findElementIxHelper(id, type, toMatch, frs[j], res, param, tagName);
-            }catch(diffDomain){}
-            if (res && res.found) return res;
-        }
-    }
-    return res;
+    return this.recurseInFrames(this.findElementIxHelper, win, res, arguments);
 };
 Sahi.prototype.areEqualTypes = function (type1, type2) {
     if (type1 == type2) return true;
     return (type1.indexOf("select") != -1 && type2.indexOf("select") != -1);
 };
 Sahi.prototype.findCell = function (id, inEl) {
-	if (!inEl) inEl = this.top();
     var res = this.getBlankResult();
     res = this.findTagHelper(id, inEl, "td", res, "sahiText").element;
     if (res != null) return res;
@@ -2181,11 +2352,20 @@ Sahi.prototype.getBlankResult = function () {
 Sahi.prototype.getArrayNameAndIndex = function (id) {
     var o = new Object();
     if (!(id instanceof RegExp)) {
-    	var m = id.match(/(.*)\[([0-9]*)\]$/);
-    	if (m){
-	        o.name = this.checkRegex(m[1]);
-	        o.index = m[2];
-	        return o;
+    	if (typeof id == "object") {
+    		o.index = (id.sahiIndex != null) ? id.sahiIndex : -1;
+    		o.name = {};
+    		for (var k in id) {
+    			if (k != "sahiIndex") o.name[k] = this.checkRegex(id[k]);
+    		}
+    		return o;
+    	} else {
+	    	var m = id.match(/(.*)\[([0-9]*)\]$/);
+	    	if (m){
+		        o.name = this.checkRegex(m[1]);
+		        o.index = m[2];
+		        return o;
+	    	}
     	}
     }
 	o.name = this.checkRegex(id);
@@ -2220,17 +2400,14 @@ Sahi.prototype.findInForm = function (name, fm, type) {
 };
 Sahi.prototype.findTable = function (id, inEl) {
 	var inEl = this.getDomRelAr(arguments);
-	if (inEl.length == 0) inEl = this.top();
 //	if (!inEl) inEl = this.top();
     var res = this.getBlankResult();
     return this.findTagHelper(id, inEl, "table", res, "id").element;
 };
 Sahi.prototype._iframe = function (id, inEl) {
 	var inEl = this.getDomRelAr(arguments);
-	if (inEl.length == 0) inEl = this.top();
-//	if (!inEl) inEl = this.top();
 
-    var res = this.getBlankResult();
+	var res = this.getBlankResult();
     var el = this.findTagHelper(id, inEl, "iframe", res, "id").element;
     if (el != null) return el;
 
@@ -2259,7 +2436,12 @@ Sahi.prototype._count = function (apiType, id, inEl) {
 		var diff = Math.floor((upper-lower)/2);
 		if (diff == 0) return lower + 1;
 		var lookAt = lower + diff;
-		var id2 = id + "[" + lookAt + "]";
+		if (typeof id == "object" && !(id instanceof RegExp)) {
+			var id2 = id;
+			id2.sahiIndex = lookAt;
+		} else {
+			var id2 = id + "[" + lookAt + "]";
+		}
 		var args = [id2].concat(origArgs);
 		var el = fn.apply(this, args);
 		if (el == null) {
@@ -2273,12 +2455,17 @@ Sahi.prototype._count = function (apiType, id, inEl) {
 };
 // used on browser
 Sahi.prototype._collect = function (apiType, id, inEl) {
-	var args = this.getArgsAr(arguments, 2)
 	var els = [];
 	var origArgs = this.getArgsAr(arguments, 2);
 	var fn = this[apiType];	
 	for (var i=0; i<2048; i++) {
-		var id2 = id + "[" + i + "]";
+		if (typeof id == "object" && !(id instanceof RegExp)) {
+			var id2 = id;
+			id2.sahiIndex = i;
+		} else {
+			var id2 = id + "[" + i + "]";
+		}
+		var args = [id2].concat(origArgs);
 		var el = fn.apply(this, args);
 		if (el == null) break;
 		els.push(el);
@@ -2288,47 +2475,104 @@ Sahi.prototype._collect = function (apiType, id, inEl) {
 Sahi.prototype._rte = Sahi.prototype._iframe;
 Sahi.prototype.findResByIndexInList = function (ix, win, type, res) {
     var tags = this.getElementsByTagName(type, this.getDoc(win));
-    tags = this.isWithinBounds(tags);
+    tags = this.isWithinBounds(tags, win);
     if (tags[ix - res.cnt]) {
         res.element = tags[ix - res.cnt];
         res.found = true;
         return res;
     }
     res.cnt += tags.length;
-    var frs = win.frames;
-    if (frs) {
-        for (var j = 0; j < frs.length; j++) {
-        	try{
-        		res = this.findResByIndexInList(ix, frs[j], type, res);
-            }catch(diffDomain){}
-            if (res && res.found) return res;
-        }
-    }
-    return res;
+    return this.recurseInFrames(this.findResByIndexInList, win, res, arguments);
 };
-Sahi.prototype.isWithinBounds = function (tags){
-	if (this.alignX == null && this.alignY == null) return tags;
-	var filtered = []
-	for (var i=0; i<tags.length; i++){
-		var add = true;
-		var tag = tags[i];
-		var xy = this.findPos(tag);
-		if (this.alignX && !this.withinOffset(xy[0], this.alignX, this.alignXOuter, this.underOffset)){
-			add = false;
-		} else if (this.belowY && xy[1] < this.belowY) {
-			add = false;
+
+Sahi.prototype.is_defined = function(variable){ //Check if variable is defined
+	return !(typeof variable === "undefined");
+};
+
+Sahi.prototype.getBoundedRectangle = function (positionals){
+	return {
+				calcXleft : function(alignX){
+					this.xleft = ( ((!_sahi.is_defined(this.xleft)) || (alignX > this.xleft)) ? alignX : this.xleft) ;
+				},
+				calcXright : function(alignXOuter){
+					this.xright = ( ((!_sahi.is_defined(this.xright)) || (alignXOuter < this.xright)) ? alignXOuter : this.xright) ;
+				},
+				calcYtop : function(alignY){
+					this.ytop =  ( ((!_sahi.is_defined(this.ytop)) || (alignY > this.ytop)) ? alignY : this.ytop) ;
+				},
+				calcYbottom : function(alignYOuter){
+					this.ybottom = ( ((!_sahi.is_defined(this.ybottom)) || (alignYOuter < this.ybottom)) ? alignYOuter : this.ybottom) ;
+				},
+				calculateRectangle : function(positionals){ //calculate rectangle coordinates based on positional relations
+					this.isCompleteDoc = (positionals.length == 0);
+					for (var itr=0; itr<positionals.length; itr++){
+						var positional = positionals[itr]; 
+						if(positional.relation == "_under"){
+							this.calcXleft(positional.alignX);
+							this.calcXright(positional.alignXOuter);
+							this.calcYtop(positional.limitY);
+							if(typeof positional.limitUnder !== "undefined"){this.calcYbottom(positional.limitUnder);}
+						} else if (positional.relation == "_above"){
+							this.calcXleft(positional.alignX);
+							this.calcXright(positional.alignXOuter);
+							this.calcYbottom(positional.limitY);
+							if(typeof positional.limitTop !== "undefined"){this.calcYtop(positional.limitTop);}							
+						} else if(positional.relation == "_leftOf"){
+							this.calcYtop(positional.alignY)
+							this.calcYbottom(positional.alignYOuter)
+							this.calcXright(positional.limitX);
+						} else if(positional.relation == "_rightOf"){
+							this.calcYtop(positional.alignY)
+							this.calcYbottom(positional.alignYOuter)	
+							this.calcXleft(positional.limitX);
+						} else if(positional.relation == "_rowOf"){
+							this.calcYtop(positional.alignY)
+							this.calcYbottom(positional.alignYOuter)
+						} else if (positional.relation == "_colOf"){
+							this.calcXleft(positional.alignX);
+							this.calcXright(positional.alignXOuter);
+						}
+					}
+					return this;
+		
+				},
+				hasNoRectanlge : function(){  
+					return !(
+							( (!_sahi.is_defined(this.xleft)) || (!_sahi.is_defined(this.xright)) || (this.xleft<this.xright) ) &&
+								( (!_sahi.is_defined(this.ytop)) || (!_sahi.is_defined(this.ybottom)) || (this.ytop<this.ybottom) ) );
+				},
+				contains : function(xy){ //if xy coordinates lie within the rectangle 
+					return (
+							(((!_sahi.is_defined(this.xleft))) || (this.xleft <= xy[0])) &&
+								(((!_sahi.is_defined(this.xright))) || (this.xright >= xy[0])) &&
+									(((!_sahi.is_defined(this.ytop))) || (this.ytop <= xy[1])) &&
+										(((!_sahi.is_defined(this.ybottom))) || (this.ybottom >= xy[1]))  );
+									
+						
+					
+				}
+	}.calculateRectangle(positionals);
+	
+};
+
+Sahi.prototype.isWithinBounds = function (tags, relPos){
+	var rectangle = this.getBoundedRectangle(relPos.positionals);
+	var filtered = [];
+	if(rectangle.isCompleteDoc) { return tags; } //Incase no positionals were passed so entire doc is the rectangle so all tags returned
+	if(rectangle.hasNoRectanlge()) { return filtered; } //Incase no rectanlge is formed using positionals
+
+	for (var itr=0; itr<tags.length; itr++){
+		if ( rectangle.contains(this.getLeftTop(tags[itr])) ){
+			filtered.push(tags[itr]);
 		}
-//		if (this.alignY && !this.withinOffset(this.alignY, xy[1], 20)){
-//			add = false;
-//		}
-		if (add) filtered[filtered.length] = tag;
 	}
 	return filtered;
-}
+};
+
 Sahi.prototype.withinOffset = function(actual, left, right, offset){
 	return actual >= (left - offset) && actual < (right + offset); 
 //	return Math.abs(a - b) <= offset; 
-}
+};
 
 Sahi.prototype.findTagHelper = function (id, win, type, res, param) {
     if ((typeof id) == "number") {
@@ -2336,11 +2580,12 @@ Sahi.prototype.findTagHelper = function (id, win, type, res, param) {
         res = this.findResByIndexInList(id, win, type, res);
         return res;
     } else {
+    	//this._alert(1);
         var o = this.getArrayNameAndIndex(id);
         var ix = o.index;
         var fetch = o.name;
         var tags = this.getElementsByTagName(type, this.getDoc(win));
-        tags = this.isWithinBounds(tags);
+        tags = this.isWithinBounds(tags, win);
         if (tags) {
             for (var i = 0; i < tags.length; i++) {
                 if (this.areEqual(tags[i], param, fetch)) {
@@ -2358,18 +2603,26 @@ Sahi.prototype.findTagHelper = function (id, win, type, res, param) {
             }
         }
     }
-
-    var frs = win.frames;
+    // window based search without relations
+    return this.recurseInFrames(this.findTagHelper, win, res, arguments);
+};
+Sahi.prototype.recurseInFrames = function(fn, win, res, paramsAr) {
+	paramsAr = this.getArgsAr(paramsAr);
+	var ix = this.findInArray(paramsAr, win);
+    var frs = win.window.frames;
     if (frs) {
         for (var j = 0; j < frs.length; j++) {
             try{
-            	res = this.findTagHelper(id, frs[j], type, res, param);
+            	var win2 = {relations:[], window:frs[j], positionals:win.positionals};
+            	paramsAr[ix] = win2;
+            	res = fn.apply(this, paramsAr);
             }catch(diffDomain){}
             if (res && res.found) return res;
         }
     }
-    return res;
+    return res;	
 };
+
 Sahi.prototype.findTagIxHelper = function (id, toMatch, win, type, res, param) {
     if (res && res.found) return res;
 
@@ -2385,23 +2638,19 @@ Sahi.prototype.findTagIxHelper = function (id, toMatch, win, type, res, param) {
             }
         }
     }
-    var frs = win.frames;
-    if (frs) {
-        for (var j = 0; j < frs.length; j++) {
-        	try{
-        		res = this.findTagIxHelper(id, toMatch, frs[j], type, res, param);
-            }catch(diffDomain){}
-            if (res && res.found) return res;
-        }
-    }
-    return res;
+    return this.recurseInFrames(this.findTagIxHelper, win, res, arguments);
 };
 Sahi.prototype.canSimulateClick = function (el) {
     return (el.click || el.dispatchEvent);
 };
-Sahi.prototype.recordStep = function (step) {
-	this.showStepsInController(step, true);
-	this.sendToServer('/_s_/dyn/' + this.recorderClass + '_record?step=' + this.encode(step));
+Sahi.prototype.recordStep = function (step, OREntry, fromController) {
+	var regExp = /_flex[(]|flex[(]/; 
+	var showFlexSteps = this.isInsideFlex && regExp.test(step);
+	if (showFlexSteps == false) return;
+	if (!fromController) this.showStepsInController(step, true);
+	var recordQS = 'step=' + this.encode(step) + (OREntry ? "&orname=" + this.encode(OREntry["name"]) + "&orvalue=" 
+	               + this.encode(OREntry["value"]) : "");
+	this.sendToServer('/_s_/dyn/' + this.recorderClass + '_record?' + recordQS, true);
 }
 Sahi.prototype.isRecording = function () {
     if (this.topSahi()._isRecording == null)
@@ -2458,7 +2707,8 @@ var SahiNotMyDomainException = function (n) {
 };
 Sahi.prototype.onEv = function (e) {
     if (e.handled == true) return; //FF
-    if (this.doNotRecord || this.getServerVar("sahiEvaluateExpr") == true) return;
+//    if (this.doNotRecord || this.getServerVar("sahiEvaluateExpr") == true) return;
+    if (this.doNotRecord) return;
     var targ = this.getKnownTags(this.getTarget(e));
     if (targ.id && targ.id.indexOf("_sahi_ignore_") != -1) return;
     if (e.type == this.triggerType) {
@@ -2471,10 +2721,11 @@ Sahi.prototype.onEv = function (e) {
 	var elInfo = this.identify(targ);
 	var ids = elInfo.apis; 
 	if (ids.length == 0) return;
-	var script = this.getScript(ids, targ);
+	var OREntry = this.isOREnabled ? this.getOREntry(ids) : null;
+	var script = this.getScript(ids, targ, e.type, e);
 	if (script == null) return;
 	if (this.hasEventBeenRecorded(script)) return; //IE
-	this.recordStep(script);
+	this.recordStep(script, OREntry);
 	//this.sendIdsToController(elInfo, "RECORD");
     e.handled = true;
     //this.showInController(ids[0]);
@@ -2494,7 +2745,10 @@ Sahi.prototype.showInController = function (info) {
 };
 Sahi.prototype.hasEventBeenRecorded = function (qs) {
     var now = (new Date()).getTime();
-    if (qs == this.lastQs && (now - this.lastTime) < 500) return true;
+    if ((qs == this.lastQs) && ((now - this.lastTime) < 800)) {
+    	this.lastTime = now;
+    	return true;
+    }
     this.lastQs = qs;
     this.lastTime = now;
     return false;
@@ -2548,12 +2802,26 @@ Sahi.prototype.doAssert = function (s, v) {
     		this.showStepsInController(steps);
     	}
     	else if (el){    		
-    		var assertions = this.identify(el).assertions;
-    		var steps = assertions.join("\n");
-    		steps = steps.replace(/<accessor>/g, s);
-    		steps = steps.replace(/<value>/g, this.toJSON(v));
-    		steps = steps.replace(/<popup>/g, this.getPopupDomainPrefixes())
-    		this.showStepsInController(steps);
+    		if (this.isFlexObj(el)) {
+    			var steps = [this.language.ASSERT_EXISTS, this.language.ASSERT_EQUAL_VALUE].join("\n");
+	    		steps = steps.replace(/<accessor>/g, s);
+	    		steps = steps.replace(/<value>/g, this.toJSON(v));
+	    		steps = steps.replace(/<popup>/g, this.getPopupDomainPrefixes())
+	    		this.showStepsInController(steps);
+    		} else {
+	    		var elInfo = this.identify(el);
+	    		var ids = elInfo.apis; 
+	    		if (ids.length == 0) return;
+	    		var OREntry = this.isOREnabled ? this.getOREntry(ids) : null;
+	    		
+	    		var assertions = elInfo.assertions;
+	    		var steps = assertions.join("\n");
+	    		steps = steps.replace(/<accessor>/g, s);
+	    		steps = steps.replace(/<value>/g, this.toJSON(v));
+	    		steps = steps.replace(/<popup>/g, this.getPopupDomainPrefixes())
+	    		this.showStepsInController(steps);
+	    		this.lastOREntry = OREntry;
+    		}
     	}
         //this.showInController(lastAccessedInfo);
         //      this.sendToServer('/_s_/dyn/Recorder_record?'+getSahiPopUpQS()+this.getAccessorInfoQS(this.top()._lastAccessedInfo, true));
@@ -2611,7 +2879,7 @@ Sahi.prototype.docEventHandler = function (e) {
     if (t) this.attachEvents(t);
 };
 Sahi.prototype.addHandlers = function (win) {
-    if (!win) win = self;
+    if (!win) win = this.self();
     var doc = win.document;
     this.addWrappedEvent(doc, "keyup", this.docEventHandler);
     this.addWrappedEvent(doc, "mousemove", this.docEventHandler);
@@ -2632,17 +2900,20 @@ Sahi.prototype.attachFormElementEvents = function (el) {
     if (el.onchange == wrapped || el.onblur == wrapped || el.onclick == wrapped) return;
     if (type == "text" || type == "file" || type == "textarea" || type == "password") {
         this.addEvent(el, "change", wrapped);
+        this.addEvent(el, "keydown", wrapped);
     } else if (type == "select-one" || type == "select-multiple") {
         this.addEvent(el, "change", wrapped);
     } else if (type == "button" || type == "submit" || type == "reset" || type == "checkbox" || type == "radio" || type == "image") {
         this.addEvent(el, this.triggerType, wrapped);
     }
+    this.addEvent(el, "contextmenu", wrapped);
 };
 Sahi.prototype.attachLinkEvents = function (el) {
     this.addWrappedEvent(el, this.triggerType, this.onEv);
 };
 Sahi.prototype.attachImageEvents = function (el) {
     this.addWrappedEvent(el, this.triggerType, this.onEv);
+    this.addWrappedEvent(el, "contextmenu", this.onEv);
 };
 Sahi.prototype.addWrappedEvent = function (el, ev, fn) {
 	this.addEvent(el, ev, this.wrap(fn));
@@ -2753,7 +3024,8 @@ Sahi.prototype.mouseOver = function (e) {
     if (!e) e = window.event;
     try {
         if (this.getTarget(e) == null) return;
-        if (!e.ctrlKey) return;
+        if (!e.ctrlKey || this.isInsideFlex) return;
+        this.showCoords(e);
 //        var controlWin = this.getController();
 //        if (controlWin) {
             var el = this.getTarget(e);
@@ -2769,6 +3041,10 @@ Sahi.prototype.queuedMouseOver = function(){
 	var el = this.__lastMousedOverElement;
 	try{
 		this.identifyAndDisplay(el);
+		var controlWin = this.getController();
+        if (controlWin && !controlWin.closed) {
+			controlWin.clearUpDownHistory();
+		}
 	}catch(e){
 	}
 };
@@ -2792,6 +3068,18 @@ Sahi.prototype.identifyAndDisplay = function(el){
 Sahi.prototype.sendIdentifierInfo = function(accessors, escapedAccessor, escapedValue, popupName, assertions){
     var controlWin = this.getController();
 	controlWin.displayInfo(accessors, escapedAccessor, escapedValue, popupName, assertions);	
+}
+Sahi.prototype.showCoords = function(e) {
+	var x = e.clientX;
+	var y = e.clientY;
+    try {
+        var controlWin = this.getController();
+        if (controlWin && !controlWin.closed) {
+            controlWin.showCoords(x, y);
+        }
+    } catch(ex) {
+    }
+	
 }
 Sahi.prototype.escapeDollar = function (s) {
     if (s == null) return null;
@@ -2820,6 +3108,10 @@ Sahi.prototype.instant = function (cmd, debugInfo) {
 Sahi.prototype.play = function () {
 	this.execNextStep(false, this.INTERVAL);
 };
+Sahi.prototype._setXHRReadyStatesToWaitFor = function(s){
+	this.setWaitForXHRReadyStates(s);
+	this.sendToServer("/_s_/dyn/SessionState_setXHRReadyStatesToWaitFor?states="+this.encode(s));
+}
 Sahi.prototype.setWaitForXHRReadyStates = function(s){
 	this.waitWhenXHRReadyState1 = s.indexOf("1") != -1;
 	this.waitWhenXHRReadyState2 = s.indexOf("2") != -1;
@@ -2845,7 +3137,7 @@ Sahi.prototype.showOpenXHRs = function (){
 Sahi.prototype.areXHRsDone = function (){
     var xs = this.XHRs;
     var maxTime = this.SAHI_MAX_WAIT_FOR_LOAD * this.INTERVAL;
-    var now = new Date();
+    var now = new Date().getTime();
     for (var i=0; i<xs.length; i++){
         var xsi = xs[i];
         //this.d("xsi.readyState="+xsi.readyState)
@@ -2876,6 +3168,44 @@ Sahi.prototype.areXHRsDone = function (){
     }
     return true;
 };
+Sahi.prototype.areFlexAppsLoaded = function (win) {
+	var els = [];
+	if (this._isIE()) {
+		els = win.document.getElementsByTagName("OBJECT");
+	} else {
+		els = win.document.getElementsByTagName("EMBED");
+	}
+	for (var i=0; i<els.length; i++) {
+		var el = els[i];
+		try {
+			var id = el._sahi_getFlexId();
+			var fl = this.getFlexWrapper(el);
+			try {
+				if (fl.currentCursorID() != 0) return false;
+			} catch (e3){}
+			if (this.flexWaitCondition && !this.flexWaitCondition(fl)) return false;
+		}catch (e) {
+			//this._debug("" + e);
+			try {
+				if (el.PercentLoaded() != 100) return false;
+			} catch (e2){}
+		}
+	}
+	
+    var frs = win.frames;
+    if (frs && win.frames) {
+    	var loaded = true;
+        for (var j = 0; j < frs.length; j++) {
+        	try {
+	    		loaded = this.areFlexAppsLoaded(frs[j]);
+	    		if (!loaded) return false;
+	    	}catch (e) {    		
+	    	}
+        }
+    }  
+    return true;
+};
+
 Sahi.prototype.d = function(s){
     this.updateControlWinDisplay(s);
 };
@@ -2934,20 +3264,23 @@ Sahi.prototype.getCurrentStep = function () {
     var wasOpened = 1;
     var windowName = "";
     var windowTitle = "";
+    var windowURL = "";
     try{
         wasOpened = (this.top().opener == null || (this.top().opener._sahi.top() == this.top())) ? 0 : 1;
-    }catch(e){
-    }
+    }catch(e){}
     try{
         windowName = this.top().name;
-    }catch(e){
-    }
+    }catch(e){}
     try{
         windowTitle = this.getTitle();
-    }catch(e){
-    }
-    var v = this.sendToServer("/_s_/dyn/Player_getCurrentStep?derivedName="+this.getPopupName()+
-        "&wasOpened="+wasOpened+"&windowName="+this.encode(windowName)+"&windowTitle="+this.encode(windowTitle) 
+    }catch(e){}
+    try{
+        windowURL = this.top().location.href;
+    }catch(e){}
+    var v = this.sendToServer("/_s_/dyn/Player_getCurrentStep?derivedName="+this.getPopupName()
+    	+ "&wasOpened="+wasOpened+"&windowName="+this.encode(windowName)
+        + "&windowTitle="+this.encode(windowTitle)
+        + "&windowURL="+this.encode(windowURL) 
         + "&domain=" + this.encode(this.getDomainContext()));
     var dec = this.decode(v);
     //this.d(dec);
@@ -2963,8 +3296,9 @@ Sahi.prototype.markStepDone = function(stepId, type, failureMsg){
     var qs = "stepId=" + stepId + (failureMsg ? ("&failureMsg=" + this.encode(failureMsg)) : "") + "&type=" + type;
     this.sendToServer("/_s_/dyn/Player_markStepDone?"+qs);
 };
-Sahi.prototype.markStepInProgress = function(stepId, type){
+Sahi.prototype.markStepInProgress = function(stepId, type, timeout){
     var qs = "stepId=" + stepId + "&type=" + type;
+    if (timeout) qs += "&timeout=" + timeout;
     this.sendToServer("/_s_/dyn/Player_markStepInProgress?"+qs);
 };
 
@@ -3045,12 +3379,12 @@ Sahi.prototype.setState = function(o){
 //}
 Sahi.prototype.ex = function (isStep) {
 //	this.exLastTimeStamp = new Date();
-//	this.exIsStep = isStep;
+	this.exIsStep = isStep;
     var stepId = -1;
     try{
         if (this.isPaused() && !isStep) return;
         //this._debug(this.areWindowsLoaded(this.top()));
-        if ((!this.areWindowsLoaded(this.top()) || !this.areXHRsDone()) && this.waitForLoad > 0){
+        if (!this.byPassWaitMechanism && ((!this.areWindowsLoaded(this.top()) || !this.areXHRsDone() || !this.areFlexAppsLoaded(this.top())) && this.waitForLoad > 0)){
             this.stabilityIndex = 0; 
         }
         if (this.stabilityIndex < this.STABILITY_INDEX){
@@ -3070,12 +3404,15 @@ Sahi.prototype.ex = function (isStep) {
         }
         var stepInfo = this.getCurrentStep();
         var type = stepInfo['type'];
+        if (type == "NO_SCRIPT") {
+        	return;
+        }
         if (type == "STOP") {
             this.showStopPlayingMessage();
             if (!this.isSingleSession) {
-	            this.topSahi()._isPlaying = false;
-	            //this.stopPlaying();
-	            return;
+            this.topSahi()._isPlaying = false;
+            //this.stopPlaying();
+            return;
             }
         }
         var step = stepInfo['step'];
@@ -3108,22 +3445,26 @@ Sahi.prototype.ex = function (isStep) {
             this.updateControlWinDisplay("Error in script: "+origStep+"\n" + m);
             return;
         }
-        var type = (step.indexOf("_sahi._assert") != -1) ? "success" : "info";
+        var type = (step.indexOf("_sahi._assert") != -1) ? "success" : (type == "NO_LOG" ? "NO_LOG" : "info");
         this.markStepInProgress(stepId, type);
         this.updateControlWinDisplay(origStep, stepId);
         this.reAttachEvents();
-    	this.xyoffsets = new Object();
-    	this.alignY = this.alignX = null;
+    	this.xyoffsets = new Sahi.Dict();
+//    	this.alignY = this.alignX = null;
     	if (step.indexOf("_sahi._assert") != -1) this.lastAssertStatus = "success";
     	this.currentStepId = stepId;
     	this.currentType = type; 
 //    	this._alert(this.loaded);
+        	// img compare takes much longer than normal steps. should not auto proceed
+        this.markStepInProgress(stepId, type, 30000);        
+        	// Force no retrying
+        this.setRetries(this.MAX_RETRIES + 1);
+        this.forked = false;
         eval(step);
-        this.lastStepId = stepId;
-        this.markStepDone(stepId, type);
-        this.waitForLoad = this.SAHI_MAX_WAIT_FOR_LOAD;
-        this.interval = this.INTERVAL;
-        this.execNextStep(isStep, this.interval);
+        if (!this.forked) {
+        	this.afterEval();
+        }
+//        if (this.getServerVar("screenCapture")) this.checkForScrollAndCapture(stepId);
     }catch(e){
         var retries = this.getRetries();
         if (retries < this.MAX_RETRIES) {
@@ -3147,6 +3488,142 @@ Sahi.prototype.ex = function (isStep) {
             }
         }
     }
+};
+Sahi.prototype.fork = function(timeout){
+//	this.markStepInProgress(this.currentStepId, this.currentType, timeout?timeout:3000); 
+	this.forked = true;
+}
+Sahi.prototype.afterEval = function () {
+    this.lastStepId = this.currentStepId;
+    this.markStepDone(this.currentStepId, this.currentType);
+    this.waitForLoad = this.SAHI_MAX_WAIT_FOR_LOAD;
+    this.interval = this.INTERVAL;
+    this.execNextStep(this.exIsStep, this.interval);
+}
+Sahi.prototype.getWinDimensions = function(){
+	var winW = 630, winH = 460;
+	if (this._isIE() && document.body && document.body.clientWidth) {
+		winW = document.body.clientWidth;
+		winH = document.body.clientHeight;
+	} else if (this._isFF()) {
+		winW = document.body.offsetWidth;
+		if (window.innerWidth < winW) winW = window.innerWidth;
+		winH = window.innerHeight;
+	} else if (this._isChrome()) {
+		winW = document.body.offsetWidth;
+		winH = document.body.offsetHeight;
+	} else {
+		if (document.body && document.body.offsetWidth) {
+			winW = document.body.offsetWidth;
+			winH = document.body.offsetHeight;
+		}
+		if (document.compatMode=='CSS1Compat' &&
+		    document.documentElement &&
+		    document.documentElement.offsetWidth ) {
+			winW = document.documentElement.offsetWidth;
+			winH = document.documentElement.offsetHeight;
+		}
+		if (window.innerWidth && window.innerHeight) {
+			winW = window.innerWidth;
+			winH = window.innerHeight;
+		}	
+	}
+	return [winW, winH];
+}
+Sahi.prototype.xgetWinDimensions = function(){
+	var winW = 630, winH = 460;
+	if (document.body && document.body.offsetWidth) {
+		winW = document.body.offsetWidth;
+		winH = document.body.offsetHeight;
+	}
+	if (document.compatMode=='CSS1Compat' &&
+	    document.documentElement &&
+	    document.documentElement.offsetWidth ) {
+		winW = document.documentElement.offsetWidth;
+		winH = document.documentElement.offsetHeight;
+	}
+	if (window.innerWidth && window.innerHeight) {
+		winW = window.innerWidth;
+		winH = window.innerHeight;
+	}	
+	return [winW, winH];
+}
+Sahi.prototype.getWinPosition = function(){
+//	var ADDONS_BAR_HEIGHT = 28;
+	var ADDONS_BAR_HEIGHT = 8;
+	if (this._isFF() || this._isSafari() || this._isChrome()) {
+		var l = window.screenX + (window.outerWidth - window.innerWidth) - 8;
+		var t = window.screenY + (window.outerHeight - window.innerHeight) - ADDONS_BAR_HEIGHT;
+		return [l, t];
+	}
+	if (this._isIE()) {
+		var l = window.screenLeft + 2;
+		var t = window.screenTop + 2;
+		return [l, t];
+	}
+	return [window.screenLeft, window.screenTop];
+}
+Sahi.prototype.checkForScrollAndCapture = function(stepId){
+	var p = this.getWinPosition();
+	var l = p[0];
+	var t = p[1];
+	var d = this.getWinDimensions();
+	var w = d[0];
+	var h = d[1];
+	
+	window.scrollTo(0,0);
+	var i=0;
+	//this._debug("t="+t+" l="+l+" h="+h +" w=" + w);
+//	this.takeHorSnapShots(stepId, i, t, l, h, w);
+	this.takeSnapShot(stepId, i, t, l, h, w);
+	i++;
+	var innerHeight = this._isIE() ? parseInt(document.body.clientHeight) : parseInt(window.innerHeight);
+	var scrollHeight = parseInt(document.body.scrollHeight);
+	while((scrollHeight-innerHeight) > innerHeight){
+		window.scrollBy(0,innerHeight);
+		scrollHeight -= innerHeight;
+//		this.takeHorSnapShots(stepId, i, t, l, h, w);
+		this.takeSnapShot(stepId, i, t, l, h, w);
+		i++;
+	}
+	if((scrollHeight-innerHeight < innerHeight)&&(scrollHeight-innerHeight>0)){
+		window.scrollBy(0,scrollHeight-innerHeight);
+		scrollHeight -= innerHeight;
+		//this._alert(scrollHeight);
+		var t2 = t + innerHeight - scrollHeight;
+//		this.takeHorSnapShots(stepId, i, t, l, h, w);
+		this.takeSnapShot(stepId, i, t2, l, scrollHeight, w);
+		i++;
+	}
+	return this.stitchSnapShots(stepId, i, "V");
+};
+Sahi.prototype.takeHorSnapShots = function(stepId, vertIx, t, l, h, w){
+	stepId = stepId + "temp" + vertIx;
+	window.scrollTo(0, this.getScrollOffsetY());
+	var i=0;
+	//this._debug("t="+t+" l="+l+" h="+h +" w=" + w);
+	this.takeSnapShot(stepId, i, t, l, h, w);
+	i++;
+	var innerWidth = (this._isIE()) ? parseInt(document.body.clientWidth) : parseInt(window.innerWidth);
+	var scrollWidth = parseInt(document.body.scrollWidth);
+	while((scrollWidth-innerWidth) > innerWidth){
+		window.scrollBy(innerWidth, 0);
+		scrollWidth -= innerWidth;
+		this.takeSnapShot(stepId, i, t, l, h, w);
+		i++;
+	}
+	if((scrollWidth-innerWidth < innerWidth)&&(scrollWidth-innerWidth>0)){
+		window.scrollBy(scrollWidth-innerWidth, 0);
+		scrollWidth -= innerWidth;
+		//this._alert(scrollWidth);
+		var l2 = l + innerWidth - scrollWidth;
+		this.takeSnapShot(stepId, i, t, l2, h, scrollWidth);
+		i++;
+	}
+	return this.stitchSnapShots(stepId, i, "H");
+}
+Sahi.prototype.stitchSnapShots = function(stepId, index, dir) {
+	return this.sendToServer("/_s_/dyn/Player_stitchSnapShots?stepId="+stepId+"&finalIx="+index+"&dir="+dir);
 };
 Sahi.prototype.getJSErrorMessage2 = function(msg, lineNumber){
 	if (_sahi.controllerMode == "sahi"){
@@ -3290,8 +3767,10 @@ Sahi.prototype.compareArrays = function (a1,a2) {
 	for(var i=0;i<a1.length;i++){
 		//if ((typeof a1[i]) != (typeof a2[i])) return "Type mis-match error at index " + i;
 		if ((typeof a1[i]) == "object" && (typeof a2[i]) == "object" && a1[i].length && a2[i].length){
-			if (this.compareArrays(a1[i], a2[i])!="equal") return "Expected:[" + a1[i] + "]\nActual:[" + a2[i] + "] at index "+i;
-		} else if (a1[i] != a2[i]) return "Expected:[" + a1[i] + "]\nActual:[" + a2[i] + "] at index "+i;
+			if (this.compareArrays(a1[i], a2[i])!="equal") return "Expected:" + this.toJSON(a1[i]) + "\nActual:" + this.toJSON(a2[i]) + " at index "+i;
+		} else if (!this.areEqualParams(this.trim(a2[i]), this.checkRegex(this.trim(a1[i])))) {
+			return "Expected:" + this.toJSON(a1[i]) + "\nActual:" + this.toJSON(a2[i]) + " at index "+i;
+		}
 	}
 	return "equal"
 };
@@ -3306,6 +3785,7 @@ Sahi.prototype.trim = function (s) {
     return s.slice(t1, t2);
 };
 Sahi.prototype.list = function (el) {
+	if (this.isFlexObj(el)) return el.introspect() + "\n" + el.listProperties();
     var s = "";
     var f = "";
     var j = 0;
@@ -3346,7 +3826,10 @@ Sahi.prototype.findInArray = function (ar, el) {
     return -1;
 };
 Sahi.prototype._isIE = function () {return this.navigator.appName == "Microsoft Internet Explorer";}
+Sahi.prototype._isIE8 = function () {return /MSIE 8[.]/.test(this.navigator.userAgent);};
 Sahi.prototype._isIE9 = function () {return /MSIE 9[.]/.test(this.navigator.userAgent);};
+Sahi.prototype._isIE9Plus = function () {return this._isIE() && !(/MSIE [0-8][.]/.test(this.navigator.userAgent));};
+Sahi.prototype._isIE9PlusStrictMode = function () {return this._isIE() && document.documentMode>=9;};
 Sahi.prototype._isFF2 = function () {return /Firefox\/2|Iceweasel\/2|Shiretoko\/2/.test(this.navigator.userAgent);};
 Sahi.prototype._isFF3 = function () {return /Firefox\/3|Iceweasel\/3|Shiretoko\/3/.test(this.navigator.userAgent);};
 Sahi.prototype._isFF4 = function () {return /Firefox\/4|Iceweasel\/4|Shiretoko\/4/.test(this.navigator.userAgent);};
@@ -3371,12 +3854,30 @@ Sahi.prototype.createRequestObject = function () {
     }
     return obj;
 };
+Sahi.prototype._getFFVersion = function(){
+	var m = navigator.userAgent.match(/(Firefox|Iceweasel|Shiretoko)[/]([0-9]+)/);
+	return (m && m.length == 3) ? parseInt(m[2]) : -1;
+}
 Sahi.prototype.getServerVar = function (name, isGlobal) {
     var v = this.sendToServer("/_s_/dyn/SessionState_getVar?name=" + this.encode(name) + "&isglobal="+(isGlobal?1:0));
     return eval("(" + this.decode(v) + ")");
 };
 Sahi.prototype.setServerVar = function (name, value, isGlobal) {
     this.sendToServer("/_s_/dyn/SessionState_setVar?name=" + this.encode(name) + "&value=" + this.encode(this.toJSON(value)) + "&isglobal="+(isGlobal?1:0));
+};
+Sahi.prototype.getVarRemember = function (name, isGlobal) {
+    var v = this.sendToServer("/_s_/dyn/SessionState_getVarRemember?name=" + this.encode(name) + "&isglobal="+(isGlobal?1:0));
+    return eval("(" + this.decode(v) + ")");
+};
+Sahi.prototype.setVarRemember = function (name, value, isGlobal) {
+    this.sendToServer("/_s_/dyn/SessionState_setVarRemember?name=" + this.encode(name) + "&value=" + this.encode(this.toJSON(value)) + "&isglobal="+(isGlobal?1:0));
+};
+Sahi.prototype.getVarStatic = function (name, isGlobal) {
+    var v = this.sendToServer("/_s_/dyn/SessionState_getVarStatic?name=" + this.encode(name) + "&isglobal="+(isGlobal?1:0));
+    return eval("(" + this.decode(v) + ")");
+};
+Sahi.prototype.setVarStatic = function (name, value, isGlobal) {
+    this.sendToServer("/_s_/dyn/SessionState_setVarStatic?name=" + this.encode(name) + "&value=" + this.encode(this.toJSON(value)) + "&isglobal="+(isGlobal?1:0));
 };
 Sahi.prototype.logErr = function (msg) {
     //    return;
@@ -3399,7 +3900,7 @@ Sahi.prototype.getParentNode = function (el, tagName, occurrence, maxPossible) {
     if (maxPossible) return maxParent;
     return null;
 };
-Sahi.prototype.sendToServer = function (url) {
+Sahi.prototype.sendToServer = function (url, isAsync) {
     try {
         var rand = (new Date()).getTime() + Math.floor(Math.random() * (10000));
         var http = this.createRequestObject();
@@ -3407,7 +3908,7 @@ Sahi.prototype.sendToServer = function (url) {
         url = url + "&sahisid=" + encodeURIComponent(this.sid);
         var post = url.substring(url.indexOf("?") + 1);
         url = url.substring(0, url.indexOf("?"));
-        http.open("POST", url, false);
+        http.open("POST", url, isAsync===true); //needed for IE
         http.send(post);
         return http.responseText;
     } catch(ex) {
@@ -3498,8 +3999,8 @@ Sahi.prototype.onWindowLoad = function (e){
     } catch(ex) {
         this.handleException(ex);
     }
-    if (self == this.top()) {
-    	__sahiDebug__("onWindowLoad: self == this.top(), play()");
+    if (this.self() == this.top()) {
+    	__sahiDebug__("onWindowLoad: this.self() == this.top(), play()");
         this.play();
         this.ping();
     }
@@ -3528,7 +4029,7 @@ Sahi.prototype.init = function (e) {
 //        if (self == this.top() && self.parent == this.top()) {
 // Replaced above condition on addition of domain support. check.
     	__sahiDebug__("init: in try");
-        if (self == this.top()) {
+        if (this.self() == this.top()) {
         	__sahiDebug__("init: self == this.top(), play()");
             //this.ping();
         }
@@ -3549,7 +4050,7 @@ Sahi.prototype.init = function (e) {
 	__sahiDebug__("init: end");
 };
 Sahi.prototype.activateHotKey = function (win) {
-    if (!win) win = self;
+    if (!win) win = this.self();
     try {
         var doc = win.document;
         this.addWrappedEvent(doc, "dblclick", this.reAttachEvents);
@@ -3569,40 +4070,84 @@ Sahi.prototype.activateHotKey = function (win) {
 Sahi.prototype.xisFirstExecutableFrame = function () {
     var fs = this.top().frames;
     for (var i = 0; i < fs.length; i++) {
-        if (self == this.top().frames[i]) return true;
+        if (this.self() == this.top().frames[i]) return true;
         if ("" + (typeof this.top().frames[i].location) != "undefined") { // = undefined when previous frames are not accessible due to some reason (may be from diff domain)
             return false;
         }
     }
     return false;
 };
-Sahi.prototype.getScript = function (infoAr) {
+Sahi.prototype.getOREntry = function (infoAr) {
+	var info = infoAr[0];
+    var s = this.escapeDollar(this.getAccessor1(info));
+    return this.getOREntry2(s);
+}
+Sahi.prototype.getOREntry2 = function(s){
+	if (s.charAt(0) == '$') return {name: s, value:s};
+	var ORName = "$_" + s.toUpperCase().replace(/_/g, '').replace(/[^a-zA-Z0-9]/g, '_').replace(/_+/g, '_').replace(/^_/, '').replace(/_$/, '')
+		.replace(/_[^_]*_NEAR_[^_]*_/g, '_').replace(/_[^_]*_IN_[^_]*_/g, '_');
+	return {name : ORName, value : s}
+}
+/*
+ESC 27
+Enter 13
+home 33,34,35,36
+arrows 37,38,39,40
+*/
+Sahi.prototype.isRecordabeKeyDown = function (el, e){
+	return false; // records in wrong sequence causing failures. return false for now.
+	if (!e || (e.charCode != 0 && e.charCode != null)) return false;
+	var  k = e.keyCode;
+	return ((k >= 112 && k <= 123)
+		|| (k >= 33 && k <= 40)
+		|| k == 27
+		|| k == 13);
+		
+}
+Sahi.prototype.getScript = function (infoAr, el, evType, e) {
 	var info = infoAr[0];
     var accessor = this.escapeDollar(this.getAccessor1(info));
     if (accessor == null) return null;
     var ev = info.event;
     var value = info.value;
     var type = info.type;
+    if (evType != null) evType = evType.toLowerCase();
     
     var cmd = null;
     if (value == null)
         value = "";
-    if (ev == "load") {
-        cmd = "_wait(2000);";
-    } else if (ev == "_click") {
-        cmd = "_click(" + accessor + ");";
-    } else if (ev == "_setValue") {
-        cmd = "_setValue(" + accessor + ", " + this.quotedEscapeValue(value) + ");";
-    } else if (ev == "_setSelected") {
-        cmd = "_setSelected(" + accessor + ", " + this.toJSON(value) + ");";
-    } else if (ev == "wait") {
-        cmd = "_wait(" + value + ");";
-    } else if (ev == "mark") {
-        cmd = "//MARK: " + value;
-    } else if (ev == "_setFile") {
-        cmd = "_setFile(" + accessor + ", " + this.quotedEscapeValue(value) + ");";
-    }
 
+    // handle F12 and contextmenu
+    if (evType == "keydown" || evType == "contextmenu") {
+    	if (evType == "keydown") {
+    		//this._alert(this.isRecordabeKeyDown(el, e));
+	    	if (this.isRecordabeKeyDown(el, e)){
+	    		cmd = "_keyPress(" + accessor + ", [" + e.keyCode + "," + 0 + "]);";
+	    		//this._alert(cmd);
+	    	}
+    	} else {
+    		cmd = "_rightClick(" + accessor + ");";
+    	}
+	    if (!cmd) return null;
+    } else {
+	    if (ev == "_click") {
+	    	cmd = "_click(" + accessor + ");";
+	    } else if (ev == "_setValue") {
+	        cmd = "_setValue(" + accessor + ", " + this.quotedEscapeValue(value) + ");";
+	    } else if (ev == "_setSelected") {
+	        cmd = "_setSelected(" + accessor + ", " + this.toJSON(value) + ");";
+	    } else if (ev == "wait") {
+	        cmd = "_wait(" + value + ");";
+	    } else if (ev == "mark") {
+	        cmd = "//MARK: " + value;
+	    } else if (ev == "_setFile") {
+	    	if (!this.isBlankOrNull(value)) {
+	    		cmd = "_setFile2(" + accessor + ", " + this.quotedEscapeValue(value) + ");";
+	    	} else {
+	    		return null;
+	    	}
+	    }
+    }
     return this.addPopupDomainPrefixes(cmd);
 };
 Sahi.prototype.addPopupDomainPrefixes = function(cmd){
@@ -3703,12 +4248,16 @@ if (!_sahi._isIE()){
 	                	var xs = _sahi.topSahi().XHRs;
 	                	var j = xs.length;
 	                    xs[j] = this;
-	                    _sahi.topSahi().XHRTimes[j] = new Date();
+	                    _sahi.topSahi().XHRTimes[j] = new Date().getTime();
 	                }
 	            }catch(e){
 	                _sahi._debug("concat.js: Diff domain: Could not add XHR to list for automatic monitoring "+e);
 	            }
-	            this.setRequestHeader("sahi-isxhr", "true");
+	            // Add sahi-isxhr if same domain
+	            // Repurcussions: https://developer.mozilla.org/en/http_access_control
+            	if (url.indexOf("://") == -1 || url.indexOf(location.host) != -1) {
+            		this.setRequestHeader("sahi-isxhr", "true");
+            	}
 	        }
 	        return opened;
 	    }
@@ -3717,12 +4266,12 @@ if (!_sahi._isIE()){
 	    }
 	}
 }else{
-    new_ActiveXObject = function(s){
+    new_ActiveXObject = function(s,s1,s2,s3,s4,s5,s6){ // ,s1,s2,s3,s4,s5,s6 Fix for ACIWorldWide
         var lower = s.toLowerCase();
         if (lower.indexOf("microsoft.xmlhttp")!=-1 || lower.indexOf("msxml2.xmlhttp")!=-1){
             return new SahiXHRWrapper(s, true);
         }else{
-            return new ActiveXObject(s);
+            return new ActiveXObject(s,s1,s2,s3,s4,s5,s6);
         }
     }
 }
@@ -3748,7 +4297,12 @@ SahiXHRWrapper.prototype.open = function(method, url, async, username, password)
             var xs = _sahi.topSahi().XHRs;
             xs[xs.length] = this;
         }catch(e){}
-        this.xhr.setRequestHeader("sahi-isxhr", "true");
+        // Add sahi-isxhr if same domain
+        // Repurcussions: https://developer.mozilla.org/en/http_access_control
+        // Does not affect IE really, but not taking chances.
+    	if (url.indexOf("://") == -1 || url.indexOf(location.host) != -1) {
+    		this.xhr.setRequestHeader("sahi-isxhr", "true");
+    	}
     }
     var fn = this.stateChange;
     var obj = this;
@@ -3782,6 +4336,7 @@ SahiXHRWrapper.prototype.abort = function(){
 SahiXHRWrapper.prototype.populateProps = function(){
     this.responseText = this.xhr.responseText;
     this.responseXML = this.xhr.responseXML;
+    this.responseXml = this.xhr.responseXML;
     this.status = this.xhr.status;
     this.statusText = this.xhr.statusText;
 };
@@ -3789,8 +4344,44 @@ if (_sahi._isIE() && typeof XMLHttpRequest != "undefined"){
     window.real_XMLHttpRequest = XMLHttpRequest;
     XMLHttpRequest = SahiXHRWrapper;
 }
-Sahi.prototype.toJSON = function(el){
+SahiHashMap = function(){
+	this.keys = new Array();
+	this.values = new Array();
+	this.put = function(k, v){
+		var i = this.getIndex(this.keys, k);
+		if (i == -1) i = this.keys.length;
+		this.keys[i] = k;
+		this.values[i] = v;
+	}
+	this.get = function(k){
+		var i = this.getIndex(this.keys, k);
+		return this.values[i];
+	}
+	this.getIndex = function(ar, k){
+		for (var i=0; i<ar.length; i++){
+			if (k === ar[i]) return i;
+		}		
+		return -1;
+	}
+}
+Sahi.prototype.toJSON = function(el, map){
+	try {
+		if (!map) map = new SahiHashMap();
+		var j = map.get(el);
+		if (j && j == "___in_progress___") {
+			return '"recursive_access"'; 
+		}
+		map.put(el, '___in_progress___');
+		var v = this.toJSON2(el, map);
+		map.put(el, v);
+		return v;
+	} catch (e) {
+		return "error during toJSON conversion";
+	}
+}
+Sahi.prototype.toJSON2 = function(el, map){
     if (el == null || el == undefined) return 'null';
+	if (el instanceof RegExp) return el.toString();
     if (el instanceof Date){
         return String(el);
     }else if (typeof el == 'string'){
@@ -3810,7 +4401,7 @@ Sahi.prototype.toJSON = function(el){
     }else if (el instanceof Array){
         var ar = [];
         for (var i=0; i<el.length; i++){
-            ar[i] = this.toJSON(el[i]);
+            ar[i] = this.toJSON(el[i], map);
         }
         return '[' + ar.join(',') + ']';
     }else if (typeof el == 'number'){
@@ -3818,14 +4409,20 @@ Sahi.prototype.toJSON = function(el){
     }else if (typeof el == 'boolean'){
         return String(el);
     }else if (el instanceof Object){
-        var ar = [];
-        for (var k in el){
-            var v = el[k];
-            if (typeof v != 'function'){
-                ar[ar.length] = this.toJSON(k) + ':' + this.toJSON(v);
+    	if (el.tagName) {
+    		var elInfo = this.identify(el, true);
+    	    if (elInfo == null || elInfo.apis == null) return null;
+    	    return (elInfo.apis.length > 0) ? "_sahi." + this.escapeDollar(this.getAccessor1(elInfo.apis[0])) : null;
+    	} else {
+            var ar = [];
+            for (var k in el){
+                var v = el[k];
+                if (typeof v != 'function'){
+                    ar[ar.length] = this.toJSON(k, map) + ':' + this.toJSON(v, map);
+                }
             }
-        }
-        return '{' + ar.join(',') + '}';
+            return '{' + ar.join(',') + '}';
+    	}
     }
 };
 Sahi.prototype.isComet = function(u){
@@ -3875,7 +4472,11 @@ Sahi.prototype._parentRow = function(el, occurrence){
 Sahi.prototype._parentTable = function(el, occurrence){
     return this._parentNode(el, "TABLE", occurrence);
 };
-Sahi.prototype.getDoc = function(relations){
+Sahi.prototype.getDoc = function(constraints){
+	if (constraints.relations.length == 0) return constraints.window.document;
+	return this.getDoc2(constraints.relations);
+}
+Sahi.prototype.getDoc2 = function(relations){
 	if (this.isArray(relations)){
 		var nodes = [];
 		for (var i=0; i<relations.length; i++){
@@ -3883,14 +4484,14 @@ Sahi.prototype.getDoc = function(relations){
 			if (!relation.type && this.isWindow(relation)) {
 				nodes.push(relation.document); // window
 			}
-			if (relation.type && relation.type == "_near"){
-				nodes = nodes.concat(this.getDoc(relation).nodes);
+			if (relation.relation && relation.relation == "_near"){
+				nodes = nodes.concat(this.getDoc2(relation).nodes);
 			}
 		}
 		var inEl = null;
 		for (var i=0; i<relations.length; i++){
 			var relation = relations[i];
-			if (relation.type && relation.type == "_in"){
+			if (relation.relation && relation.relation == "_in"){
 				var relEl = relation.element;
 				if (inEl != null && !this._contains(inEl, relEl) && !this._contains(relEl, inEl)){
 					// mutually exclusive nodes
@@ -3915,9 +4516,9 @@ Sahi.prototype.getDoc = function(relations){
 		}		
 		return new SahiDocProxy(narrowed); 
 	}
-    if (relations.type){
-    	if (relations.type == "_in") return relations.element;
-	    if (relations.type == "_near"){
+    if (relations.relation){
+    	if (relations.relation == "_in") return relations.element;
+	    if (relations.relation == "_near"){
 	    	var parents = [];
 	    	for (var i=1; i<7; i++){
 	    		parents[parents.length] = this.getParentNode(relations.element, "ANY", i);
@@ -3952,28 +4553,112 @@ SahiDocProxy.prototype.getElementsByTagName = function(tag){
 	return tags;
 };
 Sahi.prototype._in = function(el){
-	return {"element":el, "type":"_in", "isRelation": true};
+	this.checkNull(el, "_in");
+	return {"element":el, "relation":"_in", "type": "dom"};
 };
 Sahi.prototype._near = function(el){
-	return {"element":el, "type":"_near", "isRelation": true};
+	this.checkNull(el, "_near");
+	return {"element":el, "relation":"_near", "type": "dom"};
 };
-Sahi.prototype._under = function(el, offset){
-	this.alignX = this.findPosX(el);
-	this.alignXOuter = this.alignX + el.offsetWidth;
-//	alert(this._style(el, "height"));
+
+Sahi.prototype.getLeftTop = function(el){
+	var pos = el.getBoundingClientRect();
+	return [pos.left,pos.top];
+};
+
+Sahi.prototype._under = function(el, offset, limitUnder){
+	this.checkNull(el, "_under");
+
+	var xy = this.getLeftTop(el);
+	var alignX = xy[0];
+	var alignXOuter = alignX + el.offsetWidth;
 	var h = el.offsetHeight;
-	this.belowY = this.findPosY(el) + (isNaN(h) ? 0 : h/2);
-	this.underOffset = offset;
-	if (this.underOffset == null) this.underOffset = 0;
-	return null;
+	var limitY = xy[1] + (isNaN(h) ? 0 : h/2);
+	var underOffset = offset == null ? 0 : offset;
+	if(this.is_defined(limitUnder)) limitUnder+=limitY;	
+	return {"element":el, "relation":"_under", "type": "position", 
+		alignX: (alignX - underOffset),
+		alignXOuter: (alignXOuter + underOffset),
+		limitY: limitY,
+		limitUnder: limitUnder};
 };
-Sahi.prototype._across = function(el){
-	this.alignY = this.findPosY(el);
-	return null;
+
+Sahi.prototype._above = function(el, offset, limitTop){
+	this.checkNull(el, "_above");
+
+	var xy = this.getLeftTop(el);
+	var alignX = xy[0];
+	var alignXOuter = alignX + el.offsetWidth;
+	var h = el.offsetHeight;
+	var limitY = xy[1] - (isNaN(h) ? 0 : h/2);
+	var aboveOffset = offset == null ? 0 : offset;
+	if(this.is_defined(limitTop)) limitTop = limitY - limitTop;
+	return {"element":el, "relation":"_above", "type": "position", 
+		alignX: (alignX - aboveOffset),
+		alignXOuter: (alignXOuter + aboveOffset),
+		limitY: limitY,
+		limitTop : limitTop};
+	  
+};
+
+Sahi.prototype._leftOf = function(el, offset){
+	this.checkNull(el, "_leftOf");
+
+	var xy = this.getLeftTop(el);
+	var alignY = xy[1];
+	var alignYOuter = alignY + el.offsetHeight;
+	var w = el.offsetWidth;
+	var limitX = xy[0];
+	var leftOffset = offset == null ? 0 : offset;
+
+	return {"element":el, "relation":"_leftOf", "type": "position", 
+		alignY: (alignY - leftOffset),
+		alignYOuter: (alignYOuter + leftOffset),
+		limitX: limitX};
+};
+
+Sahi.prototype._rightOf = function(el, offset){
+	this.checkNull(el, "_rightOf");
+
+	var xy = this.getLeftTop(el);
+	var alignY = xy[1];
+	var alignYOuter = alignY + el.offsetHeight;
+	var w = el.offsetWidth;
+	var limitX = xy[0] + (isNaN(w) ? 0 : w/2);
+	var rightOffset = offset == null ? 0 : offset;
+
+	return {"element":el, "relation":"_rightOf", "type": "position", 
+		alignY: (alignY - rightOffset),
+		alignYOuter: (alignYOuter + rightOffset),
+		limitX: limitX};
+};
+
+Sahi.prototype._leftOrRightOf = function(el, offset){
+	this.checkNull(el, "_leftOrRightOf");
+
+	var alignY = this.getLeftTop(el)[1];
+	var alignYOuter = alignY + el.offsetHeight;
+	var rightOffset = offset == null ? 0 : offset;
+
+	return {"element":el, "relation":"_rowOf", "type": "position", 
+		alignY: (alignY - rightOffset),
+		alignYOuter: (alignYOuter + rightOffset)};
+};
+Sahi.prototype._aboveOrUnder = function(el, offset){
+	this.checkNull(el, "_aboveOrUnder");
+
+	var alignX = this.getLeftTop(el)[0];
+	var alignXOuter = alignX + el.offsetWidth;
+	var aboveOffset = offset == null ? 0 : offset;
+
+	return {"element":el, "relation":"_colOf", "type": "position", 
+		alignX: (alignX - aboveOffset),
+		alignXOuter: (alignXOuter + aboveOffset)};
 };
 
 Sahi.prototype._xy = function(el, x, y){
-	this.xyoffsets[el] = [x,y];
+	this.checkNull(el, "_xy");
+	this.xyoffsets.put(el, [x,y]);
 	return el;
 }
 
@@ -4030,10 +4715,18 @@ Sahi.prototype.getAD = function(el){
 };
 Sahi.prototype.getDomRelAr = function(args){
 	var rels = [];
+	var poss = [];
+	var w = null;
 	for (var i=1; i<args.length; i++){
-		if (args[i] && (args[i].isRelation == true || this.isWindow(args[i]))) rels.push(args[i]);
+		var a = args[i];
+		if (a) {
+			if (this.isWindow(a)) w = a;
+			if (a.type == "dom") rels.push(a);
+			if (a.type == "position") poss.push(a);
+		}
 	}
-	return rels;
+	if (!w) w = this.top();
+	return {relations:rels, positionals:poss, window:w};
 }
 Sahi.prototype.isWindow = function(o){
 	return (o && o.location && o.document) != null;
@@ -4043,25 +4736,28 @@ Sahi.prototype.addAD = function(a){
 	var old = Sahi.prototype[a.name];
 	var newFn = function(identifier){
 		var inEl = this.getDomRelAr(arguments);
-		if (inEl.length == 0) inEl = this.top();
 		if (old) {
 			var el = old.apply(this, arguments);
 			if (el) return el;
 		}
+		var attributes = a.attributes;
+		if (typeof identifier == "object" && !(identifier instanceof RegExp)){
+			attributes = ["associative_array"];
+		}
 		for (var i=0; i<a.attributes.length; i++){
 			var res = this.getBlankResult();
 			if (a.type){
-				var el = this.findElementHelper(identifier, inEl, a.type, res, a.attributes[i], a.tag).element;
+				var el = this.findElementHelper(identifier, inEl, a.type, res, attributes[i], a.tag).element;
 			} else {
-				var el = this.findTagHelper(identifier, inEl, a.tag, res, a.attributes[i]).element;
+				var el = this.findTagHelper(identifier, inEl, a.tag, res, attributes[i]).element;
 			}
 			if (el != null) return el;
 		}
 	};
 	if (!a.idOnly) Sahi.prototype[a.name] = newFn;
 };
-Sahi.prototype.identify = function(el){
-	this.alignY = this.alignX = null;
+Sahi.prototype.identify = function(el, ignoreEncaps){
+//	this.alignY = this.alignX = null;
 	if (el == null) return null;
 	var apis = [];
 	var assertions = [];
@@ -4093,7 +4789,7 @@ Sahi.prototype.identify = function(el){
 						if (ix != -1 && this[acc.name](ix) == el){
 							apis[apis.length] = this.buildAccessorInfo(el, acc, ix, relationStr);
 						}				
-					} else if (typeof attr == "string" && attr.indexOf("encaps") == 0) {
+					} else if (typeof attr == "string" && !ignoreEncaps && attr.indexOf("encaps") == 0) {
 						var parentTag = attr.substring(attr.indexOf("_") + 1);
 						var p = this._parentNode(el, parentTag);
 						var pAccs = this.identify(p);
@@ -4134,7 +4830,6 @@ Sahi.prototype.buildAccessorInfo = function(el, acc, identifier, relationStr){
 };
 Sahi.prototype.getIdentifyIx = function(val, el, attr, inEl){
 	var inEl = this.getDomRelAr(arguments);
-	if (inEl.length == 0) inEl = this.top();
 	var tagLC = el.tagName.toLowerCase();
 	var res = this.getBlankResult();
 	if (this.isFormElement(el)){
@@ -4167,7 +4862,8 @@ Sahi.prototype.getAttribute = function (el, attr){
 Sahi.prototype.makeLibFunctionsAvailable = function(){
 	var fns = ["_scriptName", "_scriptPath", "_suiteInfo", "_userDataDir", 
 	           "_sessionInfo", "_userDataPath", "_readFile", "_readCSVFile", 
-	           "_readURL", "_scriptStatus", "_stackTrace", "_selectWindow"];
+	           "_readURL", "_scriptStatus", "_stackTrace", "_selectWindow", 
+	           "_resolvePath"];
 	for (var i=0; i<fns.length; i++){		
 		this.addRhinoFn(fns[i]);
 	}
@@ -4228,7 +4924,7 @@ Sahi.prototype.prepareADs = function(){
 	this.addAD({tag: "SPAN", type: null, event:"click", name: "_span", attributes: ["sahiText", "id", "className", "index"], action: "_click", value: "sahiText"});
 	this.addAD({tag: "TABLE", type: null, event:"click", name: "_table", attributes: ["id", "className", "index"], action: null, value: "sahiText"});
 	this.addAD({tag: "TR", type: null, event:"click", name: "_row", attributes: ["id", "className", "sahiText", "index"], action: "_click", value: "sahiText"});
-	this.addAD({tag: "TD", type: null, event:"click", name: "_cell", attributes: ["sahiText", "id", "className", "encaps_TR", "encaps_TABLE"], action: "_click", idOnly: true, value: "sahiText"});
+	this.addAD({tag: "TD", type: null, event:"click", name: "_cell", attributes: ["sahiText", "id", "className", "index", "encaps_TR", "encaps_TABLE"], action: "_click", idOnly: true, value: "sahiText"});
 	this.addAD({tag: "TH", type: null, event:"click", name: "_tableHeader", attributes: ["sahiText", "id", "className", "encaps_TABLE"], action: "_click", value: "sahiText"});
 
 	this.addAD({tag: "INPUT", type: "button", event:"click", name: "_button", attributes: ["value", "name", "id", "index", "className"], action: "_click", value: "value"});
@@ -4282,15 +4978,25 @@ Sahi.prototype.prepareADs = function(){
 	this.addAD({tag: "AREA", type: null, event:"click", name: "_area", attributes: ["id", "title|alt", "href", "shape", "className", "index"], action: "_click"});
 	this.addAD({tag: "MAP", type: null, event:"click", name: "_map", attributes: ["name", "id", "title", "className", "index"], action: "_click"});
 
+	this.addAD({tag: "P", type: null, event:"click", name: "_paragraph", attributes: ["encaps_A", "id", "className", "sahiText", "index"], action: "_click", value: "sahiText"});
 	this.addAD({tag: "I", type: null, event:"click", name: "_italic", attributes: ["encaps_A", "sahiText", "id", "className", "index"], action: "_click", value: "sahiText"});
 	this.addAD({tag: "EM", type: null, event:"click", name: "_emphasis", attributes: ["encaps_A", "sahiText", "id", "className", "index"], action: "_click", value: "sahiText"});
 	this.addAD({tag: "B", type: null, event:"click", name: "_bold", attributes: ["encaps_A", "sahiText", "id", "className", "index"], action: "_click", value: "sahiText"});
 	this.addAD({tag: "STRONG", type: null, event:"click", name: "_strong", attributes: ["encaps_A", "sahiText", "id", "className", "index"], action: "_click", value: "sahiText"});
 	this.addAD({tag: "PRE", type: null, event:"click", name: "_preformatted", attributes: ["sahiText", "id", "className", "index"], action: "_click", value: "sahiText"});
 	this.addAD({tag: "CODE", type: null, event:"click", name: "_code", attributes: ["sahiText", "id", "className", "index"], action: "_click", value: "sahiText"});
-	this.addAD({tag: "BLOCKQUOTE", type: null, event:"click", name: "_blockquote", attributes: ["sahiText", "id", "className", "index"], action: "_click", value: "sahiText"});	
+	this.addAD({tag: "BLOCKQUOTE", type: null, event:"click", name: "_blockquote", attributes: ["sahiText", "id", "className", "index"], action: "_click", value: "sahiText"});
 	this.addAD({tag: "CANVAS", type: null, event:"click", name: "_canvas", attributes: ["sahiText", "id", "className", "index"], action: "_click", value: "sahiText"});
-	this.addAD({tag: "ABBR", type: null, event:"click", name: "_abbr", attributes: ["encaps_A", "sahiText", "id", "className", "index"], action: "_click", value: "sahiText"});
+	this.addAD({tag: "ABBR", type: null, event:"click", name: "_abbr", attributes: ["encaps_A", "sahiText", "title", "id", "className", "index"], action: "_click", value: "sahiText"});
+
+	var o_fn1 = function(o){try{return o._sahi_getFlexId();}catch(e){}};
+	var o_fn2 = function(o){try{return o._sahi_getUID();}catch(e){}};
+	this.addAD({tag: "OBJECT", type: null, event:"click", name: "_object", attributes: ["id", "name", "data", o_fn1, o_fn2], action: "_click", value: ""});
+	this.addAD({tag: "EMBED", type: null, event:"click", name: "_embed", attributes: ["id", "name", o_fn1, o_fn2], action: "_click", value: ""});
+
+	this.addAD({tag: "DL", type: null, event:"click", name: "_dList", attributes: ["sahiText", "id", "className", "index"], action: "_click", value: "sahiText"});
+	this.addAD({tag: "DT", type: null, event:"click", name: "_dTerm", attributes: ["sahiText", "id", "className", "index"], action: "_click", value: "sahiText"});
+	this.addAD({tag: "DD", type: null, event:"click", name: "_dDesc", attributes: ["sahiText", "id", "className", "index"], action: "_click", value: "sahiText"});
 
 };
 Sahi.prototype.getAssertions = function(accs, info){
@@ -4324,11 +5030,26 @@ _sahi.language = sahiLanguage;
 /** id end **/
 _sahi.init();
 /** Selenium start **/
-Sahi.prototype._bySeleniumLocator = function(locator){
+Sahi.prototype._bySeleniumLocator = function(locator, popupTarget, frameTarget){
 	if (locator.indexOf("//") == 0) return this._byXPath(locator);
-	else if (locator.indexOf("document") == 0) return this._accessor(locator);
-	else return this._byId(locator) || this.byName(locator, "*");
+	else if(locator.indexOf("xpath=") == 0) return this._byXPath(locator.replace("xpath=", ""));
+	else{
+		var selenium = new BrowserBot(this.top());
+		if(popupTarget != ("" || "undefined" || "null" || null)) selenium.selectWindow(popupTarget);
+		else if(frameTarget != ("" || "undefined" || "null" || null)) selenium.selectFrame(frameTarget);
+		return selenium.findElementOrNull(locator);
+	}
+//	else if (locator.indexOf("document") == 0) return this._accessor(locator);
+//	else if (locator.indexOf("link=") == 0) return this._link(locator.replace("link=", ""));
+//	else return this._byId(locator) || this.byName(locator, "*");
 }
+
+Sahi.prototype._doSeleniumSelect = function(selectLocator, optionLocator, append){
+	var optionItem = new OptionLocatorFactory();
+	var selectItem = this._bySeleniumLocator(selectLocator);
+	this._setSelected(selectItem, optionItem.fromLocatorString(optionLocator).findOption(selectItem).index, append);
+}
+
 /** Selenium end **/
 Sahi.prototype.loadXPathScript = function(){
 	if (this._isFF() || this._isHTMLUnit()) return false;
@@ -4343,7 +5064,6 @@ Sahi.prototype.loadScript = function(src, id){
 	bef.parentNode.insertBefore(newcontent, bef);	
 }
 //document.body.onclick = function(){alert(window.event.clientX + " " + window.event.clientY)}
-
 Sahi.prototype.setLastHTMLSnapShotFile = function(filePath){
 	try{
 		var $htmlUnitViewer = new Packages.com.pushtotest.sahi.SahiHTMLUnit();
@@ -4355,4 +5075,404 @@ Sahi.prototype.setLastHTMLSnapShotFile = function(filePath){
 		}
 	} catch(e){}
 }
+
 __sahiDebug__("concat.js: end");
+
+/** Pro start **/
+Sahi.prototype.setAnchor = function(s){
+	this.anchorStr = s;
+	try{
+		this.anchor = eval(this.addSahi(s));
+	}catch(e){}
+};
+Sahi.prototype.removeAnchor = function(){
+	this.anchorStr = null;
+	this.anchor = null;
+}
+/** Flex start **/
+Sahi.prototype.isFlexObj = function(el){
+	try {return el.isSFL;}
+	catch(e){return false;}
+}
+function isSahiAvailable() {
+	return true;
+}
+function SflWrapper(o){
+	this.isSFL = true;
+	this.object = o;
+	this.id = o._sahi_getFlexId();
+	this.accessorAPINames = new Array();
+	this.addAccessorFns();
+	
+}
+__fl_debugStr = "";
+SflWrapper.prototype.debug = function(s){
+	_sahi._debug(s);
+	return;
+	__fl_debugStr += "\n" + s;
+	_sahi.showStepsInController(__fl_debugStr);
+}
+SflWrapper.prototype.display = function(s){
+	var val = "";
+	if (typeof _sahi == "object") {
+		var ar = eval("("+s+")");
+		var alts = [];
+		for (var i=0; i<ar.length; i++) {
+			var item = ar[i];
+			alts.push(SflWrapper.convertToFn(item));
+		}
+		_sahi.sendIdentifierInfo(alts, 
+				alts[0], 
+				ar[0].value, 
+				"", 
+				[]);
+	}
+}
+SflWrapper.prototype.record = function(elJSON, action, value){
+	if (action == "click") value = null;
+	if (typeof _sahi == "object") {
+		var s = SflWrapper.convertToFn(elJSON);
+		if (_sahi.isRecording()){
+			_sahi.recordStep(this.getStep(action, s, value));
+		}
+	}
+}
+SflWrapper.prototype.getStep = function(action, accessorS, value){
+	return "_" + action + "(" + accessorS + (value ? (", " + value) : "") + ");";
+}
+SflWrapper.prototype.exists = function(){
+	return this.fetch("constructor") != "Error:null_object";
+}
+SflWrapper.prototype.isVisible = function(){
+	if (!this.exists()) return false;
+	try {
+		return this.get("visible") == "true";
+	}catch(e){return false;}
+}
+SflWrapper.prototype.xgetFlexApp = function(id){
+	if (navigator.appName.indexOf ("Microsoft") !=-1) return window[id];
+	return document[id];
+}
+SflWrapper.prototype.addAccessorFns = function(){
+	var actionMethodNames = ["click", "mouseDown", "mouseOver", "mouseUp", "dragDrop", "dragDropXY", "setAsDroppable",
+	                         "setValue", "choose", "listProperties", 
+	                         "introspect", "fetch", "executeFn", 
+	                         "set", "get", "highlight", "getValue", 
+	                         "getText", "getRowNo", "getColumnNo", "getGridData", 
+	                         "getTextOrToolTip", "getDataProviderData", 
+	                         "rightClick", "doubleClick"];	
+	for (var i=0; i<actionMethodNames.length; i++){
+		var methodName = actionMethodNames[i];
+		this[methodName] = this.getFlexFn(methodName, true);
+	}
+}
+SflWrapper.prototype.getFlexFn = function(methodName, isAction){
+	return function(){
+		var ar = new Array();
+		if (this.command) ar[0] = this.command;
+		for (var i=0; i<arguments.length; i++){
+			ar[ar.length] = arguments[i];
+		}
+		var command = {api:methodName, args:ar};
+		//_sahi._alert(_sahi.toJSON(command));
+		if (isAction){
+			var s = this.object._sahi_eval(command);
+			if (s && (typeof s == "string") && s.indexOf("SAHI_FLEX_ERROR") == 0) throw new Error(s);
+			return s;
+		}else {
+			this.command = command;
+			return this;
+		}
+	}
+}
+/*
+SflWrapper.prototype.getAPIObj = function(apiName, args){
+	if (_sahi.isArray(args)) args = [args];
+	return {api:apiName, args:args};
+}
+*/
+SflWrapper.convertToFn = function(s){
+	var o = (typeof s == "string") ? eval("(" + s + ")") : s;
+	return '_flex("' + o.objectId + '").' + o.api + '(' + _sahi.toJSON(o.args[0]) + ')';
+}
+SflWrapper.prototype.addMetaData = function(metadata){
+	if (!metadata.apiName) metadata.apiName = this.getAccessorAPIName(metadata.qn);
+	SflWrapper.prototype[metadata.apiName] = this.getFlexFn(metadata.apiName);
+	this.object._sahi_addMetaData(metadata);
+}
+SflWrapper.prototype.find = function(type, identifier){
+	return this[type](identifier);
+}
+SflWrapper.prototype.getAccessorAPIName = function(qn){
+	var ix = qn.indexOf("::");
+	if (ix != -1) {
+		var a = qn.substring(ix+2).toLowerCase();
+		return (qn.indexOf("spark") == 0) ? ("s_"+a) : a; 
+	}
+	return qn;
+}
+
+SflWrapper.prototype.addAllRecorderListeners = function(){
+	this.object._sahi_addAllRecorderListeners();
+}
+SflWrapper.prototype.near = function(nearObj){
+	this.command.args[0] = {id:this.command.args[0], near:nearObj.command};
+	return this;
+}
+SflWrapper.prototype.inside = function(inObj){
+	this.command.args[0] = {id:this.command.args[0], inside:inObj.command};
+	return this;
+}
+SflWrapper.prototype.getData = function(){
+	return eval("(" + this.getDataProviderData().replace(/[\r\n]/g, "") + ")");
+}
+SflWrapper.prototype.currentCursorID = function(){
+	return this.object._sahi_currentCursorID();
+}
+SflWrapper.prototype.addAllMetaData = function(){
+//	this.addMetaData({qn: "mx.core::UIComponent", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
+	this.addMetaData({qn: "mx.core::UITextField", attributes: ["encaps_mx.controls::DateField", "encaps_mx.controls::DateChooser", "encaps_mx.controls::ComboBox", 
+	                                                           "encaps_mx.controls::TextInput", "encaps_mx.controls::TextArea",
+	                                                           "label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "", value: "text"});
+	
+	this.addMetaData({qn: "mx.controls::AdvancedDataGrid", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
+	this.addMetaData({qn: "mx.controls::AdvancedDataGridBaseEx", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
+	this.addMetaData({qn: "mx.controls::AdvancedDataGridGroupItemRenderer", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
+	this.addMetaData({qn: "mx.controls::Alert", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
+	this.addMetaData({qn: "mx.controls::Button", attributes: ["encaps_mx.controls::ColorPicker", "encaps_mx.controls::DateField", "encaps_mx.controls::ComboBox", "label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
+	this.addMetaData({qn: "mx.controls::ButtonBar", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
+	this.addMetaData({qn: "mx.controls::ButtonLabelPlacement", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
+	this.addMetaData({qn: "mx.controls::CheckBox", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "selected"});
+	this.addMetaData({qn: "mx.controls::ColorPicker", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "setValue", value: "selectedColor"});
+	this.addMetaData({qn: "mx.controls::ComboBase", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
+	this.addMetaData({qn: "mx.controls::ComboBox", attributes: ["label", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "setSelected", value: "selectedItemLabel"});
+	this.addMetaData({qn: "mx.controls::DataGrid", attributes: ["encaps_spark.components::PopUpAnchor","label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
+	this.addMetaData({qn: "mx.controls.dataGridClasses::DataGridHeader", attributes: ["text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "text"});
+	this.addMetaData({qn: "mx.controls.dataGridClasses::DataGridColumn", attributes: ["headerText", "dataField", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "text"});
+	this.addMetaData({qn: "mx.controls.dataGridClasses::DataGridItemRenderer", attributes: ["text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "text"});
+	this.addMetaData({qn: "mx.controls::DateChooser", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "setValue", value: "selectedDate"});
+	this.addMetaData({qn: "mx.controls::DateField", attributes: ["label", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "setValue", value: "selectedDate"});
+	this.addMetaData({qn: "mx.controls::FileSystemComboBox", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
+	this.addMetaData({qn: "mx.controls::FileSystemDataGrid", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
+	this.addMetaData({qn: "mx.controls::FileSystemEnumerationMode", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
+	this.addMetaData({qn: "mx.controls::FileSystemHistoryButton", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
+	this.addMetaData({qn: "mx.controls::FileSystemList", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
+	this.addMetaData({qn: "mx.controls::FileSystemSizeDisplayMode", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
+	this.addMetaData({qn: "mx.controls::FileSystemTree", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
+	this.addMetaData({qn: "mx.controls::FlexNativeMenu", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
+	this.addMetaData({qn: "mx.controls::FormItemLabel", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
+	this.addMetaData({qn: "mx.controls::HorizontalList", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
+	this.addMetaData({qn: "mx.controls::HRule", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
+	this.addMetaData({qn: "mx.controls::HScrollBar", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
+	this.addMetaData({qn: "mx.controls::HSlider", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "setValue", value: "sliderValue"});
+	this.addMetaData({qn: "mx.controls::HTML", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
+	this.addMetaData({qn: "mx.controls::Image", attributes: ["text", "name", "content", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "toolTip"});
+	this.addMetaData({qn: "mx.controls::Label", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "", value: "text"});
+	this.addMetaData({qn: "mx.controls::LinkBar", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
+	this.addMetaData({qn: "mx.controls::LinkButton", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
+	this.addMetaData({qn: "mx.controls::List", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
+	this.addMetaData({qn: "mx.controls::Menu", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
+	this.addMetaData({qn: "mx.controls::MenuBar", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
+	this.addMetaData({qn: "mx.controls.menuClasses::MenuBarItem", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
+	this.addMetaData({qn: "mx.controls::MXFTETextInput", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
+	this.addMetaData({qn: "mx.controls::NavBar", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
+	this.addMetaData({qn: "mx.controls::NumericStepper", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "setValue", value: "value"});
+	this.addMetaData({qn: "mx.controls::OLAPDataGrid", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
+	this.addMetaData({qn: "mx.controls::PopUpButton", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
+	this.addMetaData({qn: "mx.controls::PopUpMenuButton", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
+	this.addMetaData({qn: "mx.controls::ProgressBar", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
+	this.addMetaData({qn: "mx.controls::ProgressBarDirection", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
+	this.addMetaData({qn: "mx.controls::ProgressBarLabelPlacement", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
+	this.addMetaData({qn: "mx.controls::ProgressBarMode", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
+	this.addMetaData({qn: "mx.controls::RadioButton", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
+	this.addMetaData({qn: "mx.controls::RadioButtonGroup", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
+	this.addMetaData({qn: "mx.controls::RichTextEditor", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
+	this.addMetaData({qn: "mx.controls::Spacer", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
+	this.addMetaData({qn: "mx.controls::SWFLoader", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
+	this.addMetaData({qn: "mx.controls::TabBar", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
+	this.addMetaData({qn: "mx.controls::Text", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "text"});
+	this.addMetaData({qn: "mx.controls::TextArea", attributes: ["label", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "setValue", value: "text"});
+	this.addMetaData({qn: "mx.controls::TextInput", attributes: ["encaps_mx.controls::DateField", "label", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "setValue", value: "text"});
+	this.addMetaData({qn: "mx.controls::TileList", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
+	this.addMetaData({qn: "mx.controls::ToggleButtonBar", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
+	this.addMetaData({qn: "mx.controls::ToolTip", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
+	this.addMetaData({qn: "mx.controls::Tree", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
+	this.addMetaData({qn: "mx.controls::VideoDisplay", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
+	this.addMetaData({qn: "mx.controls::VRule", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
+	this.addMetaData({qn: "mx.controls::VScrollBar", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
+	this.addMetaData({qn: "mx.controls::VSlider", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "setValue", value: "sliderValue"});
+	this.addMetaData({qn: "mx.controls.scrollClasses::ScrollThumb", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
+
+	this.addMetaData({qn: "mx.charts::PieChart", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
+	this.addMetaData({qn: "mx.charts.series::PieSeries", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
+	this.addMetaData({qn: "mx.charts.renderers::WedgeItemRenderer", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
+	this.addMetaData({qn: "mx.charts.series::ColumnSet", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
+	this.addMetaData({qn: "mx.charts.series::ColumnSeries", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
+	
+	// move this to user_ext.js
+	this.addMetaData({qn: "siteAnalysis.view.components::SiteColumnChart", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
+	this.addMetaData({qn: "categoryAnalysis.view.components::CategoryColumnChart", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
+	
+	
+	this.addMetaData({qn: "mx.controls.listClasses::ListItemRenderer", attributes: ["data", "label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "data"});
+	this.addMetaData({qn: "mx.controls.listClasses::ListBaseContentHolder", attributes: ["text", "data", "label", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "data"});
+	this.addMetaData({qn: "mx.controls.listClasses::AdvancedListBaseContentHolder", attributes: ["text", "data", "label", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "data"});
+	this.addMetaData({qn: "mx.controls.tabBarClasses::Tab", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
+	this.addMetaData({qn: "mx.controls.buttonBarClasses::ButtonBarButton", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
+	this.addMetaData({qn: "mx.controls.sliderClasses::SliderLabel", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
+	this.addMetaData({qn: "mx.controls.sliderClasses::SliderThumb", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
+	
+	this.addMetaData({qn: "mx.containers::Accordion", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
+	this.addMetaData({qn: "mx.containers::ApplicationControlBar", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
+	this.addMetaData({qn: "mx.containers::Box", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
+	this.addMetaData({qn: "mx.containers::BoxDirection", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
+	this.addMetaData({qn: "mx.containers::Canvas", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
+	this.addMetaData({qn: "mx.containers::ControlBar", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
+	this.addMetaData({qn: "mx.containers::DividedBox", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
+	this.addMetaData({qn: "mx.containers::Form", attributes: ["encaps_spark.components::PopUpAnchor","label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
+	this.addMetaData({qn: "mx.containers::FormHeading", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
+	this.addMetaData({qn: "mx.containers::FormItem", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
+	this.addMetaData({qn: "mx.containers::FormItemDirection", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
+	this.addMetaData({qn: "mx.containers::Grid", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
+	this.addMetaData({qn: "mx.containers::GridItem", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
+	this.addMetaData({qn: "mx.containers::GridRow", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
+	this.addMetaData({qn: "mx.containers::HBox", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "", value: "label"});
+	this.addMetaData({qn: "mx.containers::HDividedBox", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "", value: "label"});
+	this.addMetaData({qn: "mx.containers::Panel", attributes: ["title", "label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "", value: "label"});
+	this.addMetaData({qn: "mx.containers::TabNavigator", attributes: ["spark.components::NavigatorContent","label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "", value: "label"});
+	this.addMetaData({qn: "mx.containers::Tile", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
+	this.addMetaData({qn: "mx.containers::TileDirection", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
+	this.addMetaData({qn: "mx.containers::TitleWindow", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
+	this.addMetaData({qn: "mx.containers::VBox", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
+	this.addMetaData({qn: "mx.containers::VDividedBox", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
+	this.addMetaData({qn: "mx.containers::ViewStack", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
+	this.addMetaData({qn: "mx.charts::ColumnChart", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
+	
+	//Spark Components Start
+	this.addMetaData({qn: "spark.components::Panel", attributes: ["title", "label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "", value: "label"});
+	this.addMetaData({qn: "spark.components::Label", attributes: ["encaps_spark.components::FormItem","encaps_spark.components::DropDownList","encaps_spark.components::ComboBox","encaps_spark.components::FormHeading", "label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "", value: "text"});
+	this.addMetaData({qn: "spark.components::TextInput", attributes: ["encaps_spark.components::FormItem","encaps_spark.components::NumericStepper", "label", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "setValue", value: "text"});
+	this.addMetaData({qn: "spark.components::Button", attributes: ["encaps_spark.components::FormItem","encaps_spark.components::Spinner","encaps_spark.components::VScrollBar", "encaps_spark.components::HScrollBar","encaps_spark.components::VSlider", "encaps_spark.components::HSlider",
+	                                                               "encaps_spark.components::DropDownList", "encaps_spark.components::NumericStepper","encaps_spark.components::ComboBox",
+	                                                               "label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
+	this.addMetaData({qn: "spark.components::HSlider", attributes: ["encaps_spark.components::VGroup","label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "setValue", value: "value"});
+	this.addMetaData({qn: "spark.components::VSlider", attributes: ["encaps_spark.components::VGroup","label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "setValue", value: "value"});
+	this.addMetaData({qn: "spark.components::DropDownList", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "setSelected", value: "selectedItemLabel"});
+	this.addMetaData({qn: "spark.components::NumericStepper", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "setValue", value: "value"});
+	this.addMetaData({qn: "spark.components::CheckBox", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "selected"});
+//	this.addMetaData({qn: "mx.controls::Text", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "text"});
+//	this.addMetaData({qn: "mx.controls::TextArea", attributes: ["label", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "setValue", value: "text"});
+	
+	//Theeran Start
+	this.addMetaData({qn: "spark.components::TextArea", attributes: ["label","text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "setValue", value: "name"});
+	this.addMetaData({qn: "spark.components::ButtonBar", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value:"label"});
+	this.addMetaData({qn: "spark.components::ButtonBarButton", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value:"label"});
+	this.addMetaData({qn: "spark.components::CheckBox", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value:"selected"});
+	this.addMetaData({qn: "spark.components::ComboBox", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "setSelected", value: "selectedItemLabel"});
+	this.addMetaData({qn: "spark.components::DataGroup", attributes: ["encaps_spark.components::Label","encaps_spark.components::List","encaps_spark.components::ButtonBar","encaps_spark.components::TabBar","label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "", value: "label"});
+	this.addMetaData({qn: "spark.components::DropDownList", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "setSelected", value: "selectedItemLabel"});
+//	this.addMetaData({qn: "spark.components::Group", attributes: ["encaps_spark.components::Form","encaps_spark.components::DataGrid","encaps_spark.components::VideoPlayer","encaps_spark.components::TitleWindow","encaps_spark.components::RichText","encaps_spark.components::VScrollBar","encaps_spark.components::TextArea","encaps_spark.components::NavigatorContent","encaps_spark.components::PopUpAnchor","label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
+//	this.addMetaData({qn: "spark.components::HGroup", attributes: ["encaps_spark.components::VScrollBar","label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "name"});
+//	this.addMetaData({qn: "spark.components::VGroup", attributes: ["encaps_spark.components::DataGrid","encaps_spark.components::HSlider","encaps_spark.components::HSrollBar","encaps_spark.components::NumericStepper","label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "name"});
+	this.addMetaData({qn: "spark.components::HScrollBar", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "change", value: "value"});
+	this.addMetaData({qn: "spark.components::HSlider", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "change", value: "value"});
+	this.addMetaData({qn: "spark.components::List", attributes: ["encaps_spark.components::Label", "label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "setSelected", value: "selectedItem"});
+	this.addMetaData({qn: "spark.components::NavigatorContent", attributes: ["encaps_spark.components::Label","label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
+	this.addMetaData({qn: "spark.components::NumericStepper", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "value"});
+	this.addMetaData({qn: "spark.components::PopUpAnchor", attributes: ["title", "label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "", value: ""});
+	this.addMetaData({qn: "spark.components::RadioButton", attributes: ["encaps_spark.components::RadioButtonGroup","label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
+	this.addMetaData({qn: "spark.components::TextArea", attributes: ["label", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "setValue", value: "text"});
+	this.addMetaData({qn: "spark.components::VScrollBar", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "change", value: "label"});
+	this.addMetaData({qn: "spark.components::RadioButtonGroup", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
+	this.addMetaData({qn: "spark.components::RichEditableText", attributes: ["encaps_spark.components::TextArea","encaps_spark.components::TextInput", "label", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "setValue", value: "text"});
+	//this.addMetaData({qn: "spark.components::Scroller", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "value"});
+	this.addMetaData({qn: "spark.components::Spinner", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "value"});
+	this.addMetaData({qn: "spark.components::TabBar", attributes: ["label", "text", "name", "automationName", "tool-Tip", "id", "autoGeneratedName", "index"], action: "change", value: "selectedItem"});
+	this.addMetaData({qn: "spark.components::TileGroup", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
+	this.addMetaData({qn: "spark.components::TitleWindow", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
+	this.addMetaData({qn: "spark.components::ToggleButton", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
+	this.addMetaData({qn: "spark.components::VideoDisplay", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
+	this.addMetaData({qn: "spark.components::VideoPlayer", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
+	this.addMetaData({qn: "spark.components::PopUpAnchor", attributes: ["title", "label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "", value: ""});
+	this.addMetaData({qn: "spark.components::RadioButtonGroup", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
+	this.addMetaData({qn: "spark.components::RichText", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "setValue", value: "text"});
+	this.addMetaData({qn: "spark.components::TileGroup", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
+	this.addMetaData({qn: "spark.components::DataGrid", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
+	this.addMetaData({qn: "spark.components::DataItem", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
+	this.addMetaData({qn: "spark.components::Form", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
+	this.addMetaData({qn: "spark.components::FormHeading", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
+	this.addMetaData({qn: "spark.components::FormItem", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
+	this.addMetaData({qn: "spark.components.gridClasses::GridColumn", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "dataField"});
+	this.addMetaData({qn: "spark.components::Grid", attributes: ["encaps_spark.components::DataItem","label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
+	this.addMetaData({qn: "spark.components::GridColumnHeaderGroup", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
+	this.addMetaData({qn: "spark.components::Image", attributes: ["text", "name", "content", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "toolTip"});
+
+	//Theeran End
+	//Spark Components End
+	SflWrapper.prototype.cell = this.getFlexFn("cell");
+	
+	this.addCustomMetaData();
+}
+Sahi.prototype.getFlexWrapper = function(o){
+	var win = this.getWindow(o);
+	var t = win.SflWrapper;
+	return new t(o);
+}
+Sahi.prototype._flex = function(id){
+	var o = this._embed(id) || this._object(id);
+	return this.getFlexWrapper(o);
+}
+Sahi.prototype._findFlexElement = function(fl, api, id, rel){
+	var el = fl[api](id);
+	if (rel && rel.type == "dom") {
+		if (rel.relation == "_in") return el.inside(rel.element);
+		if (rel.relation == "_near") return el.near(rel.element);
+	}
+	return el;
+}
+Sahi.prototype._sfl_executeFn = function(el, fnName){
+	return el.executeFn.apply(el, this.getArgsAr(arguments, 1));
+}
+Sahi.prototype._sfl_set = function(el, key, value){
+	return el.set(key, value);
+}
+Sahi.prototype._sfl_get = function(el, key){
+	return el.get(key);
+}
+Sahi.prototype._sfl_listProperties = function(el, fn){
+	return el.listProperties();
+}
+Sahi.prototype._sfl_introspect = function(el){
+	return el.introspect();
+}
+Sahi.prototype._sfl_getGridData = function(el){
+	return el.getGridData();
+}
+Sahi.prototype._sfl_getData = function(el){
+	return el.getData();
+}
+Sahi.prototype.setMyFlexId = function(uid){
+	try {
+		var o = this._embed(uid) || this._object(uid);
+		//alert(uid + " " + o);
+		if (!o) return null;
+		var flexId = (!this.isBlankOrNull(o.id)) ? o.id : o.name;
+		o._sahi_setFlexId(flexId);
+	}catch(e){alert(e);}
+}
+Sahi.prototype.isApplet = function(){
+	return false;
+}
+/** Flex end **/
+
+
+
+/** Pro end **/
+/*
+// Event listener listening code 
+var __old_addEvLis = HTMLInputElement.prototype.addEventListener;
+HTMLInputElement.prototype.addEventListener = function(type, listener, useCapture){
+	_sahi._debug(type + " " + this.id + " " + listener);
+    __old_addEvLis.apply(this, arguments);
+}
+*/

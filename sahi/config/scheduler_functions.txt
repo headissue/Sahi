@@ -69,3 +69,5 @@ _simulateMouseEventXY
 _mouseDown
 _mouseUp
 _setStrictVisibilityCheck
+_setFile2
+_setXHRReadyStatesToWaitFor

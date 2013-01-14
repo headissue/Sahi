@@ -1,0 +1,105 @@
+//TESTS FOR POSITIONALS
+_navigateTo("positionals.htm");
+
+function testFormElement(){
+	_navigateTo("positionals.htm");
+	_assertEqual(_checkbox("cbj"), _checkbox(0, _under(_cell("Check A"))));
+	_assertEqual(_checkbox("cbm"), _checkbox(0, _under(_cell("Check B"))));
+
+	_assertEqual(_checkbox(1), _checkbox("cb", _under(_cell("Check A"))));
+	_assertEqual(_checkbox(4), _checkbox("cb", _under(_cell("Check B"))));
+}
+
+function testTag(){
+	_navigateTo("positionals.htm");
+	_assertEqual(_cell("Jaja"), _cell(0, _under(_cell("Name"))));
+	_assertEqual(_cell("Maja"), _cell(0, _under(_cell("Name[1]"))));
+
+	_assertEqual(_cell("Baja"), _cell(1, _under(_cell("Name"))));
+	_assertEqual(_cell("Paja"), _cell(1, _under(_cell("Name[1]"))));
+}
+
+function testNestedUnder(){
+	_navigateTo("positionals.htm");
+	_assertEqual("aaa", _getText(_cell(0, _under(_tableHeader("In-Progress", _under(_tableHeader("Ready")))))));
+	_assertEqual("bbb", _getText(_cell(0, _under(_tableHeader("Done", _under(_tableHeader("Ready")))))));
+	_assertEqual("ccc", _getText(_cell(0, _under(_tableHeader("In-Progress", _under(_tableHeader("Development")))))));
+	_assertEqual("ddd", _getText(_cell(0, _under(_tableHeader("Done", _under(_tableHeader("Development")))))));
+	_assertEqual("eee", _getText(_cell(0, _under(_tableHeader("Complete")))));
+	_assertEqual("aaa", _getText(_cell(0, _under(_tableHeader("Ready")))));
+	_assertEqual("bbb", _getText(_cell(1, _under(_tableHeader("Ready")))));
+	_assertEqual("bbb2", _getText(_cell(0, _near(_cell("aaa2")), _under(_tableHeader("Done", _under(_tableHeader("Ready")))))));
+	_assertEqual("ddd2", _getText(_cell(0, _near(_cell("aaa2")), _under(_tableHeader("Done", _under(_tableHeader("Development")))))));
+}
+
+function testFormElementUnderAboveLeftRight(){
+	_navigateTo("positionals.htm");
+	_assertEqual(_textbox("one"), _textbox(0, _rightOf(_cell("Mojo"))));
+	_assertEqual(_textbox("one"), _textbox(0, _leftOf(_cell("Rising"))));
+
+	_assertEqual(_textbox("three"), _textbox(1, _rightOf(_div("lMy"),20)));
+	_assertEqual(_textbox("three"), _textbox(1, _leftOf(_div("rMy"),20)));
+	_assertEqual(_textbox("three"), _textbox(1, _leftOrRightOf(_div("rMy"),20)));
+
+	_assertEqual(_textbox("two"), _textbox(1, _rightOf(_div("lMy"),50)));
+	_assertEqual(_textbox("two"), _textbox(1, _leftOf(_div("rMy"),50)));
+
+	_assertEqual(_textbox("two"), _textbox(0, _under(_textbox("one"))));
+	_assertEqual(_textbox("one"), _textbox(0, _above(_textbox("two"))));
+
+	_assertEqual(_textbox("three"), _textbox(1, _under(_textbox("one"))));
+	_assertEqual(_textbox("one"), _textbox(0, _above(_textbox("three"))));
+
+	_assertEqual(_textbox("three"), _textbox(1, _under(_cell("Mojo"),20)));
+	_assertEqual(_textbox("one"), _textbox(0, _above(_cell("Years"),20)));
+
+	_assertEqual(_div("lLight"), _div(0, _under(_cell("Mojo"),200)));
+	_assertEqual(_div("rLight"), _div(3, _under(_cell("Mojo"),200)));
+	_assertEqual(_div("lLight"), _div(0, _above(_cell("Years"),200)));
+	_assertEqual(_div("rLight"), _div(3, _above(_cell("Years"),200)));
+	
+}
+
+function testNestedUnderAboveLeftRight(){
+	_navigateTo("positionals.htm");
+	_assertEqual(_cell("Rising"),_cell("Rising", _rightOf(_cell("Mojo"),10), _rightOf(_textbox("one"),10)));
+	_assertEqual(_cell("Mojo"),_cell("Mojo", _leftOf(_cell("Rising"),10), _leftOf(_textbox("one"),10)));
+	_assertEqual(_textbox("three"),_textbox(0, _under(_textbox("two")), _under(_textbox("one"))));
+	_assertEqual(_textbox("three"),_textbox(0, _under(_textbox("two")), _under(_textbox("one"))));
+	_assertEqual(_textbox("one"),_textbox(0, _above(_textbox("two")), _above(_textbox("three"))));
+	_assertEqual(_textbox("one"),_textbox(0, _above(_textbox("two")), _above(_textbox("three"))));
+	_assertEqual(_textbox("one"),_textbox(0, _aboveOrUnder(_textbox("two")), _above(_textbox("three"))));
+}
+
+function testUnderAboveLeftRightCombinations(){
+	_navigateTo("positionals.htm");
+	_assertEqual(_textbox("one"),_textbox(0, _rightOf(_cell("Mojo")), _leftOf(_cell("Rising"))));
+	_assertEqual(_textbox("one"),_textbox(0,_leftOf(_cell("Rising")), _rightOf(_cell("Mojo"))));
+
+	_assertEqual(_textbox("two"),_textbox(0, _rightOf(_cell("Mojo"),30), _under(_textbox("one"))));
+	_assertEqual(_textbox("two"),_textbox(0, _under(_textbox("one")), _rightOf(_cell("Mojo"),30)));
+
+	_assertEqual(_textbox("two"),_textbox(0, _leftOf(_cell("Rising"),30), _under(_textbox("one"))));
+	_assertEqual(_textbox("two"),_textbox(0,_under(_textbox("one")), _leftOf(_cell("Rising"),30)));
+
+	_assertEqual(_textbox("one"),_textbox(0, _rightOf(_cell("Mojo"),30), _above(_textbox("three"))));
+	_assertEqual(_textbox("one"),_textbox(0,_above(_textbox("three")), _rightOf(_cell("Mojo"),30)));
+	_assertEqual(_textbox("one"),_textbox(0,_above(_textbox("three")), _leftOrRightOf(_cell("Mojo"),30)));
+
+	_assertEqual(_textbox("one"),_textbox(0, _leftOf(_cell("Rising"),30), _above(_textbox("three"))));
+	_assertEqual(_textbox("one"),_textbox(0,_above(_textbox("three")), _leftOf(_cell("Rising"),30)));
+	_assertEqual(_textbox("one"),_textbox(0,_above(_textbox("three")), _leftOrRightOf(_cell("Rising"),30)));
+
+	_assertEqual(_textbox("two"),_textbox(0, _under(_textbox("one")), _above(_textbox("three"))));
+	_assertEqual(_textbox("two"),_textbox(0,_above(_textbox("three")), _under(_textbox("one"))));
+	
+	_assertEqual(_textbox("two"),_textbox(0,_above(_textbox("three")), _under(_textbox("one")) ,_rightOf(_div("lLight"),30), _leftOf(_div("rLight"),30) ));
+}
+function testIndexedCells(){
+	_navigateTo("tableTest.htm");
+	_assertEqual(_cell("0-0"),_cell(0, _leftOf(_cell("CellWithId"))));
+	_assertEqual(_cell("0-3"),_cell(0, _rightOf(_cell("CellWithId"))));
+}
+
+
+_runUnitTests();

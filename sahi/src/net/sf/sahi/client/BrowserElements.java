@@ -326,6 +326,7 @@ public abstract class BrowserElements {
 	 * @param Identifier: can be id, className, text, index
 	 * @return a stub representing the accessor
 	 */
+	
 	public ElementStub row(Object... args) {return new ElementStub("row", browser, args);}
 	/**
 	 * Defines a div element. <br/>
@@ -359,7 +360,87 @@ public abstract class BrowserElements {
 	 * @return a stub representing the element
 	 */
 	public ElementStub span(Object... args) {return new ElementStub("span", browser, args);}
+	
+	/**
+	 * Defines the element in focus. <br/>
+	 * Usage: browser.activeElement() <br/>
+	 * <br/>
+	 * Example:<br/>
+	 * <code>assertEquals("username", browser.activeElement().fetch("id"));</code><br/>
+	 * 
+	 * @return a stub representing the element
+	 */
+	public ElementStub activeElement(Object... args) {return new ElementStub("activeElement", browser, args);}
+	
+	/**
+	 * Defines a definition list. <br/>
+	 * Usage: browser.dList(identifier) <br/>
+	 * HTML: {@code <dl class=”classname” id=”id”></dl>}<br/>
+	 * Identifier: sahiText, id, className, index<br/>
+	 * <br/>
+	 * Example:<br/>
+	 * <code>browser.dList("definitionListId")</code><br/>
+	 * 
+	 * @param Identifier: can be sahiText, id, className, index
+	 * @return a stub representing the element
+	 */
+	public ElementStub dList(Object... args) {return new ElementStub("dList", browser, args);}
 
+	/**
+	 * Defines an item in a definition list. <br/>
+	 * Usage: browser.dTerm(identifier) <br/>
+	 * HTML: {@code <dt class=”classname” id=”id”></dt>}<br/>
+	 * Identifier: sahiText, id, className, index<br/>
+	 * <br/>
+	 * Example:<br/>
+	 * <code>browser.dTerm("termContent")</code><br/>
+	 * 
+	 * @param Identifier: can be sahiText, id, className, index
+	 * @return a stub representing the element
+	 */
+	public ElementStub dTerm(Object... args) {return new ElementStub("dTerm", browser, args);}
+	/**
+	 * Defines a description of item in a definition list. <br/>
+	 * Usage: browser.dDesc(identifier) <br/>
+	 * HTML: {@code <dd class=”classname” id=”id”></dd>}<br/>
+	 * Identifier: sahiText, id, className, index<br/>
+	 * <br/>
+	 * Example:<br/>
+	 * <code>browser.dDesc("description")</code><br/>
+	 * 
+	 * @param Identifier: can be sahiText, id, className, index
+	 * @return a stub representing the element
+	 */
+	public ElementStub dDesc(Object... args) {return new ElementStub("dDesc", browser, args);}
+	/**
+	 * Defines an abbreviation. <br/>
+	 * Usage: browser.abbr(identifier) <br/>
+	 * HTML: {@code <abbr class="className" id="id">sahiText</abbr>}<br/>
+	 * Identifier: sahiText, title, id, className, index<br/>
+	 * <br/>
+	 * Example:<br/>
+	 * <code>browser.abbr("GNU")</code><br/>
+	 * 
+	 * @param Identifier: can be sahiText, title, id, className, index
+	 * @return a stub representing the element
+	 */
+	
+	public ElementStub abbr(Object... args) {return new ElementStub("abbr", browser, args);}
+	/**
+	 * Defines a paragraph element. <br/>
+	 * Usage: browser.paragraph(identifier) <br/>
+	 * HTML: {@code <paragraph>text</paragraph>}<br/>
+	 * Identifier: index, id, text<br/>
+	 * <br/>
+	 * Example:<br/>
+	 * <code>browser.paragraph("pId").getText()</code><br/>
+	 * 
+	 * will return the text contents of the paragraph.
+	 *  
+	 * @param Identifier: can be id, className, text, index
+	 * @return a stub representing the accessor
+	 */
+	public ElementStub paragraph(Object... args) {return new ElementStub("paragraph", browser, args);}
 	/**
 	 * Defines a spandiv element. <br/>
 	 * Usage: browser.spandiv(identifier) <br/>

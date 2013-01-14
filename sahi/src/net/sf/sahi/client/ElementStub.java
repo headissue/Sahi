@@ -493,7 +493,38 @@ public class ElementStub {
 	public ElementStub near(ElementStub nearEl) {
 		return relation("near", nearEl);
 	}
+	
+	/**
+	 * Establishes a "near" relation with another element.<br/>
+	 * Eg. {@code browser.link("delete").near(browser.cell("user1")).click();}<br/>
+	 * This clicks on the delete link near a cell with content "user1"
+	 * 
+	 * 
+	 * @param nearEl
+	 * @return Element with relation established
+	 */
 
+	public ElementStub above(ElementStub aboveEl) {
+		return relation("above", aboveEl);
+	}
+	
+	public ElementStub aboveOrUnder(ElementStub aboveOrUnderEl) {
+		return relation("aboveOrUnder", aboveOrUnderEl);
+	}
+	
+	public ElementStub leftOf(ElementStub leftOfEl) {
+		return relation("leftOf", leftOfEl);
+	}
+	
+	public ElementStub rightOf(ElementStub rightOfEl) {
+		return relation("rightOf", rightOfEl);
+	}
+	
+	public ElementStub leftOrRightOf(ElementStub leftOrRightOfEl) {
+		return relation("leftOf", leftOrRightOfEl);
+	}
+	
+	
 	private ElementStub relation(String relationType, ElementStub inEl) {
 		Object[] newArray = new Object[this.identifiers.length + 1];
 		System.arraycopy(this.identifiers, 0, newArray, 0, this.identifiers.length);

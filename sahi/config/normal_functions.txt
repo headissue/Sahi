@@ -55,6 +55,11 @@ _code
 _blockquote
 _xy
 _under
+_above
+_aboveOrUnder
+_leftOf
+_rightOf
+_leftOrRightOf
 _byXPath
 _bySeleniumLocator
 
@@ -144,9 +149,18 @@ _numberbox
 _rangebox
 _searchbox
 _telbox
+_telephonebox
+_sendHTMLResponseAfterFileDownload
 _timebox
 _urlbox
 _weekbox
+_abbr
+_activeElement
 _count
 _collect
 _canvas
+_dList
+_dTerm
+_dDesc
+_paragraph
+_scriptStartTime

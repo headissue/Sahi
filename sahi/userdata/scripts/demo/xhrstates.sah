@@ -1,0 +1,21 @@
+_navigateTo("/demo/");
+_assert(_sahi.waitWhenXHRReadyState1);
+_assert(_sahi.waitWhenXHRReadyState2);
+_assert(_sahi.waitWhenXHRReadyState3);
+
+_setXHRReadyStatesToWaitFor("2,3");
+_assertFalse(_sahi.waitWhenXHRReadyState1);
+_assert(_sahi.waitWhenXHRReadyState2);
+_assert(_sahi.waitWhenXHRReadyState3);
+
+_click(_link("Link Test"));
+_assertFalse(_sahi.waitWhenXHRReadyState1);
+_assert(_sahi.waitWhenXHRReadyState2);
+_assert(_sahi.waitWhenXHRReadyState3);
+
+_setXHRReadyStatesToWaitFor("2");
+_click(_link("Back"));
+_assertFalse(_sahi.waitWhenXHRReadyState1);
+_assert(_sahi.waitWhenXHRReadyState2);
+_assertFalse(_sahi.waitWhenXHRReadyState3);
+

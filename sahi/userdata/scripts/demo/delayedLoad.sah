@@ -7,4 +7,5 @@ _set($t, parseInt(_div("clock").innerHTML));
 _log($t);
 _assert($t > 8 && $t < 12);
 _click(_link("Go home"));
+_wait(3000);
 _assertExists(_link("Form Test"));
