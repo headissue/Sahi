@@ -2969,7 +2969,7 @@ Sahi.prototype.setJSError = function (msg, lno) {
 Sahi.prototype.openWin = function (e) {
     try {
         if (!e) e = window.event;
-        this.controller = window.open("", "_sahiControl", this.getWinParams(e));
+        this.controller = window.open("", "sahiControl", this.getWinParams(e));
         var diffDom = false;
         try {
             var checkDiffDomain = this.controller.document.domain;
@@ -2977,7 +2977,7 @@ Sahi.prototype.openWin = function (e) {
             diffDom = true;
         }
         if (diffDom || !this.controller.isWinOpen) {
-            this.controller = window.open(this.controllerURL, "_sahiControl", this.getWinParams(e));
+            this.controller = window.open(this.controllerURL, "sahiControl", this.getWinParams(e));
         }
         if (this.controller) this.controller.opener = window;
         if (e) this.controller.focus();
@@ -3008,10 +3008,20 @@ Sahi.prototype.getController = function () {
     var controller = this.topSahi().controller;
     if (controller && !controller.closed) return controller;
 };
-Sahi.prototype.openControllerWindow = function (e) {
+Sahi.prototype.xopenControllerWindow = function (e) {
     if (!e) e = window.event;
     if (!this.isHotKeyPressed(e)) return true;
     this.topSahi().openWin(e);
+    return true;
+};
+Sahi.prototype.openControllerWindow = function (e) {
+    if (!e) e = window.event;
+    if (!this.isHotKeyPressed(e)) return true;
+    if (this._isChrome()) {
+        window.setTimeout(function(){_sahi.topSahi().openWin(e)}, 100);
+    } else {
+        this.topSahi().openWin(e);
+    }
     return true;
 };
 Sahi.prototype.isHotKeyPressed = function (e) {
