@@ -1,6 +1,7 @@
+
 if (_condition(navigator.appName == "Microsoft Internet Explorer")){
 	_click(_link("Key Press"));
-
+	_click(_radio("r3"));
 	_keyPress(_textbox("t2"), 'a')
 	_assertEqual("key pressed charCode=[undefined] keyCode=[97] NONE", _textbox("t1").value);
 	_assertEqual("a", _textbox("t2").value);
@@ -23,7 +24,7 @@ if (_condition(navigator.appName == "Microsoft Internet Explorer")){
 }else {
 	if (_condition(navigator.userAgent.match(/Firefox/) != null)) {
 		_click(_link("Key Press"));
-
+		_click(_radio("r3"));
 		_keyPress(_textbox("t2"), 'a')
 		_assertEqual("key pressed charCode=[97] keyCode=[0] NONE", _textbox("t1").value);
 		_assertEqual("a", _textbox("t2").value);
@@ -45,7 +46,7 @@ if (_condition(navigator.appName == "Microsoft Internet Explorer")){
 		_assertEqual("aaA", _textbox("t2").value);
 	} else {
 	    _click(_link("Key Press"));
-
+		_click(_radio("r3"));
 	    _keyPress(_textbox("t2"), 'a')
 	    _assertEqual("key pressed charCode=[97] keyCode=[97] NONE", _textbox("t1").value);
 	    _assertEqual("a", _textbox("t2").value);
