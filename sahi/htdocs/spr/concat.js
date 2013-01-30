@@ -3465,10 +3465,17 @@ Sahi.prototype.ex = function (isStep) {
     	this.currentStepId = stepId;
     	this.currentType = type; 
 //    	this._alert(this.loaded);
+        if (this.getServerVar("screenCapture")) {
+        	this._takeScreenShot();
+//        	this.checkForScrollAndCapture(stepId);
+        }
+        if (step.indexOf("_assertSnapShot") != -1) {
         	// img compare takes much longer than normal steps. should not auto proceed
-        this.markStepInProgress(stepId, type, 30000);        
+        	this.markStepInProgress(stepId, type, 30000);        
         	// Force no retrying
-        this.setRetries(this.MAX_RETRIES + 1);
+        	this.setRetries(this.MAX_RETRIES + 1);
+        	
+        }
         this.forked = false;
         eval(step);
         if (!this.forked) {
