@@ -1,6 +1,5 @@
 _navigateTo("http://dev.sencha.com/deploy/ext-4.0.0/examples/feed-viewer/feed-viewer.html");
 //_navigateTo("http://www.extjs.com/deploy/dev/examples/feed-viewer/view.html");
-
 _click(_div("Sencha Forums"));
 var $author;
 _set($author, _getText(_span("author[1]")));

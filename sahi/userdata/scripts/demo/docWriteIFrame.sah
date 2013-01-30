@@ -3,6 +3,7 @@ function check(close){
 	_setValue(_textbox("t1"), "aa");
 	_click(_button("Click me " + (close ? "(doc closed)" : "(doc not closed)")));
 	_click(_link("My link"));
+	_wait(2000);
 	_setValue(_textbox("t1[1]"), "ss");
 	_click(_button("Click me " + (close ? "(doc closed)" : "(doc not closed)") + "[1]"));
 	_click(_checkbox("check1"));
