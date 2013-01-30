@@ -1719,8 +1719,8 @@ Sahi.prototype._assertFalse = Sahi.prototype._assertNotTrue;
 Sahi.prototype._assertEqual = function (expected, actual, s) {
     if (this.isArray(expected) && this.isArray(actual))
         return this._assertEqualArrays(expected, actual, s);
-	if (!this.areEqualParams(this.trim(actual), this.checkRegex(this.trim(expected)))) 
-		throw new SahiAssertionException(3, (s ? s : "") + "\nExpected:" + this.toJSON(expected) + "\nActual:" + this.toJSON(actual) + "");
+	if (this.trim(expected) != this.trim(actual)) 
+		throw new SahiAssertionException(3, (s ? s : "") + "\nExpected:[" + expected + "]\nActual:[" + actual + "]");
 	return true;
 };
 
