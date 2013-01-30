@@ -1018,7 +1018,7 @@ Sahi.prototype.callOnScriptFailure = function (e){
 };
 /* callbacks end */
 Sahi.prototype.getExtraInfo = function (){
-	 return ScriptRunner.getSession()..getSuite().getExtraInfo();
+	 return ScriptRunner.getSession().getSuite().getExtraInfo();
 }
 Sahi.prototype.getInitJS = function(){
 	if(ScriptRunner.getSession() != null && ScriptRunner.getSession().getSuite() != null)
