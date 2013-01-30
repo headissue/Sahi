@@ -701,7 +701,7 @@ Sahi.prototype._sessionInfo = function(){
 };
 Sahi.prototype._suiteInfo = function(){
 	var suite = ScriptRunner.getSession().getSuite();
-	if (suite == null) return fnull;
+	if (suite == null) return null;
     var info = eval("(" + suite.getInfoJSON() + ")");
     return info;
 };
