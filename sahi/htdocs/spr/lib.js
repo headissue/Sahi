@@ -377,11 +377,11 @@ Sahi.prototype.schedule2 = function(cmd, debugInfo, cycles, stepType, throwExcep
     	ScriptRunner.markStepDoneFromLib(""+this.lastId, resultType, null);
     }
 };
+
 Sahi.prototype.start = function(){
 	if (this.started) return;
 	this.started = true;
 	this.initialMemory = java.lang.Runtime.getRuntime().totalMemory();
-		_sahi.clubFunctionsLogging(_sahi.global);
     var i=0;
     var cycles = this.maxCycles;
     while(i++ < cycles){
@@ -846,32 +846,16 @@ Sahi.prototype._runUnitTests = function(testAr){
 		if (typeof setUp != "undefined") setUp();
 		try {
 			
-//			ScriptRunner.log("---- TEST START: " + fnName + " ----", "", "CUSTOM2");
+			ScriptRunner.log("---- TEST START: " + fnName + " ----", "", "CUSTOM2");
 			eval(testAr[i])();
 		} catch (e) {
 			$status = "failure";
 			this._logExceptionAsFailure(e);
 		}
 		finally {
-//			ScriptRunner.log("---- TEST FINISH: " + fnName + " ----", "", "CUSTOM2");
+			ScriptRunner.log("---- TEST FINISH: " + fnName + " ----", "", "CUSTOM2");
 			if (typeof tearDown != "undefined") tearDown();
 		}
-	}
-}
-
-Sahi.prototype.clubFunctionsLogging = function(scope){
-	var fnAr = [];
-	for(var [n, v] in Iterator(scope)){
-		if (typeof v == 'function') {
-			fnAr.push(n);
-		}
-	}
-	for(var i=0; i<fnAr.length; i++){
-		var fnName = fnAr[i];
-		if (fnName.indexOf("Sahi") == 0 || fnName.indexOf("ignoregroup_") == 0 || fnName == "indexBinder" 
-			|| fnName == "stubBinder" || fnName == "Stub" || fnName == "SahiHashMap" || fnName == "s_v") continue;
-		scope[fnName+"_sahiorig"]=scope[fnName];
-		scope[fnName] = this.getWrappedFunctionWithLogging(scope, fnName);
 	}
 }
 Sahi.prototype.getWrappedFunctionWithLogging = function (scope, fnName){
