@@ -352,6 +352,76 @@ public class Browser extends BrowserElements {
 	}
 	
 	/**
+	 * Sets the file to be posted to the server via a file input field.
+	 * This method instructs the proxy to inject the file contents directly in the request.
+	 * The browser's input field will not be populated, though data will be submitted. 
+	 * 
+	 * @param elementStub
+	 * @param value
+	 * @param url String The form "action" url pattern to which this upload request is submitted
+	 * @throws ExecutionException
+	 */
+	public void setFile(ElementStub textbox, String value, String URL) throws ExecutionException {
+		execute("_sahi._setFile(" + textbox + ", " + quoted(value) + ", " + quoted(URL) + ")");
+	}
+	/**
+	 * Simulates a key down event on the given element with a combo value ie. ALT/CTRL/SHIFT etc.
+	 * 
+	 * @param element
+	 * @param keysequence Key to be pressed down
+	 * @param combo String can be "ALT", "META", "SHIFT", "CTRL" or a combination of these with | as the separator
+	 * eg. "ALT|SHIFT" or "CTRL|ALT|SHIFT"
+	 * @throws ExecutionException
+	 */
+	public void keyDown(ElementStub elementStub, String keySequence, String combo) throws ExecutionException {
+		execute("_sahi._keyDown(" + elementStub + ", " + quoted(keySequence) + ", " + quoted(combo) + ")");
+	}
+
+	/**
+	 * Simulates a key down event on the given element with a combo value ie. ALT/CTRL/SHIFT etc.
+	 * 
+	 * @param element
+	 * @param keysequence Key to be pressed down
+	 * @param combo String can be "ALT", "META", "SHIFT", "CTRL" or a combination of these with | as the separator
+	 * eg. "ALT|SHIFT" or "CTRL|ALT|SHIFT"
+	 * @throws ExecutionException
+	 */
+	public void keyDown(ElementStub elementStub, String keySequence) throws ExecutionException {
+		execute("_sahi._keyDown(" + elementStub + ", " + quoted(keySequence) +")");
+	}
+	/**
+	 * Highlights the given element
+	 * 
+	 * @param element
+	 * @throws ExecutionException
+	 */
+	public void highlight(ElementStub element) throws ExecutionException {
+		execute("_sahi._highlight(" + element + ")");		
+	}
+	/**
+	 * Simulates a key press event on the given element with a combo value ie. ALT/CTRL/SHIFT etc.
+	 * 
+	 * @param element
+	 * @param keysequence Key to be pressed
+	 * @param combo String can be "ALT", "META", "SHIFT", "CTRL" or a combination of these with | as the separator
+	 * eg. "ALT|SHIFT" or "CTRL|ALT|SHIFT"
+	 * @throws ExecutionException
+	 */
+	public void keyPress(ElementStub elementStub, String keySequence, String combo) throws ExecutionException {
+		execute("_sahi._keyPress(" + elementStub + ", " + quoted(keySequence) + ", " + quoted(combo) + ")");
+	}
+
+	/**
+	 * Simulates a key press event on the given element.
+	 * 
+	 * @param element
+	 * @param keysequence Key to be pressed
+	 * @throws ExecutionException
+	 */
+	public void keyPress(ElementStub elementStub, String keySequence) throws ExecutionException {
+		execute("_sahi._keyPress(" + elementStub + ", " + quoted(keySequence) + ")");
+	}
+	/**
 	 * Clicks the given element
 	 * 
 	 * @param element
@@ -360,7 +430,16 @@ public class Browser extends BrowserElements {
 	public void click(ElementStub element) throws ExecutionException {
 		execute("_sahi._click(" + element + ")");		
 	}
-	
+	/**
+	 * Simulates a blur event on the element
+	 * @param elementStub
+	 */
+	public void blur(ElementStub elementStub) {
+		execute("_sahi._blur(" + elementStub + ")");
+	}	
+	public String getAttribute(ElementStub el, String attribute) throws ExecutionException {
+		return fetch("_sahi._getAttribute(" + el + ", " + quoted(attribute) + ")");
+	}
 	
 	/**
 	 * Double clicks the given element
@@ -1087,7 +1166,25 @@ public class Browser extends BrowserElements {
 	public void keyUp(ElementStub element, int keyCode, int charCode) {
 		execute("_sahi._keyUp(" + element + ", ["+ keyCode + ", " + charCode + "])");	
 	}
-	
+	/**
+	 * Clears the window print statement i.e. resets the value of _printCalled 
+	 * @return
+	 */
+	public String clearPrintCalled(){
+		return fetch("_sahi._clearPrintCalled()");
+	}
+	/**
+	 * Returns true if window print statement was executed
+	 * @return
+	 */
+	public Boolean printCalled(){
+		
+		String fetched = fetch("_sahi._printCalled()");
+		if("true".equals(fetched)){
+			return true;
+		}
+		else return false;
+	}
 	
 }
 

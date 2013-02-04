@@ -659,7 +659,13 @@ public class ElementStub {
 		browser.keyUp(this, keyCode, charCode);
 	}
 
-	
+
+	public String getAttribute(String attribute) throws ExecutionException {
+		return browser.getAttribute(this, attribute);
+	}
+	public void blur() throws ExecutionException {
+		browser.blur(this);
+	}
 	/**
 	 * Performs a keyDown on this element.<br/>
 	 * Internally calls browser.keyDown;
@@ -668,5 +674,17 @@ public class ElementStub {
 	 */
 	public void keyDown(int keyCode, int charCode) {
 		browser.keyDown(this, keyCode, charCode);
+	}
+
+	public void keyPress(String keySequence, String combo) {
+		browser.keyPress(this, keySequence, combo);		
+	}
+	/**
+	 * Highlights this element.<br/>
+	 * Internally calls browser.highlight(this);
+	 * @throws ExecutionException
+	 */
+	public void highlight() throws ExecutionException {
+		browser.highlight(this);
 	}
 }
