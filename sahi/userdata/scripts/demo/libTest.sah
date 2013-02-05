@@ -34,11 +34,11 @@ _assertEqual('{"a":"\u00a3","b":"\u00a3"}', $json);
 
 var $x = /\u00a3/;
 $json = _sahi.toJSON($x);
-_assertEqual(""+/\u00a3/, ""+$x);
+_assert(""+/\u00a3/ == ""+$x);
 $s = "\u00a3".match(/\u00a3/) != null; 
 _assertTrue($s); // test boolean
 _assertTrue("\u00a3".match($x) != null); // test regex
-_assertEqual('/\\u00a3/', $json); // test regex
+_assertTrue('/\\u00a3/' == $json); // test regex
 
 var x = new Array(1, "2", 3);
 $json = _sahi.toJSON(x);
