@@ -617,22 +617,6 @@ Sahi.dB = function (driver, jdbcurl, username, password) {
         }
     };
 };
-Sahi.QC = function (serverName, serverPort, domainName, projectName, userName, password) {
-    this.serverName = serverName;
-    this.serverPort = serverPort;
-    this.domainName = domainName;
-    this.projectName = projectName;
-    this.userName = userName;
-    this.password = password;
-    this.log = function (testPlanName, testPlanFolderName, testSetName, scriptStatus, scriptTime) {
-    	var qcclient = new Packages.net.sf.sahi.plugin.QCClient();
-    	qcclient.logToQC(ScriptRunner, this.serverName, this.serverPort, this.domainName, this.projectName, this.userName, this.password, 
-    					 testPlanName, testPlanFolderName, testSetName, scriptStatus, "" + scriptTime);
-        /*var qs = "serverName=" + this.serverName + "&serverPort=" + this.serverPort + "&domainName=" + this.domainName + "&projectName=" + this.projectName + "&userName="
-         + "&password=" + this.password + "&testPlanName=" + testPlanName + "&testPlanFolderName=" + testPlanFolderName + "&testSetName=" + testSetName;
-        return eval(sahi._callServer("net.sf.sahi.plugin.QCClient_logToQC", qs));*/
-    };
-};
 Sahi.prototype.end = function(){
 	ScriptRunner.stop();
     //this.print('script ended.');
