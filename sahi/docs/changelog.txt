@@ -1,6 +1,6 @@
 06 Feb 2013
 -----------
-Sahi V4.2
+Sahi V4.3
 
 This is a major release with lots of changes ported back from the Sahi Pro version.
 
