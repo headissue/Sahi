@@ -1,3 +1,81 @@
+06 Feb 2013
+-----------
+Sahi V4.2
+
+This is a major release with lots of changes ported back from the Sahi Pro version.
+
+* Bugfixes
+	* Fixed ConfigureUI screens on IE
+	* Fixed bug causing some clicks on IE to fail
+	* Fix for ZLIB EOFException error	
+	* Fixed null pointer exception in Single Session report generation
+	* Fix for Firefox 5
+	* _isSafari() fixed
+	* script status correctly set for _continueOnError, try catch
+	* File name is picked from content-disposition header.
+	* Ruby driver: guid replaced with timestamps.
+	* _count, _collect fixed
+	* Fixed duplicate events on IE9 Strict Mode
+	* Fixed fetching of ajax/js files with content-disposition attachment
+	* Fixed _under such that complex nesting also works properly
+	* Increased Dashboard browser session timeout
+	* _dragDrop fixed for YUI
+	* Displays JDBC error in logs
+	* Fixed window/domain not found error when iframes with different domains are loaded on a slow page. (Facebook integrated pages)
+	* Fixed concurrent modification error bug in reports
+	* Array toJSON recursive_access bug fixed
+	* RegExp with modifiers handled correctly
+	* onScriptError logging issue fixed
+	* Sahi injects properly for conditional comments
+	* _setValue($a,$b) with no space after comma handled correctly
+	* Fixed focusin focusout events on IE9
+	* Window name is blank by default. Not null. Fix for sessvars
+	* javascript-xpath.js blanked by default.
+	* Drag drop significantly improved. Works across scrolling panels.
+	* Firefox 13 suite run fixed
+	* _confirm and _prompt wait for input
+	* Fixed _byText
+	* Fixed bug in resizing Evaluation Expression box
+	* Fixed IE focus issue.
+	* Fixed keypress issues in various browsers.
+	* Mixing file and url scripts fixed.
+	* Modal from different domain fix.
+	* handle newlines and spaces in browser_types.xml
+	* Added _setFile with 3 parameters in Sahi Java.
+	* NO_LOG type handled
+	
+* Features
+	* IE9, FF4, Chrome 10 support
+	* _setStrictVisibilityCheck added. If true, Sahi APIs will look at visible elements only.
+	* Blocked unnecessary https calls via block_ssl_domains.txt (fix for FF hang due to safe-browse and addons update)
+	* _isFF4() and _isIE9() added
+	* added keyUp, keyDown, mouseUp, mouseDown to java APIs
+	* Made JUnit log reporting better and easier to plugin with hudson
+	* domainfix for setting document.domain made configurable via userdata/domainfix.txt
+	* Exposed Realm in 401 auth for greater control
+	* Traffic Logs can now be enabled from the Dashboard
+	* _abbr API added
+	* Default encoding is now UTF-8
+	* popup takes URL regex
+	* Right click can be recorded
+	* New APIs:
+		_dList, _dTerm, _dDesc,
+		_activeElement
+	* _assertEqual & _assertNotEqual take RegExp in expected value
+	* _extract API added to extract portions of text
+	* Ability to pass an associative array as identifier to Sahi Accessor APIs
+	* _leftOf, _rightOf, _leftOrRightOf, _above and _aboveOrUnder positional APIs added
+	* Bin link added for Mac version. Automatically opens terminal at userdata/bin
+	* _sendHTMLResponseAfterFileDownload added
+	* _paragraph added for P tag
+	* Ability to use Properties files when connecting to database
+	* _setXHRReadyStatesToWaitFor API added
+	* Added index based identification for cells
+	* _setFile2 added. Automatically handles js validations.
+	* Fixed Java APIs                                             
+	
+
+
 19 Jul 2011
 -----------
 *Bugfixes
