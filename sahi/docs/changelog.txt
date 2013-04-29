@@ -1,3 +1,12 @@
+29 Apr 2013
+-----------
+Sahi 4.4
+
+* Bugfixes
+	* Fixed bug in launching browser using Sahi with Java version 1.7
+	* Fixed alert bug when highlight function was used.
+	* Fixed _setValue API in Firefox 20.
+
 06 Feb 2013
 -----------
 Sahi V4.3
