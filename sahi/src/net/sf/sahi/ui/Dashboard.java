@@ -37,6 +37,7 @@ import javax.swing.border.EtchedBorder;
 
 import net.sf.sahi.Proxy;
 import net.sf.sahi.config.Configuration;
+import net.sf.sahi.test.BrowserLauncher;
 import net.sf.sahi.util.BrowserType;
 import net.sf.sahi.util.BrowserTypesLoader;
 import net.sf.sahi.util.ProxySwitcher;
@@ -258,17 +259,16 @@ public class Dashboard extends JFrame {
 	
 			        @Override
 			        public void run() {
-			            if (browserType.useSystemProxy()) toggleProxy(true);
-			        	String browserExeCmd = browserType.path();
-			        	String browserOption = browserType.options();
-			        	if (browserOption != null) browserExeCmd = browserExeCmd + " " + browserOption;
-			        	browserExeCmd = browserExeCmd.replace("$userDir", Configuration.getUserDataDir());
-			        	browserExeCmd = browserExeCmd.replace("$threadNo", "0");
-			        	browserExeCmd = browserExeCmd + " http://sahi.example.com/_s_/dyn/Driver_initialized";
-			        	browserExeCmd = Utils.expandSystemProperties(browserExeCmd);
-			        	System.out.println(browserExeCmd);
-						execCommand(browserExeCmd);
-						if (browserType.useSystemProxy()) ProxySwitcher.revertSystemProxy();
+			        	final BrowserLauncher launcher = new BrowserLauncher(browserType);
+			        	launcher.setMaxTimeToWaitForPIDs(Configuration.getMaxTimeForPIDGatherFromDashboard());
+			    		String url = "http://" + Configuration.getCommonDomain() + "/_s_/dyn/Driver_initialized?browserType=" + browserType.name();   	
+			        	try {
+							launcher.openURL(url);
+							launcher.waitTillAlive();
+							launcher.kill();
+						} catch (Exception e) {
+							e.printStackTrace();
+						} 
 			        }
 
 			    }.start();

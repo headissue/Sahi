@@ -845,6 +845,20 @@ public class Configuration {
 	public static boolean forceTreatAsXHTML() {
 		return "true".equals(getUserProperty("sahi.inject.force_treat_as_xhtml"));
 	}
+	public static int getMaxTimeForPIDGatherFromDashboard() {
+		try {
+			return Integer.parseInt(getUserProperty("dashboard.max_time_for_pid_gather", "5000"));
+		} catch (Exception e) {
+			return 5000;
+		}
+	}
+	public static int getMaxTimeForPIDGather() {
+		try {
+			return Integer.parseInt(getUserProperty("script.max_time_for_pid_gather", "60000"));
+		} catch (Exception e) {
+			return 60000;
+		}
+	}
 
 	// Pro start
 }

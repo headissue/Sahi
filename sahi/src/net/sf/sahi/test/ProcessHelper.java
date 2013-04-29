@@ -33,8 +33,12 @@ import net.sf.sahi.util.Utils;
 public class ProcessHelper {
 	private static final Logger logger = Logger.getLogger("net.sf.sahi.test.ProcessHelper");
 	private String cmd;
+	private enum Status {
+	    INITIALIZED, RUNNING, STOPPED
+	}
 	private Process process;
-
+	private int maxTimeToWaitForPIDs;
+	private Status status;
 	private ArrayList<String> pids;
 
 	private String imageName;
@@ -43,7 +47,11 @@ public class ProcessHelper {
 		this.cmd = cmd;
 		this.imageName = imageName;
 	}
-
+	public ProcessHelper(String cmd, String imageName, int maxTimeToWaitForPIDs) {
+		this.cmd = cmd;
+		this.imageName = imageName;
+		this.maxTimeToWaitForPIDs = maxTimeToWaitForPIDs;
+	}
 	static Semaphore lock = new Semaphore(1, true);
 	static long t;
 
@@ -84,7 +92,8 @@ public class ProcessHelper {
 			this.allPIDsBefore = allPIDsBefore;
 		}
 		public void run() {
-			int maxTime = 30000;
+			status = ProcessHelper.Status.INITIALIZED;
+			int maxTime = maxTimeToWaitForPIDs;
 			int time = 0;
 			int interval = 100;
 			while (!hasProcessStarted && time < maxTime){
@@ -100,6 +109,7 @@ public class ProcessHelper {
 				pids = getNewlyAdded(allPIDsBefore, allPIDsAfter);					
 			}catch(Exception e){}
 			logger.info("PIDs: " + pids + "; " + (System.currentTimeMillis() - t) + " ms");		
+			status = ProcessHelper.Status.RUNNING;
 			lock.release();
 		}		
 	}
@@ -217,5 +227,29 @@ public class ProcessHelper {
 
 	public static void setProcessStarted() {
 		hasProcessStarted = true;
+	}
+	public void waitTillAlive() {
+		 while(true){
+			 try {
+				Thread.sleep(200);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			 if(!isProcessAlive()){
+				 break;
+			 }
+		 }
+	}
+	public boolean isProcessAlive() {
+		if(status == ProcessHelper.Status.STOPPED) return false;
+		if(status == ProcessHelper.Status.INITIALIZED) return true;
+		ArrayList<String> pidArray = getPIDs();
+		for(String pid : pids){
+			if(pidArray.contains(pid)) {
+				return true;			
+			}
+		}
+		status = ProcessHelper.Status.STOPPED;
+		return false;
 	}
 }

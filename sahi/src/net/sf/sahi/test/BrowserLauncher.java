@@ -4,6 +4,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
 import net.sf.sahi.config.Configuration;
+import net.sf.sahi.util.BrowserType;
 import net.sf.sahi.util.ProxySwitcher;
 import net.sf.sahi.util.Utils;
 
@@ -33,6 +34,7 @@ public class BrowserLauncher {
 	private String browserOption;
 	private ProcessHelper process;
 	private final boolean useProxy;
+	private int maxTimeToWaitForPIDs = Configuration.getMaxTimeForPIDGather();
 
 	public BrowserLauncher(String browser, String browserProcessName,
 			String browserOption, boolean useProxy) {
@@ -41,7 +43,9 @@ public class BrowserLauncher {
 		this.browserOption = browserOption;
 		this.useProxy = useProxy;
 	}
-
+	public BrowserLauncher(BrowserType browserType) {
+		this(browserType.path(), browserType.processName(), browserType.options(), browserType.useSystemProxy());
+	}
 	public ProcessHelper openURL(final String url) throws Exception {
 		if (useProxy){
 			toggleProxy(true);
@@ -52,7 +56,7 @@ public class BrowserLauncher {
 		cmd = cmd.replaceAll("[$]userDir", Configuration.getUserDataDir().replace('\\', '/'));
 		cmd = cmd.replaceAll("[$]threadNo", "0"); // if this has not been substituted, change it to 0.
 		cmd = Utils.expandSystemProperties(cmd);
-		process = new ProcessHelper(cmd, browserProcessName);
+		process = new ProcessHelper(cmd, browserProcessName,maxTimeToWaitForPIDs);
 		process.execute();
 		addShutDownHook();
 		return process;
@@ -130,6 +134,11 @@ public class BrowserLauncher {
 		}
 		return cmd;
 	}
-	
+	public void setMaxTimeToWaitForPIDs(int maxTimeToWaitForPIDs) {
+		this.maxTimeToWaitForPIDs = maxTimeToWaitForPIDs;
+	}
+	public void waitTillAlive() {
+		process.waitTillAlive();
+	}
 
 }
