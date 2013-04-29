@@ -3847,10 +3847,10 @@ Sahi.prototype._isIE8 = function () {return /MSIE 8[.]/.test(this.navigator.user
 Sahi.prototype._isIE9 = function () {return /MSIE 9[.]/.test(this.navigator.userAgent);};
 Sahi.prototype._isIE9Plus = function () {return this._isIE() && !(/MSIE [0-8][.]/.test(this.navigator.userAgent));};
 Sahi.prototype._isIE9PlusStrictMode = function () {return this._isIE() && document.documentMode>=9;};
-Sahi.prototype._isFF2 = function () {return /Firefox\/2|Iceweasel\/2|Shiretoko\/2/.test(this.navigator.userAgent);};
-Sahi.prototype._isFF3 = function () {return /Firefox\/3|Iceweasel\/3|Shiretoko\/3/.test(this.navigator.userAgent);};
-Sahi.prototype._isFF4 = function () {return /Firefox\/4|Iceweasel\/4|Shiretoko\/4/.test(this.navigator.userAgent);};
-Sahi.prototype._isFF5 = function () {return /Firefox\/5|Iceweasel\/5|Shiretoko\/5/.test(this.navigator.userAgent);};
+Sahi.prototype._isFF2 = function () {return /Firefox\/2[.]|Iceweasel\/2[.]|Shiretoko\/2[.]/.test(this.navigator.userAgent);};
+Sahi.prototype._isFF3 = function () {return /Firefox\/3[.]|Iceweasel\/3[.]|Shiretoko\/3[.]/.test(this.navigator.userAgent);};
+Sahi.prototype._isFF4 = function () {return /Firefox\/4[.]|Iceweasel\/4[.]|Shiretoko\/4[.]/.test(this.navigator.userAgent);};
+Sahi.prototype._isFF5 = function () {return /Firefox\/5[.]|Iceweasel\/5[.]|Shiretoko\/5[.]/.test(this.navigator.userAgent);};
 Sahi.prototype._isFF4Plus = function () {return (this._isFF() && !this._isFF2() && !this._isFF3());};
 Sahi.prototype._isFF = function () {return /Firefox|Iceweasel|Shiretoko/.test(this.navigator.userAgent);};
 Sahi.prototype._isChrome = function () {return /Chrome/.test(this.navigator.userAgent);};
