@@ -1148,7 +1148,7 @@ Sahi.prototype._highlight = function (el) {
     var oldOutline = el.style.outline;
     el.style.border = "1px solid red";
     el.style.outline = "1px solid red";
-    Sahi.lastUnhighlight = function(){_sahi._alert(oldBorder);el.style.border = oldBorder;el.style.outline = oldOutline;Sahi.lastUnhighlight=null;}
+    Sahi.lastUnhighlight = function(){el.style.border = oldBorder;el.style.outline = oldOutline;Sahi.lastUnhighlight=null;}
     Sahi.unhighlightTimer = window.setTimeout(Sahi.lastUnhighlight, 1000);
 };
 Sahi.prototype._position = function (el){
