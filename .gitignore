@@ -5,9 +5,17 @@
 *.war
 *.ear
 
+sahi/junittestrun.out
 sahi/classes/
 sahi/deploy/
 sahi/lib/
 sahi/temp/
+sahi/userdata/
+sahi/config/version.txt
+sahi/docs/java_client/
+temp
+
+.project
+!sahi/.project
 
 !sahi/extlib/*/*
