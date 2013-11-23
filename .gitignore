@@ -1,0 +1,13 @@
+*.class
+
+# Package Files #
+*.jar
+*.war
+*.ear
+
+sahi/classes/
+sahi/deploy/
+sahi/lib/
+sahi/temp/
+
+!sahi/extlib/*/*
