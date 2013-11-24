@@ -306,3 +306,82 @@ if (_sahi.controllerMode == "testmaker"){
 	};		
 }
 /** -- TestMaker Recorder End -- **/
+
+/** -- pytanium Recorder Start -- **/
+if (_sahi.controllerMode == "pytanium"){
+	_sahi.controllerURL = "/_s_/spr/controllerAlt.htm";
+	_sahi.controllerHeight = 250;
+	_sahi.controllerWidth = 420;
+	_sahi.recorderClass = "StepWiseRecorder";
+	Sahi.prototype.getExpectPromptScript = function(s, retVal){
+		return "browser." + this.getPopupDomainPrefixes() + "expect_prompt(" + this.quotedEscapeValue(s) + ", " + this.quotedEscapeValue(retVal) + ")";
+	}
+	Sahi.prototype.getExpectConfirmScript = function(s, retVal){
+		return "browser." + this.getPopupDomainPrefixes() + "expect_confirm(" + this.quotedEscapeValue(s) + ", " + retVal + ")"
+	}
+	Sahi.prototype.getNavigateToScript = function(url){
+		return "browser." + this.getPopupDomainPrefixes() + "get(" + this.quotedEscapeValue(url) + ")"
+	}
+	Sahi.prototype.getScript = function (infoAr, el, evType, e) {
+		var info = infoAr[0];
+	    var accessor = this.escapeDollar(this.getAccessor1(info));
+	    if (accessor == null) return null;
+	    if (accessor.indexOf("_") == 0) accessor = accessor.substring(1);
+	    var ev = info.event;
+	    var value = info.value;
+	    var type = info.type;
+	    var popup = this.getPopupName();
+	
+	    var cmd = null;
+	    if (value == null)
+	        value = "";
+		 // handle F12 and contextmenu
+	    if (evType == "keydown") {
+	    	if (e && e.keyCode >= 112 && e.keyCode <= 123 && !e.charCode){
+	    		cmd =  accessor + ".key_press(\"[" + e.keyCode + "," + 0 + "]\");";
+	    	}
+		    if (!cmd) return null;
+	    } else { 	    
+		    if (ev == "_click") {
+		    	if (evType && evType.toLowerCase() == "contextmenu") {
+		    		cmd =  "driver.context_click(" + accessor + ");";
+		    	}
+		    	else cmd = accessor + ".click()";
+		    } else if (ev == "_setValue") {
+		        cmd = accessor + ".send_keys(" + this.quotedEscapeValue(value) + ")";
+		    } else if (ev == "_setSelected") {
+		        cmd = accessor + ".choose(" + this.quotedEscapeValue(value) + ")";
+		    } else if (ev == "_setFile") {
+		        cmd = accessor + ".file = " + this.quotedEscapeValue(value);
+		    }
+	    }
+	    cmd = this.addPopupDomainPrefixes(cmd);
+	    cmd = "browser." + cmd;    
+	    return cmd;
+	};
+	Sahi.prototype.escapeDollar = function (s) {
+		return s;
+	    if (s == null) return null;
+	    return s.replace(/[$]/g, "\\$");
+	};	
+	Sahi.prototype.getAccessor1 = function (info) {
+	    if (info == null) return null;
+	    if ("" == (""+info.shortHand) || info.shortHand == null) return null;
+	    var accessor = info.type + "(" + this.escapeForScript(info.shortHand) + ")";
+	    if (accessor.indexOf("_") == 0) accessor = accessor.substring(1);
+	    return accessor;
+	};	
+	_sahi.language = {
+			ASSERT_EXISTS: "assert(<accessor>)",
+			ASSERT_VISIBLE: "assert(<accessor>.is_displayed);",			
+			ASSERT_EQUAL_TEXT: "assert_equal(<value>, <accessor>.text);",
+			ASSERT_CONTAINS_TEXT: "assert(<value> in <accessor>.text);",
+			ASSERT_EQUAL_VALUE: "assert_equal(<value>, <accessor>.value);",
+			ASSERT_SELECTION: "assert_equal(<value>, <accessor>.selected_text);",
+			ASSERT_CHECKED: "assert(<accessor>.is_selected());",
+			ASSERT_NOT_CHECKED: "assert(not <accessor>.is_selected());",
+			POPUP: "browser.popup(<window_name>).",
+			DOMAIN: "browser.domain(<domain>)."		
+	};	
+}
+/** -- pytanium Recorder End -- **/

@@ -51,7 +51,7 @@ public class ConfigurationTest extends TestCase {
     	assertEquals(userDataDirectory + "/logs/playback", Configuration.getPlayBackLogsRoot().replace('\\', '/'));
     	assertEquals(userDataDirectory + "/certs", Configuration.getCertsPath().replace('\\', '/'));
     	assertEquals(userDataDirectory + "/temp/download", Configuration.tempDownloadDir().replace('\\', '/'));
-    	assertEquals("sahi", Configuration.getControllerMode());
+    	assertEquals("pytanium", Configuration.getControllerMode());
     }
     public void testInitJava(){
 		Configuration.initJava(basePath + "", userDataDirectory);
