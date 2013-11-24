@@ -1,0 +1,82 @@
+a, body, input, td, textarea, select {
+    font-size: 8pt;
+    font-family: verdana;
+}
+ul.tabs {
+	padding: 0px;
+	margin: 0px;
+}
+ul.tabs li.hiTab {
+	font-weight: bold;
+	background-color: white;
+	padding: 4px 8px;
+	border: 0px 0px 2px 2px;
+	border-color: black;
+}
+ul.tabs li.normalTab {
+	font-weight: normal;
+}
+ul.tabs li {
+	font-family: verdana;
+	#font-size: 9pt;
+	display: inline;
+	background-color: silver;
+	border: 1px solid gray;
+	padding: 2px 8px;
+	margin-right: 2px;
+	cursor: pointer;
+}
+div.hiTab {
+	font-weight: bold;
+}
+div.normalTab {
+	font-weight: normal;
+	cursor: pointer;
+}
+.field {
+	width: 250px;
+}
+.b {
+	xtext-transform: uppercase;
+	xfont-size: 7pt;
+	cursor: pointer;
+	width: 60px;
+	xfont-family: verdana;
+	padding: 0px;
+}
+.ta {
+	width: 392px;
+	height: 100px;
+	margin: 3px;
+}
+.topB {
+	xtext-transform: uppercase;
+	xfont-size: 7pt;
+	cursor: pointer;
+	font-family: verdana;
+	padding: 0px;
+}
+.step {
+	cursor: pointer;
+}
+.stepsPart {
+	background-color: #ccc;
+}
+.cImg {
+	cursor: pointer;
+	border: 1px solid white;
+	padding: 1px;
+}
+.cImg_toggle {
+	cursor: pointer;
+	border: 1px solid white;
+	padding: 1px;
+}
+.fileInput{
+	cursor: pointer;
+}
+.editorbox{
+	width:100%;
+	height:199px;
+	border:0px;
+}

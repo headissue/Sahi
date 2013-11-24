@@ -74,15 +74,28 @@ function sahiGetServerVar(name){
     var v = sahiSendToServer("/_s_/dyn/SessionState_getVar?name="+fixedEncodeURIComponent(name));
     if (v == "null") return null;
     return fixedDecodeURIComponent(v);
+
 }
+function sahiGetVarRemember(name){
+    var v = sahiSendToServer("/_s_/dyn/SessionState_getVarRemember?name="+fixedEncodeURIComponent(name));
+    if (v == "null") return null;
+    return fixedDecodeURIComponent(v);
+}
+
 function sahiSetServerVar(name, value){
     sahiSendToServer("/_s_/dyn/SessionState_setVar?name="+fixedEncodeURIComponent(name)+"&value="+fixedEncodeURIComponent(value));
+    
+}
+function sahiSetVarRemember(name, value){
+    sahiSendToServer("/_s_/dyn/SessionState_setVarRemember?name="+fixedEncodeURIComponent(name)+"&value="+fixedEncodeURIComponent(value));
+    
 }
 function sahiSendToServer(url){
 	try {
 	    var rand = (new Date()).getTime() + Math.floor(Math.random() * (10000));
 	    var http = sahiCreateRequestObject();
 	    url = url + (url.indexOf("?") == -1 ? "?" : "&") + "t=" + rand;
+	 //   url = url + "&sahisid=" + encodeURIComponent(sahi().sid);
 	    var post = url.substring(url.indexOf("?") + 1);
 	    url = url.substring(0, url.indexOf("?"));
 	    http.open("POST", url, false);
