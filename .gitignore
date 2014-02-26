@@ -15,7 +15,20 @@ sahi/config/version.txt
 sahi/docs/java_client/
 temp
 
+# Eclipse
+.classpath
 .project
-!sahi/.project
+.settings/
 
-!sahi/extlib/*/*
+# Intellij
+.idea/
+*.iml
+*.iws
+
+# Mac
+.DS_Store
+
+# Maven
+log/
+target/
+
