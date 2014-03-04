@@ -1,12 +1,10 @@
 package net.sf.sahi.playback;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.io.IOException;
-
+import junit.framework.TestCase;
 import net.sf.sahi.config.Configuration;
 
-import junit.framework.TestCase;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Sahi - Web Automation and Test Tool
@@ -234,18 +232,6 @@ public class SahiScriptTest extends TestCase {
 		assertTrue(keywords.contains("_log"));
 		assertTrue(keywords.contains("_navigateTo"));
 	}
-
-    public void testUnicode() throws IOException {
-//        assertEquals("??", "\u4E2D\u6587");
-//        File file = new File("C:\\unicode.txt");
-//        FileOutputStream out = new FileOutputStream(file);
-        String s = "\u4E2D\u6587";
-        assertEquals(2, s.getBytes().length);
-        assertEquals("\u4E2D\u6587", "\u4e2d\u6587");
-//        out.write(s.getBytes("UTF-16"));
-//        out.close();
-//        System.out.print("\u4E2D\u6587");
-    }
 
     public void testFindCondition(){
         assertEquals("'' == _textbox(\"t1\").value", testScript.findCondition("_condition('' == _textbox(\"t1\").value)"));

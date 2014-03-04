@@ -17,17 +17,19 @@
  */
 package net.sf.sahi.config;
 
+import net.sf.sahi.util.FileUtils;
+import net.sf.sahi.util.Utils;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Properties;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
-
-import net.sf.sahi.util.FileUtils;
-import net.sf.sahi.util.Utils;
 
 /**
  * Configuration resolves all properties and paths required by Sahi.<br/>
