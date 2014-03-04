@@ -1,9 +1,0 @@
-.*_sahi=false.*
-.*arcwebservices.*
-.*googleadservices.*
-.*googleads.*
-.*doubleclick.*
-.*centigrade.*
-.*save[-]state[.]php
-.*get[-]state[.]php
-.*callback=.*

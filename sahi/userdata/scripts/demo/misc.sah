@@ -1,2 +1,0 @@
-var $logFile = Packages.net.sf.sahi.util.Utils.createLogFileName("abcd");
-_alert($logFile);

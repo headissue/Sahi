@@ -1,4 +1,0 @@
-<?php
-adasdas
-asdasd
-?>

@@ -1,0 +1,73 @@
+<!--
+/**
+ * Copyright  2006  V Narayan Raman
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+-->
+<html>
+<head><title></title></head>
+<body>
+<script>
+var s_v = function (v) {
+    var type = typeof v;
+    if (type != "number" && type != "string"){
+    	try{
+			if (v.getClass().getName().indexOf("String")!=-1){
+				type = "string";
+				v = "" + v.toString();
+			}
+		}catch(e){}
+    }
+    if (type == "number") return v;
+    else if (type == "string") return "\"" + v.replace(/\r/g, '\\r').replace(/\n/g, '\\n').replace(/\\/g, "\\\\").replace(/"/g, '\\"') + "\"";
+    else return v;
+}
+
+function FormElementStub(s){
+	Stub.call(this, s)
+	this.value = new Stub(this.s + ".value"); 
+}
+
+function Stub(s){
+	this.s = s;
+	this.toString = function() {return this.s};
+}
+FormElementStub.prototype = new Stub();
+function stubFn(fnName){
+	return function(){
+		var s = "";
+		for (var i=0; i<arguments.length; i++){
+			s += s_v(arguments[i]);
+			if (i != arguments.length-1) s += ", "
+		}
+		return new Stub(fnName + "(" + s + ")");
+	}
+}
+
+_accessor = stubFn("_accessor");
+_button = stubFn("_button");
+_check = stubFn("_check");
+_checkbox = stubFn("_checkbox");
+_image = stubFn("_image");
+window["_in"] = stubFn("_in");
+window["_cell"] = stubFn("_cell");
+alert(_image(0, _in(_cell("ab\"cd"))));
+alert(_checkbox("aaa"));
+</script>
+<form name="f1">
+<input type="text" name="t1"><br/>
+<input type="button" value="Click me" onclick="oc()">
+</form>
+</body>
+</html>
