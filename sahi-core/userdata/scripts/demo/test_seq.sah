@@ -1,0 +1,5 @@
+$a = null;
+_assertNull($a);
+_setGlobal("xx", 123);
+$a = _getGlobal("xx");
+_assertEqual(123, $a);

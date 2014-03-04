@@ -1,0 +1,23 @@
+_navigateTo("/demo/index.htm");
+<browser>
+function getFocus(){
+	if (window.showModalDialog)
+		window.showModalDialog("/_s_/spr/getFocus.htm", "", "dialogheight=50px;dialogwidth=50px;dialogtop=0px;dialogleft=800px;");
+}
+</browser>
+_call(getFocus());
+function takeSnapShot(){
+	try {
+		var robot = new java.awt.Robot();
+		var toolkit = new java.awt.Toolkit.getDefaultToolkit();
+		var screenSize = toolkit.getScreenSize();
+		var screenRect = new java.awt.Rectangle(0, 0, screenSize.width, screenSize.height);
+		var image = robot.createScreenCapture(screenRect);
+
+		var file = new java.io.File("C:/snapshot.png");
+		javax.imageio.ImageIO.write(image, "png", file);
+	} catch (e) {
+		_sahi.print(e);
+	}
+}
+takeSnapShot();

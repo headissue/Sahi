@@ -1,0 +1,9 @@
+_click(_link("Contain Test"));
+_assertNotNull(_byId("a"));
+_assertContainsText("find me here", _byId("a"));
+_assertContainsText("me", _byId("a"));
+_assertContainsText(/find/, _byId("a"));
+_assertContainsText("/find/", _byId("a"));
+_assertContainsText(/f.*nd/, _byId("a"));
+_assertContainsText("/f.*nd/", _byId("a"));
+_click(_link("Back"));

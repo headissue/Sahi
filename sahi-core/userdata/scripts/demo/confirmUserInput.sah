@@ -1,0 +1,22 @@
+<browser>
+function confirmForUserInput(message){
+    _sahi_temp_confirmValue = _sahi._confirm(message);
+}
+Sahi.prototype._confirm = function (s) {
+    return this.callFunction(this.real_confirm, window, s);
+};
+</browser>
+
+function getConfirmResult($message){
+    var $value = null;
+    _call(confirmForUserInput($message));
+   //Firebug says :  _sahi_temp_confirmValue is not defined
+    _set($value, _sahi_temp_confirmValue);
+
+    return $value;
+}
+
+
+// Get the user input in your script
+var $userInput = getConfirmResult('Are you sure ?');
+_alert($userInput);

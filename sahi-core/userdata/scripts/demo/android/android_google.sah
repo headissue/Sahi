@@ -1,0 +1,8 @@
+//_navigateTo("http://www.google.com");
+_setValue(_textbox("q"), "sahi f");
+_click(_cell("sahi forums"));
+_assertExists(_link("Forums - Sahi - Web Automation and Test Tool"));
+_assert(_isVisible(_link("Forums - Sahi - Web Automation and Test Tool")));
+_click(_link("Forums - Sahi - Web Automation and Test Tool"));
+_assertExists(_span("Customer Stories and Testimonials"));
+

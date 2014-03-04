@@ -1,0 +1,4 @@
+_navigateTo("http://jquery.com/");
+_assertFalse(_isVisible($("p.neat")[0]));
+_click(_link("Run Code"));
+_assertTrue(_isVisible($("p.neat")[0]));

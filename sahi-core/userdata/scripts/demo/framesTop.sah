@@ -1,0 +1,3 @@
+_click(_link("Frames Test"));
+_click(_link("Form Test[1]"));
+_setValue(_textbox("t1"), "afewr");

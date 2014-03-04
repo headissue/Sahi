@@ -1,0 +1,20 @@
+function login($username, $password){
+	_setValue(_textbox("user"), $username);
+	_setValue(_password("password"), $password);
+	_click(_submit("Login"));
+}
+
+function addBooks($numJava, $numRuby, $numPython){
+	_setValue(_textbox("q", _near(_cell("Core Java"))), $numJava);
+	_setValue(_textbox("q", _near(_cell("Ruby for Rails"))), $numRuby);
+	_setValue(_textbox("q", _near(_cell("Python Cookbook"))), $numPython);
+	_click(_button("Add"));
+}
+
+function verifyTotal($total){
+	_assertEqual($total, _textbox("total").value);	
+}
+
+function verifyTotal111($total){
+	_assertEqual($total, _textbox("total").value);	
+}

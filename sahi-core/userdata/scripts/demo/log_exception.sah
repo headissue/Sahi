@@ -1,0 +1,22 @@
+var $checkpoint = 0;
+try {
+	_assertEqual(1, 1);
+	$x = xparseInt("abcd"); // ERROR ON THIS LINE
+	$checkpoint = 1;
+} catch(e) {
+    _logException(e);
+	_assertEqual(0, $checkpoint);
+	$checkpoint = 2;
+}
+_assertEqual(2, $checkpoint);
+
+var $checkpoint = 4;
+try {
+	_click(_link("does not exist")); // ERROR ON THIS LINE
+	$checkpoint = 5;
+} catch(e) {
+    _logException(e);
+	_assertEqual(4, $checkpoint);
+	$checkpoint = 6;
+}
+_assertEqual(6, $checkpoint);

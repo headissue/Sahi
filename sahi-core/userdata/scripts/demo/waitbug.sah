@@ -1,0 +1,22 @@
+function w(){
+    _wait(1000);
+    _wait(1000);
+}
+<browser>
+function f(){
+    _setValue(_textbox("t1"), "qwe");
+    _wait(5100);
+    _log("abc");
+}
+</browser>
+
+_click(_link("Form Test"));
+w();
+_call(f());
+_click(_link("Back"));
+
+_click(_link("Form Test"));
+w();
+_call(f());
+_click(_link("Back"));
+

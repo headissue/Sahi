@@ -1,0 +1,10 @@
+_click(_link("Link Test"));
+_click(_link("Back"));
+_click(_link("Different Domains External"));
+_domain("www.tytosoftware.com")._click(_link("Link Test"));
+_domain("www.bing.com")._setValue(_textbox("q"), "sahi forums");
+_domain("www.bing.com")._click(_submit("go"));
+_domain("www.tytosoftware.com")._setValue(_textbox("t1"), "aaa");
+_domain("www.tytosoftware.com")._click(_link("Back"));
+_domain("www.bing.com")._click(_link("Sahi - Web Automation and Test Tool"));
+_domain("sahi.co.in")._setValue(_textbox("q"), "checking");

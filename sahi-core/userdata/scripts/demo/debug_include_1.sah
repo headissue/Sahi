@@ -1,0 +1,6 @@
+function login($username, $password){
+	_setValue(_textbox("user"), $username);
+	_setValue(_password("password"), $password);
+	_click(_submit("Login"));
+}
+

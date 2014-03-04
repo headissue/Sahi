@@ -1,0 +1,7 @@
+_assertFalse(_printCalled());
+_click(_button("Print"));
+_assert(_printCalled());
+_clearPrintCalled();
+_assertFalse(_printCalled());
+_click(_button("Print"));
+_assert(_printCalled());

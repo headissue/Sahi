@@ -1,0 +1,8 @@
+_include("debug_include_1.sah");
+_include("debug_include_2.sah");
+_include("debug_include_3.sah");
+
+login("test", "secret");
+addBooks(2, 1, 1);
+verifyTotal(1150);
+_click(_button("Logout"));

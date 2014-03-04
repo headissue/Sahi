@@ -1,0 +1,290 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+/**
+ * Copyright  2006  V Narayan Raman
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+-->
+<project name="demo" default="sahitests">
+    <taskdef name="sahi" classname="net.sf.sahi.ant.RunSahiTask" classpath="lib/ant-sahi.jar"/>
+    <target name="sahitests" description="start the server and run sahi tests">
+        <parallel>
+            <!--<antcall target="start"/>-->
+            <antcall target="start-web"/>
+            <sequential>
+                <waitfor maxwait="3" maxwaitunit="minute" checkevery="100">
+                    <http url="http://localhost:10000/demo/index.htm"/>
+                </waitfor>
+                <antcall target="runietests"/>
+            </sequential>
+        </parallel>
+    </target>
+
+    <target name="stressie" description="start the server and run sahi tests">
+        <parallel>
+            <antcall target="start"/>
+            <antcall target="start-web"/>
+            <sequential>
+                <waitfor maxwait="3" maxwaitunit="minute" checkevery="100">
+                    <http url="http://localhost:10000/demo/index.htm"/>
+                </waitfor>
+                <antcall target="proxyon"/>
+                <antcall target="justie"/>
+                <antcall target="justie"/>
+                <antcall target="justie"/>
+                <antcall target="justie"/>
+                <antcall target="justie"/>
+                <antcall target="justie"/>
+                <antcall target="justie"/>
+                <antcall target="justie"/>
+                <antcall target="justie"/>
+                <antcall target="justie"/>
+                <antcall target="justie"/>
+                <antcall target="justie"/>
+                <antcall target="justie"/>
+                <antcall target="justie"/>
+                <antcall target="justie"/>
+                <antcall target="justie"/>
+                <antcall target="justie"/>
+                <antcall target="justie"/>
+                <antcall target="justie"/>
+                <antcall target="justie"/>
+                <antcall target="justie"/>
+                <antcall target="justie"/>
+                <antcall target="justie"/>
+                <antcall target="justie"/>
+                <antcall target="justie"/>
+                <antcall target="justie"/>
+                <antcall target="justie"/>
+                <antcall target="justie"/>
+                <antcall target="justie"/>
+                <antcall target="justie"/>
+                <antcall target="justie"/>
+                <antcall target="justie"/>
+                <antcall target="justie"/>
+                <antcall target="justie"/>
+                <antcall target="justie"/>
+                <antcall target="justie"/>
+                <antcall target="justie"/>
+                <antcall target="justie"/>
+                <antcall target="justie"/>
+                <antcall target="justie"/>
+                <antcall target="justie"/>
+                <antcall target="justie"/>
+                <antcall target="justie"/>
+                <antcall target="justie"/>
+                <antcall target="justie"/>
+                <antcall target="justie"/>
+                <antcall target="justie"/>
+                <antcall target="justie"/>
+                <antcall target="justie"/>
+                <antcall target="justie"/>
+                <antcall target="stop-web"/>
+                <antcall target="proxyoff"/>
+                <antcall target="stopsahi"/>
+            </sequential>
+        </parallel>
+    </target>
+
+
+    <target name="ff" description="start the server and run sahi tests">
+        <parallel>
+            <sequential>
+                <waitfor maxwait="3" maxwaitunit="minute" checkevery="100">
+                    <http url="http://localhost:10000/demo/index.htm"/>
+                </waitfor>
+                <antcall target="runfftests"/>
+                <antcall target="failsahi"/>
+            </sequential>
+            <antcall target="start-web"/>
+        </parallel>
+    </target>
+
+    <target name="stressff" description="start the server and run sahi tests">
+        <parallel>
+            <sequential>
+                <waitfor maxwait="3" maxwaitunit="minute" checkevery="100">
+                    <http url="http://localhost:10000/demo/index.htm"/>
+                </waitfor>
+                <antcall target="justff"/>
+                <antcall target="justff"/>
+                <antcall target="justff"/>
+                <antcall target="justff"/>
+                <antcall target="justff"/>
+                <antcall target="stop-web"/>
+                <antcall target="failsahi"/>
+                <antcall target="stopsahi"/>
+            </sequential>
+            <antcall target="start-web"/>
+        </parallel>
+    </target>
+
+    <target name="runfftests">
+        <sahi suite="../scripts/demo.suite"
+              browser="C:\Program Files\Mozilla Firefox\firefox.exe"
+              baseurl="http://localhost:10000/demo/"
+              sahihost="localhost"
+              sahiport="9999"
+              failureproperty="sahi.failed"
+              haltonfailure="false"
+              browseroption="-profile ${basedir}/browser/ff/profiles/sahi$threadNo"
+              threads="3"
+                />
+        <!--<antcall target="failsahi"/>-->
+        <!--logdir="yy"-->
+    </target>
+
+    <target name="rundir">
+        <sahi suite="../tempscripts"
+              browser="C:\\Program Files\\Internet Explorer\\iexplore.exe"
+              baseurl="http://localhost:10000/demo/"
+              sahihost="localhost"
+              sahiport="9999"
+              failureproperty="sahi.failed"
+              haltonfailure="false"
+                />
+        <!--logdir="D:\xx\logs"-->
+        <!--threads="3"-->
+    </target>
+
+    <target name="justie">
+        <sahi suite="../scripts/demo.suite"
+              browser="C:\\Program Files\\Internet Explorer\\iexplore.exe"
+              baseurl="http://localhost:10000/demo/"
+              sahihost="localhost"
+              sahiport="9999"
+              failureproperty="sahi.failed"
+              haltonfailure="false"
+              threads="3"
+                />
+    </target>
+
+    <target name="justff">
+        <sahi suite="../scripts/demo.suite"
+              browser="C:\\Program Files\\Mozilla Firefox\\firefox.exe"
+              baseurl="http://localhost:10000/demo/"
+              sahihost="localhost"
+              sahiport="9999"
+              failureproperty="sahi.failed"
+              haltonfailure="false"
+                >
+            <report type="html"/>
+            <report type="junit" logdir="D:/my/sahi/logs/junit/a"/>
+        </sahi>
+    </target>
+
+
+    <target name="runietests">
+        <antcall target="proxyon"/>
+        <sahi suite="../scripts/demo.suite"
+              browser="C:\\Program Files\\Internet Explorer\\iexplore.exe"
+              baseurl="http://localhost:10000/demo/"
+              sahihost="localhost"
+              sahiport="9999"
+              failureproperty="sahi.failed"
+              haltonfailure="false"
+              threads="3"
+                >
+            <report type="html"/>
+            <report type="junit" logdir="D:/my/sahi/temp/junit"/>
+        </sahi>
+        <!--<createissue tool="jira"/>-->
+        <!--logdir="D:\xx\logs"-->
+        <!--threads="3"-->
+        <antcall target="failsahi"/>
+        <antcall target="passsahi"/>
+    </target>
+
+    <target name="passsahi" unless="sahi.failed">
+        <antcall target="proxyoff"/>
+        <antcall target="stop-web"/>
+        <!--<antcall target="stopsahi"/>-->
+    </target>
+
+    <target name="failsahi" if="sahi.failed">
+        <antcall target="proxyoff"/>
+        <antcall target="stop-web"/>
+        <!--<antcall target="stopsahi"/>-->
+        <fail message="Sahi tests failed!"/>
+    </target>
+
+    <target name="start-web" description="starts web">
+        <java classname="net.sf.sahi.WebServer" fork="true" dir="bin"
+              jvmargs="-Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5006">
+            <classpath location="lib/sahi.jar"/>
+        </java>
+    </target>
+
+    <target name="stop-web" description="stop web server">
+        <get dest="stopserver.htm" src="http://localhost:10000/dyn/stopserver" ignoreerrors="true"/>
+        <delete file="stopserver.htm"/>
+    </target>
+
+
+    <target name="sahireport" description="show report">
+        <exec command="C:\\Program Files\\Internet Explorer\\iexplore.exe file:///C:/my/sahi/logs/playback/"/>
+    </target>
+
+    <target name="start" description="starts proxy">
+        <java classname="net.sf.sahi.Proxy" fork="true" dir="bin">
+            <env key="MOZ_NO_REMOTE" value="1"/>
+            <classpath location="lib/sahi.jar">
+                <fileset dir="extlib" includes="*.jar"/>
+            </classpath>
+        </java>
+    </target>
+
+    <target name="stopsahi" description="stop sahi server">
+        <sahi stop="true" sahihost="localhost" sahiport="9999"/>
+    </target>
+
+    <target name="proxyon">
+        <exec executable="tools/toggle_IE_proxy.exe">
+            <arg value="enable"/>
+        </exec>
+    </target>
+    <target name="proxyoff">
+        <exec executable="tools/toggle_IE_proxy.exe">
+            <arg value="disable"/>
+        </exec>
+    </target>
+
+    <target name="testwithproxy" description="start the server and run sahi tests">
+        <parallel>
+            <antcall target="start"/>
+            <sequential>
+                <waitfor maxwait="3" maxwaitunit="minute" checkevery="100">
+                    <http url="http://localhost:10000/demo/index.htm"/>
+                </waitfor>
+                <antcall target="proxyon"/>
+                <antcall target="justie"/>
+            </sequential>
+            <antcall target="start-web"/>
+        </parallel>
+    </target>
+
+    <target name="testwithproxyff" description="start the server and run sahi tests">
+        <parallel>
+            <antcall target="start"/>
+            <sequential>
+                <waitfor maxwait="3" maxwaitunit="minute" checkevery="100">
+                    <http url="http://localhost:10000/demo/index.htm"/>
+                </waitfor>
+                <antcall target="runfftests"/>
+            </sequential>
+            <antcall target="start-web"/>
+        </parallel>
+    </target>
+
+</project>

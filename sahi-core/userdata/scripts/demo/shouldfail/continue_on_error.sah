@@ -1,0 +1,7 @@
+_continueOnError()
+_click(_link("Non existent 1"));
+_click(_link("Link Test"));
+_click(_link("Non existent 2"));
+_click(_link("Back"));
+_stopOnError();
+_click(_link("Non existent 3")); // should fail here

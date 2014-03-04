@@ -1,0 +1,6 @@
+_click(_link("Form Test"));
+_setValue(_textbox("t1"), "abc");
+_setValue(_textbox(1), "def");
+_call(history.back())
+_click(_link("Link Test"));
+_assertNotNull(_link("linkByHtml"));

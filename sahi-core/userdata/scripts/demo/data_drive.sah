@@ -1,0 +1,29 @@
+var $data = [["Link Test", "Back"], ["Form Test", "Back"], ["Table Test", "Back"]];
+
+
+function navigate($link1, $link2){
+	_click(_link($link1));
+	_assertEqual($link1, _title());
+	_click(_link($link2));
+}
+
+_dataDrive(navigate, $data);
+         
+var $preFnCalled = false;
+var $postFnCalled = true;
+
+function preFn1(){
+	$preFnCalled = true;
+	$postFnCalled = false;
+}
+function postFn1(){
+	$preFnCalled = false;
+	$postFnCalled = true;
+}
+function navigate2($link1, $link2){
+	if (!$postFnCalled) _fail();
+	if (!$preFnCalled) _fail();
+	_assertTrue($preFnCalled);
+	_assertFalse($postFnCalled);
+}
+_dataDrive(navigate2, $data, preFn1, postFn1);

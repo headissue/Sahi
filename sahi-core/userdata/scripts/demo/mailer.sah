@@ -1,0 +1,6 @@
+var $host = "smtp.myserver.com";
+var $port = 25;
+var $username = "myemail@example.com";
+var $password = "mypassword";
+var $mailer = new net.sf.sahi.ant.Mailer($host, $port, $username, $password);
+$mailer.send("from@example.com", "to@example.com", "my subject", "my email body");

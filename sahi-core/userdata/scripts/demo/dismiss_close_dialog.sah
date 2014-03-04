@@ -1,0 +1,17 @@
+_navigateTo("/demo/");
+
+_call(top.focus());
+_click(_link("Close Self"));
+
+var robot = new java.awt.Robot(); 
+function keypressNative(key){
+	robot.keyPress(key);
+	robot.keyRelease(key);	
+}
+
+keypressNative(java.awt.event.KeyEvent.VK_TAB);
+keypressNative(java.awt.event.KeyEvent.VK_ENTER);
+
+_click(_link("Link Test"));
+
+

@@ -1,0 +1,27 @@
+// http://www.javapractices.com/topic/TopicAction.do?Id=82
+function readClipboard() {
+	var robot = new java.awt.Robot();
+	var clipboard = java.awt.Toolkit.getDefaultToolkit().getSystemClipboard();
+	var contents = clipboard.getContents(null);
+	var stringFlavor = java.awt.datatransfer.DataFlavor.stringFlavor
+	if (contents && contents.isDataFlavorSupported(stringFlavor)) {
+		try {
+			var result = "" + contents.getTransferData(stringFlavor);
+		} catch (e) {
+			throw e;
+		}
+	}
+	return result;
+}
+
+function setClipboard(s){
+    var stringSelection = new java.awt.datatransfer.StringSelection(s);
+    var clipboard = java.awt.Toolkit.getDefaultToolkit().getSystemClipboard();
+    clipboard.setContents(stringSelection, null);
+}
+
+var $contents = readClipboard();
+_alert($contents);
+setClipboard("some text in clipboard");
+$contents = readClipboard();
+_alert($contents);

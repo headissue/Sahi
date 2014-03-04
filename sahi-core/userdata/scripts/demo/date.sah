@@ -1,0 +1,12 @@
+function formatDate($origDate, $inFormat, $outFormat){
+	var $inFormatter = new java.text.SimpleDateFormat($inFormat);
+	var $outFormatter = new java.text.SimpleDateFormat($outFormat);
+	return $outFormatter.format($inFormatter.parse($origDate));
+}
+
+var $origDate = "2009-09-04 13:40:43"
+var $inFormat = "yyyy-MM-dd HH:mm:ss"
+var $outFormat = "MM-dd-yyyy HH:mm:ss"
+ 
+var $formatted = formatDate($origDate, $inFormat, $outFormat);
+_assertEqual("09-04-2009 13:40:43", $formatted);

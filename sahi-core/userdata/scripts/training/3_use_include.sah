@@ -1,0 +1,5 @@
+_include("3_included.sah");
+
+login("test", "secret");
+addBooks(2, 1, 1);
+verifyTotal(1150);
