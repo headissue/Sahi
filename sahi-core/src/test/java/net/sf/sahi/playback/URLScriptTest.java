@@ -5,15 +5,15 @@ import junit.framework.TestCase;
 
 /**
  * Sahi - Web Automation and Test Tool
- * 
+ * <p/>
  * Copyright  2006  V Narayan Raman
- *
+ * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,29 +21,29 @@ import junit.framework.TestCase;
  * limitations under the License.
  */
 public class URLScriptTest extends TestCase {
-	static {
-		Configuration.init();
-	}
-	
-	private static final long serialVersionUID = 9089031044975786876L;
+  static {
+    Configuration.init();
+  }
 
-	public void testFQN() {
-		MockURLScript urlScript = new MockURLScript("http://abc/def/a.sah");
-		assertEquals("http://abc/def/b.sah", urlScript.getFQN("b.sah"));
-	}
+  private static final long serialVersionUID = 9089031044975786876L;
 
-	public void testFQNWithFullURL() {
-		MockURLScript urlScript = new MockURLScript("http://abc/def/a.sah");
-		assertEquals("http://xxx/b.sah", urlScript.getFQN("http://xxx/b.sah"));
-	}
+  public void testFQN() {
+    MockURLScript urlScript = new MockURLScript("http://abc/def/a.sah");
+    assertEquals("http://abc/def/b.sah", urlScript.getFQN("b.sah"));
+  }
 
-	private class MockURLScript extends URLScript {
-		public MockURLScript(String fileName) {
-			super(fileName);
-		}
+  public void testFQNWithFullURL() {
+    MockURLScript urlScript = new MockURLScript("http://abc/def/a.sah");
+    assertEquals("http://xxx/b.sah", urlScript.getFQN("http://xxx/b.sah"));
+  }
 
-		protected void loadScript(String fileName) {
-		}
-	}
+  private class MockURLScript extends URLScript {
+    public MockURLScript(String fileName) {
+      super(fileName);
+    }
+
+    protected void loadScript(String fileName) {
+    }
+  }
 
 }

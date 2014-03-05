@@ -4,7 +4,7 @@ import junit.framework.TestCase;
 
 /**
  * Sahi - Web Automation and Test Tool
- * 
+ *
  * Copyright  2006  V Narayan Raman
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,31 +19,31 @@ import junit.framework.TestCase;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 /**
  * @author dlewis
- * 
  */
 public class ReportTest extends TestCase {
-	private static final long serialVersionUID = -2966355524465595469L;
-	
-	private Report report = null;
+  private static final long serialVersionUID = -2966355524465595469L;
 
-	protected void setUp() throws Exception {
-		super.setUp();
-		report = new Report("test", new HtmlReporter(null));
-	}
+  private Report report = null;
 
-	protected void tearDown() throws Exception {
-		super.tearDown();
-	}
+  protected void setUp() throws Exception {
+    super.setUp();
+    report = new Report("test", new HtmlReporter(null));
+  }
 
-	public void testAddResult() {
-		report.addResult("a", "success", "", null);
-		assertEquals(1, report.getListResult().size());
-	}
+  protected void tearDown() throws Exception {
+    super.tearDown();
+  }
+
+  public void testAddResult() {
+    report.addResult("a", "success", "", null);
+    assertEquals(1, report.getListResult().size());
+  }
 
 	/*
-	 * public void xtestGenerateReportForDefaultLogDir() throws
+   * public void xtestGenerateReportForDefaultLogDir() throws
 	 * FileNotFoundException { report.addResult(ReportUtil.getListResult());
 	 * report.generateReport(); assertNotNull(new
 	 * FileReader(Configuration.appendLogsRoot(report
@@ -56,19 +56,19 @@ public class ReportTest extends TestCase {
 	 * .getFormatter().getFileName(Utils.createLogFileName("test"))))); }
 	 */
 
-	public void testSummarizeResultsForEmptyList() {
-		TestSummary summary = report.summarizeResults("");
-		assertEquals(0, summary.getSteps());
-	}
+  public void testSummarizeResultsForEmptyList() {
+    TestSummary summary = report.summarizeResults("");
+    assertEquals(0, summary.getSteps());
+  }
 
-	public void testSummarizeResultsForAllTypes() {
-		report.addResult(ReportUtil.getListResult());
-		TestSummary summary = report.summarizeResults("");
-		assertEquals(3, summary.getSteps());
-		assertEquals(1, summary.getFailures());
-		assertEquals(0, summary.getErrors());
-		assertEquals("test", summary.getScriptName());
-	}
+  public void testSummarizeResultsForAllTypes() {
+    report.addResult(ReportUtil.getListResult());
+    TestSummary summary = report.summarizeResults("");
+    assertEquals(3, summary.getSteps());
+    assertEquals(1, summary.getFailures());
+    assertEquals(0, summary.getErrors());
+    assertEquals("test", summary.getScriptName());
+  }
 
-	
+
 }

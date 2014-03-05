@@ -5,7 +5,7 @@ import org.jmock.MockObjectTestCase;
 
 /**
  * Sahi - Web Automation and Test Tool
- * 
+ *
  * Copyright  2006  V Narayan Raman
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -27,16 +27,17 @@ import org.jmock.MockObjectTestCase;
  * Time: 5:57:45 PM
  */
 public class IssueReporterTest extends MockObjectTestCase {
-	private static final long serialVersionUID = 7349882941554985315L;
-	private IssueReporter issueReporter;
-    public void testCreateIssue()  {
-        Mock mockIssueCreator = mock(IssueCreator.class);
-        issueReporter = new IssueReporter("junit.suite");
-        issueReporter.addIssueCreator((IssueCreator)mockIssueCreator.proxy());
+  private static final long serialVersionUID = 7349882941554985315L;
+  private IssueReporter issueReporter;
 
-        mockIssueCreator.expects(once()).method("login").withNoArguments();
-        mockIssueCreator.expects(once()).method("createIssue").with(isA(Issue.class)).after("login");
-        mockIssueCreator.expects(once()).method("logout").withNoArguments().after("createIssue");
-        issueReporter.createIssue(new Issue("",""));
-    }
+  public void testCreateIssue() {
+    Mock mockIssueCreator = mock(IssueCreator.class);
+    issueReporter = new IssueReporter("junit.suite");
+    issueReporter.addIssueCreator((IssueCreator) mockIssueCreator.proxy());
+
+    mockIssueCreator.expects(once()).method("login").withNoArguments();
+    mockIssueCreator.expects(once()).method("createIssue").with(isA(Issue.class)).after("login");
+    mockIssueCreator.expects(once()).method("logout").withNoArguments().after("createIssue");
+    issueReporter.createIssue(new Issue("", ""));
+  }
 }
