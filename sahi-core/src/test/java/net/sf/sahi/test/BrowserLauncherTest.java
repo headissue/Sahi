@@ -1,12 +1,15 @@
 package net.sf.sahi.test;
 
-import java.io.File;
-import java.io.IOException;
-
 import net.sf.sahi.config.Configuration;
 import net.sf.sahi.util.FileUtils;
 import net.sf.sahi.util.Utils;
-import junit.framework.TestCase;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
+
+import java.io.File;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * Sahi - Web Automation and Test Tool
@@ -26,33 +29,37 @@ import junit.framework.TestCase;
  * limitations under the License.
  */
 
-public class BrowserLauncherTest extends TestCase {
+public class BrowserLauncherTest {
 
-  private static final long serialVersionUID = -2231996285413401877L;
   public String launchURL;
 
-  protected void setUp() throws Exception {
+  @Before
+  public void setUp() throws Exception {
+    Configuration.init();
     launchURL = "http://auto?startUrl=http://www.starturl.com&sessionId=123";
   }
 
+  @Test
   public void testEscapeForWindows() {
     BrowserLauncher browserLauncher = new BrowserLauncher("C:\\ie.exe", "ie.exe", "", true);
     assertEquals("\"C:\\ie.exe\"  \"http://auto?startUrl=http://www.starturl.com&sessionId=123\"",
       browserLauncher.buildCommandForWindows(launchURL));
   }
 
+  @Test
   public void testEscapeForNonWindows() {
     BrowserLauncher browserLauncher = new BrowserLauncher("/usr/programs/firefox", "firefox", "", false);
     assertEquals("/usr/programs/firefox http://auto?startUrl=http://www.starturl.com&sessionId=123",
       browserLauncher.buildCommandForNonWindows(launchURL));
   }
 
+  @Test
+  @Ignore("OS dependent")
   public void ytestFirefoxFirstLaunchAndKill() throws Exception {
     String pathname = "D:/sahi/sf/sahi_993/userdata/browser/ff/profiles/sahi9";
     Utils.deleteDir(new File(pathname));
     FileUtils.copyDir("D:/sahi/sf/sahi_993/config/ff_profile_template", pathname);
 
-    Configuration.init();
     BrowserLauncher browserLauncher = new BrowserLauncher("C:\\Program Files\\Mozilla Firefox\\firefox.exe", "firefox.exe", "-profile " + pathname + " -no-remote", false);
     browserLauncher.openURL("http://narayan:10000/demo/");
 //    	Thread.sleep(5000);

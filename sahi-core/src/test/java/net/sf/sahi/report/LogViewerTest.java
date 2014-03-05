@@ -1,11 +1,15 @@
 package net.sf.sahi.report;
 
-import junit.framework.TestCase;
 import net.sf.sahi.config.Configuration;
 import net.sf.sahi.util.Utils;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Sahi - Web Automation and Test Tool
@@ -30,22 +34,20 @@ import java.io.IOException;
  * Date: Dec 8, 2006
  * Time: 5:02:01 PM
  */
-public class LogViewerTest extends TestCase {
-  private static final long serialVersionUID = 6044194475810086560L;
+public class LogViewerTest {
 
-  static {
+  private File dir;
+
+
+  @Before
+  public void setUp() throws Exception {
     Configuration.init();
-  }
-
-  private File dir = new File(Configuration.getPlayBackLogsRoot() + System.getProperty("file.separator") + "junit");
-
-
-  protected void setUp() throws Exception {
-    super.setUp();
+    dir = new File(Configuration.getUserDataDir() + "/scripts/junit");
     Utils.deleteDir(dir);
     dir.mkdirs();
   }
 
+  @Test
   public void testGetLogsList() throws IOException, InterruptedException {
     new File(dir, "log3.htm").createNewFile();
     new File(dir, "log2.htm").createNewFile();
@@ -64,6 +66,7 @@ public class LogViewerTest extends TestCase {
     assertTrue(actual.indexOf(expected3) != 1);
   }
 
+  @Test
   public void testHighlightLine() {
     assertEquals("<span>1</span> <a name='selected'><b>one</b></a>\n<span>2</span> two\n<span>3</span> three\n<span>4</span> four\n", LogViewer.highlightLine("one\ntwo\nthree\r\nfour", 1));
     assertEquals("<span>1</span> one\n<span>2</span> <a name='selected'><b>two</b></a>\n<span>3</span> three\n<span>4</span> four\n", LogViewer.highlightLine("one\ntwo\nthree\nfour", 2));
@@ -72,6 +75,7 @@ public class LogViewerTest extends TestCase {
     assertEquals("<span>1</span> one\n<span>2</span> two\n<span>3</span> three\n<span>4</span> four\n", LogViewer.highlightLine("one\ntwo\nthree\nfour", 0));
   }
 
+  @Test
   public void testHighlight() {
     String data = "test";
     assertEquals("<html><head><meta http-equiv=\"content-type\" content=\"text/html; charset=UTF-8\" /></head><body><style>b{background:brown;color:white;}\nspan{background:lightgrey;}</style><pre><span>1</span> test\n</pre></body></html>", LogViewer.highlight(data, -1));

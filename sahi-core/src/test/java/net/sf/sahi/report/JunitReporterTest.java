@@ -1,6 +1,8 @@
 package net.sf.sahi.report;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * Sahi - Web Automation and Test Tool
@@ -25,9 +27,9 @@ import junit.framework.TestCase;
  * Date: Dec 11, 2006
  * Time: 5:47:23 PM
  */
-public class JunitReporterTest extends TestCase {
-  private static final long serialVersionUID = -2056790640359715868L;
+public class JunitReporterTest {
 
+  @Test
   public void testCreateSuiteLogFolder() {
     assertEquals(false, new JunitReporter("").createSuiteLogFolder());
   }

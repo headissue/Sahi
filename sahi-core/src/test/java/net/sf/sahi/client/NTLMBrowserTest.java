@@ -1,9 +1,14 @@
 package net.sf.sahi.client;
 
-import junit.framework.TestCase;
 import net.sf.sahi.config.Configuration;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
 
-public class NTLMBrowserTest extends TestCase {
+import static org.junit.Assert.assertEquals;
+
+public class NTLMBrowserTest {
   private static final long serialVersionUID = -4296085986550978115L;
   private Browser browser;
   private String sahiBasePath = ".";
@@ -11,6 +16,8 @@ public class NTLMBrowserTest extends TestCase {
   private String baseURL = "http://sahi.co.in";
 
 
+  @Test
+  @Ignore("OS dependent")
   public void testNTLMBrowser() {
     browser.navigateTo(baseURL + "/demo/formTest.htm");
     browser.textbox("t1").setValue("aaa");
@@ -34,8 +41,8 @@ public class NTLMBrowserTest extends TestCase {
     }
   }
 
-  @Override
-  protected void setUp() throws Exception {
+  @Before
+  public void setUp() throws Exception {
     Configuration.initJava(sahiBasePath, userDataDirectory);
 
     toggleIEProxy(true);
@@ -44,8 +51,8 @@ public class NTLMBrowserTest extends TestCase {
     browser.open();
   }
 
-  @Override
-  protected void tearDown() throws Exception {
+  @After
+  public void tearDown() throws Exception {
     browser.close();
     toggleIEProxy(false);
   }

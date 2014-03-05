@@ -1,7 +1,8 @@
 package net.sf.sahi.command;
 
-import junit.framework.TestCase;
-import net.sf.sahi.command.MockResponder;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * Sahi - Web Automation and Test Tool
@@ -20,9 +21,9 @@ import net.sf.sahi.command.MockResponder;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-public class CustomResponseManagerTest extends TestCase {
-  private static final long serialVersionUID = -8104865035753409420L;
+public class CustomResponseManagerTest {
 
+  @Test
   public void testGetCommand() {
     MockResponder mockResponder = new MockResponder();
     mockResponder.add(".*sahi[.]co[.]in.*", "net.sf.sahi.Test_test");

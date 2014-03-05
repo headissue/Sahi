@@ -1,6 +1,7 @@
 package net.sf.sahi.test;
 
-import junit.framework.TestCase;
+import org.junit.Ignore;
+import org.junit.Test;
 
 import java.io.IOException;
 
@@ -21,11 +22,10 @@ import java.io.IOException;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-public class SahiTestTest extends TestCase {
+public class SahiTestTest  {
 
-  private static final long serialVersionUID = 7669927478979181445L;
-
-  @SuppressWarnings("unchecked")
+  @Test
+  @Ignore("This may not be a UnitTest. Seems more like it should run in an Integrationtest phase")
   public void xtestProcess2() throws IOException, InterruptedException {
     Process p = null;
     java.util.Properties envVars = new java.util.Properties();
@@ -75,6 +75,8 @@ public class SahiTestTest extends TestCase {
   }
 
 
+  @Test
+  @Ignore("This may not be a UnitTest. Seems more like it should run in an Integrationtest phase")
   public void xtestProcess() throws IOException, InterruptedException {
 //        Properties properties = System.getProperties();
 //
@@ -118,8 +120,4 @@ public class SahiTestTest extends TestCase {
     System.out.println(p.toString());
     p2.destroy();
   }
-
-  public void test() {
-  }
-
 }

@@ -1,12 +1,18 @@
 package net.sf.sahi.test;
 
-import junit.framework.TestCase;
 
-public class SingleSessionTestRunnerTest extends TestCase {
-  private static final long serialVersionUID = 4687325716286230955L;
+import org.junit.Ignore;
+import org.junit.Test;
+
+import static junit.framework.Assert.assertEquals;
+
+public class SingleSessionTestRunnerTest {
+
   private String browserType = "firefox";
   private String base = "http://sahi.co.in/demo/";
 
+  @Test
+  @Ignore("This may not be a UnitTest. Seems more like it should run in an Integrationtest phase")
   public void testSingleBrowserSession() throws Exception {
 
     SingleSessionTestRunner testRunner = new SingleSessionTestRunner("my_session", browserType, base);
@@ -21,6 +27,8 @@ public class SingleSessionTestRunnerTest extends TestCase {
   }
 
 
+  @Test
+  @Ignore("This may not be a UnitTest. Seems more like it should run in an Integrationtest phase")
   public void testSessionSpecificInitJs() throws Exception {
     SingleSessionTestRunner testRunner = new SingleSessionTestRunner("my_session", browserType, base);
     testRunner.start();

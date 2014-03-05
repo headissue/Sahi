@@ -1,8 +1,12 @@
 package net.sf.sahi.ssl;
 
+import net.sf.sahi.config.Configuration;
 import net.sf.sahi.util.Utils;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Sahi - Web Automation and Test Tool
@@ -21,14 +25,21 @@ import junit.framework.TestCase;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-public class SSLHelperTest extends TestCase {
-  private static final long serialVersionUID = -5997317724110573969L;
+public class SSLHelperTest {
 
+  @Before
+  public void setup() {
+    Configuration.init();
+  }
+
+  @Test
+  @Ignore("FIXME")
   public void xtestSSLCommand() {
     SSLHelper helper = new SSLHelper();
     assertEquals("keytool.exe -genkey -alias www.sahi.co.in -keypass pwd -storepass pwd -keyalg RSA -keystore filekarasta -dname \"CN=www.sahi.co.in, OU=Sahi, O=Sahi, L=Bangalore, S=Karnataka, C=IN\"", helper.getPrintableSSLCommand(helper.getSSLCommand("www.sahi.co.in", "filekarasta", "pwd", "keytool.exe")).trim());
   }
 
+  @Test
   public void testTokenizer() {
     String s = "keytool.exe -dname \"CN=www.sahi.co.in, OU=Sahi\"";
     String[] commandTokens = Utils.getCommandTokens(s);

@@ -1,7 +1,5 @@
 package net.sf.sahi.client;
 
-import junit.framework.TestCase;
-
 /**
  * Sahi - Web Automation and Test Tool
  * <p/>
@@ -19,7 +17,7 @@ import junit.framework.TestCase;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-public class SahiBrowserTestCase extends TestCase {
+public class SahiBrowserTestCase {
   private static final long serialVersionUID = -7323657270745640059L;
   private Browser browser;
 

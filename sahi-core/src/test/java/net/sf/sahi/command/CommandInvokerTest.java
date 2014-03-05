@@ -20,29 +20,22 @@
  */
 package net.sf.sahi.command;
 
-import net.sf.sahi.request.HttpRequest;
-import net.sf.sahi.response.HttpResponse;
-import org.jmock.Mock;
-import org.jmock.cglib.MockObjectTestCase;
-
-import java.net.URL;
-import java.io.File;
+/* FIXME how to Junit4?
 
 public class CommandInvokerTest extends MockObjectTestCase {
-  private static final long serialVersionUID = -8519265344249609705L;
   private CommandInvoker commandInvoker;
   private final File HELPFILE = new File("help.txt");
 
-  protected void setUp() throws Exception {
+  @Before
+  public void setUp() throws Exception {
     commandInvoker = new CommandInvoker();
     HELPFILE.createNewFile();
   }
 
-  protected void tearDown() throws Exception {
-    HELPFILE.delete();
-  }
 
-  public void xtestExecuteRunsACommand() throws InterruptedException {
+  @Test
+  @Ignore("FIXME")
+  public void testExecuteRunsACommand() throws InterruptedException {
     assertTrue(HELPFILE.exists());
     HttpResponse response = commandInvoker.execute(prepareMockHttpRequest(getCommandPath("test.cmd"), true));
     String actualResponse = new String(response.data());
@@ -50,13 +43,17 @@ public class CommandInvokerTest extends MockObjectTestCase {
     assertFalse(HELPFILE.exists());
   }
 
-  public void xtestExecuteReturnsFailureForInvalidCommand() throws InterruptedException {
+  @Test
+  @Ignore("FIXME")
+  public void testExecuteReturnsFailureForInvalidCommand() throws InterruptedException {
     HttpResponse response = commandInvoker.execute(prepareMockHttpRequest("invalid", true));
     String actualResponse = new String(response.data());
     assertEquals(CommandInvoker.FAILURE, actualResponse);
   }
 
-  public void xtestExecuteRunsACommandInAsyncMode() throws InterruptedException {
+  @Test
+  @Ignore("FIXME")
+  public void testExecuteRunsACommandInAsyncMode() throws InterruptedException {
     HttpResponse response = commandInvoker.execute(prepareMockHttpRequest(getCommandPath("test.cmd"), false));
     String actualResponse = new String(response.data());
     assertEquals(CommandInvoker.SUCCESS, actualResponse);
@@ -69,8 +66,6 @@ public class CommandInvokerTest extends MockObjectTestCase {
     return (HttpRequest) mock.proxy();
   }
 
-  public void testDummy() {
-  }
 
   private String getCommandPath(String command) {
     URL resource = this.getClass().getResource(command);
@@ -80,4 +75,12 @@ public class CommandInvokerTest extends MockObjectTestCase {
     return commandToExecute;
   }
 
+  @After
+  public void tearDown() throws Exception {
+    HELPFILE.delete();
+  }
+
 }
+
+ */
+

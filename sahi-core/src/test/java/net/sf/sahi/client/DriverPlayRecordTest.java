@@ -1,8 +1,14 @@
 package net.sf.sahi.client;
 
-import junit.framework.TestCase;
 import net.sf.sahi.Proxy;
 import net.sf.sahi.config.Configuration;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Sahi - Web Automation and Test Tool
@@ -21,13 +27,14 @@ import net.sf.sahi.config.Configuration;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-public class DriverPlayRecordTest extends TestCase {
-  private static final long serialVersionUID = -5086443670358903534L;
+public class DriverPlayRecordTest {
+
   private Browser browser;
   private Proxy proxy;
   String basePath = ".";
   private String userDataDirectory = "./userdata/";
 
+  @Before
   public void setUp() {
     System.setProperty("sahi.mode.dev", "true");
     Configuration.initJava(basePath, userDataDirectory);
@@ -45,6 +52,8 @@ public class DriverPlayRecordTest extends TestCase {
     browser.open();
   }
 
+  @Test
+  @Ignore("OS dependent")
   public void testRecorder() throws ExecutionException {
     System.out.println("--- startRecording");
     browser.startRecording(); // check that controller window is opened, and navigateTo is added.
@@ -99,6 +108,7 @@ public class DriverPlayRecordTest extends TestCase {
     browser.link("Back").click();
   }
 
+  @After
   public void tearDown() {
     browser.close();
     proxy.stop();

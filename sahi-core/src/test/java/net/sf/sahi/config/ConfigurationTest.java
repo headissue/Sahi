@@ -1,8 +1,11 @@
 package net.sf.sahi.config;
 
+import org.junit.Before;
+import org.junit.Test;
+
 import java.io.File;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Sahi - Web Automation and Test Tool
@@ -21,32 +24,34 @@ import junit.framework.TestCase;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-public class ConfigurationTest extends TestCase {
-  private static final long serialVersionUID = -2118478735809372530L;
+public class ConfigurationTest{
   private String basePath;
   private String userDataDirectory;
 
-  @Override
-  protected void setUp() throws Exception {
-    super.setUp();
-    basePath = new File(".").getCanonicalPath().replace('\\', '/');
+  @Before
+  public void setUp() throws Exception {
+    basePath = ".";
     userDataDirectory = new File(basePath, "userdata/").getCanonicalPath().replace('\\', '/');
   }
 
+  @Test
   public void testSplit() {
     assertEquals("a", "a\nb\nc".split("\n")[0]);
     assertEquals("b", "a\nb\nc".split("\n")[1]);
     assertEquals("c", "a\nb\nc".split("\n")[2]);
   }
 
+  @Test
   public void testGetRenderableContentTypes() {
     assertEquals("a\nb", "a\r\nb".replaceAll("\\\r", ""));
   }
 
+  @Test
   public void testGetNonBlankLines() {
     assertEquals("a", Configuration.getNonBlankLines(" \r\n a \r\n")[0]);
   }
 
+  @Test
   public void testInit() {
     Configuration.init(basePath + "", userDataDirectory);
     assertEquals(userDataDirectory + "/logs/playback", Configuration.getPlayBackLogsRoot().replace('\\', '/'));
@@ -55,6 +60,7 @@ public class ConfigurationTest extends TestCase {
     assertEquals("sahi", Configuration.getControllerMode());
   }
 
+  @Test
   public void testInitJava() {
     Configuration.initJava(basePath + "", userDataDirectory);
     assertEquals(userDataDirectory + "/logs/playback", Configuration.getPlayBackLogsRoot().replace('\\', '/'));

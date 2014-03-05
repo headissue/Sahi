@@ -1,9 +1,12 @@
 package net.sf.sahi.stream.filter;
 
+import net.sf.sahi.config.Configuration;
+import org.junit.Before;
+import org.junit.Test;
+
 import java.io.IOException;
 
-import net.sf.sahi.config.Configuration;
-import net.sf.sahi.stream.filter.HTMLModifierFilter;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Sahi - Web Automation and Test Tool
@@ -26,7 +29,8 @@ public class HTMLModifierFilterTest extends AbstractFilterTestCase {
   private static final long serialVersionUID = -8595824041373557849L;
 
 
-  static {
+  @Before
+  public void setup() {
     Configuration.init();
   }
 
@@ -39,6 +43,7 @@ public class HTMLModifierFilterTest extends AbstractFilterTestCase {
     return getFiltered(ss, modifierFilter, charset);
   }
 
+  @Test
   public void testSingleLine() throws IOException {
     String output;
     String s1 = "<html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" />";
@@ -51,6 +56,7 @@ public class HTMLModifierFilterTest extends AbstractFilterTestCase {
       output);
   }
 
+  @Test
   public void testSingleLineXHTML() throws IOException {
     String output;
     String s1 = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\" \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\">" +
@@ -64,6 +70,7 @@ public class HTMLModifierFilterTest extends AbstractFilterTestCase {
       output);
   }
 
+  @Test
   public void testMultiLine1() throws IOException {
     String output;
     String s1 = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\" \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\"";

@@ -1,11 +1,14 @@
 package net.sf.sahi.playback;
 
-import junit.framework.TestCase;
+import net.sf.sahi.config.Configuration;
+import net.sf.sahi.util.Utils;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.io.File;
 
-import net.sf.sahi.config.Configuration;
-import net.sf.sahi.util.Utils;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Sahi - Web Automation and Test Tool
@@ -24,13 +27,14 @@ import net.sf.sahi.util.Utils;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-public class FileScriptTest extends TestCase {
-  static {
+public class FileScriptTest {
+
+  @Before
+  public void setup() {
     Configuration.init();
   }
 
-  private static final long serialVersionUID = -1687495110846340213L;
-
+  @Test
   public void testFQN() {
     if (Utils.isWindows()) {
       FileScript fileScript = new MockFileScript("c:/abc/def/a.sah");
@@ -47,6 +51,7 @@ public class FileScriptTest extends TestCase {
     }
   }
 
+  @Test
   public void testDirCreation() {
     if (Utils.isWindows()) {
       File file = new File(new File("D:\\my\\sahi\\logs\\"), "D:\\my");

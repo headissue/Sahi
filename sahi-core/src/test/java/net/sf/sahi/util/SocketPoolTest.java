@@ -1,8 +1,11 @@
 package net.sf.sahi.util;
 
+import org.junit.Before;
+import org.junit.Test;
+
 import java.io.IOException;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Sahi - Web Automation and Test Tool
@@ -21,11 +24,12 @@ import junit.framework.TestCase;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-public class SocketPoolTest extends TestCase {
+public class SocketPoolTest {
   private static final long serialVersionUID = 5201601055328888972L;
 
   private SocketPool pool;
 
+  @Before
   public void setUp() {
     pool = new SocketPool(2);
   }
@@ -33,6 +37,7 @@ public class SocketPoolTest extends TestCase {
   /*
    * Test method for 'net.sf.sahi.util.SocketPool.get(String, int)'
    */
+  @Test
   public void testGet() throws IOException {
     assertTrue(pool.get().getLocalPort() == 13300);
     pool.returnToPool(13300);

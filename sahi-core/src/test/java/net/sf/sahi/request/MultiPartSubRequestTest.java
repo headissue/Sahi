@@ -1,6 +1,8 @@
 package net.sf.sahi.request;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * Sahi - Web Automation and Test Tool
@@ -25,9 +27,10 @@ import junit.framework.TestCase;
  * Date: May 18, 2005
  * Time: 8:42:08 PM
  */
-public class MultiPartSubRequestTest extends TestCase {
+public class MultiPartSubRequestTest {
   private static final long serialVersionUID = 3538233569242971732L;
 
+  @Test
   public void testParse() {
     String s = "form-data; name=\"f1\"; filename=\"test.txt\"";
     MultiPartSubRequest multiPartSubRequest = new MultiPartSubRequest();
@@ -37,6 +40,7 @@ public class MultiPartSubRequestTest extends TestCase {
 
   }
 
+  @Test
   public void testGetValue() {
     assertEquals("f1", MultiPartSubRequest.getValue("name=\"f1\""));
     assertEquals("test.txt", MultiPartSubRequest.getValue("filename=\"test.txt\""));

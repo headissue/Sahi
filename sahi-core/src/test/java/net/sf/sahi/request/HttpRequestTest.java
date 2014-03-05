@@ -1,10 +1,12 @@
 package net.sf.sahi.request;
 
+import org.junit.Test;
+
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.List;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Sahi - Web Automation and Test Tool
@@ -23,9 +25,7 @@ import junit.framework.TestCase;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-public class HttpRequestTest extends TestCase {
-
-  private static final long serialVersionUID = 7198890274763001829L;
+public class HttpRequestTest {
 
 //	public void testRebuildCookies() {
 //		Map<String, String> cookies = new LinkedHashMap<String, String>();
@@ -38,10 +38,12 @@ public class HttpRequestTest extends TestCase {
 //	}
 
 
+  @Test
   public void testUnicode() throws UnsupportedEncodingException {
     URLDecoder.decode("abc", "sadalkdjlaksjdfl");
   }
 
+  @Test
   public void testSetUri() {
     assertEquals("/login?service=http://www.hostname.com/landing",
       new HttpRequest().stripHostName("/login?service=http://www.hostname.com/landing", "www.hostname.com", false));
@@ -56,6 +58,7 @@ public class HttpRequestTest extends TestCase {
       new HttpRequest().stripHostName("http://localhost:8080/netdirector/?service=http://localhost:8080/landing", "localhost", false));
   }
 
+  @Test
   public void testHandleSahiCookie() throws Exception {
     checkCookie("a=b; sahisid=123; c=d", "a=b; c=d");
     checkCookie("a=b; sahisid=123;", "a=b");
@@ -73,6 +76,7 @@ public class HttpRequestTest extends TestCase {
     assertEquals(after, request.headers().getLastHeader("Cookie"));
   }
 
+  @Test
   public void testCheckMultiCookieHeader() throws Exception {
     HttpRequest request = new HttpRequest();
     request.addHeader("Cookie", "sahisid=1231212; a=b; c=d");
@@ -84,6 +88,7 @@ public class HttpRequestTest extends TestCase {
     assertEquals("e=f", headers.get(1));
   }
 
+  @Test
   public void testCheckMultiCookieHeaderIgnoresBlank() throws Exception {
     HttpRequest request = new HttpRequest();
     request.addHeader("Cookie", "sahisid=1231212");

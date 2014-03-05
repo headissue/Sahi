@@ -12,7 +12,7 @@ import net.sf.sahi.config.Configuration;
  * You need sahi/lib/sahi.jar in your classpath.</br>
  * 
  */
-public class JavaClientTest extends TestCase {
+public class JavaClientTest {
 	private Browser browser;
 	private String userDataDirectory;
 

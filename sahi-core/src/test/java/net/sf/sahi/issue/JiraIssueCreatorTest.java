@@ -1,16 +1,18 @@
 package net.sf.sahi.issue;
 
 import net.sf.sahi.config.Configuration;
-
 import org.apache.xmlrpc.client.XmlRpcClient;
 import org.apache.xmlrpc.client.XmlRpcClientConfigImpl;
 import org.jmock.Mock;
 import org.jmock.cglib.MockObjectTestCase;
 import org.jmock.core.Constraint;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
-import java.net.URL;
 
 /**
  * Sahi - Web Automation and Test Tool
@@ -40,8 +42,8 @@ public class JiraIssueCreatorTest extends MockObjectTestCase {
   private JiraIssueCreator issueCreator;
   Mock mockXmlRpcClient;
 
-
-  protected void setUp() throws Exception {
+  @Before
+  public void setUp() throws Exception {
     Configuration.init();
     super.setUp();
     if (mockXmlRpcClient == null) {
@@ -51,16 +53,19 @@ public class JiraIssueCreatorTest extends MockObjectTestCase {
     mockXmlRpcClient.expects(once()).method("execute").with(eq("jira1.login"), ANYTHING).will(returnValue("loginToken"));
   }
 
+  @After
   protected void tearDown() throws Exception {
     super.tearDown();
     mockXmlRpcClient.reset();
   }
 
+  @Test
   public void testLogout() throws Exception {
     mockXmlRpcClient.expects(once()).method("execute").with(eq("jira1.logout"), ANYTHING);
     issueCreator.logout();
   }
 
+  @Test
   public void testInitializeXmlRpcClient() throws Exception {
     Mock mockConfigImpl = mock(XmlRpcClientConfigImpl.class);
     mockXmlRpcClient.reset();
@@ -69,6 +74,7 @@ public class JiraIssueCreatorTest extends MockObjectTestCase {
     issueCreator.initializeXmlRpcClient((XmlRpcClient) mockXmlRpcClient.proxy(), (XmlRpcClientConfigImpl) mockConfigImpl.proxy());
   }
 
+  @Test
   @SuppressWarnings("unchecked")
   public void testCreateIssue() throws Exception {
     issueCreator.setIssueParams(new HashMap());
@@ -87,6 +93,7 @@ public class JiraIssueCreatorTest extends MockObjectTestCase {
     issueCreator.createIssue(new Issue("", ""));
   }
 
+  @Test
   public void testGetIssueParametersWithParameterNotFound() throws Exception {
     try {
       mockXmlRpcClient.expects(once()).method("execute").with(eq("jira1.getProjects"), ANYTHING).will(returnValue(new Object[0]));
@@ -98,6 +105,7 @@ public class JiraIssueCreatorTest extends MockObjectTestCase {
   }
 
   @SuppressWarnings("unchecked")
+  @Test
   public void testGetIssueParametersWithParameterFound() throws Exception {
     mockXmlRpcClient.expects(once()).method("execute").with(eq("jira1.getProjects"), ANYTHING).will(returnValue(new Object[]{getParamMap("Sahi Integration")}));
     mockXmlRpcClient.expects(once()).method("execute").with(eq("jira1.getIssueTypes"), ANYTHING).will(returnValue(new Object[]{getParamMap("Sahi Bug")}));

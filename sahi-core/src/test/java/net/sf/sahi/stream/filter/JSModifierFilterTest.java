@@ -1,9 +1,13 @@
 package net.sf.sahi.stream.filter;
 
+import net.sf.sahi.config.Configuration;
+import org.junit.Before;
+import org.junit.Test;
+
 import java.io.IOException;
 
-import net.sf.sahi.config.Configuration;
-import net.sf.sahi.stream.filter.JSModifierFilter;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Sahi - Web Automation and Test Tool
@@ -25,10 +29,12 @@ import net.sf.sahi.stream.filter.JSModifierFilter;
 public class JSModifierFilterTest extends AbstractFilterTestCase {
   private static final long serialVersionUID = -723608175329141025L;
 
-  static {
+  @Before
+  public void setup() {
     Configuration.init();
   }
 
+  @Test
   public void testActiveXIsSubstituted() throws IOException {
     assertTrue(Configuration.modifyActiveX());
     String s1 = "new ActiveXObject";
@@ -40,6 +46,7 @@ public class JSModifierFilterTest extends AbstractFilterTestCase {
     assertEquals("obj = new_ActiveXObject('Microsoft.XMLHTTP');", output);
   }
 
+  @Test
   public void testWithTabsAndSpaces() throws IOException {
     String s1;
     String output;
@@ -48,6 +55,7 @@ public class JSModifierFilterTest extends AbstractFilterTestCase {
     assertEquals("new_ActiveXObject", output);
   }
 
+  @Test
   public void testWithTab() throws IOException {
     String s1;
     String output;
@@ -56,6 +64,7 @@ public class JSModifierFilterTest extends AbstractFilterTestCase {
     assertEquals("new_ActiveXObject", output);
   }
 
+  @Test
   public void testWithSpaces() throws IOException {
     String s1;
     String output;
@@ -64,6 +73,7 @@ public class JSModifierFilterTest extends AbstractFilterTestCase {
     assertEquals("new_ActiveXObject", output);
   }
 
+  @Test
   public void testBrokenStreamParsing1() throws IOException {
     byte[] s1 = "xx a = new ActiveXObject(); yy".getBytes();
     JSModifierFilter modifierFilter = new JSModifierFilter("iso-8859-1");
@@ -72,12 +82,14 @@ public class JSModifierFilterTest extends AbstractFilterTestCase {
     assertEquals("xx a = new_ActiveXObject(); yy", new String(result) + new String(remaining));
   }
 
+  @Test
   public void testBrokenStreamParsing11() throws IOException {
     String s1 = "xx a = new    ActiveXObject(); yy";
     String output = getFiltered(new String[]{s1});
     assertEquals("xx a = new_ActiveXObject(); yy", output);
   }
 
+  @Test
   public void testBrokenStreamParsing2() throws IOException {
     String s1 = "xx a = new ActiveX";
     String s2 = "Object(); yy";
@@ -85,6 +97,7 @@ public class JSModifierFilterTest extends AbstractFilterTestCase {
     assertEquals("xx a = new_ActiveXObject(); yy", output);
   }
 
+  @Test
   public void testBrokenStreamParsing3() throws IOException {
     String s1 = "xx a = ne";
     String s2 = "w ActiveX";
@@ -93,6 +106,7 @@ public class JSModifierFilterTest extends AbstractFilterTestCase {
     assertEquals("xx a = new_ActiveXObject(); yy", output);
   }
 
+  @Test
   public void testBrokenStreamParsing4() throws IOException {
     String s1 = "xx a = ne";
     String s2 = "w                      ActiveX";
@@ -101,6 +115,7 @@ public class JSModifierFilterTest extends AbstractFilterTestCase {
     assertEquals("xx a = new_ActiveXObject(); yy", output);
   }
 
+  @Test
   public void testBrokenStreamParsing5() throws IOException {
     String s1 = "xx a = ne";
     String s2 = "w                  ";
@@ -110,6 +125,7 @@ public class JSModifierFilterTest extends AbstractFilterTestCase {
     assertEquals("xx a = new_ActiveXObject(); yy", output);
   }
 
+  @Test
   public void testWithTabsAndSpacesBroken() throws IOException {
     String output;
     String s1 = "new\t   ";
@@ -118,6 +134,7 @@ public class JSModifierFilterTest extends AbstractFilterTestCase {
     assertEquals("new_ActiveXObject", output);
   }
 
+  @Test
   public void testWithTabsBroken() throws IOException {
     String output;
     String s1 = "new\t";
@@ -127,6 +144,7 @@ public class JSModifierFilterTest extends AbstractFilterTestCase {
     assertEquals("new_ActiveXObject", output);
   }
 
+  @Test
   public void testWithTabsAndSpacesBroken2() throws IOException {
     String output;
     String s1 = "new\t   ";

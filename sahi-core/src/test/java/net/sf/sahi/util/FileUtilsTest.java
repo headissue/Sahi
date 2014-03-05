@@ -1,10 +1,16 @@
 package net.sf.sahi.util;
 
-import junit.framework.TestCase;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
-import java.io.IOException;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Sahi - Web Automation and Test Tool
@@ -24,8 +30,8 @@ import java.io.FileOutputStream;
  * limitations under the License.
  */
 
-public class FileUtilsTest extends TestCase {
-  private static final long serialVersionUID = 4433222425549723764L;
+public class FileUtilsTest {
+
   String src = "../temp/copysrc/";
   String dest = "../temp/copydest/";
   String file1 = "a.txt";
@@ -33,7 +39,8 @@ public class FileUtilsTest extends TestCase {
   public String content = "Some text";
 
 
-  protected void setUp() throws Exception {
+  @Before
+  public void setUp() throws Exception {
     new File(src).mkdirs();
     new File(src + "nested").mkdirs();
 
@@ -48,6 +55,7 @@ public class FileUtilsTest extends TestCase {
     out.close();
   }
 
+  @Test
   public void testCopyDir() throws IOException, InterruptedException {
     FileUtils.copyDir(src, dest);
     assertTrue(new File(dest + file1).exists());
@@ -64,7 +72,8 @@ public class FileUtilsTest extends TestCase {
   }
 
 
-  protected void tearDown() throws Exception {
+  @After
+  public void tearDown() throws Exception {
     new File(src + file1).delete();
     new File(src + file2).delete();
     new File(dest + file1).delete();
@@ -76,6 +85,7 @@ public class FileUtilsTest extends TestCase {
     new File(dest).delete();
   }
 
+  @Test
   public void testCleanFileName() throws IOException {
     assertEquals("abcdefghijk", FileUtils.cleanFileName("a\\b/c:d*e?f\"g<h>i|jk"));
     String fileName = null;

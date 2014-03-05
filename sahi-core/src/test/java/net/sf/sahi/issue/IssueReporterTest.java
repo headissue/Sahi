@@ -2,6 +2,7 @@ package net.sf.sahi.issue;
 
 import org.jmock.Mock;
 import org.jmock.MockObjectTestCase;
+import org.junit.Test;
 
 /**
  * Sahi - Web Automation and Test Tool
@@ -27,9 +28,10 @@ import org.jmock.MockObjectTestCase;
  * Time: 5:57:45 PM
  */
 public class IssueReporterTest extends MockObjectTestCase {
-  private static final long serialVersionUID = 7349882941554985315L;
+
   private IssueReporter issueReporter;
 
+  @Test
   public void testCreateIssue() {
     Mock mockIssueCreator = mock(IssueCreator.class);
     issueReporter = new IssueReporter("junit.suite");

@@ -1,6 +1,8 @@
 package net.sf.sahi.playback;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * Sahi - Web Automation and Test Tool
@@ -19,9 +21,9 @@ import junit.framework.TestCase;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-public class SahiScriptHTMLAdapterTest extends TestCase {
-  private static final long serialVersionUID = 7655910208487317349L;
+public class SahiScriptHTMLAdapterTest {
 
+  @Test
   public void testCreateHTML() {
     assertEquals("<pre>a<br/>b</pre>", SahiScriptHTMLAdapter.createHTML("a\r\nb"));
   }

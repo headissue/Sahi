@@ -5,9 +5,13 @@
  */
 package net.sf.sahi.playback;
 
-import junit.framework.TestCase;
 import net.sf.sahi.config.Configuration;
 import net.sf.sahi.util.Utils;
+import org.junit.Before;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 /**
  * Sahi - Web Automation and Test Tool
@@ -26,22 +30,23 @@ import net.sf.sahi.util.Utils;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-public class ScriptHandlerTest extends TestCase {
-  static {
-    Configuration.init();
-  }
+public class ScriptHandlerTest {
 
-  private static final long serialVersionUID = 6341354901708835100L;
   private SahiScript script;
 
-  protected void setUp() {
-    script = new MockFileScript("fileName");
-  }
+    @Before
+    public void setup() {
+      Configuration.init();
+      script = new MockFileScript("fileName");
+    }
 
+
+  @Test
   public void testModify() {
     assertEquals("_sahi.schedule(\"_sahi._setValue ( elements['username'] , 'test'+\"+s_v($ix)+\" )\", \"fileName&n=1\");\r\n", script.modify("_setValue ( elements['username'] , 'test'+$ix )"));
   }
 
+  @Test
   public void testSeparateVariables() {
     assertEquals("_click(\"+s_v($ix)+\")", script.separateVariables("_click($ix)"));
     assertEquals("aaa \"+s_v($ix)+\" bbb", script.separateVariables("aaa $ix bbb"));
@@ -63,23 +68,27 @@ public class ScriptHandlerTest extends TestCase {
     assertEquals("_click(\"+s_v($ar.get($i, $j))+\")", script.separateVariables("_click($ar.get($i, $j))"));
   }
 
+  @Test
   public void testEscape() {
     assertEquals("\\\\", "\\".replaceAll("\\\\", "\\\\\\\\"));
     assertEquals("aaa \\\" bbb", Utils.escapeDoubleQuotesAndBackSlashes("aaa \" bbb"));
     assertEquals("aaa \\\\\\\" bbb", Utils.escapeDoubleQuotesAndBackSlashes("aaa \\\" bbb"));
   }
 
+  @Test
   public void testForUnderstanding() {
     assertFalse(Character.isJavaIdentifierPart('.'));
     assertFalse(Character.isUnicodeIdentifierPart('.'));
   }
 
+  @Test
   public void testModifyFunctionNames() {
     assertEquals("_sahi._setValue ( _sahi._textbox('username') , 'test'+$ix )", SahiScript.modifyFunctionNames("_setValue ( _textbox('username') , 'test'+$ix )"));
     assertEquals("_sahi._setValue(_sahi._textbox('username') , 'test'+$ix )", SahiScript.modifyFunctionNames("_setValue(_textbox('username') , 'test'+$ix )"));
     assertEquals("_sahi._click(_sahi._image(\"Link Quote Application \" + _sahi._getCellText(_sahi._accessor(\"top.content.creditFrameContent.document.getElementById('tblRecentlyAccessedQuotes').rows[3].cells[1]\"))));", SahiScript.modifyFunctionNames("_click(_image(\"Link Quote Application \" + _getCellText(_accessor(\"top.content.creditFrameContent.document.getElementById('tblRecentlyAccessedQuotes').rows[3].cells[1]\"))));"));
   }
 
+  @Test
   public void testStripSahiFromFunctionNames() {
     assertEquals("_setValue ( _textbox('username') , 'test'+$ix )", SahiScript.stripSahiFromFunctionNames("_sahi._setValue ( _sahi._textbox('username') , 'test'+$ix )"));
     assertEquals("_setValue(_textbox('username') , 'test'+$ix )", SahiScript.stripSahiFromFunctionNames("_sahi._setValue(_sahi._textbox('username') , 'test'+$ix )"));

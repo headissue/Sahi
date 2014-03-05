@@ -1,7 +1,12 @@
 package net.sf.sahi.client;
 
+import org.junit.Ignore;
+import org.junit.Test;
+
 import java.io.File;
 import java.util.List;
+
+import static org.junit.Assert.*;
 
 /**
  * Sahi - Web Automation and Test Tool
@@ -29,8 +34,9 @@ import java.util.List;
 public class DriverClientTest extends SahiTestCase {
   //	protected String baseURL = "http://gramam";
   protected String baseURL = "http://sahi.co.in";
-  private static final long serialVersionUID = 5492057299341976253L;
 
+  @Test
+  @Ignore("Move to integration test phase")
   public void xtestZK() {
     browser.setSpeed(210);
     browser.navigateTo("http://www.zkoss.org/zkdemo/userguide/");
@@ -54,6 +60,8 @@ public class DriverClientTest extends SahiTestCase {
     assertTrue(browser.textbox("z-combobox-inp[2]").exists());
   }
 
+  @Test
+  @Ignore("Move to integration test phase")
   public void testOpen() {
     browser.navigateTo(baseURL + "/demo/formTest.htm");
     browser.textbox("t1").setValue("aaa");
@@ -62,12 +70,16 @@ public class DriverClientTest extends SahiTestCase {
     assertEquals("Cell with id", browser.cell("CellWithId").getText());
   }
 
+  @Test
+  @Ignore("Move to integration test phase")
   public void testFetch() throws Exception {
     browser.navigateTo(baseURL + "/demo/formTest.htm");
     assertEquals(baseURL + "/demo/formTest.htm", browser.fetch("window.location.href"));
 
   }
 
+  @Test
+  @Ignore("Move to integration test phase")
   public void testDragDrop() {
     browser.navigateTo("http://www.snook.ca/technical/mootoolsdragdrop/");
     browser.div("Drag me").dragAndDropOn(browser.div("Item 2"));
@@ -79,6 +91,8 @@ public class DriverClientTest extends SahiTestCase {
     browser.div("Item 4").exists();
   }
 
+  @Test
+  @Ignore("Move to integration test phase")
   public void testSahiDemoAccessors() {
     browser.navigateTo(baseURL + "/demo/formTest.htm");
     assertEquals("", browser.textbox("t1").value());
@@ -130,6 +144,8 @@ public class DriverClientTest extends SahiTestCase {
     assertNotNull(browser.byXPath("//table[1]/tbody/tr[1]/td[@id='CellWithId']"));
   }
 
+  @Test
+  @Ignore("Move to integration test phase")
   public void testSelect() {
     browser.navigateTo(baseURL + "/demo/formTest.htm");
     assertEquals("o1", browser.select("s1Id[1]").selectedText());
@@ -137,6 +153,8 @@ public class DriverClientTest extends SahiTestCase {
     assertEquals("o2", browser.select("s1Id[1]").selectedText());
   }
 
+  @Test
+  @Ignore("Move to integration test phase")
   public void testMultiSelect() {
     browser.navigateTo(baseURL + "/demo/selectTest.htm");
     browser.select("s4Id").choose("o1");
@@ -149,6 +167,8 @@ public class DriverClientTest extends SahiTestCase {
     assertEquals("o1,o2,o3", browser.select("s4Id").selectedText());
   }
 
+  @Test
+  @Ignore("Move to integration test phase")
   public void testSetFile() {
     browser.navigateTo(baseURL + "/demo/php/fileUpload.htm");
     browser.file("file").setFile("scripts/demo/uploadme.txt");
@@ -159,6 +179,8 @@ public class DriverClientTest extends SahiTestCase {
     browser.link("Back to form").click();
   }
 
+  @Test
+  @Ignore("Move to integration test phase")
   public void testMultiFileUpload() {
     browser.navigateTo(baseURL + "/demo/php/fileUpload.htm");
     browser.file("file[]").setFile("scripts/demo/uploadme.txt");
@@ -172,6 +194,8 @@ public class DriverClientTest extends SahiTestCase {
     assertTrue(browser.span("size[1]").text().indexOf("0.32421875 Kb") != -1);
   }
 
+  @Test
+  @Ignore("Move to integration test phase")
   public void testSahiDemoClicks() {
     browser.navigateTo(baseURL + "/demo/formTest.htm");
     assertNotNull(browser.checkbox("c1"));
@@ -191,6 +215,8 @@ public class DriverClientTest extends SahiTestCase {
     assertFalse(browser.radio("r1").checked());
   }
 
+  @Test
+  @Ignore("Move to integration test phase")
   public void testLinks() {
     browser.navigateTo(baseURL + "/demo/index.htm");
     browser.link("Link Test").click();
@@ -221,6 +247,8 @@ public class DriverClientTest extends SahiTestCase {
     browser.link("Back").click();
   }
 
+  @Test
+  @Ignore("Move to integration test phase")
   public void testPopupTitleNameMix() {
     browser.navigateTo(baseURL + "/demo/index.htm");
     browser.link("Window Open Test").click();
@@ -256,6 +284,8 @@ public class DriverClientTest extends SahiTestCase {
     browser.link("Back").click();
   }
 
+  @Test
+  @Ignore("Move to integration test phase")
   public void testIn() {
     browser.navigateTo(baseURL + "/demo/tableTest.htm");
     assertEquals("111", browser.textarea("ta").near(browser.cell("a1")).getValue());
@@ -264,6 +294,8 @@ public class DriverClientTest extends SahiTestCase {
     assertTrue(browser.link("Link Test").exists());
   }
 
+  @Test
+  @Ignore("Move to integration test phase")
   public void testExists() {
     browser.navigateTo(baseURL + "/demo/index.htm");
     assertTrue(browser.link("Link Test").exists());
@@ -293,6 +325,8 @@ public class DriverClientTest extends SahiTestCase {
     assertNull(browser.lastAlert());
   }
 
+  @Test
+  @Ignore("Move to integration test phase")
   public void testAlert() {
     alert1("One");
     alert1("Two");
@@ -301,6 +335,8 @@ public class DriverClientTest extends SahiTestCase {
     assertEquals("You must correct the following Errors:\nYou must select a messaging price plan.\nYou must select an international messaging price plan.\nYou must enter a value for the Network Lookup Charge", browser.lastAlert());
   }
 
+  @Test
+  @Ignore("Move to integration test phase")
   public void xtestGoogle() {
     browser.open();
     browser.navigateTo("http://www.google.com");
@@ -312,6 +348,8 @@ public class DriverClientTest extends SahiTestCase {
     assertTrue(browser.textbox("req_username").exists());
   }
 
+  @Test
+  @Ignore("Move to integration test phase")
   public void xtestGoogleDD() throws Exception {
     browser.open();
     browser.navigateTo("http://www.google.com");
@@ -323,12 +361,16 @@ public class DriverClientTest extends SahiTestCase {
     assertEquals("sahi download", browser.textbox("q").getValue());
   }
 
+  @Test
+  @Ignore("Move to integration test phase")
   public void xtestForumsExists() throws Exception {
     browser.navigateTo("http://sahi.co.in/forums/");
     browser.link("Login").click();
     assertTrue(browser.textbox("req_username").exists());
   }
 
+  @Test
+  @Ignore("Move to integration test phase")
   public void testConfirm() {
     browser.navigateTo(baseURL + "/demo/confirmTest.htm");
     browser.expectConfirm("Some question?", true);
@@ -355,6 +397,8 @@ public class DriverClientTest extends SahiTestCase {
     assertNull(browser.lastConfirm());
   }
 
+  @Test
+  @Ignore("Move to integration test phase")
   public void testPrompt() {
     browser.navigateTo(baseURL + "/demo/promptTest.htm");
     browser.expectPrompt("Some prompt?", "abc");
@@ -369,6 +413,8 @@ public class DriverClientTest extends SahiTestCase {
   }
 
   @SuppressWarnings("deprecation")
+  @Test
+  @Ignore("Move to integration test phase")
   public void testIsVisible() {
     browser.navigateTo(baseURL + "/demo/index.htm");
     browser.link("Visible Test").click();
@@ -396,6 +442,8 @@ public class DriverClientTest extends SahiTestCase {
 
   }
 
+  @Test
+  @Ignore("Move to integration test phase")
   public void testCheck() throws Exception {
     browser.navigateTo(baseURL + "/demo/");
     browser.link("Form Test").click();
@@ -414,6 +462,8 @@ public class DriverClientTest extends SahiTestCase {
     assertEquals("true", browser.checkbox("c1").fetch("checked"));
   }
 
+  @Test
+  @Ignore("Move to integration test phase")
   public void testFocus() throws Exception {
     browser.navigateTo(baseURL + "/demo/focusTest.htm");
     browser.textbox("t2").focus();
@@ -424,6 +474,8 @@ public class DriverClientTest extends SahiTestCase {
     assertEquals("focused", browser.textbox("t1").value());
   }
 
+  @Test
+  @Ignore("Move to integration test phase")
   public void testTitle() throws Exception {
     browser.navigateTo(baseURL + "/demo/index.htm");
     assertEquals("Sahi Tests", browser.title());
@@ -434,6 +486,8 @@ public class DriverClientTest extends SahiTestCase {
     assertEquals("With Title", browser.popup("With Title").title());
   }
 
+  @Test
+  @Ignore("Move to integration test phase")
   public void testArea() throws Exception {
     browser.navigateTo(baseURL + "/demo/map.htm");
     browser.navigateTo("map.htm");
@@ -450,6 +504,8 @@ public class DriverClientTest extends SahiTestCase {
     //browser.navigateTo("map.htm");
   }
 
+  @Test
+  @Ignore("Move to integration test phase")
   public void testRegExp() throws Exception {
     browser.navigateTo(baseURL + "/demo/regexp.htm");
     assertEquals("Inner", browser.div("Inner").getText());
@@ -462,6 +518,8 @@ public class DriverClientTest extends SahiTestCase {
     assertTrue(browser.link("View[3]").fetch("href").indexOf("3.htm") != -1);
   }
 
+  @Test
+  @Ignore("Move to integration test phase")
   public void testContainsText() throws Exception {
     browser.navigateTo(baseURL + "/demo/containTest.htm");
     assertTrue(browser.div("a").containsText("find me here"));
@@ -472,6 +530,8 @@ public class DriverClientTest extends SahiTestCase {
     assertTrue(browser.accessor("document.body").containsHTML("/find .* here/"));
   }
 
+  @Test
+  @Ignore("Move to integration test phase")
   public void testStyle() throws Exception {
     browser.navigateTo(baseURL + "/demo/mouseover.htm");
     if (browser.isChrome() || browser.isFirefox()) {
@@ -484,6 +544,8 @@ public class DriverClientTest extends SahiTestCase {
 
   }
 
+  @Test
+  @Ignore("Move to integration test phase")
   public void testDoubleClick() throws Exception {
     browser.navigateTo(baseURL + "/demo/clicks.htm");
     browser.div("dbl click me").highlight();
@@ -493,6 +555,8 @@ public class DriverClientTest extends SahiTestCase {
   }
 
 
+  @Test
+  @Ignore("Move to integration test phase")
   public void testRightClick() throws Exception {
     browser.navigateTo(baseURL + "/demo/clicks.htm");
     browser.div("right click me").rightClick();
@@ -500,6 +564,8 @@ public class DriverClientTest extends SahiTestCase {
     browser.button("Clear").click();
   }
 
+  @Test
+  @Ignore("Move to integration test phase")
   public void testUnder() throws Exception {
     browser.navigateTo(baseURL + "/demo/tableTest.htm");
     assertEquals("x1-2", browser.cell(0).near(browser.cell("x1-0")).under(browser.tableHeader("header 3")).getText());
@@ -507,6 +573,8 @@ public class DriverClientTest extends SahiTestCase {
   }
 
 
+  @Test
+  @Ignore("Move to integration test phase")
   public void xtestSaveAs() throws Exception {
     browser.navigateTo(baseURL + "/demo/");
     String absolutePath = "testsaveas_x.zip";
@@ -526,6 +594,8 @@ public class DriverClientTest extends SahiTestCase {
 
   }
 
+  @Test
+  @Ignore("Move to integration test phase")
   public void testBrowserJS() throws Exception {
     browser.setBrowserJS("function giveMyNumber(){return '23';}");
     browser.navigateTo(baseURL + "/demo/");
@@ -535,6 +605,8 @@ public class DriverClientTest extends SahiTestCase {
     browser.link("Back").click();
   }
 
+  @Test
+  @Ignore("Move to integration test phase")
   public void testFillMe() throws Exception {
     browser.navigateTo(baseURL + "/demo/");
     browser.link("Link Test").click();
@@ -545,6 +617,8 @@ public class DriverClientTest extends SahiTestCase {
     browser.popup("popWin").link("Break Frames").click();
   }
 
+  @Test
+  @Ignore("Move to integration test phase")
   public void xtestDomain() {
     // works only on FF right now.
     browser.navigateTo(baseURL + "/demo/");
@@ -556,6 +630,8 @@ public class DriverClientTest extends SahiTestCase {
     browser.navigateTo(baseURL + "/demo/");
   }
 
+  @Test
+  @Ignore("Move to integration test phase")
   public void xtestLateRooms() throws Exception {
     browser.navigateTo("http://www.laterooms.com/");
     browser.textbox("k").setValue("Manchester");
@@ -564,6 +640,8 @@ public class DriverClientTest extends SahiTestCase {
     assertTrue(browser.heading1("/Premier Apartments Manchester/").exists());
   }
 
+  @Test
+  @Ignore("Move to integration test phase")
   public void testFileUploadWithChangedType() throws Exception {
     browser.navigateTo(baseURL + "/demo/php/fileUpload.htm");
     browser.file("file").setFile("scripts/demo/uploadme.txt");
@@ -580,6 +658,8 @@ public class DriverClientTest extends SahiTestCase {
     browser.link("Back to form").click();
   }
 
+  @Test
+  @Ignore("Move to integration test phase")
   public void testTextareaHandlesNewlines() throws Exception {
     browser.navigateTo(baseURL + "/demo/");
     browser.link("Form Test").click();
@@ -587,6 +667,8 @@ public class DriverClientTest extends SahiTestCase {
     assertEquals("a\nb", browser.textarea("ta1").getValue().replace("\r\n", "\n"));
   }
 
+  @Test
+  @Ignore("Move to integration test phase")
   public void testCount() throws Exception {
     browser.navigateTo(baseURL + "/demo/count.htm");
     assertEquals(4, browser.link("group 0 link").countSimilar());
@@ -595,6 +677,8 @@ public class DriverClientTest extends SahiTestCase {
     assertEquals(2, browser.link("/group 1/").in(browser.div("div1")).countSimilar());
   }
 
+  @Test
+  @Ignore("Move to integration test phase")
   public void testCollect() throws Exception {
     browser.navigateTo(baseURL + "/demo/count.htm");
     List<ElementStub> els = browser.link("/group 1/").collectSimilar();
@@ -616,6 +700,8 @@ public class DriverClientTest extends SahiTestCase {
 
   }
 
+  @Test
+  @Ignore("Move to integration test phase")
   public void testHTML5FormFields() throws Exception {
     browser.navigateTo(baseURL + "/demo/html5_form_fields.htm");
     browser.datebox("dob").setValue("2010-10-10");
@@ -628,12 +714,16 @@ public class DriverClientTest extends SahiTestCase {
     assertEquals("2009-W10", browser.weekbox("week2").getValue());
   }
 
+  @Test
+  @Ignore("Move to integration test phase")
   public void testWikipedia() throws Exception {
     browser.navigateTo("http://www.wikipedia.org");
     browser.searchbox("search").setValue("sahi software");
     browser.submit("go").click();
   }
 
+  @Test
+  @Ignore("Move to integration test phase")
   public void testStrictVisibility() throws Exception {
     browser.navigateTo(baseURL + "/demo/strict_visible.htm");
     assertTrue(browser.textbox("q").exists());
@@ -653,11 +743,15 @@ public class DriverClientTest extends SahiTestCase {
     assertTrue(browser.textbox("q[2]").exists());
   }
 
+  @Test
+  @Ignore("Move to integration test phase")
   public void testCuteEditor() throws Exception {
     browser.navigateTo("http://cutesoft.net/asp/EnableAll.asp");
     browser.rte("CE_Editor1_ID_Frame").rteWrite("<html><b>Hhahaia</b></html>");
   }
 
+  @Test
+  @Ignore("Move to integration test phase")
   public void testActiveElement() throws Exception {
     browser.navigateTo(baseURL + "/demo/training/login.htm");
     browser.textbox("user").focus();
@@ -666,6 +760,8 @@ public class DriverClientTest extends SahiTestCase {
     assertEquals("password", browser.activeElement().fetch("name"));
   }
 
+  @Test
+  @Ignore("Move to integration test phase")
   public void testMouseDownMouseUp() throws Exception {
     browser.navigateTo(baseURL + "/demo/mouseEvents.htm");
     browser.button("Capture mouse down").mouseDown();
@@ -674,6 +770,8 @@ public class DriverClientTest extends SahiTestCase {
     assertEquals("[MOUSE_DOWN][MOUSE_UP]", browser.getText(browser.textarea("t2")));
   }
 
+  @Test
+  @Ignore("Move to integration test phase")
   public void testKeyPressAndGetAttribute() {
     browser.navigateTo(baseURL + "/demo/keypress.htm");
     browser.click(browser.radio("r3"));
@@ -686,6 +784,8 @@ public class DriverClientTest extends SahiTestCase {
     assertEquals("key pressed charCode=[99] keyCode=[0] NONE", browser.getText(browser.textbox("t1")));
   }
 
+  @Test
+  @Ignore("Move to integration test phase")
   public void testBlur() {
     browser.navigateTo(baseURL + "/demo/focusTest.htm");
     browser.focus(browser.textbox("t2"));
@@ -699,6 +799,8 @@ public class DriverClientTest extends SahiTestCase {
 
   }
 
+  @Test
+  @Ignore("Move to integration test phase")
   public void testPrintCalledAndClearPrintCalled() {
     browser.navigateTo(baseURL + "/demo/print.htm");
     assertFalse(browser.printCalled());
@@ -711,6 +813,8 @@ public class DriverClientTest extends SahiTestCase {
 
   }
 
+  @Test
+  @Ignore("Move to integration test phase")
   public void testSetXSRStates() {
     browser.navigateTo(baseURL + "/demo/");
     assertEquals("true", browser.fetch("_sahi.waitWhenXHRReadyState1"));
@@ -736,6 +840,8 @@ public class DriverClientTest extends SahiTestCase {
 
   }
 
+  @Test
+  @Ignore("Move to integration test phase")
   public void testSetFileWithThirdArguement() {
     browser.navigateTo(baseURL + "/demo/php/fileUpload.htm");
     browser.setFile(browser.file("file4"), "scripts/demo/uploadme.txt", "fileUpload.php");
@@ -746,6 +852,8 @@ public class DriverClientTest extends SahiTestCase {
 
   }
 
+  @Test
+  @Ignore("Move to integration test phase")
   public void xtestKeyUpAndKeyDown() {
     browser.navigateTo(baseURL + "/demo/keypress.htm");
     browser.check(browser.radio("r2"));

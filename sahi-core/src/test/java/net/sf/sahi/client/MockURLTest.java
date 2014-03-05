@@ -6,16 +6,21 @@ import net.sf.sahi.response.HttpResponse;
 import net.sf.sahi.response.SimpleHttpResponse;
 import net.sf.sahi.response.StreamingHttpResponse;
 import net.sf.sahi.stream.filter.ChunkedFilter;
+import org.junit.Ignore;
+import org.junit.Test;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class MockURLTest extends SahiTestCase {
-  private static final long serialVersionUID = 250310150223836438L;
-
 
   @Override
   public void setBrowser() {
     setBrowser("ie");
   }
 
+  @Test
+  @Ignore("This may not be a UnitTest. Seems more like it should run in an Integrationtest phase")
   public void testMock() {
     browser.navigateTo("http://sahi.co.in/demo/index.htm");
     assertTrue(browser.link("Link Test").exists());

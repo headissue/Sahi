@@ -1,6 +1,9 @@
 package net.sf.sahi.report;
 
-import junit.framework.TestCase;
+import org.junit.Before;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * Sahi - Web Automation and Test Tool
@@ -23,20 +26,16 @@ import junit.framework.TestCase;
 /**
  * @author dlewis
  */
-public class ReportTest extends TestCase {
-  private static final long serialVersionUID = -2966355524465595469L;
+public class ReportTest {
 
   private Report report = null;
 
-  protected void setUp() throws Exception {
-    super.setUp();
+  @Before
+  public void setUp() throws Exception {
     report = new Report("test", new HtmlReporter(null));
   }
 
-  protected void tearDown() throws Exception {
-    super.tearDown();
-  }
-
+  @Test
   public void testAddResult() {
     report.addResult("a", "success", "", null);
     assertEquals(1, report.getListResult().size());
@@ -56,11 +55,13 @@ public class ReportTest extends TestCase {
 	 * .getFormatter().getFileName(Utils.createLogFileName("test"))))); }
 	 */
 
+  @Test
   public void testSummarizeResultsForEmptyList() {
     TestSummary summary = report.summarizeResults("");
     assertEquals(0, summary.getSteps());
   }
 
+  @Test
   public void testSummarizeResultsForAllTypes() {
     report.addResult(ReportUtil.getListResult());
     TestSummary summary = report.summarizeResults("");
@@ -69,6 +70,4 @@ public class ReportTest extends TestCase {
     assertEquals(0, summary.getErrors());
     assertEquals("test", summary.getScriptName());
   }
-
-
 }

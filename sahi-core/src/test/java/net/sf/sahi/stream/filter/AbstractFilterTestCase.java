@@ -3,9 +3,6 @@ package net.sf.sahi.stream.filter;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-import junit.framework.TestCase;
-import net.sf.sahi.stream.filter.StreamFilter;
-
 /**
  * Sahi - Web Automation and Test Tool
  * <p/>
@@ -23,7 +20,7 @@ import net.sf.sahi.stream.filter.StreamFilter;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-public abstract class AbstractFilterTestCase extends TestCase {
+public abstract class AbstractFilterTestCase {
   private static final long serialVersionUID = -7765749910538404904L;
 
   protected String getFiltered(String[] strings, StreamFilter modifierFilter) throws IOException {

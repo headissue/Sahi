@@ -18,31 +18,13 @@
 package net.sf.sahi.util;
 
 //
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.EOFException;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintStream;
-import java.io.UnsupportedEncodingException;
-import java.net.InetAddress;
-import java.net.MalformedURLException;
-import java.net.SocketTimeoutException;
-import java.net.URL;
-import java.net.URLEncoder;
-import java.net.UnknownHostException;
+import org.apache.commons.io.FileUtils;
+
+import java.io.*;
+import java.net.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -372,19 +354,7 @@ public class Utils {
 
 	public static void deleteDir(final File dir) {
 		try {
-			if (dir.exists()) {
-				File[] files = dir.listFiles();
-				int len = files.length; // cached length so it doesn't have to
-										// be looked up in loop
-				for (int i = 0; i < len; i++) {
-					if (files[i].isDirectory()) {
-						deleteDir(files[i]);
-					} else {
-						files[i].delete();
-					}
-				}
-				dir.delete();
-			}
+      FileUtils.deleteDirectory(dir);
 		} catch (Exception e) {
 		}
 	}

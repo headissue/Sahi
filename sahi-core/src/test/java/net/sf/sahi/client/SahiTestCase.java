@@ -19,12 +19,13 @@ package net.sf.sahi.client;
  */
 
 
-import junit.framework.TestCase;
 import net.sf.sahi.Proxy;
 import net.sf.sahi.config.Configuration;
+import org.junit.After;
+import org.junit.Before;
 
-public abstract class SahiTestCase extends TestCase {
-  private static final long serialVersionUID = 9094239240720483156L;
+public abstract class SahiTestCase {
+
   protected Browser browser;
   protected Proxy proxy;
   protected String sahiBasePath = ".";
@@ -35,6 +36,7 @@ public abstract class SahiTestCase extends TestCase {
 
   public abstract void setBrowser();
 
+  @Before
   public void setUp() {
     Configuration.initJava(sahiBasePath, userDataDirectory);
 
@@ -49,6 +51,7 @@ public abstract class SahiTestCase extends TestCase {
     browser.open();
   }
 
+  @After
   public void tearDown() {
     browser.setSpeed(100);
     browser.close();

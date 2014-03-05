@@ -1,7 +1,10 @@
 package net.sf.sahi.playback;
 
 import net.sf.sahi.config.Configuration;
-import junit.framework.TestCase;
+import org.junit.Before;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * Sahi - Web Automation and Test Tool
@@ -20,18 +23,20 @@ import junit.framework.TestCase;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-public class URLScriptTest extends TestCase {
-  static {
+public class URLScriptTest {
+
+  @Before
+  public void setup() {
     Configuration.init();
   }
 
-  private static final long serialVersionUID = 9089031044975786876L;
-
+  @Test
   public void testFQN() {
     MockURLScript urlScript = new MockURLScript("http://abc/def/a.sah");
     assertEquals("http://abc/def/b.sah", urlScript.getFQN("b.sah"));
   }
 
+  @Test
   public void testFQNWithFullURL() {
     MockURLScript urlScript = new MockURLScript("http://abc/def/a.sah");
     assertEquals("http://xxx/b.sah", urlScript.getFQN("http://xxx/b.sah"));

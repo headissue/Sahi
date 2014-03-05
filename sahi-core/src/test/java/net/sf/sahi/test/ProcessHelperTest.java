@@ -1,6 +1,9 @@
 package net.sf.sahi.test;
 
-import junit.framework.TestCase;
+import net.sf.sahi.config.Configuration;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
 
 /**
  * Sahi - Web Automation and Test Tool
@@ -19,9 +22,16 @@ import junit.framework.TestCase;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-public class ProcessHelperTest extends TestCase {
+public class ProcessHelperTest {
   private static final long serialVersionUID = -268318881994670816L;
 
+  @Before
+  public void setupU() {
+    Configuration.init();
+  }
+
+  @Test
+  @Ignore("OS dependent")
   public void xtestFirefoxKill() throws Exception {
     for (int i = 0; i < 100; i++) {
       String cmd = "\"C:\\Program Files\\Mozilla Firefox\\firefox.exe\" -profile \"D:/sahi_v2/browser/ff/profiles/sahi0\"";
@@ -32,16 +42,10 @@ public class ProcessHelperTest extends TestCase {
     }
   }
 
-  /**
-   *
-   */
+  @Test
   public void xtestGetPIDs() {
     ProcessHelper ph = new ProcessHelper(
       "\"C:\\Program Files\\Mozilla Firefox\\firefox.exe\" -profile \"D:/sahi_v2/browser/ff/profiles/sahi0\"", "firefox.exe");
     ph.getPIDs();
-  }
-
-  public void testDummy() {
-    assertEquals("", "");
   }
 }

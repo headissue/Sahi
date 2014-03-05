@@ -1,32 +1,38 @@
 package net.sf.sahi.test;
 
+import net.sf.sahi.Proxy;
+import net.sf.sahi.ant.Report;
+import net.sf.sahi.config.Configuration;
+import net.sf.sahi.util.Utils;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
+
 import java.io.IOException;
 import java.util.HashMap;
 
-import net.sf.sahi.test.TestRunner;
-import net.sf.sahi.util.Utils;
-import net.sf.sahi.ant.Report;
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
 
-public class TestRunnerTest extends TestCase {
+public class TestRunnerTest {
   private static final long serialVersionUID = 3104595408470646058L;
+  Proxy proxy = new Proxy();
 
-  protected void setUp() throws Exception {
-    super.setUp();
+  @Before
+  public void setup() throws InterruptedException {
+    Configuration.init();
+    proxy.start(true);
+    Thread.sleep(2000);
   }
 
-	/*
-	 * java -cp %SAHI_HOME%\lib\ant-sahi.jar net.sf.sahi.test.TestRunner scripts/demo/sahi_demo.sah 
-	 * "C:\Program Files\Mozilla Firefox\firefox.exe" http://sahi.co.in/demo/ logs/playback/aaa 
-	 * localhost 9999 3 
-	 * firefox.exe "-profile %SAHI_USERDATA_DIR%/browser/ff/profiles/sahi$threadNo -no-remote"
-	 * 
-	 */
-
+  @Test
+  @Ignore("This may not be a UnitTest. Seems more like it should run in an Integrationtest phase")
   public void testExecute() throws Exception {
     runSingleTest("scripts/demo/link_test.sah");
   }
 
+  @Test
+  @Ignore("This may not be a UnitTest. Seems more like it should run in an Integrationtest phase")
   public void testPreconfiguredBrowsers() throws Exception {
     final String suiteName = "scripts/demo/integration.sah";
     final String browserType = "firefox";
@@ -65,6 +71,8 @@ public class TestRunnerTest extends TestCase {
     assertEquals("SUCCESS", status);
   }
 
+  @Test
+  @Ignore("This may not be a UnitTest. Seems more like it should run in an Integrationtest phase")
   public void testEOP() throws IOException, InterruptedException {
     String browserType = "firefox";
     String base = "http://sahi.co.in/demo/training/";
@@ -86,5 +94,10 @@ public class TestRunnerTest extends TestCase {
 
 
     System.out.println(Utils.readFileAsString("D:/temp/logs/integration.xml"));
+  }
+
+  @After
+  public void teardown() {
+    proxy.stop();
   }
 }

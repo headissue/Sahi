@@ -1,7 +1,10 @@
 package net.sf.sahi.util;
 
 import net.sf.sahi.config.Configuration;
-import junit.framework.TestCase;
+import org.junit.Before;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * Sahi - Web Automation and Test Tool
@@ -20,30 +23,33 @@ import junit.framework.TestCase;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-public class OSUtilsTest extends TestCase {
+public class OSUtilsTest {
   private static final long serialVersionUID = -844205436414642224L;
 
-  @Override
-  protected void setUp() throws Exception {
+  @Before
+  public void setUp() throws Exception {
     Configuration.init();
-    super.setUp();
   }
 
+  @Test
   public void testIdentifyOS() throws Exception {
     if (Utils.isWindows())
       assertEquals("xp", OSUtils.identifyOS());
   }
 
+  @Test
   public void testGetPIDListCommmand() throws Exception {
     if (Utils.isWindows())
       assertEquals("tasklist /FI \"IMAGENAME eq $imageName\" /NH /FO TABLE", OSUtils.getPIDListCommand());
   }
 
+  @Test
   public void testGetPIDKillCommand() throws Exception {
     if (Utils.isWindows())
       assertEquals("taskkill /F /PID $pid", OSUtils.getPIDKillCommand());
   }
 
+  @Test
   public void testGetPIDListColumnNo() throws Exception {
     assertEquals(2, OSUtils.getPIDListColumnNo());
   }
