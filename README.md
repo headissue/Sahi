@@ -1,7 +1,18 @@
-Sahi
-====
+# Sahi
 
-I wanted to contribute to Sahi Open Source, but it's currently maintained in svn while most open source projects are shifting towards git. Sahi Pro is very well maintained, but Sahi OS isn't actively maintained or updated. This may be a better place to add features to Sahi OS, especially if those features are currently only found in Sahi Pro.
+## Setting up the workspace
+
+### With IntelliJ
+
+- clone Sahi from this git repo
+- import the project http://www.jetbrains.com/idea/webhelp/importing-project-from-maven-model.html
+- set the default run/debug configuration to use the sahi-core module as default working directory (or else your unittests will fail), see http://youtrack.jetbrains.com/issue/IDEA-52112
+
+### With Eclipse
+
+- File -> Import -> Existing Projects into Workspace -> Next -> Select the above checked out directory as root directory
+- Project should now be imported.
+
 
 How to compile
 --------------
