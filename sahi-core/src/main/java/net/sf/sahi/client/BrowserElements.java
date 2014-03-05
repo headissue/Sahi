@@ -375,7 +375,7 @@ public abstract class BrowserElements {
 	/**
 	 * Defines a definition list. <br/>
 	 * Usage: browser.dList(identifier) <br/>
-	 * HTML: {@code <dl class=”classname” id=”id”></dl>}<br/>
+	 * HTML: {@code <dl class=classname id=id></dl>}<br/>
 	 * Identifier: sahiText, id, className, index<br/>
 	 * <br/>
 	 * Example:<br/>
@@ -389,7 +389,7 @@ public abstract class BrowserElements {
 	/**
 	 * Defines an item in a definition list. <br/>
 	 * Usage: browser.dTerm(identifier) <br/>
-	 * HTML: {@code <dt class=”classname” id=”id”></dt>}<br/>
+	 * HTML: {@code <dt class=classname id=id></dt>}<br/>
 	 * Identifier: sahiText, id, className, index<br/>
 	 * <br/>
 	 * Example:<br/>
@@ -402,7 +402,7 @@ public abstract class BrowserElements {
 	/**
 	 * Defines a description of item in a definition list. <br/>
 	 * Usage: browser.dDesc(identifier) <br/>
-	 * HTML: {@code <dd class=”classname” id=”id”></dd>}<br/>
+	 * HTML: {@code <dd class=classname id=id></dd>}<br/>
 	 * Identifier: sahiText, id, className, index<br/>
 	 * <br/>
 	 * Example:<br/>
@@ -535,7 +535,7 @@ public abstract class BrowserElements {
 	/**
 	 * Returns position of an element. <br/>
 	 * Usage: browser.position(identifier) <br/>
-	 * Notes: Returns an array with the element’s x, y coordinate in pixels.<br/>
+	 * Notes: Returns an array with the elements x, y coordinate in pixels.<br/>
 	 * <br/>
 	 * Example 1:<br/>
 	 * <code>browser.position(brower.div("id"))</code><br/>

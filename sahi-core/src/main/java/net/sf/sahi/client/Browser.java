@@ -179,8 +179,8 @@ public class Browser extends BrowserElements {
 	/**
 	 * Sahi waits for AJAX readyStates 1,2 and 3. 
 	 * Some applications may have an AJAX request open at state 1 for long periods of time. 
-	 * Sahi should be asked to ignore readyState 1. _setXHRReadyStatesToWaitFor(“2,3?) can be called in this case. 
-	 * $waitStates is just a string of comma separated readyStates (“1,2,3? or “2? or “2,3? etc.).
+	 * Sahi should be asked to ignore readyState 1. _setXHRReadyStatesToWaitFor(2,3?) can be called in this case.
+	 * $waitStates is just a string of comma separated readyStates (1,2,3? or 2? or 2,3? etc.).
 	 * @param s
 	 */	
 	public void setXHRReadyStatesToWaitFor(String s) {

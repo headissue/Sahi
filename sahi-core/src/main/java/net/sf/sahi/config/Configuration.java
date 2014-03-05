@@ -24,8 +24,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Properties;
 import java.util.logging.Logger;
@@ -77,12 +75,16 @@ public class Configuration {
 		init(".", "userdata");
 	}
 
-	/**
+  public static void init(String basePath) {
+    init(basePath, basePath + "/userdata");
+  }
+
+  /**
 	 * Initializes Sahi's properties and relative paths.<br/>
 	 * A call to <code>init</code> or <code>initJava</code> is required before
 	 * invoking Proxy.start()
 	 * 
-	 * @param basePath
+	 * @param basePath1
 	 *            String basePath to folder where sahi is located
 	 * @param userDataDirectory
 	 *            String path to user data directory
@@ -862,5 +864,6 @@ public class Configuration {
 		}
 	}
 
-	// Pro start
+
+  // Pro start
 }

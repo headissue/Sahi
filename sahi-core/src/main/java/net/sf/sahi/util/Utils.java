@@ -240,23 +240,10 @@ public class Utils {
 		return getString(readFile(fileName));
 	}
 
-	// Returns a string than has all its non-ASCII characters converted to its
-	// ASCII
-	// equivalent. Eg : By passing "Éléphant", the function would return
-	// "Elephant".
-	// Should consider refactoring to StringBuilder();
-	public static String convertStringToASCII(String s) {
-		return s.replaceAll("(è|é|ê|ë)", "e").replaceAll("(ù|ú|û|ü)", "u").replaceAll("(à|á|â|ã|ä|å)", "a").replaceAll(
-				"æ", "ae").replaceAll("(ì|í|î|ï)", "i").replaceAll("(ò|ó|ô|õ|ö|ø)", "o").replaceAll("(ý|ÿ)", "y")
-				.replaceAll("ñ", "n").replaceAll("ç", "c").replaceAll("(À|Á|Â|Ã|Ä|Å)", "A").replaceAll("Æ", "AE")
-				.replaceAll("Ç", "C").replaceAll("(È|É|Ê|Ë)", "E").replaceAll("(Ì|Í|Î|Ï)", "I").replaceAll("Ñ", "N")
-				.replaceAll("(Ò|Ó|Ô|Õ|Ö|Ø)", "O").replaceAll("(Ù|Ú|Û|Ü)", "U").replaceAll("Ý", "Y");
-	}
-
 	public static synchronized String createLogFileName(final String scriptFileName) {
 		String TMPscriptFileName = new File(scriptFileName).getName();
 		String date = getFormattedDateForFile(new Date());
-		return convertStringToASCII(TMPscriptFileName.replaceAll("[.].*$", "") + "__" + date);
+		return TMPscriptFileName.replaceAll("[.].*$", "") + "__" + date;
 	}
 
 	static String getFormattedDateForFile(Date date) {

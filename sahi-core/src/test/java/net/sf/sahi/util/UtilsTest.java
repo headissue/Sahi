@@ -1,9 +1,9 @@
 package net.sf.sahi.util;
 
+import junit.framework.TestCase;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import junit.framework.TestCase;
 
 /**
  * Sahi - Web Automation and Test Tool
@@ -41,9 +41,6 @@ public class UtilsTest extends TestCase {
         assertEquals(1, Utils.getTokens(s).size());
     }
 
-    public void testConvertStringToASCII() {
-        assertEquals("Elephant", Utils.convertStringToASCII("Éléphant"));
-    }
 
     public void testMakeString() {
         assertEquals("a\\nb", Utils.makeString("a\nb"));
