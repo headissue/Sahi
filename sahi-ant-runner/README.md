@@ -1,0 +1,1 @@
+We do not plan to maintain this module, so at some point starting tests via ant wont work. Feel free to send pull requests to keep this up to date.
