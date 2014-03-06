@@ -1,0 +1,14 @@
+var $linkTest = _link("Link Test");
+_click($linkTest);
+_click(_link("link with return true"));
+var $ta1 = _textarea("ta1");
+_assertExists($ta1);
+function $tValue(){ 
+	return $ta1.value;
+}
+function $brValue(){
+	return _textarea("ta1").value;
+}
+_assertEqual("", $tValue());
+_assertEqual("", $brValue());
+_click(_link("Back"));

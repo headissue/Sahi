@@ -1,0 +1,7 @@
+_setValue(_textbox("q"), "yahoo mail");
+_click(_submit("Google Search"));
+_click(_link("Yahoo! Mail - The best web-based email!"));
+_setValue(_textbox("login"), "nari6ul");
+_setValue(_password("passwd"), "badpassword");
+_click(_submit("Sign In"));
+_assertContainsText(/Invalid .* or password/, _byId("yreglg"))

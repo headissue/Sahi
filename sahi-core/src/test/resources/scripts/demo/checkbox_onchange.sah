@@ -1,0 +1,10 @@
+_navigateTo("/demo/checkbox_onchange.htm");
+_click(_checkbox(0));
+_assertEqual("onchange_c1", _textbox("t1").value);
+
+_click(_radio(0));
+if (_condition(_sahi.isIE())){
+	_assertEqual("onclick_r1", _textbox("t1").value);
+}else{
+	_assertEqual("onchange_r1", _textbox("t1").value);	
+}

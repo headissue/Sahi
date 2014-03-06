@@ -1,0 +1,68 @@
+
+function testIfWorksWithoutCondition(){
+	_log("testIfWorksWithoutCondition");
+	var $i = 10;
+	if ($i == 10){
+	}else{
+		_fail("Should not have reached else");
+	}
+}
+
+function decide(s){
+	if ("yes" == s) {
+		return true;
+	} else {
+		return false;
+	}
+}
+
+function testIfWorksWithFunctionAsCondition(){
+	_log("testIfWorksWithFunctionAsCondition");
+	if (decide("yes")){
+	}else{
+		_fail("Should not have reached else");
+	}
+	if (decide("no")){
+		_fail("Should not have reached else");
+	}else{
+	}
+}
+
+/*
+function testFnNameWith _condition(){
+	_log("testFnNameWith_condition passed");
+}
+*/
+
+function testCondition(){
+	_navigateTo("/demo/ifTest.htm");
+	if (_condition(_textbox("t1").value == "")){
+		_log("True");
+	} else {
+		_fail("Should not have reached here");
+	}
+}
+
+function testEscapedDollarInIf(){
+	_navigateTo("/demo/ifTest.htm");
+	if(_condition(_textbox("\$V_Id").value == "")){
+		_log("True");
+	} else {
+		_fail("Should not have reached here");
+	}
+}
+function testParsingBugWhen$VariableIsAtEnd(){
+	// DO NOT CHANGE STRUCTURE OF CODE. TEST FOR PARSING BUG
+	_log("testParsingBugWhen$VariableIsAtEnd");
+	var $a = 1;
+	var $b = 1;
+	if (_condition($a == $b))
+	{
+		_log("inside if","success");
+	}
+	else
+	{
+		_log("outside if","success");
+	}
+}
+_runUnitTests();

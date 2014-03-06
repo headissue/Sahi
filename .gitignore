@@ -11,6 +11,8 @@ sahi-core/deploy/
 sahi-core/lib/
 sahi-core/temp/
 sahi-core/userdata/
+!sahi-core/userdata/config
+!sahi-core/userdata/bin
 sahi-core/config/version.txt
 sahi-core/docs/java_client/
 temp

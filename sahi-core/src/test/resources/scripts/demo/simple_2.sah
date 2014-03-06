@@ -1,0 +1,4 @@
+_click(_link("Link Test"));
+_setValue(_textbox("t1"), $value1);
+_assertEqual("success2", $value1);
+_click(_link("Back"));
