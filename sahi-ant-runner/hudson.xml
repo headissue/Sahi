@@ -23,7 +23,7 @@
 	<!--
 	<property name="urlbase" value="gramam"/>
 	-->
-	<taskdef name="sahi" classname="net.sf.sahi.ant.RunSahiTask" classpath="lib/ant-sahi.jar"/>
+	<taskdef name="sahi" classname="net.sf.sahi.ant.RunSahiTask" classpath="../sahi-core/lib/ant-sahi.jar"/>
 	<target name="sahitests" description="start the server and run sahi tests">
 		<parallel>
 			<antcall target="start"/>

@@ -10,10 +10,10 @@ import net.sf.sahi.session.Status;
 import net.sf.sahi.test.SahiTestSuite;
 import net.sf.sahi.test.TestLauncher;
 import net.sf.sahi.util.Utils;
-import sun.org.mozilla.javascript.internal.Context;
-import sun.org.mozilla.javascript.internal.RhinoException;
-import sun.org.mozilla.javascript.internal.Scriptable;
-import sun.org.mozilla.javascript.internal.ScriptableObject;
+import org.mozilla.javascript.Context;
+import org.mozilla.javascript.RhinoException;
+import org.mozilla.javascript.Scriptable;
+import org.mozilla.javascript.ScriptableObject;
 
 import java.util.logging.Logger;
 

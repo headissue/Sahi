@@ -18,7 +18,7 @@
 -->
 <project name="project" default="all">
     <property file="sample.properties"/>
-    <taskdef name="sahi" classname="net.sf.sahi.ant.RunSahiTask" classpath="${sahidir}/lib/ant-sahi.jar"/>
+    <taskdef name="sahi" classname="net.sf.sahi.RunSahiTask" classpath="${sahidir}/lib/ant-sahi.jar"/>
 
     <target name="run-ff-tests">
         <sahi suite="${suite}"

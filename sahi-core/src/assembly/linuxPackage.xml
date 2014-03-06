@@ -1,0 +1,37 @@
+<assembly xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2 http://maven.apache.org/xsd/assembly-1.1.2.xsd
+http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2 ">
+    <!-- linux descriptor just to include the right browser_types.xml -->
+    <id>sahiLinux</id>
+    <formats>
+        <format>zip</format>
+    </formats>
+    <fileSets>
+        <fileSet>
+            <!-- this is like... copy the gitignore file-->
+            <useDefaultExcludes>false</useDefaultExcludes>
+            <excludes>
+                <exclude>${project.basedir}/target/**</exclude>
+                <exclude>${project.basedir}/log/**</exclude>
+                <exclude>${project.basedir}/out/**</exclude>
+                <exclude>${project.basedir}/.classpath</exclude>
+                <exclude>${project.basedir}/.project</exclude>
+                <exclude>${project.basedir}/.settings</exclude>
+                <exclude>${project.basedir}/.idea/**</exclude>
+                <exclude>${project.basedir}/*.iml</exclude>
+                <exclude>${project.basedir}/*.iws</exclude>
+                <exclude>${project.basedir}/.DS_Store</exclude>
+                <exclude>${project.basedir}/temp/**</exclude>
+            </excludes>
+        </fileSet>
+    </fileSets>
+    <files>
+        <file>
+            <source>${project.basedir}/config/browser_types/linux.xml</source>
+            <destName>browser_types.xml</destName>
+            <!-- RELATIV PATH!!! don't ask me why... -->
+            <outputDirectory>userdata/config</outputDirectory>
+        </file>
+    </files>
+
+</assembly>

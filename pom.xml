@@ -10,5 +10,6 @@
     <version>1.0</version>
     <modules>
         <module>sahi-core</module>
+        <module>sahi-ant-runner</module>
     </modules>
 </project>

@@ -1,13 +1,12 @@
 package net.sf.sahi.ant;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.Properties;
+import net.sf.sahi.test.TestRunner;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
-
-import net.sf.sahi.test.TestRunner;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.Properties;
 
 /**
  * Sahi - Web Automation and Test Tool
@@ -38,7 +37,7 @@ public class Scheduler {
     public static void main(String[] args) throws IOException, InterruptedException {
         String filePath = "";
         if (args.length == 0) {
-            System.out.println("Usage: java net.sf.sahi.ant.Scheduler [path to scheduler.properties]");
+            System.out.println("Usage: java net.sf.sahi.Scheduler [path to scheduler.properties]");
             System.out.println("No scheduler.properties specified. Using ../config/scheduler.properties");
             filePath = "../config/scheduler.properties";
         } else {
