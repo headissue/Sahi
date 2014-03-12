@@ -1,6 +1,6 @@
 /**
  * Sahi - Web Automation and Test Tool
- * 
+ *
  * Copyright  2006  V Narayan Raman
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,14 +21,14 @@ import java.util.ArrayList;
 
 public class ScriptFactory {
 
-    public SahiScript getScript(final String fileName, final ArrayList<String> parents) {
-        if (fileName.indexOf("http://") == 0 || fileName.indexOf("https://") == 0) {
-            return new URLScript(fileName, parents);
-        }
-        return new FileScript(fileName, parents);
+  public SahiScript getScript(final String fileName, final ArrayList<String> parents) {
+    if (fileName.indexOf("http://") == 0 || fileName.indexOf("https://") == 0) {
+      return new URLScript(fileName, parents);
     }
+    return new FileScript(fileName, parents);
+  }
 
-    public SahiScript getScript(final String fileName) {
-        return getScript(fileName, new ArrayList<String>());
-    }
+  public SahiScript getScript(final String fileName) {
+    return getScript(fileName, new ArrayList<String>());
+  }
 }

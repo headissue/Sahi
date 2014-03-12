@@ -1,6 +1,6 @@
 /**
  * Sahi - Web Automation and Test Tool
- * 
+ *
  * Copyright  2006  V Narayan Raman
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -27,32 +27,32 @@ import net.sf.sahi.response.NoCacheHttpResponse;
 
 public class Hits {
 
-    public static HashMap<String, Integer> hits = new HashMap<String, Integer>();
+  public static HashMap<String, Integer> hits = new HashMap<String, Integer>();
 
-    public static void increment(final String key) {
-        hits.put(key, new Integer(getCount(key) + 1));
-    }
+  public static void increment(final String key) {
+    hits.put(key, new Integer(getCount(key) + 1));
+  }
 
-    private static int getCount(final String key) {
-        final Integer value = (Integer) hits.get(key);
-        if (value == null) {
-            return 0;
-        }
-        return value.intValue();
+  private static int getCount(final String key) {
+    final Integer value = (Integer) hits.get(key);
+    if (value == null) {
+      return 0;
     }
+    return value.intValue();
+  }
 
-    public HttpResponse print(final HttpRequest requestFromBrowser) {
-        final Set<String> keySet = Hits.hits.keySet();
-        Iterator<String> it = keySet.iterator();
-        StringBuffer sb = new StringBuffer();
-        while (it.hasNext()) {
-            String key = it.next();
-            sb.append("<br>").append(key).append(" ").append(Hits.hits.get(key));
-        }
-        return new NoCacheHttpResponse(sb.toString());
+  public HttpResponse print(final HttpRequest requestFromBrowser) {
+    final Set<String> keySet = Hits.hits.keySet();
+    Iterator<String> it = keySet.iterator();
+    StringBuffer sb = new StringBuffer();
+    while (it.hasNext()) {
+      String key = it.next();
+      sb.append("<br>").append(key).append(" ").append(Hits.hits.get(key));
     }
+    return new NoCacheHttpResponse(sb.toString());
+  }
 
-    public void reset(HttpRequest requestFromBrowser) {
-        Hits.hits.clear();
-    }
+  public void reset(HttpRequest requestFromBrowser) {
+    Hits.hits.clear();
+  }
 }

@@ -37,60 +37,60 @@ import java.util.List;
 import java.util.logging.Logger;
 
 public class FileUpload {
-    private static Logger logger = Configuration.getLogger("net.sf.sahi.command.FileUpload");
+  private static Logger logger = Configuration.getLogger("net.sf.sahi.command.FileUpload");
 
-    @SuppressWarnings("unchecked")
-	public HttpResponse setFile(final HttpRequest request) {
-        Session session = request.session();
-		String key = "file:" + request.getParameter("n");
-		ArrayList<String> list = (ArrayList<String>) session.getObject(key);
-		if (list == null) list = new ArrayList<String>();
-		String filePath = request.getParameter("v");
-		list.add(filePath);
-		session.setObject(key, list);
-        session.mockResponder().add(request.getParameter("action").replaceAll("[.]", "[.]") + ".*", "FileUpload_appendFiles");
-        if (new File(Configuration.getAbsoluteUserPath(filePath)).exists()) {
-        	return new SimpleHttpResponse("true");
-        } else {
-        	return new SimpleHttpResponse("File not found: " + filePath + "; Base directory is userdata directory: " + Configuration.getUserDataDir());
-        }
+  @SuppressWarnings("unchecked")
+  public HttpResponse setFile(final HttpRequest request) {
+    Session session = request.session();
+    String key = "file:" + request.getParameter("n");
+    ArrayList<String> list = (ArrayList<String>) session.getObject(key);
+    if (list == null) list = new ArrayList<String>();
+    String filePath = request.getParameter("v");
+    list.add(filePath);
+    session.setObject(key, list);
+    session.mockResponder().add(request.getParameter("action").replaceAll("[.]", "[.]") + ".*", "FileUpload_appendFiles");
+    if (new File(Configuration.getAbsoluteUserPath(filePath)).exists()) {
+      return new SimpleHttpResponse("true");
+    } else {
+      return new SimpleHttpResponse("File not found: " + filePath + "; Base directory is userdata directory: " + Configuration.getUserDataDir());
     }
+  }
 
-    @SuppressWarnings("unchecked")
-	public HttpResponse appendFiles(final HttpRequest request) {
-        HttpRequest rebuiltRequest = request;
-        if (request.isMultipart()) {
-            Session session = request.session();
-            MultiPartRequest multiPartRequest;
-            try {
-                multiPartRequest = new MultiPartRequest(request);
-            } catch (IOException e) {
-                return null;
-            }
-            List<MultiPartSubRequest> parts = multiPartRequest.getMultiPartSubRequests();
-            for (Iterator<MultiPartSubRequest> iterator = parts.iterator(); iterator.hasNext();) {
-                MultiPartSubRequest part = iterator.next();
-                ArrayList<String> fileNames = (ArrayList<String>) session.getObject("file:" + part.name());
-                if (fileNames == null || fileNames.size() == 0) {
-                    continue;
-                }
-                String fileName = fileNames.remove(0);
-                String absolutePath = Configuration.getAbsoluteUserPath(fileName);
-				logger.info("Uploading: fileName = " + fileName + " resolved to " + absolutePath);
-                part.setHeader("Content-Type", MimeType.getMimeTypeOfFile(fileName, "application/octet-stream"));
-                byte[] fileContent = new byte[0];
-                try {
-                	fileContent = Utils.readFile(absolutePath);
-                } catch (FileNotFoundRuntimeException e) {
-                	logger.warning(Utils.getStackTraceString(e));
-                }
-                part.setData(fileContent);
-                part.removeHeader("Content-Length");
-                part.setFileName(new File(fileName).getName());
-            }
-            rebuiltRequest = multiPartRequest.getRebuiltRequest();
-            session.mockResponder().remove(request.url().replaceAll("[.]", "[.]"));
+  @SuppressWarnings("unchecked")
+  public HttpResponse appendFiles(final HttpRequest request) {
+    HttpRequest rebuiltRequest = request;
+    if (request.isMultipart()) {
+      Session session = request.session();
+      MultiPartRequest multiPartRequest;
+      try {
+        multiPartRequest = new MultiPartRequest(request);
+      } catch (IOException e) {
+        return null;
+      }
+      List<MultiPartSubRequest> parts = multiPartRequest.getMultiPartSubRequests();
+      for (Iterator<MultiPartSubRequest> iterator = parts.iterator(); iterator.hasNext(); ) {
+        MultiPartSubRequest part = iterator.next();
+        ArrayList<String> fileNames = (ArrayList<String>) session.getObject("file:" + part.name());
+        if (fileNames == null || fileNames.size() == 0) {
+          continue;
         }
-        return new RemoteRequestProcessor().processHttp(rebuiltRequest);
+        String fileName = fileNames.remove(0);
+        String absolutePath = Configuration.getAbsoluteUserPath(fileName);
+        logger.info("Uploading: fileName = " + fileName + " resolved to " + absolutePath);
+        part.setHeader("Content-Type", MimeType.getMimeTypeOfFile(fileName, "application/octet-stream"));
+        byte[] fileContent = new byte[0];
+        try {
+          fileContent = Utils.readFile(absolutePath);
+        } catch (FileNotFoundRuntimeException e) {
+          logger.warning(Utils.getStackTraceString(e));
+        }
+        part.setData(fileContent);
+        part.removeHeader("Content-Length");
+        part.setFileName(new File(fileName).getName());
+      }
+      rebuiltRequest = multiPartRequest.getRebuiltRequest();
+      session.mockResponder().remove(request.url().replaceAll("[.]", "[.]"));
     }
+    return new RemoteRequestProcessor().processHttp(rebuiltRequest);
+  }
 }

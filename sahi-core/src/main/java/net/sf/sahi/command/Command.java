@@ -2,7 +2,7 @@ package net.sf.sahi.command;
 
 /**
  * Sahi - Web Automation and Test Tool
- * 
+ *
  * Copyright  2006  V Narayan Raman
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,6 +25,6 @@ package net.sf.sahi.command;
  * Time: 1:12:46 PM
  */
 public interface Command {
-    String LOG_VIEW = "Log_viewLogs";
-    String LOG_HIGHLIGHT = "Log_highlight";
+  String LOG_VIEW = "Log_viewLogs";
+  String LOG_HIGHLIGHT = "Log_highlight";
 }

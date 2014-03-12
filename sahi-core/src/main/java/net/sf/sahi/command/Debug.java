@@ -1,6 +1,6 @@
 /**
  * Sahi - Web Automation and Test Tool
- * 
+ *
  * Copyright  2006  V Narayan Raman
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,29 +25,29 @@ import java.io.IOException;
 
 public class Debug {
 
-    public void toOut(final HttpRequest request) {
-        String msg = request.getParameter("msg");
-        System.out.println(msg);
-    }
+  public void toOut(final HttpRequest request) {
+    String msg = request.getParameter("msg");
+    System.out.println(msg);
+  }
 
-    public void toErr(final HttpRequest request) {
-        String msg = request.getParameter("msg");
-        System.err.println(msg);
-    }
+  public void toErr(final HttpRequest request) {
+    String msg = request.getParameter("msg");
+    System.err.println(msg);
+  }
 
-    public void toFile(final HttpRequest request) {
-        String msg = request.getParameter("msg");
-        try {
-            File file = new File(request.getParameter("file"));
-            if (!file.exists()) {
-                file.createNewFile();
-            }
-            FileOutputStream out;
-            out = new FileOutputStream(file, true);
-            out.write((msg + "\n").getBytes());
-            out.close();
-        } catch (IOException e) {
-            System.out.println(msg);
-        }
+  public void toFile(final HttpRequest request) {
+    String msg = request.getParameter("msg");
+    try {
+      File file = new File(request.getParameter("file"));
+      if (!file.exists()) {
+        file.createNewFile();
+      }
+      FileOutputStream out;
+      out = new FileOutputStream(file, true);
+      out.write((msg + "\n").getBytes());
+      out.close();
+    } catch (IOException e) {
+      System.out.println(msg);
     }
+  }
 }

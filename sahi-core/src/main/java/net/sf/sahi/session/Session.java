@@ -41,310 +41,314 @@ import net.sf.sahi.util.Utils;
  * User: nraman Date: Jun 21, 2005 Time: 8:03:28 PM
  */
 public class Session {
-	private static final Logger logger = Logger.getLogger("net.sf.sahi.session.Session");
-	private final Hashtable<String,String> ajaxRedirects = new Hashtable<String, String>();
-	
-	private Status status;
+  private static final Logger logger = Logger.getLogger("net.sf.sahi.session.Session");
+  private final Hashtable<String, String> ajaxRedirects = new Hashtable<String, String>();
 
-	private static Map<String, Session> sessions = new HashMap<String, Session>();
+  private Status status;
 
-	private String sessionId;
+  private static Map<String, Session> sessions = new HashMap<String, Session>();
 
-	private boolean isWindowOpen = false;
+  private String sessionId;
 
-	private Recorder recorder;
+  private boolean isWindowOpen = false;
 
-	private SahiScript script;
+  private Recorder recorder;
 
-	private Map<String, String> variables;
+  private SahiScript script;
 
-	private String xhrReadyStatesToWaitFor;
-	
-	private MockResponder mockResponder = new MockResponder();
+  private Map<String, String> variables;
 
-	private Report report;
+  private String xhrReadyStatesToWaitFor;
 
-	private long timestamp = System.currentTimeMillis();
+  private MockResponder mockResponder = new MockResponder();
 
-	private ScriptRunner scriptRunner;
-	
-	private boolean sendHTMLResponseAfterFileDownload = false;
+  private Report report;
 
-	private Map<String, RequestCredentials> requestCredentials = new HashMap<String, RequestCredentials>();
+  private long timestamp = System.currentTimeMillis();
 
-	private BrowserLauncher launcher;
+  private ScriptRunner scriptRunner;
 
-	private boolean isPlaying;
+  private boolean sendHTMLResponseAfterFileDownload = false;
 
-	private boolean isRecording;
+  private Map<String, RequestCredentials> requestCredentials = new HashMap<String, RequestCredentials>();
 
-	private boolean isReadyForDriver;
+  private BrowserLauncher launcher;
 
-	private Map<String, Object> objectVariables = new HashMap<String, Object>();
-	private boolean is204;
-	static double playbackInactiveTimeout = Configuration.getMaxInactiveTimeForScript() * 1.5;
-	static double recorderInactiveTimeout = 20 * 60 * 1000; // 20 minutes
-	
-	static {
-		Timer stepTimer = new Timer();
-		stepTimer.schedule(new TimerTask(){
-			@Override
-			public void run() {
-				removeInactiveSessions();
-			}
-		}, 0, 10000);
-	}
+  private boolean isPlaying;
 
-	public Report getReport() {
-		return report;
-	}
+  private boolean isRecording;
 
-	public void setReport(final Report report) {
-		this.report = report;
-	}
-	public static void removeInstance(final String sessionId) {
-		sessions.remove(sessionId);
-	}
+  private boolean isReadyForDriver;
 
-	public static synchronized Session getInstance(final String sessionId) {
-		if (!sessions.containsKey(sessionId)) {
-			sessions.put(sessionId, new Session(sessionId));
-		}
-		Session session = sessions.get(sessionId);
-		session.touch();
-		return session;
-	}
-	
-	public static synchronized Session getExistingInstance(final String sessionId) {
-		return sessions.get(sessionId);
-	}
-	
-	public Session(final String sessionId) {
-		this.sessionId = sessionId;
-		this.variables = new HashMap<String, String>();
-		this.status = Status.INITIAL;
-	}
+  private Map<String, Object> objectVariables = new HashMap<String, Object>();
+  private boolean is204;
+  static double playbackInactiveTimeout = Configuration.getMaxInactiveTimeForScript() * 1.5;
+  static double recorderInactiveTimeout = 20 * 60 * 1000; // 20 minutes
 
-	public String id() {
-		return sessionId;
-	}
+  static {
+    Timer stepTimer = new Timer();
+    stepTimer.schedule(new TimerTask() {
+      @Override
+      public void run() {
+        removeInactiveSessions();
+      }
+    }, 0, 10000);
+  }
 
-	public void setIsWindowOpen(final boolean isWindowOpen) {
-		this.isWindowOpen = isWindowOpen;
-	}
+  public Report getReport() {
+    return report;
+  }
 
-	public boolean isWindowOpen() {
-		return isWindowOpen;
-	}
+  public void setReport(final Report report) {
+    this.report = report;
+  }
 
-	public boolean sendHTMLResponseAfterFileDownload() {
-		return this.sendHTMLResponseAfterFileDownload;
-	}
-	public void setSendHTMLResponseAfterFileDownload(boolean b) {
-		this.sendHTMLResponseAfterFileDownload = b;
-	}
-	
-	public Recorder getRecorder() {
-		if (this.recorder == null) {
-			this.recorder = new Recorder();
-		}
-		return recorder;
-	}
+  public static void removeInstance(final String sessionId) {
+    sessions.remove(sessionId);
+  }
 
-	public String getVariable(final String name) {
-		// System.out.println("get name="+name);
-		// System.out.println("get value="+(String) (variables.get(name)));
-		return (String) (variables.get(name));
-	}
+  public static synchronized Session getInstance(final String sessionId) {
+    if (!sessions.containsKey(sessionId)) {
+      sessions.put(sessionId, new Session(sessionId));
+    }
+    Session session = sessions.get(sessionId);
+    session.touch();
+    return session;
+  }
 
-	public void removeVariables(final String pattern) {
-		for (Iterator<String> iterator = variables.keySet().iterator(); iterator.hasNext();) {
-			String s = iterator.next();
-			if (s.matches(pattern)) {
-				iterator.remove();
-			}
-		}
-	}
+  public static synchronized Session getExistingInstance(final String sessionId) {
+    return sessions.get(sessionId);
+  }
 
-	public void setVariable(final String name, final String value) {
-		// System.out.println("set name="+name);
-		// System.out.println("set value="+value);
-		variables.put(name, value);
-		if (scriptRunner != null)
-			scriptRunner.setVariable(name, value);
-	}
+  public Session(final String sessionId) {
+    this.sessionId = sessionId;
+    this.variables = new HashMap<String, String>();
+    this.status = Status.INITIAL;
+  }
 
-	public SahiScript xgetScript() {
-		return script;
-	}
+  public String id() {
+    return sessionId;
+  }
 
-	public SahiTestSuite getSuite() {
-		return SahiTestSuite.getSuite(this.id());
-	}
+  public void setIsWindowOpen(final boolean isWindowOpen) {
+    this.isWindowOpen = isWindowOpen;
+  }
 
-	public MockResponder mockResponder() {
-		return mockResponder;
-	}
+  public boolean isWindowOpen() {
+    return isWindowOpen;
+  }
 
-	public boolean isPlaying() {
+  public boolean sendHTMLResponseAfterFileDownload() {
+    return this.sendHTMLResponseAfterFileDownload;
+  }
+
+  public void setSendHTMLResponseAfterFileDownload(boolean b) {
+    this.sendHTMLResponseAfterFileDownload = b;
+  }
+
+  public Recorder getRecorder() {
+    if (this.recorder == null) {
+      this.recorder = new Recorder();
+    }
+    return recorder;
+  }
+
+  public String getVariable(final String name) {
+    // System.out.println("get name="+name);
+    // System.out.println("get value="+(String) (variables.get(name)));
+    return (String) (variables.get(name));
+  }
+
+  public void removeVariables(final String pattern) {
+    for (Iterator<String> iterator = variables.keySet().iterator(); iterator.hasNext(); ) {
+      String s = iterator.next();
+      if (s.matches(pattern)) {
+        iterator.remove();
+      }
+    }
+  }
+
+  public void setVariable(final String name, final String value) {
+    // System.out.println("set name="+name);
+    // System.out.println("set value="+value);
+    variables.put(name, value);
+    if (scriptRunner != null)
+      scriptRunner.setVariable(name, value);
+  }
+
+  public SahiScript xgetScript() {
+    return script;
+  }
+
+  public SahiTestSuite getSuite() {
+    return SahiTestSuite.getSuite(this.id());
+  }
+
+  public MockResponder mockResponder() {
+    return mockResponder;
+  }
+
+  public boolean isPlaying() {
 //		return scriptRunner != null;
-		return this.isPlaying;
-	}
-	
-	public void setIsPlaying(boolean isPlaying){
-		this.isPlaying = isPlaying;
-	}
+    return this.isPlaying;
+  }
 
-	public Status getStatus() {
-		return status;
-	}
+  public void setIsPlaying(boolean isPlaying) {
+    this.isPlaying = isPlaying;
+  }
 
-	public void setStatus(Status status) {
-		this.status = status;
-	}
+  public Status getStatus() {
+    return status;
+  }
 
-	public void touch() {
-		timestamp = System.currentTimeMillis();
-	}
+  public void setStatus(Status status) {
+    this.status = status;
+  }
 
-	public long lastActiveTime() {
-		return timestamp;
-	}
+  public void touch() {
+    timestamp = System.currentTimeMillis();
+  }
 
-	public ScriptRunner getScriptRunner() {
-		return scriptRunner;
-	}
+  public long lastActiveTime() {
+    return timestamp;
+  }
 
-	public void setScriptRunner(ScriptRunner scriptRunner) {
-		this.scriptRunner = scriptRunner;
-		scriptRunner.setSession(this);
-	}
+  public ScriptRunner getScriptRunner() {
+    return scriptRunner;
+  }
 
-	public void setLauncher(BrowserLauncher launcher) {
-		this.launcher = launcher;
-	}
+  public void setScriptRunner(ScriptRunner scriptRunner) {
+    this.scriptRunner = scriptRunner;
+    scriptRunner.setSession(this);
+  }
 
-	public BrowserLauncher getLauncher() {
-		return launcher;
-	}
+  public void setLauncher(BrowserLauncher launcher) {
+    this.launcher = launcher;
+  }
 
-	public void addRequestCredentials(String realm, String username, String password){
-		realm = realm.trim();
-		logger.info(">>> Credentials added: " + realm + " " + username);
-		requestCredentials.put(realm, new RequestCredentials(realm, username, password));
-	}
-	
-	public void removeRequestCredentials(String realm){
-		requestCredentials.remove(realm);
-	}
-	
-	public void removeAllRequestCredentials(){
-		requestCredentials.clear();
-	}
-	
-	public RequestCredentials getMatchingCredentials(String realm, String scheme){
-		String key = Utils.isBlankOrNull(realm) ? scheme : realm;
-		RequestCredentials cred = requestCredentials.get(key.trim());
-		if (cred == null || cred.used()) return null;
-		return cred;
-	}
+  public BrowserLauncher getLauncher() {
+    return launcher;
+  }
 
-	public boolean isRecording() {
-		return isRecording;
-	}
+  public void addRequestCredentials(String realm, String username, String password) {
+    realm = realm.trim();
+    logger.info(">>> Credentials added: " + realm + " " + username);
+    requestCredentials.put(realm, new RequestCredentials(realm, username, password));
+  }
 
-	public void setIsRecording(boolean isRecording) {
-		this.isRecording = isRecording;
-	}
+  public void removeRequestCredentials(String realm) {
+    requestCredentials.remove(realm);
+  }
 
-	public void setIsReadyForDriver(boolean isReadyForDriver) {
-		this.isReadyForDriver = isReadyForDriver;
-	}
+  public void removeAllRequestCredentials() {
+    requestCredentials.clear();
+  }
 
-	public boolean isReadyForDriver() {
-		return isReadyForDriver;
-	}
-	
-	public boolean isPaused() {
-        return "1".equals(getVariable("sahi_paused"));
+  public RequestCredentials getMatchingCredentials(String realm, String scheme) {
+    String key = Utils.isBlankOrNull(realm) ? scheme : realm;
+    RequestCredentials cred = requestCredentials.get(key.trim());
+    if (cred == null || cred.used()) return null;
+    return cred;
+  }
+
+  public boolean isRecording() {
+    return isRecording;
+  }
+
+  public void setIsRecording(boolean isRecording) {
+    this.isRecording = isRecording;
+  }
+
+  public void setIsReadyForDriver(boolean isReadyForDriver) {
+    this.isReadyForDriver = isReadyForDriver;
+  }
+
+  public boolean isReadyForDriver() {
+    return isReadyForDriver;
+  }
+
+  public boolean isPaused() {
+    return "1".equals(getVariable("sahi_paused"));
+  }
+
+  public String getInfoJSON() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("{");
+    sb.append("'isRecording':" + isRecording());
+    sb.append(",");
+    sb.append("'isPlaying':" + isPlaying());
+    sb.append(",");
+    sb.append("'isPaused':" + isPaused());
+    sb.append(",");
+    sb.append("'sessionId':'" + sessionId + "'");
+    sb.append("}");
+    return sb.toString();
+  }
+
+  public double getInactiveTimeout() {
+    return isPlaying() ? playbackInactiveTimeout : recorderInactiveTimeout;
+  }
+
+  public static void removeInactiveSessions() {
+    long timeNow = System.currentTimeMillis();
+    try {
+      for (Iterator<Session> iterator = sessions.values().iterator(); iterator.hasNext(); ) {
+        Session s = (Session) iterator.next();
+        if (timeNow - s.lastActiveTime() > s.getInactiveTimeout()) {
+          iterator.remove();
+        }
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
     }
-    
-	public String getInfoJSON() {
-    	StringBuilder sb = new StringBuilder();
-    	sb.append("{");
-    	sb.append("'isRecording':"+isRecording());
-    	sb.append(",");
-    	sb.append("'isPlaying':"+isPlaying());
-    	sb.append(",");
-    	sb.append("'isPaused':"+isPaused());
-    	sb.append(",");
-    	sb.append("'sessionId':'"+sessionId+"'");
-    	sb.append("}");
-    	return sb.toString();	
+    System.gc();
+    //System.out.println("sessions.size() = " + sessions.size());
+  }
+
+  public void setObject(String key, Object value) {
+    this.objectVariables.put(key, value);
+  }
+
+  public Object getObject(String key) {
+    return this.objectVariables.get(key);
+  }
+
+  public void addAjaxRedirect(String redirectedTo) {
+    if (logger.isLoggable(Level.FINE)) {
+      logger.fine("Adding AJAX redirect for: " + redirectedTo);
     }
-	
-	public double getInactiveTimeout(){
-		return isPlaying() ? playbackInactiveTimeout : recorderInactiveTimeout;
-	}
-	
-	public static void removeInactiveSessions(){
-		long timeNow = System.currentTimeMillis();
-		try{
-			for (Iterator<Session> iterator = sessions.values().iterator(); iterator.hasNext();) {
-				Session s = (Session) iterator.next();
-				if (timeNow - s.lastActiveTime() > s.getInactiveTimeout()){
-					iterator.remove();
-				}
-			}
-		}catch(Exception e){e.printStackTrace();}
-		System.gc();		
-		//System.out.println("sessions.size() = " + sessions.size());
-	}
+    ajaxRedirects.put(redirectedTo, redirectedTo);
+  }
 
-	public void setObject(String key, Object value) {
-		this.objectVariables.put(key, value);
-	}
+  public boolean isAjaxRedirect(String url) {
+    boolean isRedirect = ajaxRedirects.containsKey(url);
+    if (logger.isLoggable(Level.FINE)) {
+      logger.fine("AJAX redirect for: " + url + ": " + isRedirect);
+    }
+    if (isRedirect) ajaxRedirects.remove(url);
+    return isRedirect;
+  }
 
-	public Object getObject(String key) {
-		return this.objectVariables.get(key);
-	}
+  public void set204(boolean is204) {
+    this.is204 = is204;
+    if (logger.isLoggable(Level.FINE)) {
+      logger.fine("Setting is204 = " + is204);
+    }
+  }
 
-	public void addAjaxRedirect(String redirectedTo) {
-		if (logger.isLoggable(Level.FINE)){
-			logger.fine("Adding AJAX redirect for: " + redirectedTo);
-		}
-		ajaxRedirects.put(redirectedTo, redirectedTo);
-	}
+  public boolean is204() {
+    if (logger.isLoggable(Level.FINE)) {
+      logger.fine("is204 = " + is204);
+    }
+    return is204;
+  }
 
-	public boolean isAjaxRedirect(String url) {
-		boolean isRedirect = ajaxRedirects.containsKey(url);
-		if (logger.isLoggable(Level.FINE)){
-			logger.fine("AJAX redirect for: " + url + ": " + isRedirect);
-		}
-		if (isRedirect) ajaxRedirects.remove(url);
-		return isRedirect;
-	}
+  public String getXHRReadyStatesToWaitFor() {
+    return xhrReadyStatesToWaitFor;
+  }
 
-	public void set204(boolean is204) {
-		this.is204 = is204;
-		if (logger.isLoggable(Level.FINE)){
-			logger.fine("Setting is204 = " + is204);
-		}
-	}
-
-	public boolean is204() {
-		if (logger.isLoggable(Level.FINE)){
-			logger.fine("is204 = " + is204);
-		}
-		return is204;
-	}
-	
-	public String getXHRReadyStatesToWaitFor() {
-		return xhrReadyStatesToWaitFor;
-	}
-	
-	public void setXHRReadyStatesToWaitFor(String states) {
-		this.xhrReadyStatesToWaitFor = states;
-	}
+  public void setXHRReadyStatesToWaitFor(String states) {
+    this.xhrReadyStatesToWaitFor = states;
+  }
 
 }

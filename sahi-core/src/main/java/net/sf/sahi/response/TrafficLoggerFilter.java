@@ -7,15 +7,15 @@ import net.sf.sahi.util.TrafficLogger;
 
 /**
  * Sahi - Web Automation and Test Tool
- * 
+ * <p/>
  * Copyright  2006  V Narayan Raman
- *
+ * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -25,18 +25,18 @@ import net.sf.sahi.util.TrafficLogger;
 
 
 public class TrafficLoggerFilter extends StreamFilter {
-	private final TrafficLogger loggerForThread;
+  private final TrafficLogger loggerForThread;
 
-	public TrafficLoggerFilter(TrafficLogger loggerForThread) {
-		this.loggerForThread = loggerForThread;
-	}
+  public TrafficLoggerFilter(TrafficLogger loggerForThread) {
+    this.loggerForThread = loggerForThread;
+  }
 
-	public byte[] modify(byte[] data) throws IOException {
+  public byte[] modify(byte[] data) throws IOException {
 //		loggerForThread.storeResponseBody(data);
-		return data;
-	}
+    return data;
+  }
 
-	public void modifyHeaders(HttpResponse response) throws IOException {
+  public void modifyHeaders(HttpResponse response) throws IOException {
 //		loggerForThread.storeResponseHeader(response.rawHeaders());
-	}
+  }
 }

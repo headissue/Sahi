@@ -30,119 +30,120 @@ import net.sf.sahi.session.Status;
  */
 public class TestLauncher {
 
-	private final String scriptName;
+  private final String scriptName;
 
-	private final String startURL;
+  private final String startURL;
 
-	private String sessionId;
+  private String sessionId;
 
-	private String childSessionId;
+  private String childSessionId;
 
-	private String browser;
+  private String browser;
 
-	private static Logger logger = Configuration
-			.getLogger("net.sf.sahi.test.TestLauncher");
+  private static Logger logger = Configuration
+    .getLogger("net.sf.sahi.test.TestLauncher");
 
-	private String browserOption;
+  private String browserOption;
 
-	private int threadNo;
+  private int threadNo;
 
-	@SuppressWarnings("unused")
-	private boolean isMultiThreaded;
+  @SuppressWarnings("unused")
+  private boolean isMultiThreaded;
 
-	private RhinoScriptRunner scriptRunner;
+  private RhinoScriptRunner scriptRunner;
 
-	private String browserProcessName;
+  private String browserProcessName;
 
-	private BrowserLauncher browserLauncher;
+  private BrowserLauncher browserLauncher;
 
-	private boolean useSystemProxy;
+  private boolean useSystemProxy;
 
-	private boolean isSingleSession;
+  private boolean isSingleSession;
 
-	public TestLauncher(final String scriptName, final String startURL) {
-		this.scriptName = scriptName;
-		this.startURL = startURL;
-	}
+  public TestLauncher(final String scriptName, final String startURL) {
+    this.scriptName = scriptName;
+    this.startURL = startURL;
+  }
 
-	public void setSessionId(final String sessionId, String childSessionId) {
-		this.sessionId = sessionId;
-		this.childSessionId = childSessionId;
-	}
+  public void setSessionId(final String sessionId, String childSessionId) {
+    this.sessionId = sessionId;
+    this.childSessionId = childSessionId;
+  }
 
-	public void setBrowser(final String browser) {
-		this.browser = browser;
-	}
+  public void setBrowser(final String browser) {
+    this.browser = browser;
+  }
 
-	public void setBrowserOption(final String browserOption) {
-		this.browserOption = browserOption;
-	}
+  public void setBrowserOption(final String browserOption) {
+    this.browserOption = browserOption;
+  }
 
-	public String getStartURL() {
-		return startURL;
-	}
+  public String getStartURL() {
+    return startURL;
+  }
 
-	public String getScriptName() {
-		return scriptName;
-	}
+  public String getScriptName() {
+    return scriptName;
+  }
 
-	public void execute(Session session) throws Exception {
-		this.execute(session, true, true);
-	}
-	
-	public void execute(Session session, boolean async, boolean setDefaultReporters) throws Exception {
-		System.out.println("#### Running Script: " + scriptName);
-        scriptRunner = new RhinoScriptRunner(new ScriptFactory().getScript(scriptName), session.getSuite(), this, setDefaultReporters);
-		session.setScriptRunner(scriptRunner);
-        if (!isSingleSession) {
-	        launchBrowser();
-        }
-		if (async) scriptRunner.execute();
-		else scriptRunner.executeAndWait(); // seems not to be used? 
-	}
-	
-	private void launchBrowser() throws Exception {
-		browserOption = (browserOption == null) ? "" : browserOption.replaceAll("[$]threadNo", "" + threadNo)
-				.replaceAll("[$]userDir", Configuration.getAbsoluteUserPath(".").replace('\\', '/'));
-		browserLauncher = new BrowserLauncher(browser, browserProcessName, browserOption, useSystemProxy);
-		browserLauncher.openURL(browserLauncher.getPlayerAutoURL(childSessionId, startURL, isSingleSession));
-	}
+  public void execute(Session session) throws Exception {
+    this.execute(session, true, true);
+  }
 
-	public void kill() {
-		System.out.println("Killing " + scriptName);
-		logger.fine("Killing " + scriptName);
-		if (!isSingleSession) browserLauncher.kill();
-	}
+  public void execute(Session session, boolean async, boolean setDefaultReporters) throws Exception {
+    System.out.println("#### Running Script: " + scriptName);
+    scriptRunner = new RhinoScriptRunner(new ScriptFactory().getScript(scriptName), session.getSuite(), this, setDefaultReporters);
+    session.setScriptRunner(scriptRunner);
+    if (!isSingleSession) {
+      launchBrowser();
+    }
+    if (async) scriptRunner.execute();
+    else scriptRunner.executeAndWait(); // seems not to be used?
+  }
 
-	public String getChildSessionId() {
-		return childSessionId;
-	}
+  private void launchBrowser() throws Exception {
+    browserOption = (browserOption == null) ? "" : browserOption.replaceAll("[$]threadNo", "" + threadNo)
+      .replaceAll("[$]userDir", Configuration.getAbsoluteUserPath(".").replace('\\', '/'));
+    browserLauncher = new BrowserLauncher(browser, browserProcessName, browserOption, useSystemProxy);
+    browserLauncher.openURL(browserLauncher.getPlayerAutoURL(childSessionId, startURL, isSingleSession));
+  }
 
-	public void setThreadNo(int threadNo, boolean isMultiThreaded) {
-		this.threadNo = threadNo;
-		this.isMultiThreaded = isMultiThreaded;
-	}
+  public void kill() {
+    System.out.println("Killing " + scriptName);
+    logger.fine("Killing " + scriptName);
+    if (!isSingleSession) browserLauncher.kill();
+  }
 
-	public int getThreadNo() {
-		return threadNo;
-	}
+  public String getChildSessionId() {
+    return childSessionId;
+  }
 
-	public Status getStatus() {
-		return scriptRunner.getScriptStatus();
-	}
-	
-	public RhinoScriptRunner getScriptRunner() {
-		return scriptRunner;
-	}
+  public void setThreadNo(int threadNo, boolean isMultiThreaded) {
+    this.threadNo = threadNo;
+    this.isMultiThreaded = isMultiThreaded;
+  }
 
-	public void setBrowserProcessName(String browserProcessName) {
-		this.browserProcessName = browserProcessName;
-	}
-	public void setUseSystemProxy(boolean useSystemProxy) {
-		this.useSystemProxy = useSystemProxy;
-	}
+  public int getThreadNo() {
+    return threadNo;
+  }
 
-	public void setIsSingleSession(boolean isSingleSession) {
-		this.isSingleSession = isSingleSession;
-	}
+  public Status getStatus() {
+    return scriptRunner.getScriptStatus();
+  }
+
+  public RhinoScriptRunner getScriptRunner() {
+    return scriptRunner;
+  }
+
+  public void setBrowserProcessName(String browserProcessName) {
+    this.browserProcessName = browserProcessName;
+  }
+
+  public void setUseSystemProxy(boolean useSystemProxy) {
+    this.useSystemProxy = useSystemProxy;
+  }
+
+  public void setIsSingleSession(boolean isSingleSession) {
+    this.isSingleSession = isSingleSession;
+  }
 }

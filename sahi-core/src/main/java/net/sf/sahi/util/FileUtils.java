@@ -25,49 +25,49 @@ import java.nio.channels.FileChannel;
 
 public class FileUtils {
 
-    public static void copyDir(final String src, final String dest) throws IOException, InterruptedException {
-        copyDir(new File(src), new File(dest));
+  public static void copyDir(final String src, final String dest) throws IOException, InterruptedException {
+    copyDir(new File(src), new File(dest));
+  }
+
+  public static void copyDir(final File src, final File dest) throws IOException {
+    dest.mkdirs();
+    File[] files = src.listFiles();
+
+    int j = files.length;   // cache the length so it doesn't need to be looked up over and over in the loop
+    for (int i = 0; i < j; i++) {
+      File file = files[i];
+      if (file.isDirectory()) {
+        copyDir(file, new File(dest, file.getName()));
+      } else {
+        copyFile(file, new File(dest, file.getName()));
+      }
     }
+  }
 
-    public static void copyDir(final File src, final File dest) throws IOException {
-        dest.mkdirs();
-        File[] files = src.listFiles();
+  public static void copyFile(final String src, final String dest) throws IOException {
+    copyFile(new File(src), new File(dest));
+  }
 
-        int j = files.length;   // cache the length so it doesn't need to be looked up over and over in the loop
-        for (int i = 0; i < j; i++) {
-            File file = files[i];
-            if (file.isDirectory()) {
-                copyDir(file, new File(dest, file.getName()));
-            } else {
-                copyFile(file, new File(dest, file.getName()));
-            }
-        }
-    }
+  public static boolean renameFile(String oldPath, String newPath) {
+    File oldFile = new File(oldPath);
+    File newFile = new File(newPath);
+    if (newFile.exists()) newFile.delete();
+    return oldFile.renameTo(newFile);
+  }
 
-    public static void copyFile(final String src, final String dest) throws IOException {
-        copyFile(new File(src), new File(dest));
-    }
+  public static void copyFile(final File src, final File dest) throws IOException {
+    dest.getParentFile().mkdirs();
+    dest.createNewFile();
 
-	public static boolean renameFile(String oldPath, String newPath) {
-		File oldFile = new File(oldPath);
-		File newFile = new File(newPath);
-		if (newFile.exists()) newFile.delete();
-		return oldFile.renameTo(newFile);
-	}    
-    
-    public static void copyFile(final File src, final File dest) throws IOException {
-        dest.getParentFile().mkdirs();
-        dest.createNewFile();
+    FileChannel sourceChannel = new FileInputStream(src).getChannel();
+    FileChannel targetChannel = new FileOutputStream(dest).getChannel();
+    sourceChannel.transferTo(0, sourceChannel.size(), targetChannel);
+    sourceChannel.close();
+    targetChannel.close();
+  }
 
-        FileChannel sourceChannel = new FileInputStream(src).getChannel();
-        FileChannel targetChannel = new FileOutputStream(dest).getChannel();
-        sourceChannel.transferTo(0, sourceChannel.size(), targetChannel);
-        sourceChannel.close();
-        targetChannel.close();
-    }
-
-    public static String cleanFileName(String fileName) {
-    	if (fileName == null) return fileName;
-		return fileName.replaceAll("[\\\\/:*?\"<>|]", "");
-	}
+  public static String cleanFileName(String fileName) {
+    if (fileName == null) return fileName;
+    return fileName.replaceAll("[\\\\/:*?\"<>|]", "");
+  }
 }

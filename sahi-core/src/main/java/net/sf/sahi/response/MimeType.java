@@ -1,6 +1,6 @@
 /**
  * Sahi - Web Automation and Test Tool
- * 
+ *
  * Copyright  2006  V Narayan Raman
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,36 +25,36 @@ import net.sf.sahi.config.Configuration;
 
 public class MimeType {
 
-    private static Properties properties;
-    
+  private static Properties properties;
 
-    static {
-        properties = new Properties();
-        try {
-            properties.load(new FileInputStream(Configuration.getMimeTypesMappingFile()));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 
-    public static String get(String fileExtension, final String defaultValue) {
-        fileExtension = (fileExtension == null ? "" : fileExtension.toLowerCase());
-        return properties.getProperty(fileExtension, defaultValue);
+  static {
+    properties = new Properties();
+    try {
+      properties.load(new FileInputStream(Configuration.getMimeTypesMappingFile()));
+    } catch (IOException e) {
+      e.printStackTrace();
     }
+  }
 
-    public static String getMimeTypeOfFile(final String fileName) {
-        return getMimeTypeOfFile(fileName, "text/plain");
-    }
+  public static String get(String fileExtension, final String defaultValue) {
+    fileExtension = (fileExtension == null ? "" : fileExtension.toLowerCase());
+    return properties.getProperty(fileExtension, defaultValue);
+  }
 
-    public static String getMimeTypeOfFile(final String fileName, final String defaultValue) {
-        return get(getExtension(fileName), defaultValue);
-    }
+  public static String getMimeTypeOfFile(final String fileName) {
+    return getMimeTypeOfFile(fileName, "text/plain");
+  }
 
-    static String getExtension(final String fileName) {
-        int ix = fileName.lastIndexOf('.');
-        if (ix == -1) {
-            return "";
-        }
-        return fileName.substring(ix);
+  public static String getMimeTypeOfFile(final String fileName, final String defaultValue) {
+    return get(getExtension(fileName), defaultValue);
+  }
+
+  static String getExtension(final String fileName) {
+    int ix = fileName.lastIndexOf('.');
+    if (ix == -1) {
+      return "";
     }
+    return fileName.substring(ix);
+  }
 }

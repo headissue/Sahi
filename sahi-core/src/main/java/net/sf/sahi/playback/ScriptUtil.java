@@ -27,72 +27,72 @@ import java.util.Arrays;
 
 public class ScriptUtil {
 
-    public static String getScriptsJs(final String scriptName) {
-        String[] fileList = getScriptFiles();
-        Arrays.sort(fileList);
-        return getJs(fileList, scriptName, false);
-    }
+  public static String getScriptsJs(final String scriptName) {
+    String[] fileList = getScriptFiles();
+    Arrays.sort(fileList);
+    return getJs(fileList, scriptName, false);
+  }
 
-    public static String getScriptRootsJs(final String dir) {
-        String[] fileList = Configuration.getScriptRoots();
-        return getJs(fileList, Utils.escapeDoubleQuotesAndBackSlashes(dir), true);
-    }
+  public static String getScriptRootsJs(final String dir) {
+    String[] fileList = Configuration.getScriptRoots();
+    return getJs(fileList, Utils.escapeDoubleQuotesAndBackSlashes(dir), true);
+  }
 
-    private static String getJs(final String[] list, final String selected, final boolean isDir) {
-        StringBuffer sb = new StringBuffer();
-        for (int i = 0; i < list.length; i++) {
-            String absolutePath = list[i];
-            sb.append("addToScript").append(isDir ? "Dir" : "").append("List").append("('");
-            sb.append(Utils.escapeDoubleQuotesAndBackSlashes(absolutePath));
-            sb.append("');\n");
-        }
-        sb.append("setSelectedScript").append(isDir ? "Dir" : "").append("('").append(selected).append("')");
-        sb.append("\n\n\n");
-        return sb.toString();
+  private static String getJs(final String[] list, final String selected, final boolean isDir) {
+    StringBuffer sb = new StringBuffer();
+    for (int i = 0; i < list.length; i++) {
+      String absolutePath = list[i];
+      sb.append("addToScript").append(isDir ? "Dir" : "").append("List").append("('");
+      sb.append(Utils.escapeDoubleQuotesAndBackSlashes(absolutePath));
+      sb.append("');\n");
     }
+    sb.append("setSelectedScript").append(isDir ? "Dir" : "").append("('").append(selected).append("')");
+    sb.append("\n\n\n");
+    return sb.toString();
+  }
 
-    private static String[] getScriptFiles() {
-        List<String> allFiles = new ArrayList<String>();
-        Configuration.createScriptsDirIfNeeded();
-        String[] scriptRoots = Configuration.getScriptRoots();
-        for (int i = 0; i < scriptRoots.length; i++) {
-            String scriptRoot = scriptRoots[i];
-            File file = new File(scriptRoot);
-            getFilesRecursively(file, allFiles);
-        }
-        return allFiles.toArray(new String[0]);
+  private static String[] getScriptFiles() {
+    List<String> allFiles = new ArrayList<String>();
+    Configuration.createScriptsDirIfNeeded();
+    String[] scriptRoots = Configuration.getScriptRoots();
+    for (int i = 0; i < scriptRoots.length; i++) {
+      String scriptRoot = scriptRoots[i];
+      File file = new File(scriptRoot);
+      getFilesRecursively(file, allFiles);
     }
-    
-	public static String[] getScriptFiles(String dir) {
-		List<String> allFiles = new ArrayList<String>();
-		File file = new File(dir);
-		getFilesRecursively(file, allFiles);
-		return allFiles.toArray(new String[0]);
-	}
-	
-    private static List<String> getFilesRecursively(final File dir, final List<String> allFiles) {
-        File[] files = dir.listFiles();
-        for (int i = 0; i < files.length; i++) {
-            File file = files[i];
-            if (file.isDirectory()) {
-                getFilesRecursively(file, allFiles);
-            } else {
-                if (isAddable(file)) {
-                    allFiles.add(Utils.getAbsolutePath(file));
-                }
-            }
-        }
-        return allFiles;
-    }
+    return allFiles.toArray(new String[0]);
+  }
 
-    private static boolean isAddable(final File file) {
-        String absolutePath = Utils.getAbsolutePath(file);
-        String[] extensions = Configuration.getScriptExtensions();
-        for (int i = 0; i < extensions.length; i++) {
-            if (absolutePath.endsWith(extensions[i])) {
-                return true;
-            }
+  public static String[] getScriptFiles(String dir) {
+    List<String> allFiles = new ArrayList<String>();
+    File file = new File(dir);
+    getFilesRecursively(file, allFiles);
+    return allFiles.toArray(new String[0]);
+  }
+
+  private static List<String> getFilesRecursively(final File dir, final List<String> allFiles) {
+    File[] files = dir.listFiles();
+    for (int i = 0; i < files.length; i++) {
+      File file = files[i];
+      if (file.isDirectory()) {
+        getFilesRecursively(file, allFiles);
+      } else {
+        if (isAddable(file)) {
+          allFiles.add(Utils.getAbsolutePath(file));
         }
-        return false;
+      }
     }
+    return allFiles;
+  }
+
+  private static boolean isAddable(final File file) {
+    String absolutePath = Utils.getAbsolutePath(file);
+    String[] extensions = Configuration.getScriptExtensions();
+    for (int i = 0; i < extensions.length; i++) {
+      if (absolutePath.endsWith(extensions[i])) {
+        return true;
+      }
+    }
+    return false;
+  }
 }

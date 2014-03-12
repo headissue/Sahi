@@ -1,6 +1,6 @@
 /**
  * Sahi - Web Automation and Test Tool
- * 
+ *
  * Copyright  2006  V Narayan Raman
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,5 +18,5 @@
 package net.sf.sahi.util;
 
 public class FileIsDirectoryException extends RuntimeException {
-	private static final long serialVersionUID = -995408894200630655L;
+  private static final long serialVersionUID = -995408894200630655L;
 }

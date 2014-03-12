@@ -25,50 +25,50 @@ import java.util.ArrayList;
 
 public class FileScript extends SahiScript {
 
-    private String userDirRelativePath;
+  private String userDirRelativePath;
 
-    public FileScript(String fileName) {
-        super(fileName, new ArrayList<String>(), new File(fileName).getName());
+  public FileScript(String fileName) {
+    super(fileName, new ArrayList<String>(), new File(fileName).getName());
+  }
+
+  private void setUserDirRelativePath(String fileName) {
+    String s = Utils.makePathOSIndependent(Utils.getAbsolutePath(fileName));
+    String userDirPath = Utils.makePathOSIndependent(Configuration.getUserDataDir());
+    if (s.startsWith(userDirPath)) {
+      userDirRelativePath = s.substring(userDirPath.length());
+      if (userDirRelativePath.startsWith("/")) userDirRelativePath = userDirRelativePath.substring(1);
     }
+  }
 
-	private void setUserDirRelativePath(String fileName) {
-		String s = Utils.makePathOSIndependent(Utils.getAbsolutePath(fileName));
-        String userDirPath = Utils.makePathOSIndependent(Configuration.getUserDataDir());
-        if (s.startsWith(userDirPath)){
-			userDirRelativePath = s.substring(userDirPath.length());
-			if (userDirRelativePath.startsWith("/")) userDirRelativePath = userDirRelativePath.substring(1);
-        }
-	}
+  public FileScript(final String fileName, final ArrayList<String> parents) {
+    super(fileName, parents, new File(fileName).getName());
+  }
 
-    public FileScript(final String fileName, final ArrayList<String> parents) {
-        super(fileName, parents, new File(fileName).getName());
+  protected void loadScript(final String fileName) {
+    setUserDirRelativePath(fileName);
+    try {
+      setScript(Utils.readFileAsString(fileName));
+    } catch (Exception e) {
+      setScript("throw \"Script: " + Utils.escapeDoubleQuotesAndBackSlashes(fileName) + " does not exist.\";\n");
     }
+  }
 
-    protected void loadScript(final String fileName) {
-        setUserDirRelativePath(fileName);
-        try {
-            setScript(Utils.readFileAsString(fileName));
-        } catch (Exception e) {
-            setScript("throw \"Script: " + Utils.escapeDoubleQuotesAndBackSlashes(fileName) + " does not exist.\";\n");
-        }
+  String getFQN(final String scriptName) {
+    if (scriptName.indexOf("http") == 0) {
+      return scriptName;
     }
+    return Utils.getAbsolutePath(Utils.getRelativeFile(new File(path), scriptName));
+  }
 
-    String getFQN(final String scriptName) {
-        if (scriptName.indexOf("http") == 0) {
-            return scriptName;
-        }
-        return Utils.getAbsolutePath(Utils.getRelativeFile(new File(path), scriptName));
-    }
+  SahiScript getNewInstance(final String scriptName, final ArrayList<String> parents) {
+    FileScript fileScript = new FileScript(getFQN(scriptName), parents);
+    fileScript.parents = parents;
+    return fileScript;
+  }
 
-    SahiScript getNewInstance(final String scriptName, final ArrayList<String> parents) {
-        FileScript fileScript = new FileScript(getFQN(scriptName), parents);
-        fileScript.parents = parents;
-        return fileScript;
-    }
-    
-	protected String getDebugFilePath() {
-		if (userDirRelativePath != null)
-			return userDirRelativePath;
-		return super.getDebugFilePath();
-	}
+  protected String getDebugFilePath() {
+    if (userDirRelativePath != null)
+      return userDirRelativePath;
+    return super.getDebugFilePath();
+  }
 }

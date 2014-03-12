@@ -5,15 +5,15 @@ package net.sf.sahi.report;
 
 /**
  * Sahi - Web Automation and Test Tool
- * 
+ * <p/>
  * Copyright  2006  V Narayan Raman
- *
+ * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -24,102 +24,102 @@ package net.sf.sahi.report;
 
 public class TestSummary {
 
-    private String scriptName = null;
-    private String logFileName = null;
-    private boolean addLink = false;
-    private int steps;
-    private int failures;
-    private int errors;
-    private int successes;
-    private boolean fail;
-	private long timeTaken;
-	private String suiteName;
+  private String scriptName = null;
+  private String logFileName = null;
+  private boolean addLink = false;
+  private int steps;
+  private int failures;
+  private int errors;
+  private int successes;
+  private boolean fail;
+  private long timeTaken;
+  private String suiteName;
 
-    public boolean addLink() {
-        return addLink;
-    }
+  public boolean addLink() {
+    return addLink;
+  }
 
-    public void setAddLink(final boolean addLink) {
-        this.addLink = addLink;
-    }
+  public void setAddLink(final boolean addLink) {
+    this.addLink = addLink;
+  }
 
-    public String getLogFileName() {
-        return logFileName;
-    }
+  public String getLogFileName() {
+    return logFileName;
+  }
 
-    public void setLogFileName(final String logFileName) {
-        this.logFileName = logFileName;
-    }
+  public void setLogFileName(final String logFileName) {
+    this.logFileName = logFileName;
+  }
 
-    public int getErrors() {
-        return errors;
-    }
+  public int getErrors() {
+    return errors;
+  }
 
-    public void setErrors(final int errors) {
-        this.errors = errors;
-    }
+  public void setErrors(final int errors) {
+    this.errors = errors;
+  }
 
-    public int getSuccesses() {
-        return successes;
-    }
-    
-    public int getFailures() {
-        return failures;
-    }
+  public int getSuccesses() {
+    return successes;
+  }
 
-    public void setFailures(final int failures) {
-        this.failures = failures;
-    }
+  public int getFailures() {
+    return failures;
+  }
 
-    public String getScriptName() {
-        return scriptName;
-    }
+  public void setFailures(final int failures) {
+    this.failures = failures;
+  }
 
-    public void setScriptName(final String scriptName) {
-        this.scriptName = scriptName;
-    }
+  public String getScriptName() {
+    return scriptName;
+  }
 
-    public int getSteps() {
-        return steps;
-    }
+  public void setScriptName(final String scriptName) {
+    this.scriptName = scriptName;
+  }
 
-    public void setSteps(final int steps) {
-        this.steps = steps;
-    }
+  public int getSteps() {
+    return steps;
+  }
 
-    public void incrementFailures() {
-        this.failures++;
-    }
+  public void setSteps(final int steps) {
+    this.steps = steps;
+  }
 
-    public boolean hasFailed() {
-        return fail;
-    }
+  public void incrementFailures() {
+    this.failures++;
+  }
 
-    public void incrementErrors() {
-        this.errors++;
-    }
+  public boolean hasFailed() {
+    return fail;
+  }
 
-    public void incrementSuccesses() {
-        this.successes++;
-    }
+  public void incrementErrors() {
+    this.errors++;
+  }
 
-    public void setFail(final boolean fail) {
-        this.fail = fail;
-    }
+  public void incrementSuccesses() {
+    this.successes++;
+  }
 
-	public long getTimeTaken() {
-		return timeTaken;
-	}
-	
-	public String getSuiteName() {
-		return suiteName;
-	}
-	
-	public void setTimeTaken(long timeTaken){
-		this.timeTaken = timeTaken;
-	}
+  public void setFail(final boolean fail) {
+    this.fail = fail;
+  }
 
-	public void setSuiteName(String suiteName) {
-		this.suiteName = suiteName;
-	}
+  public long getTimeTaken() {
+    return timeTaken;
+  }
+
+  public String getSuiteName() {
+    return suiteName;
+  }
+
+  public void setTimeTaken(long timeTaken) {
+    this.timeTaken = timeTaken;
+  }
+
+  public void setSuiteName(String suiteName) {
+    this.suiteName = suiteName;
+  }
 }

@@ -11,15 +11,15 @@ import net.sf.sahi.util.Utils;
 
 /**
  * Sahi - Web Automation and Test Tool
- * 
+ * <p/>
  * Copyright  2006  V Narayan Raman
- *
+ * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -29,31 +29,31 @@ import net.sf.sahi.util.Utils;
 
 
 public class SSLManager {
-    public HttpResponse execute(final HttpRequest request) {
-    	File dir = new File(Configuration.getCertsPath());
-    	String domains = "";
-    	if (dir.exists()){
-    		String[] files = dir.list();
-    		StringBuffer sb = new StringBuffer();
-    		for (int i=0; i<files.length; i++){
-    			sb.append(files[i]);
-    			sb.append("|");
-    		}
-    		domains = sb.toString().replace('_', '.');
-    	}
-        Properties props = new Properties();
-        props.setProperty("domains", domains);
-        props.setProperty("commonDomain", Configuration.getCommonDomain());
-        return new HttpFileResponse(Utils.concatPaths(Configuration.getHtdocsRoot(), "spr/manage/ssl/manager.htm"),
-        		props, true, true);
+  public HttpResponse execute(final HttpRequest request) {
+    File dir = new File(Configuration.getCertsPath());
+    String domains = "";
+    if (dir.exists()) {
+      String[] files = dir.list();
+      StringBuffer sb = new StringBuffer();
+      for (int i = 0; i < files.length; i++) {
+        sb.append(files[i]);
+        sb.append("|");
+      }
+      domains = sb.toString().replace('_', '.');
     }
+    Properties props = new Properties();
+    props.setProperty("domains", domains);
+    props.setProperty("commonDomain", Configuration.getCommonDomain());
+    return new HttpFileResponse(Utils.concatPaths(Configuration.getHtdocsRoot(), "spr/manage/ssl/manager.htm"),
+      props, true, true);
+  }
 
-    public HttpResponse success(final HttpRequest request) {
-        Properties props = new Properties();
-        props.setProperty("domain", request.getParameter("domain"));
-        
-        props.setProperty("commonDomain", Configuration.getCommonDomain());
-        return new HttpFileResponse(Utils.concatPaths(Configuration.getHtdocsRoot(), "spr/manage/ssl/success.htm"),
-        		props, true, true);
-    }
+  public HttpResponse success(final HttpRequest request) {
+    Properties props = new Properties();
+    props.setProperty("domain", request.getParameter("domain"));
+
+    props.setProperty("commonDomain", Configuration.getCommonDomain());
+    return new HttpFileResponse(Utils.concatPaths(Configuration.getHtdocsRoot(), "spr/manage/ssl/success.htm"),
+      props, true, true);
+  }
 }

@@ -2,7 +2,7 @@ package net.sf.sahi.issue;
 
 /**
  * Sahi - Web Automation and Test Tool
- * 
+ *
  * Copyright  2006  V Narayan Raman
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,9 +25,9 @@ package net.sf.sahi.issue;
  * Time: 4:57:21 PM
  */
 public interface IssueCreator {
-    void login() throws Exception;
+  void login() throws Exception;
 
-    void createIssue(Issue issue) throws Exception;
+  void createIssue(Issue issue) throws Exception;
 
-    void logout() throws Exception;
+  void logout() throws Exception;
 }

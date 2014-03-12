@@ -1,6 +1,6 @@
 /**
  * Sahi - Web Automation and Test Tool
- * 
+ *
  * Copyright  2006  V Narayan Raman
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,7 +23,7 @@ import net.sf.sahi.request.HttpRequest;
 
 public class FileReader {
 
-    public HttpResponse contents(final HttpRequest request) {
-        return new HttpFileResponse(request.getParameter("fileName"));
-    }
+  public HttpResponse contents(final HttpRequest request) {
+    return new HttpFileResponse(request.getParameter("fileName"));
+  }
 }

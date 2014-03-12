@@ -32,60 +32,60 @@ import net.sf.sahi.util.Utils;
 
 public class MockResponder {
 
-    private HashMap<String, String> map = new HashMap<String, String>();
+  private HashMap<String, String> map = new HashMap<String, String>();
 
-    public void add(final String urlPattern, final String className) {
-        map.put(urlPattern, className);
+  public void add(final String urlPattern, final String className) {
+    map.put(urlPattern, className);
+  }
+
+  public void remove(final String urlPattern) {
+    map.remove(urlPattern);
+  }
+
+  String getCommand(final String url) {
+    final Iterator<String> iterator = map.keySet().iterator();
+    while (iterator.hasNext()) {
+      String pattern = iterator.next();
+      if (url.matches(pattern)) {
+        return map.get(pattern);
+      }
     }
+    return null;
+  }
 
-    public void remove(final String urlPattern) {
-        map.remove(urlPattern);
+  public HttpResponse getResponse(final HttpRequest request) throws Exception {
+    String url = request.url();
+    final String command = getCommand(url);
+    if (command == null) {
+      return null;
     }
+    System.out.println("url: " + url);
+    System.out.println("command: " + command);
+    return new CommandExecuter(command, request, false).execute();
+  }
 
-    String getCommand(final String url) {
-        final Iterator<String> iterator = map.keySet().iterator();
-        while (iterator.hasNext()) {
-            String pattern = iterator.next();
-            if (url.matches(pattern)) {
-                return map.get(pattern);
-            }
-        }
-        return null;
-    }
+  public void remove(final HttpRequest request) {
+    request.session().mockResponder().remove(request.getParameter("pattern"));
+  }
 
-    public HttpResponse getResponse(final HttpRequest request) throws Exception {
-        String url = request.url();
-        final String command = getCommand(url);
-        if (command == null) {
-            return null;
-        }
-        System.out.println("url: " + url);
-        System.out.println("command: " + command);
-        return new CommandExecuter(command, request, false).execute();
-    }
+  public void add(final HttpRequest request) {
+    request.session().mockResponder().add(request.getParameter("pattern"), request.getParameter("class"));
+  }
 
-    public void remove(final HttpRequest request) {
-        request.session().mockResponder().remove(request.getParameter("pattern"));
-    }
+  public HttpResponse mockImage(final HttpRequest request) throws IOException {
+    return new HttpFileResponse(Utils.concatPaths(Configuration.getHtdocsRoot(), "spr/mock.gif"), null, true, true);
+  }
 
-    public void add(final HttpRequest request) {
-        request.session().mockResponder().add(request.getParameter("pattern"), request.getParameter("class"));
-    }
-
-    public HttpResponse mockImage(final HttpRequest request) throws IOException {
-        return new HttpFileResponse(Utils.concatPaths(Configuration.getHtdocsRoot(), "spr/mock.gif"), null, true, true);
-    }
-
-    public HttpResponse simple(final HttpRequest request) throws IOException {
-        Properties props = new Properties();
-        props.put("url", request.url());
-        HttpResponse mockResponse = new HttpFileResponse(Configuration.getHtdocsRoot() + "spr/simpleMock.htm", props, false, false);
-        HttpResponse response = new HttpModifiedResponse2(mockResponse, request.isSSL(), request.fileExtension());
+  public HttpResponse simple(final HttpRequest request) throws IOException {
+    Properties props = new Properties();
+    props.put("url", request.url());
+    HttpResponse mockResponse = new HttpFileResponse(Configuration.getHtdocsRoot() + "spr/simpleMock.htm", props, false, false);
+    HttpResponse response = new HttpModifiedResponse2(mockResponse, request.isSSL(), request.fileExtension());
 //		response.addFilter(new ChunkedFilter());
-		return response;
-    }
+    return response;
+  }
 
-    public HttpResponse fileUpload(final HttpRequest request) {
-        return new RemoteRequestProcessor().processHttp(request);
-    }
+  public HttpResponse fileUpload(final HttpRequest request) {
+    return new RemoteRequestProcessor().processHttp(request);
+  }
 }

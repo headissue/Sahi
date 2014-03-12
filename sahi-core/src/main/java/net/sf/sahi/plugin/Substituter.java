@@ -1,6 +1,6 @@
 /**
  * Sahi - Web Automation and Test Tool
- * 
+ *
  * Copyright  2006  V Narayan Raman
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,17 +23,17 @@ import net.sf.sahi.response.HttpResponse;
 
 public class Substituter {
 
-    public HttpResponse replaceHttps(final HttpRequest request) {
-        HttpResponse response = new RemoteRequestProcessor().processHttp(request);
-        byte[] bytes = response.data();
-        String data = new String(bytes);
-        data = data.replaceAll("https", "http");
-        response.setData(data.getBytes());
-        return response;
-    }
+  public HttpResponse replaceHttps(final HttpRequest request) {
+    HttpResponse response = new RemoteRequestProcessor().processHttp(request);
+    byte[] bytes = response.data();
+    String data = new String(bytes);
+    data = data.replaceAll("https", "http");
+    response.setData(data.getBytes());
+    return response;
+  }
 
-    public HttpResponse makeHTTPS(final HttpRequest request) {
-        request.setSSL(true);
-        return new RemoteRequestProcessor().processHttp(request);
-    }
+  public HttpResponse makeHTTPS(final HttpRequest request) {
+    request.setSSL(true);
+    return new RemoteRequestProcessor().processHttp(request);
+  }
 }

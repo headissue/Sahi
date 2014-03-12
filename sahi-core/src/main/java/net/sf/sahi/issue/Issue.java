@@ -2,7 +2,7 @@ package net.sf.sahi.issue;
 
 /**
  * Sahi - Web Automation and Test Tool
- * 
+ *
  * Copyright  2006  V Narayan Raman
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -26,27 +26,27 @@ package net.sf.sahi.issue;
  */
 public class Issue {
 
-    private String summary;
-    private String description;
+  private String summary;
+  private String description;
 
-    public Issue(String summary, String description) {
-        this.summary = summary;
-        this.description = description;
-    }
+  public Issue(String summary, String description) {
+    this.summary = summary;
+    this.description = description;
+  }
 
-    public String getDescription() {
-        return description;
-    }
+  public String getDescription() {
+    return description;
+  }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+  public void setDescription(String description) {
+    this.description = description;
+  }
 
-    public String getSummary() {
-        return summary;
-    }
+  public String getSummary() {
+    return summary;
+  }
 
-    public void setSummary(String summary) {
-        this.summary = summary;
-    }
+  public void setSummary(String summary) {
+    this.summary = summary;
+  }
 }

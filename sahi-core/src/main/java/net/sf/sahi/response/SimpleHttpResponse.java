@@ -1,6 +1,6 @@
 /**
  * Sahi - Web Automation and Test Tool
- * 
+ *
  * Copyright  2006  V Narayan Raman
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -26,18 +26,18 @@ import net.sf.sahi.util.Utils;
  */
 public class SimpleHttpResponse extends HttpResponse {
 
-    public SimpleHttpResponse(final String dataStr) {
-    	this(Utils.getBytes(dataStr));
-    }
+  public SimpleHttpResponse(final String dataStr) {
+    this(Utils.getBytes(dataStr));
+  }
 
-    public SimpleHttpResponse(final byte[] data) {
-        setData(data);
-        setFirstLine("HTTP/1.0 200 OK");
-        setHeader("Content-Type", "text/html");
-        setHeader("Cache-Control", "no-cache");
-        setHeader("Pragma", "no-cache");
-        setHeader("Expires", "0");
-        setHeader("Content-Length", "" + data().length);
-        setRawHeaders(getRebuiltHeaderBytes());
-    }
+  public SimpleHttpResponse(final byte[] data) {
+    setData(data);
+    setFirstLine("HTTP/1.0 200 OK");
+    setHeader("Content-Type", "text/html");
+    setHeader("Cache-Control", "no-cache");
+    setHeader("Pragma", "no-cache");
+    setHeader("Expires", "0");
+    setHeader("Content-Length", "" + data().length);
+    setRawHeaders(getRebuiltHeaderBytes());
+  }
 }

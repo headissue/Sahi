@@ -29,43 +29,43 @@ import java.util.Properties;
  */
 public class HttpFileResponse extends HttpResponse {
 
-    private String fileName;
-    boolean addCacheHeader = false;
+  private String fileName;
+  boolean addCacheHeader = false;
 
-    public HttpFileResponse(final String fileName, final Properties substitutions, final boolean addCacheHeader, final boolean cacheFileInMemory) {
-        this.fileName = fileName;
-        byte[] bytes;
-        if (cacheFileInMemory && !Configuration.isDevMode()) {
-            bytes = Utils.readCachedFile(fileName);
-        } else {
-            bytes = Utils.readFile(fileName);
-        }
-        setData(bytes);
-        if (substitutions != null) {
-            setData(Utils.substitute(new String(data()), substitutions).getBytes());
-        }
-        this.addCacheHeader = addCacheHeader;
-        setHeaders();
+  public HttpFileResponse(final String fileName, final Properties substitutions, final boolean addCacheHeader, final boolean cacheFileInMemory) {
+    this.fileName = fileName;
+    byte[] bytes;
+    if (cacheFileInMemory && !Configuration.isDevMode()) {
+      bytes = Utils.readCachedFile(fileName);
+    } else {
+      bytes = Utils.readFile(fileName);
     }
+    setData(bytes);
+    if (substitutions != null) {
+      setData(Utils.substitute(new String(data()), substitutions).getBytes());
+    }
+    this.addCacheHeader = addCacheHeader;
+    setHeaders();
+  }
 
-    public HttpFileResponse(final String fileName) {
-        this(fileName, null, false, false);
+  public HttpFileResponse(final String fileName) {
+    this(fileName, null, false, false);
 //		this(fileName, null, true, true);
-    }
+  }
 
-    private void setHeaders() {
-        setFirstLine("HTTP/1.1 200 OK");
-        removeHeader("Content-Type");
-        setHeader("Content-Type", MimeType.getMimeTypeOfFile(fileName));
-        if (addCacheHeader) {
-            setHeader("Expires", formatForExpiresHeader(new Date(
-                    System.currentTimeMillis() + 10 * 60 * 1000))); // 10 minutes
-        }
-        setHeader("Content-Length", "" + data().length);
-        setRawHeaders(getRebuiltHeaderBytes());
+  private void setHeaders() {
+    setFirstLine("HTTP/1.1 200 OK");
+    removeHeader("Content-Type");
+    setHeader("Content-Type", MimeType.getMimeTypeOfFile(fileName));
+    if (addCacheHeader) {
+      setHeader("Expires", formatForExpiresHeader(new Date(
+        System.currentTimeMillis() + 10 * 60 * 1000))); // 10 minutes
     }
+    setHeader("Content-Length", "" + data().length);
+    setRawHeaders(getRebuiltHeaderBytes());
+  }
 
-    static String formatForExpiresHeader(Date date) {
-        return new SimpleDateFormat("EEE, dd MMM yyyy hh:mm:ss z").format(date);
-    }
+  static String formatForExpiresHeader(Date date) {
+    return new SimpleDateFormat("EEE, dd MMM yyyy hh:mm:ss z").format(date);
+  }
 }

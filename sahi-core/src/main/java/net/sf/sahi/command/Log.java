@@ -34,68 +34,68 @@ import net.sf.sahi.util.Utils;
 
 public class Log {
 
-    public HttpResponse viewLogs(final HttpRequest request) {
-        String fileName = URLParser.logFileNamefromURI(request.uri());
-        if ("".equals(fileName)) {
+  public HttpResponse viewLogs(final HttpRequest request) {
+    String fileName = URLParser.logFileNamefromURI(request.uri());
+    if ("".equals(fileName)) {
 //        	long start = System.currentTimeMillis();
-            String logsList = LogViewer.getLogsList(Configuration.getPlayBackLogsRoot());
+      String logsList = LogViewer.getLogsList(Configuration.getPlayBackLogsRoot());
 //            System.out.println((System.currentTimeMillis() - start));
-			NoCacheHttpResponse response = new NoCacheHttpResponse(logsList);
+      NoCacheHttpResponse response = new NoCacheHttpResponse(logsList);
 //            System.out.println((System.currentTimeMillis() - start));
-			return response;
-        } else {
-            return new HttpFileResponse(fileName, null, false, false);
-        }
+      return response;
+    } else {
+      return new HttpFileResponse(fileName, null, false, false);
     }
+  }
 
-    public HttpResponse getBrowserScript(final HttpRequest request) {
-        HttpResponse httpResponse;
-        String scriptPath = request.getParameter("href");
-        SahiScript script = new ScriptFactory().getScript(scriptPath);
-		if (script != null) {
-            httpResponse = new SimpleHttpResponse(LogViewer.highlight(script.getBrowserJSWithLineNumbers(), getLineNumber(request)));
-        } else {
-            httpResponse = new SimpleHttpResponse(
-                    "No Script has been set for playback.");
-        }
-        return httpResponse;
+  public HttpResponse getBrowserScript(final HttpRequest request) {
+    HttpResponse httpResponse;
+    String scriptPath = request.getParameter("href");
+    SahiScript script = new ScriptFactory().getScript(scriptPath);
+    if (script != null) {
+      httpResponse = new SimpleHttpResponse(LogViewer.highlight(script.getBrowserJSWithLineNumbers(), getLineNumber(request)));
+    } else {
+      httpResponse = new SimpleHttpResponse(
+        "No Script has been set for playback.");
     }
+    return httpResponse;
+  }
 
-    public HttpResponse highlight(final HttpRequest request) {
-        int lineNumber = getLineNumber(request);
-        String href = request.getParameter("href");
-        String content;
-        if (href.startsWith("http://") || href.startsWith("https://")) {
-            content = new String(Utils.readURL(href));
-        } else {
-        	try{
-        		content = Utils.readFileAsString(Configuration.getAbsoluteUserPath(href));
-        	}catch(FileNotFoundRuntimeException e){
-        		content = "File ["+href+"] not found";
-        	}
-        }
-        content = content.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
-        final SimpleHttpResponse response = new SimpleHttpResponse("");
-        String highlighted = LogViewer.highlight(content, lineNumber);
-        highlighted = ("<h4>" + href.replace("\\\\", "\\") + "</h4>").concat(highlighted);
-		try {
-			response.setData(highlighted.getBytes("UTF8"));
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-			response.setData(highlighted.getBytes());
-		}
-        response.resetRawHeaders();
-        return response;
+  public HttpResponse highlight(final HttpRequest request) {
+    int lineNumber = getLineNumber(request);
+    String href = request.getParameter("href");
+    String content;
+    if (href.startsWith("http://") || href.startsWith("https://")) {
+      content = new String(Utils.readURL(href));
+    } else {
+      try {
+        content = Utils.readFileAsString(Configuration.getAbsoluteUserPath(href));
+      } catch (FileNotFoundRuntimeException e) {
+        content = "File [" + href + "] not found";
+      }
     }
-
-    private int getLineNumber(final HttpRequest req) {
-        String p = req.getParameter("n");
-        int i = -1;
-        try {
-            i = Integer.parseInt(p);
-        } catch (Exception e) {
-
-        }
-        return i;
+    content = content.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+    final SimpleHttpResponse response = new SimpleHttpResponse("");
+    String highlighted = LogViewer.highlight(content, lineNumber);
+    highlighted = ("<h4>" + href.replace("\\\\", "\\") + "</h4>").concat(highlighted);
+    try {
+      response.setData(highlighted.getBytes("UTF8"));
+    } catch (UnsupportedEncodingException e) {
+      e.printStackTrace();
+      response.setData(highlighted.getBytes());
     }
+    response.resetRawHeaders();
+    return response;
+  }
+
+  private int getLineNumber(final HttpRequest req) {
+    String p = req.getParameter("n");
+    int i = -1;
+    try {
+      i = Integer.parseInt(p);
+    } catch (Exception e) {
+
+    }
+    return i;
+  }
 }

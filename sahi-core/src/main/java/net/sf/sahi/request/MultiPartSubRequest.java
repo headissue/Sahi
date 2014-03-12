@@ -30,45 +30,45 @@ import java.util.StringTokenizer;
  */
 public class MultiPartSubRequest extends StreamHandler {
 
-    private String name;
-    private String fileName;
+  private String name;
+  private String fileName;
 
-    // For Test. Yuck!
-    public MultiPartSubRequest() {
+  // For Test. Yuck!
+  public MultiPartSubRequest() {
+  }
+
+  public MultiPartSubRequest(final InputStream in) throws IOException {
+    populateHeaders(in, false);
+    populateData(in);
+    setNameAndFileName(getLastSetValueOfHeader("Content-Disposition"));
+    removeHeader("Content-Length");
+    // System.out.println(new String(rawHeaders()));
+  }
+
+  void setNameAndFileName(final String s) {
+    StringTokenizer tokenizer = new StringTokenizer(s, ";");
+    tokenizer.nextToken();
+    name = getValue(tokenizer.nextToken());
+    if (tokenizer.hasMoreTokens()) {
+      fileName = getValue(tokenizer.nextToken());
     }
+  }
 
-    public MultiPartSubRequest(final InputStream in) throws IOException {
-        populateHeaders(in, false);
-        populateData(in);
-        setNameAndFileName(getLastSetValueOfHeader("Content-Disposition"));
-		removeHeader("Content-Length");
-        // System.out.println(new String(rawHeaders()));
-	}
+  static String getValue(final String s) {
+    return s.substring(s.indexOf("\"") + 1, s.lastIndexOf("\""));
+  }
 
-    void setNameAndFileName(final String s) {
-        StringTokenizer tokenizer = new StringTokenizer(s, ";");
-        tokenizer.nextToken();
-        name = getValue(tokenizer.nextToken());
-        if (tokenizer.hasMoreTokens()) {
-            fileName = getValue(tokenizer.nextToken());
-        }
-    }
+  public String name() {
+    return name;
+  }
 
-    static String getValue(final String s) {
-        return s.substring(s.indexOf("\"") + 1, s.lastIndexOf("\""));
-    }
+  public String fileName() {
+    return fileName;
+  }
 
-    public String name() {
-        return name;
-    }
-
-    public String fileName() {
-        return fileName;
-    }
-
-    public void setFileName(final String fileName) {
-        this.fileName = fileName;
-        setHeader("Content-Disposition", "form-data; name=\"" + name + "\"; filename=\"" + this.fileName + "\"");
-        resetRawHeaders();
-    }
+  public void setFileName(final String fileName) {
+    this.fileName = fileName;
+    setHeader("Content-Disposition", "form-data; name=\"" + name + "\"; filename=\"" + this.fileName + "\"");
+    resetRawHeaders();
+  }
 }

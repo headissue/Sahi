@@ -34,57 +34,57 @@ import java.util.regex.Pattern;
 
 public class Script {
 
-    public HttpResponse view(final HttpRequest request) {
-        String file = request.getParameter("script");
-        return view(file);
+  public HttpResponse view(final HttpRequest request) {
+    String file = request.getParameter("script");
+    return view(file);
+  }
+
+  public HttpResponse view(String file) {
+    String js = makeIncludeALink(file);
+
+    Properties props = new Properties();
+    props.setProperty("name", file.replaceAll("\\\\", "/"));
+    props.setProperty("js", js);
+    props.setProperty("script", js);
+    return new HttpFileResponse(net.sf.sahi.config.Configuration.getHtdocsRoot() + "spr/script.htm", props, false, true);
+  }
+
+  public static String makeIncludeALink(final String baseFile) {
+    String inputStr = Utils.readFileAsString(baseFile);
+    inputStr = inputStr.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+    inputStr = LogViewer.highlight(inputStr, -1);
+    String patternStr = "[\"'](.*[.]sah)[\"']";
+    Pattern pattern = Pattern.compile(patternStr);
+    Matcher matcher = pattern.matcher(inputStr);
+
+    StringBuffer sb = new StringBuffer();
+    while (matcher.find()) {
+      String includedScriptName = matcher.group(1);
+      String scriptPath = Utils.concatPaths(baseFile, includedScriptName).replaceAll("\\\\", "/");
+      String replaceStr = "";
+      if (includedScriptName.startsWith("http://") || includedScriptName.startsWith("https://")) {
+        replaceStr = "<a href='" + includedScriptName + "'>" + includedScriptName + "</a>";
+      } else {
+        replaceStr = "<a href='/_s_/dyn/Script_view?script=" + scriptPath + "'>" + includedScriptName + "</a>";
+      }
+      matcher.appendReplacement(sb, replaceStr);
     }
+    matcher.appendTail(sb);
+    return sb.toString();
+  }
 
-    public HttpResponse view(String file) {
-        String js = makeIncludeALink(file);
-
-        Properties props = new Properties();
-        props.setProperty("name", file.replaceAll("\\\\", "/"));
-        props.setProperty("js", js);
-        props.setProperty("script", js);
-        return new HttpFileResponse(net.sf.sahi.config.Configuration.getHtdocsRoot() + "spr/script.htm", props, false, true);
+  HttpResponse dummyFunctions(final HttpRequest request) {
+    ArrayList<String> words = SahiScript.getKeyWords();
+    StringBuffer sb = new StringBuffer();
+    for (Iterator<String> iterator = words.iterator(); iterator.hasNext(); ) {
+      String word = iterator.next();
+      sb.append("var " + word + " = b;\n");
+      sb.append("var _" + word + " = b;\n");
     }
+    String functions = sb.toString();
 
-    public static String makeIncludeALink(final String baseFile) {
-        String inputStr = Utils.readFileAsString(baseFile);
-        inputStr = inputStr.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
-        inputStr = LogViewer.highlight(inputStr, -1);
-        String patternStr = "[\"'](.*[.]sah)[\"']";
-        Pattern pattern = Pattern.compile(patternStr);
-        Matcher matcher = pattern.matcher(inputStr);
-
-        StringBuffer sb = new StringBuffer();
-        while (matcher.find()) {
-            String includedScriptName = matcher.group(1);
-            String scriptPath = Utils.concatPaths(baseFile, includedScriptName).replaceAll("\\\\", "/");
-            String replaceStr = "";
-            if (includedScriptName.startsWith("http://") || includedScriptName.startsWith("https://")) {
-                replaceStr = "<a href='" + includedScriptName + "'>" + includedScriptName + "</a>";
-            } else {
-                replaceStr = "<a href='/_s_/dyn/Script_view?script=" + scriptPath + "'>" + includedScriptName + "</a>";
-            }
-            matcher.appendReplacement(sb, replaceStr);
-        }
-        matcher.appendTail(sb);
-        return sb.toString();
-    }
-
-    HttpResponse dummyFunctions(final HttpRequest request) {
-        ArrayList<String> words = SahiScript.getKeyWords();
-        StringBuffer sb = new StringBuffer();
-        for (Iterator<String> iterator = words.iterator(); iterator.hasNext();) {
-            String word = iterator.next();
-            sb.append("var " + word + " = b;\n");
-            sb.append("var _" + word + " = b;\n");
-        }
-        String functions = sb.toString();
-
-        Properties props = new Properties();
-        props.setProperty("dummyFunctions", functions);
-        return new HttpFileResponse(net.sf.sahi.config.Configuration.getHtdocsRoot() + "spr/dummyFunctions.js", props, false, true);
-    }
+    Properties props = new Properties();
+    props.setProperty("dummyFunctions", functions);
+    return new HttpFileResponse(net.sf.sahi.config.Configuration.getHtdocsRoot() + "spr/dummyFunctions.js", props, false, true);
+  }
 }

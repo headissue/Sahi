@@ -1,6 +1,6 @@
 /**
  * Sahi - Web Automation and Test Tool
- * 
+ *
  * Copyright  2006  V Narayan Raman
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,6 +21,6 @@
 package net.sf.sahi.command;
 
 public class RequestConstants {
-    public static final String COMMAND = "command";
-    public static final String SYNC = "sync";
+  public static final String COMMAND = "command";
+  public static final String SYNC = "sync";
 }

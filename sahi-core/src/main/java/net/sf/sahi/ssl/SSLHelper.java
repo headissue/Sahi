@@ -45,159 +45,159 @@ import net.sf.sahi.request.HttpRequest;
 import net.sf.sahi.util.Utils;
 
 public class SSLHelper {
-	private static final Logger logger = Logger.getLogger("net.sf.sahi.ssl.SSLHelper");
-	private String defaultFilePath = Utils.concatPaths(Configuration.getCertsPath(), "sahi_example_com");
-	static HashMap<String, SSLSocketFactory> sslSocketFactories = new HashMap<String, SSLSocketFactory>();
+  private static final Logger logger = Logger.getLogger("net.sf.sahi.ssl.SSLHelper");
+  private String defaultFilePath = Utils.concatPaths(Configuration.getCertsPath(), "sahi_example_com");
+  static HashMap<String, SSLSocketFactory> sslSocketFactories = new HashMap<String, SSLSocketFactory>();
 
-	private SSLSocketFactory getSSLClientSocketFactory(String domain) throws IOException {
-		if (domain == null) {
-			domain = Configuration.getCommonDomain();
-		}
-		if (!sslSocketFactories.containsKey(domain)) {
-			String sslPassword = Configuration.getSSLPassword();
-			String fileWithPath = getTrustStoreFilePath(domain);
-			final SSLSocketFactory socketFactory = createSocketFactory(fileWithPath, sslPassword);
-			if (socketFactory != null) {
-				sslSocketFactories.put(domain, socketFactory);
-			}
-		}
-		return (SSLSocketFactory) sslSocketFactories.get(domain);
-	}
+  private SSLSocketFactory getSSLClientSocketFactory(String domain) throws IOException {
+    if (domain == null) {
+      domain = Configuration.getCommonDomain();
+    }
+    if (!sslSocketFactories.containsKey(domain)) {
+      String sslPassword = Configuration.getSSLPassword();
+      String fileWithPath = getTrustStoreFilePath(domain);
+      final SSLSocketFactory socketFactory = createSocketFactory(fileWithPath, sslPassword);
+      if (socketFactory != null) {
+        sslSocketFactories.put(domain, socketFactory);
+      }
+    }
+    return (SSLSocketFactory) sslSocketFactories.get(domain);
+  }
 
-	private SSLSocketFactory createSocketFactory(final String fileWithPath, final String password) {
-		SSLSocketFactory factory = null;
-		try {
-			KeyManagerFactory keyManagerFactory = getKeyManagerFactory(fileWithPath, password, "JKS");
+  private SSLSocketFactory createSocketFactory(final String fileWithPath, final String password) {
+    SSLSocketFactory factory = null;
+    try {
+      KeyManagerFactory keyManagerFactory = getKeyManagerFactory(fileWithPath, password, "JKS");
 
-			SSLContext sslContext = SSLContext.getInstance("SSLv3");
-			sslContext.init(keyManagerFactory.getKeyManagers(), getAllTrustingManager(), new SecureRandom());
-			factory = sslContext.getSocketFactory();
+      SSLContext sslContext = SSLContext.getInstance("SSLv3");
+      sslContext.init(keyManagerFactory.getKeyManagers(), getAllTrustingManager(), new SecureRandom());
+      factory = sslContext.getSocketFactory();
 
-			return factory;
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return (SSLSocketFactory) SSLSocketFactory.getDefault();
-	}
+      return factory;
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    return (SSLSocketFactory) SSLSocketFactory.getDefault();
+  }
 
-	public static KeyManagerFactory getKeyManagerFactoryForRemoteFetch() throws UnrecoverableKeyException, NoSuchAlgorithmException,
-			KeyStoreException, FileNotFoundException, CertificateException, IOException {
-		String fileWithPath = Configuration.getSSLClientCertPath();
-		logger.info(fileWithPath == null ? "No SSL Client Cert specified" : ("\n----\nSSL Client Cert Path = " + fileWithPath + "\n----"));
-		String password = Configuration.getSSLClientCertPassword();
-		return getKeyManagerFactory(fileWithPath, password, Configuration.getSSLClientKeyStoreType());
-	}
+  public static KeyManagerFactory getKeyManagerFactoryForRemoteFetch() throws UnrecoverableKeyException, NoSuchAlgorithmException,
+    KeyStoreException, FileNotFoundException, CertificateException, IOException {
+    String fileWithPath = Configuration.getSSLClientCertPath();
+    logger.info(fileWithPath == null ? "No SSL Client Cert specified" : ("\n----\nSSL Client Cert Path = " + fileWithPath + "\n----"));
+    String password = Configuration.getSSLClientCertPassword();
+    return getKeyManagerFactory(fileWithPath, password, Configuration.getSSLClientKeyStoreType());
+  }
 
-	public static KeyManagerFactory getKeyManagerFactory(final String fileWithPath, final String password, String keyStoreType)
-			throws NoSuchAlgorithmException, KeyStoreException, FileNotFoundException, IOException,
-			CertificateException, UnrecoverableKeyException {
-		char[] passphrase = password == null ? null : password.toCharArray();
-		KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance(Configuration.getSSLAlgorithm());
-		KeyStore keyStore = KeyStore.getInstance(keyStoreType);
-		FileInputStream fileInputStream = null;
-		if (fileWithPath != null){
-			try{
-				fileInputStream = new FileInputStream(fileWithPath);
-			}catch(IOException ioe){
-				//ioe.printStackTrace();
-				logger.warning("\n----\nCertificate not found: " + fileWithPath + "\n----");
-			}
-		}
-		keyStore.load(fileInputStream, passphrase);
-		keyManagerFactory.init(keyStore, passphrase);
-		return keyManagerFactory;
-	}
+  public static KeyManagerFactory getKeyManagerFactory(final String fileWithPath, final String password, String keyStoreType)
+    throws NoSuchAlgorithmException, KeyStoreException, FileNotFoundException, IOException,
+    CertificateException, UnrecoverableKeyException {
+    char[] passphrase = password == null ? null : password.toCharArray();
+    KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance(Configuration.getSSLAlgorithm());
+    KeyStore keyStore = KeyStore.getInstance(keyStoreType);
+    FileInputStream fileInputStream = null;
+    if (fileWithPath != null) {
+      try {
+        fileInputStream = new FileInputStream(fileWithPath);
+      } catch (IOException ioe) {
+        //ioe.printStackTrace();
+        logger.warning("\n----\nCertificate not found: " + fileWithPath + "\n----");
+      }
+    }
+    keyStore.load(fileInputStream, passphrase);
+    keyManagerFactory.init(keyStore, passphrase);
+    return keyManagerFactory;
+  }
 
-	private String getTrustStoreFilePath(final String domain) {
-		String fileWithPath = Utils.concatPaths(Configuration.getCertsPath(), getCertsFileName(domain));
-		if ((new File(fileWithPath)).exists()) {
-			return fileWithPath;
-		}
-		if (!Configuration.autoCreateSSLCertificates()) {
-			return defaultFilePath;
-		}
-		String command = getSSLCommand(domain, fileWithPath, Configuration.getSSLPassword(), Configuration
-				.getKeytoolPath());
-		try {
-			executeCommand(command);
-			return fileWithPath;
-		} catch (Exception e) {
-			System.out.println("\n\n\n--------------------HTTPS/SSL START--------------------"
-					+ "\n\nSahi is trying to create a certificate for domain: \n" + domain
-					+ "\n\nIf you are unable to connect to this HTTPS site, do the following:"
-					+ "\nCheck on your filesystem to see if a file like " + "\n" + fileWithPath + "\nhas been created."
-					+ "\n\nIf not, then create it by running the command below on a command prompt."
-					+ "\nNote that you need 'keytool' to be in your path. "
-					+ "\nkeytool comes with the JDK by default and is present in <JAVA_HOME>/bin."
-					+ "\n\nOnce you create that file, SSL/HTTPS should work properly for that site."
-					+ "\n\n\n-------COMMAND START-------\n\n" + getPrintableSSLCommand(command)
-					+ "\n\n-------COMMAND END-------"
-					+ "\n\nThe files in certs can be copied over to other systems to make ssl/https work there."
-					+ "\n\n--------------------HTTPS/SSL END--------------------\n\n\n");
-			return fileWithPath;
-		}
-	}
+  private String getTrustStoreFilePath(final String domain) {
+    String fileWithPath = Utils.concatPaths(Configuration.getCertsPath(), getCertsFileName(domain));
+    if ((new File(fileWithPath)).exists()) {
+      return fileWithPath;
+    }
+    if (!Configuration.autoCreateSSLCertificates()) {
+      return defaultFilePath;
+    }
+    String command = getSSLCommand(domain, fileWithPath, Configuration.getSSLPassword(), Configuration
+      .getKeytoolPath());
+    try {
+      executeCommand(command);
+      return fileWithPath;
+    } catch (Exception e) {
+      System.out.println("\n\n\n--------------------HTTPS/SSL START--------------------"
+        + "\n\nSahi is trying to create a certificate for domain: \n" + domain
+        + "\n\nIf you are unable to connect to this HTTPS site, do the following:"
+        + "\nCheck on your filesystem to see if a file like " + "\n" + fileWithPath + "\nhas been created."
+        + "\n\nIf not, then create it by running the command below on a command prompt."
+        + "\nNote that you need 'keytool' to be in your path. "
+        + "\nkeytool comes with the JDK by default and is present in <JAVA_HOME>/bin."
+        + "\n\nOnce you create that file, SSL/HTTPS should work properly for that site."
+        + "\n\n\n-------COMMAND START-------\n\n" + getPrintableSSLCommand(command)
+        + "\n\n-------COMMAND END-------"
+        + "\n\nThe files in certs can be copied over to other systems to make ssl/https work there."
+        + "\n\n--------------------HTTPS/SSL END--------------------\n\n\n");
+      return fileWithPath;
+    }
+  }
 
-	private synchronized static void executeCommand(String command) throws Exception {
-		Utils.executeCommand(Utils.getCommandTokens(command));
-	}
+  private synchronized static void executeCommand(String command) throws Exception {
+    Utils.executeCommand(Utils.getCommandTokens(command));
+  }
 
-	private String getCertsFileName(final String domain) {
-		return domain.replace('.', '_');
-	}
-	
-	String getPrintableSSLCommand(final String command) {
-		return command.replace('\n', ' ').replaceAll("\r", "");
-	}
+  private String getCertsFileName(final String domain) {
+    return domain.replace('.', '_');
+  }
 
-	String getSSLCommand(final String domain, final String keyStoreFilePath, final String password, final String keytool) {
-		String contents = new String(Utils.readCachedFile(Configuration.getSSLCommandFile())).trim();
-		Properties props = new Properties();
-		props.put("domain", domain);
-		props.put("keystore", Utils.escapeDoubleQuotesAndBackSlashes(keyStoreFilePath));
-		props.put("password", password);
-		props.put("keytool", Utils.escapeDoubleQuotesAndBackSlashes(keytool));
-		String command = Utils.substitute(contents, props);
-		return command;
-	}
+  String getPrintableSSLCommand(final String command) {
+    return command.replace('\n', ' ').replaceAll("\r", "");
+  }
 
-	public static TrustManager[] getAllTrustingManager() {
-		TrustManager[] trustAllCerts = new TrustManager[] { new X509TrustManager() {
+  String getSSLCommand(final String domain, final String keyStoreFilePath, final String password, final String keytool) {
+    String contents = new String(Utils.readCachedFile(Configuration.getSSLCommandFile())).trim();
+    Properties props = new Properties();
+    props.put("domain", domain);
+    props.put("keystore", Utils.escapeDoubleQuotesAndBackSlashes(keyStoreFilePath));
+    props.put("password", password);
+    props.put("keytool", Utils.escapeDoubleQuotesAndBackSlashes(keytool));
+    String command = Utils.substitute(contents, props);
+    return command;
+  }
 
-			public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-				return null;
-			}
+  public static TrustManager[] getAllTrustingManager() {
+    TrustManager[] trustAllCerts = new TrustManager[]{new X509TrustManager() {
 
-			public void checkClientTrusted(java.security.cert.X509Certificate[] certs, String authType) {
-			}
+      public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+        return null;
+      }
 
-			public void checkServerTrusted(java.security.cert.X509Certificate[] certs, String authType) {
-			}
-		} };
-		return trustAllCerts;
-	}
+      public void checkClientTrusted(java.security.cert.X509Certificate[] certs, String authType) {
+      }
 
-	public Socket getSocket(final HttpRequest request, final InetAddress addr, final int port) throws IOException {
-		SSLSocketFactory sslFact = getSSLClientSocketFactory(addr.getHostName());
-		SSLSocket socket = (SSLSocket) sslFact.createSocket(addr, port);
-		socket.setUseClientMode(true);
-		socket.setEnabledCipherSuites(socket.getSupportedCipherSuites());
-		return socket;
-	}
+      public void checkServerTrusted(java.security.cert.X509Certificate[] certs, String authType) {
+      }
+    }};
+    return trustAllCerts;
+  }
 
-	public SSLSocket convertToSecureSocket(final Socket plainSocket, final String domain) {
-		try {
-			return (SSLSocket) getSSLClientSocketFactory(domain).createSocket(plainSocket,
-					plainSocket.getInetAddress().getHostName(), plainSocket.getPort(), true);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
+  public Socket getSocket(final HttpRequest request, final InetAddress addr, final int port) throws IOException {
+    SSLSocketFactory sslFact = getSSLClientSocketFactory(addr.getHostName());
+    SSLSocket socket = (SSLSocket) sslFact.createSocket(addr, port);
+    socket.setUseClientMode(true);
+    socket.setEnabledCipherSuites(socket.getSupportedCipherSuites());
+    return socket;
+  }
 
-	public SSLSocket convertToSecureServerSocket(final Socket socket, final String domain) {
-		SSLSocket sslSocket = convertToSecureSocket(socket, domain);
-		sslSocket.setUseClientMode(false);
-		return sslSocket;
-	}
+  public SSLSocket convertToSecureSocket(final Socket plainSocket, final String domain) {
+    try {
+      return (SSLSocket) getSSLClientSocketFactory(domain).createSocket(plainSocket,
+        plainSocket.getInetAddress().getHostName(), plainSocket.getPort(), true);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    return null;
+  }
+
+  public SSLSocket convertToSecureServerSocket(final Socket socket, final String domain) {
+    SSLSocket sslSocket = convertToSecureSocket(socket, domain);
+    sslSocket.setUseClientMode(false);
+    return sslSocket;
+  }
 }

@@ -1,6 +1,6 @@
 /**
  * @author dlewis
- * 
+ *
  */
 package net.sf.sahi.report;
 
@@ -8,15 +8,15 @@ import java.util.List;
 
 /**
  * Sahi - Web Automation and Test Tool
- * 
+ * <p/>
  * Copyright  2006  V Narayan Raman
- *
+ * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -27,23 +27,23 @@ import java.util.List;
 
 public interface Formatter {
 
-    String getFileName(String scriptName);
+  String getFileName(String scriptName);
 
-    String getHeader();
+  String getHeader();
 
-    String getResultData(List<TestResult> listResult);
+  String getResultData(List<TestResult> listResult);
 
-    String getSummaryHeader();
+  String getSummaryHeader();
 
-    String getSummaryData(TestSummary summary);
+  String getSummaryData(TestSummary summary);
 
-    String getSummaryFooter();
+  String getSummaryFooter();
 
-    String getStartScript();
+  String getStartScript();
 
-    String getStopScript();
+  String getStopScript();
 
-    String getFooter();
+  String getFooter();
 
-    String getSuiteLogFileName();
+  String getSuiteLogFileName();
 }

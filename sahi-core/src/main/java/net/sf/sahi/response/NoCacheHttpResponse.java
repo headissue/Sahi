@@ -29,48 +29,49 @@ import net.sf.sahi.util.Utils;
  */
 public class NoCacheHttpResponse extends HttpResponse {
 
-    private static final Logger logger = Logger.getLogger("net.sf.sahi.response.NoCacheHttpResponse");
-    private int status = 200;
-    private String statusMessage = "OK";
+  private static final Logger logger = Logger.getLogger("net.sf.sahi.response.NoCacheHttpResponse");
+  private int status = 200;
+  private String statusMessage = "OK";
 
-    public NoCacheHttpResponse() {
-        this("");
-    }
+  public NoCacheHttpResponse() {
+    this("");
+  }
 
-    public NoCacheHttpResponse(final String dataStr) {
-        setNoCacheHeaders(Utils.getBytes(dataStr));
-    }
+  public NoCacheHttpResponse(final String dataStr) {
+    setNoCacheHeaders(Utils.getBytes(dataStr));
+  }
 
-    public NoCacheHttpResponse(final int status, final String statusMessage, final String dataStr) {
-        this.status = status;
-        if (status != 200) {
-            this.statusMessage = "";
-        }
-        this.statusMessage = statusMessage == null ? "" : statusMessage;
-        setNoCacheHeaders(Utils.getBytes(dataStr));
+  public NoCacheHttpResponse(final int status, final String statusMessage, final String dataStr) {
+    this.status = status;
+    if (status != 200) {
+      this.statusMessage = "";
     }
+    this.statusMessage = statusMessage == null ? "" : statusMessage;
+    setNoCacheHeaders(Utils.getBytes(dataStr));
+  }
 
-    protected void setNoCacheHeaders(final byte[] data) {
-    	setNoCacheHeaders(data, null);
-    }
-    protected void setNoCacheHeaders(final byte[] data, String contentType) {
-        setData(data);
-        setFirstLine("HTTP/1.1 " + status + " " + statusMessage);
-        if (contentType == null)
-        	setHeader("Content-Type", "text/html");
-        else
-        	setHeader("Content-Type", contentType);
-        setHeader("Cache-control", "no-store");
-        setHeader("Pragma", "no-cache");
-        setHeader("Expires", "-1");
-        setHeader("Content-Length", "" + data().length);
-        resetRawHeaders();
-		if (logger.isLoggable(Level.FINEST)){
-			logger.finest(new String(rawHeaders()));
-		}
-    }
+  protected void setNoCacheHeaders(final byte[] data) {
+    setNoCacheHeaders(data, null);
+  }
 
-    public NoCacheHttpResponse(final HttpResponse httpResponse) {
-        setNoCacheHeaders(httpResponse.data(), httpResponse.contentTypeHeader());
+  protected void setNoCacheHeaders(final byte[] data, String contentType) {
+    setData(data);
+    setFirstLine("HTTP/1.1 " + status + " " + statusMessage);
+    if (contentType == null)
+      setHeader("Content-Type", "text/html");
+    else
+      setHeader("Content-Type", contentType);
+    setHeader("Cache-control", "no-store");
+    setHeader("Pragma", "no-cache");
+    setHeader("Expires", "-1");
+    setHeader("Content-Length", "" + data().length);
+    resetRawHeaders();
+    if (logger.isLoggable(Level.FINEST)) {
+      logger.finest(new String(rawHeaders()));
     }
+  }
+
+  public NoCacheHttpResponse(final HttpResponse httpResponse) {
+    setNoCacheHeaders(httpResponse.data(), httpResponse.contentTypeHeader());
+  }
 }

@@ -1,6 +1,6 @@
 /**
  * Sahi - Web Automation and Test Tool
- * 
+ *
  * Copyright  2006  V Narayan Raman
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,21 +18,21 @@
 package net.sf.sahi.util;
 
 public class FileNotFoundRuntimeException extends RuntimeException {
-	private static final long serialVersionUID = -6600876695622201125L;
+  private static final long serialVersionUID = -6600876695622201125L;
 
-	public FileNotFoundRuntimeException() {
-        super();
-    }
+  public FileNotFoundRuntimeException() {
+    super();
+  }
 
-    public FileNotFoundRuntimeException(String arg0, Throwable arg1) {
-        super(arg0, arg1);
-    }
+  public FileNotFoundRuntimeException(String arg0, Throwable arg1) {
+    super(arg0, arg1);
+  }
 
-    public FileNotFoundRuntimeException(String arg0) {
-        super(arg0);
-    }
+  public FileNotFoundRuntimeException(String arg0) {
+    super(arg0);
+  }
 
-    public FileNotFoundRuntimeException(Throwable arg0) {
-        super(arg0);
-    }
+  public FileNotFoundRuntimeException(Throwable arg0) {
+    super(arg0);
+  }
 }

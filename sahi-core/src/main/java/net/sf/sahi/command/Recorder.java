@@ -1,6 +1,6 @@
 /**
  * Sahi - Web Automation and Test Tool
- * 
+ *
  * Copyright  2006  V Narayan Raman
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,34 +23,34 @@ import net.sf.sahi.util.Utils;
 
 public class Recorder {
 
-    public void start(final HttpRequest request) {
-        startRecorder(request);
-    }
+  public void start(final HttpRequest request) {
+    startRecorder(request);
+  }
 
-    public void record(final HttpRequest request) {
-    	Session session = request.session();
-		if (session.isRecording())
-    		session.getRecorder().record(request.getParameter("step"));
-    }
+  public void record(final HttpRequest request) {
+    Session session = request.session();
+    if (session.isRecording())
+      session.getRecorder().record(request.getParameter("step"));
+  }
 
-    public void stop(final HttpRequest request) {
-    	Session session = request.session();
-    	if (session.isRecording())
-    		session.getRecorder().stop();
-    	session.setIsRecording(false);
-    }
+  public void stop(final HttpRequest request) {
+    Session session = request.session();
+    if (session.isRecording())
+      session.getRecorder().stop();
+    session.setIsRecording(false);
+  }
 
-    private void startRecorder(final HttpRequest request) {
-        Session session = request.session();
-        String dir = request.getParameter("dir");
-        String fileName = request.getParameter("file");
-        if (fileName.indexOf(".") == -1) {
-            fileName = fileName + ".sah";
-        }
-        net.sf.sahi.record.Recorder recorder = session.getRecorder();
-        recorder.setDir(dir);
-        recorder.start(Utils.concatPaths(dir, fileName));
-        session.setIsRecording(true);
+  private void startRecorder(final HttpRequest request) {
+    Session session = request.session();
+    String dir = request.getParameter("dir");
+    String fileName = request.getParameter("file");
+    if (fileName.indexOf(".") == -1) {
+      fileName = fileName + ".sah";
+    }
+    net.sf.sahi.record.Recorder recorder = session.getRecorder();
+    recorder.setDir(dir);
+    recorder.start(Utils.concatPaths(dir, fileName));
+    session.setIsRecording(true);
 //        session.setVariable("sahi_record", "1");
-    }
+  }
 }

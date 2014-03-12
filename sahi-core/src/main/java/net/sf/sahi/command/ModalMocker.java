@@ -1,6 +1,6 @@
 /**
  * Sahi - Web Automation and Test Tool
- * 
+ *
  * Copyright  2006  V Narayan Raman
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -26,23 +26,23 @@ import net.sf.sahi.response.HttpResponse;
 
 public class ModalMocker {
 
-    public HttpResponse alert(final HttpRequest requestFromBrowser) {
-        return proxyAlertResponse(requestFromBrowser.getParameter("msg"));
-    }
+  public HttpResponse alert(final HttpRequest requestFromBrowser) {
+    return proxyAlertResponse(requestFromBrowser.getParameter("msg"));
+  }
 
-    public HttpResponse confirm(final HttpRequest requestFromBrowser) {
-        return proxyConfirmResponse(requestFromBrowser.getParameter("msg"));
-    }
+  public HttpResponse confirm(final HttpRequest requestFromBrowser) {
+    return proxyConfirmResponse(requestFromBrowser.getParameter("msg"));
+  }
 
-    private HttpFileResponse proxyAlertResponse(final String msg) {
-        Properties props = new Properties();
-        props.setProperty("msg", msg);
-        return new HttpFileResponse(Configuration.getHtdocsRoot() + "spr/alert.htm", props, false, true);
-    }
+  private HttpFileResponse proxyAlertResponse(final String msg) {
+    Properties props = new Properties();
+    props.setProperty("msg", msg);
+    return new HttpFileResponse(Configuration.getHtdocsRoot() + "spr/alert.htm", props, false, true);
+  }
 
-    private HttpFileResponse proxyConfirmResponse(final String msg) {
-        Properties props = new Properties();
-        props.setProperty("msg", msg);
-        return new HttpFileResponse(Configuration.getHtdocsRoot() + "spr/confirm.htm", props, false, true);
-    }
+  private HttpFileResponse proxyConfirmResponse(final String msg) {
+    Properties props = new Properties();
+    props.setProperty("msg", msg);
+    return new HttpFileResponse(Configuration.getHtdocsRoot() + "spr/confirm.htm", props, false, true);
+  }
 }

@@ -1,6 +1,6 @@
 /**
  * Sahi - Web Automation and Test Tool
- * 
+ *
  * Copyright  2006  V Narayan Raman
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,31 +25,31 @@ import java.net.MalformedURLException;
 
 public class URLScript extends SahiScript {
 
-    public URLScript(final String url) {
-        super(url, new ArrayList<String>(), url);
-    }
+  public URLScript(final String url) {
+    super(url, new ArrayList<String>(), url);
+  }
 
-    public URLScript(final String url, final ArrayList<String> parents) {
-        super(url, parents, url);
-    }
+  public URLScript(final String url, final ArrayList<String> parents) {
+    super(url, parents, url);
+  }
 
-    protected void loadScript(final String url) {
-        setScript(new String(Utils.readURL(url)));
-    }
+  protected void loadScript(final String url) {
+    setScript(new String(Utils.readURL(url)));
+  }
 
-    String getFQN(final String scriptName) {
-        try {
-            return new URL(new URL(path), scriptName).toString();
-        } catch (MalformedURLException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
-        return null;
+  String getFQN(final String scriptName) {
+    try {
+      return new URL(new URL(path), scriptName).toString();
+    } catch (MalformedURLException e) {
+      e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
     }
+    return null;
+  }
 
-    SahiScript getNewInstance(final String scriptName, final ArrayList<String> parents) {
-        String script = getFQN(scriptName);
-        URLScript urlScript = new URLScript(script, parents);
-        urlScript.parents = parents;
-        return urlScript;
-    }
+  SahiScript getNewInstance(final String scriptName, final ArrayList<String> parents) {
+    String script = getFQN(scriptName);
+    URLScript urlScript = new URLScript(script, parents);
+    urlScript.parents = parents;
+    return urlScript;
+  }
 }
