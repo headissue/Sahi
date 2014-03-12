@@ -1,40 +1,5 @@
 package net.sf.sahi.ui;
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Cursor;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.swing.AbstractButton;
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.SwingConstants;
-import javax.swing.UIManager;
-import javax.swing.border.Border;
-import javax.swing.border.CompoundBorder;
-import javax.swing.border.EtchedBorder;
-
 import net.sf.sahi.Proxy;
 import net.sf.sahi.config.Configuration;
 import net.sf.sahi.test.BrowserLauncher;
@@ -42,6 +7,19 @@ import net.sf.sahi.util.BrowserType;
 import net.sf.sahi.util.BrowserTypesLoader;
 import net.sf.sahi.util.ProxySwitcher;
 import net.sf.sahi.util.Utils;
+
+import javax.swing.*;
+import javax.swing.border.Border;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.EtchedBorder;
+import java.awt.*;
+import java.awt.event.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Dashboard exposes various Sahi components from a convenient place.
@@ -226,7 +204,7 @@ public class Dashboard extends JFrame {
 
 	private byte[] getImageBytes(String iconFile) {
 		try {
-			final InputStream resourceAsStream = Dashboard.class.getResourceAsStream("/net/sf/sahi/resources/" + iconFile);
+      final InputStream resourceAsStream = Dashboard.class.getResourceAsStream(iconFile);
 			return Utils.getBytes(resourceAsStream);
 		} catch (IOException e) {
 			e.printStackTrace();
