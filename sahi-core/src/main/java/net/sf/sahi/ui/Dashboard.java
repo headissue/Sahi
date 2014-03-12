@@ -204,7 +204,7 @@ public class Dashboard extends JFrame {
 
 	private byte[] getImageBytes(String iconFile) {
 		try {
-      final InputStream resourceAsStream = Dashboard.class.getResourceAsStream(iconFile);
+      final InputStream resourceAsStream = this.getClass().getResourceAsStream(iconFile);
 			return Utils.getBytes(resourceAsStream);
 		} catch (IOException e) {
 			e.printStackTrace();
