@@ -14,7 +14,7 @@
 		<displayName>Chrome</displayName>
 		<icon>chrome.png</icon>
 		<path>/usr/bin/google-chrome-stable</path>
-		<options>--user-data-dir=$userDir/browser/chrome/profiles/sahi$threadNo --proxy-server=localhost:9999 --disable-popup-blocking</options>  
+		<options>--user-data-dir=$userDir/browser/chrome/profiles/sahi$threadNo --proxy-server=localhost:9999 --disable-popup-blocking --no-first-run</options>
 		<processName>chrome</processName> 
 		<capacity>5</capacity>  
 	</browserType>	
