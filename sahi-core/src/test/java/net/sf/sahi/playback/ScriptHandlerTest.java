@@ -34,11 +34,11 @@ public class ScriptHandlerTest {
 
   private SahiScript script;
 
-    @Before
-    public void setup() {
-      Configuration.init();
-      script = new MockFileScript("fileName");
-    }
+  @Before
+  public void setup() {
+    Configuration.init();
+    script = new MockFileScript("fileName");
+  }
 
 
   @Test

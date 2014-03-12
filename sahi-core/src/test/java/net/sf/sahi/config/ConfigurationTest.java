@@ -24,7 +24,7 @@ import static org.junit.Assert.assertEquals;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-public class ConfigurationTest{
+public class ConfigurationTest {
   private String basePath;
   private String userDataDirectory;
 

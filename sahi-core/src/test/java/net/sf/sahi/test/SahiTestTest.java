@@ -22,7 +22,7 @@ import java.io.IOException;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-public class SahiTestTest  {
+public class SahiTestTest {
 
   @Test
   @Ignore("This may not be a UnitTest. Seems more like it should run in an Integrationtest phase")

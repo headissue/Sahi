@@ -26,7 +26,7 @@ import static org.junit.Assert.assertTrue;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-public class URLParserTest{
+public class URLParserTest {
   final String uri = "/_s_/dyn/Log_highlight/sahi_demo_include.sah?n=2";
 
   @Before
@@ -36,7 +36,7 @@ public class URLParserTest{
 
   @Test
   public void xtestScriptFileNamefromURI() {
-    assertEquals( Configuration.getUserDataDir() + "/scripts/sahi_demo_include.sah", URLParser.scriptFileNamefromURI(uri, "/Log_highlight/"));
+    assertEquals(Configuration.getUserDataDir() + "/scripts/sahi_demo_include.sah", URLParser.scriptFileNamefromURI(uri, "/Log_highlight/"));
   }
 
   @Test
