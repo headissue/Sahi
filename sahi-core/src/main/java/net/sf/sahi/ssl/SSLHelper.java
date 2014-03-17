@@ -17,62 +17,156 @@
  */
 package net.sf.sahi.ssl;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.Socket;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
-import java.security.UnrecoverableKeyException;
-import java.security.cert.CertificateException;
-import java.util.HashMap;
-import java.util.Properties;
-import java.util.logging.Logger;
-
-import javax.net.ssl.KeyManagerFactory;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSocket;
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
-
 import net.sf.sahi.config.Configuration;
 import net.sf.sahi.request.HttpRequest;
 import net.sf.sahi.util.Utils;
+import org.bouncycastle.asn1.ASN1Sequence;
+import org.bouncycastle.asn1.x500.X500Name;
+import org.bouncycastle.asn1.x500.X500NameBuilder;
+import org.bouncycastle.asn1.x500.style.BCStyle;
+import org.bouncycastle.asn1.x509.BasicConstraints;
+import org.bouncycastle.asn1.x509.Extension;
+import org.bouncycastle.asn1.x509.SubjectPublicKeyInfo;
+import org.bouncycastle.cert.CertIOException;
+import org.bouncycastle.cert.X509v3CertificateBuilder;
+import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.bouncycastle.openssl.PEMWriter;
+import org.bouncycastle.operator.ContentSigner;
+import org.bouncycastle.operator.OperatorCreationException;
+import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
+
+import javax.net.ssl.*;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.math.BigInteger;
+import java.net.InetAddress;
+import java.net.Socket;
+import java.security.*;
+import java.security.cert.CertificateEncodingException;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.logging.Logger;
 
 public class SSLHelper {
+
+  private static final SSLHelper instance = new SSLHelper();
+
+  private KeyStore keystore;
+  private KeyPair keyPair;
+  private final Provider bouncyCastleProvider = new BouncyCastleProvider();
+  private final String keystorePassword = Configuration.getSSLPassword();
+  private final String rootCAHost = Configuration.getCommonDomain();
+  private X509Certificate rootCA;
+
   private static final Logger logger = Logger.getLogger("net.sf.sahi.ssl.SSLHelper");
-  private String defaultFilePath = Utils.concatPaths(Configuration.getCertsPath(), "sahi_example_com");
-  static HashMap<String, SSLSocketFactory> sslSocketFactories = new HashMap<String, SSLSocketFactory>();
+  static HashMap<String, SSLSocketFactory> sslSocketFactories = new HashMap<>();
+  public final String rootCAPath = Configuration.getRootCaPath();
+
+  public static SSLHelper getInstance() {
+    return instance;
+  }
 
   private SSLSocketFactory getSSLClientSocketFactory(String domain) throws IOException {
     if (domain == null) {
       domain = Configuration.getCommonDomain();
     }
-    if (!sslSocketFactories.containsKey(domain)) {
-      String sslPassword = Configuration.getSSLPassword();
-      String fileWithPath = getTrustStoreFilePath(domain);
-      final SSLSocketFactory socketFactory = createSocketFactory(fileWithPath, sslPassword);
+   if (!sslSocketFactories.containsKey(domain)) {
+      putKeyInKeyStore(domain);
+      final SSLSocketFactory socketFactory = createSocketFactory();
       if (socketFactory != null) {
         sslSocketFactories.put(domain, socketFactory);
       }
     }
-    return (SSLSocketFactory) sslSocketFactories.get(domain);
+    return sslSocketFactories.get(domain);
   }
 
-  private SSLSocketFactory createSocketFactory(final String fileWithPath, final String password) {
-    SSLSocketFactory factory = null;
+  public void checkRootCA() {
+    if (!new File(rootCAPath).exists()) {
+      System.out.println("rootCA missing, createing new one in " + rootCAPath);
+      try {
+        createKeystore();
+        createRootCA();
+        addCertToKeystore(rootCA, rootCAHost);
+        writeCertificateToFile(rootCAPath, rootCA);
+        System.out.println("Created new root CA in " + rootCAPath);
+      } catch (Exception e) {
+        throw new RuntimeException(e);
+      }
+    }
+  }
+
+  public KeyStore getKeyStore() {
+    return keystore;
+  }
+
+  /**
+   * Wrapper for the key manager to select the correct server key within a single
+   * key store.
+   *
+   * @author Jens Wilke
+   */
+  public static class X509KeyMangerWrapper implements X509KeyManager {
+
+    X509KeyManager wrapped;
+    String domain;
+
+    public X509KeyMangerWrapper(X509KeyManager wrapped, String domain) {
+      this.wrapped = wrapped;
+      this.domain = domain;
+    }
+
+    public String[] getClientAliases(String s, Principal[] principals) {
+      return wrapped.getClientAliases(s, principals);
+    }
+
+    public String chooseClientAlias(String[] strings, Principal[] principals, Socket socket) {
+      return wrapped.chooseClientAlias(strings, principals, socket);
+    }
+
+    public String[] getServerAliases(String s, Principal[] principals) {
+      return wrapped.getServerAliases(s, principals);
+    }
+
+    /**
+     * the socket factory calls this through the ssl context
+     * first with EC_EC and then with RSA. The normal key store implementation
+     * returns the last certificate. Return the CN for the domain we want to
+     * connect. This certificate and key is also existing in the keystore.
+     */
+    public String chooseServerAlias(String s, Principal[] principals, Socket socket) {
+      return domain;
+    }
+
+    public X509Certificate[] getCertificateChain(String s) {
+      return wrapped.getCertificateChain(s);
+    }
+
+    public PrivateKey getPrivateKey(String s) {
+      return wrapped.getPrivateKey(s);
+    }
+  }
+
+  KeyManager[] wrapKeyManagers(KeyManager[] kma, String domain) {
+    KeyManager[] kma2 = new KeyManager[kma.length];
+    for (int i = 0; i < kma2.length; i++) {
+      kma2[i] = new X509KeyMangerWrapper((X509KeyManager) kma[i], domain);
+    }
+    return kma2;
+  }
+
+  private SSLSocketFactory createSocketFactory() {
+    SSLSocketFactory factory;
     try {
-      KeyManagerFactory keyManagerFactory = getKeyManagerFactory(fileWithPath, password, "JKS");
+      KeyManagerFactory keyManagerFactory = getKeyManagerFactory();
 
       SSLContext sslContext = SSLContext.getInstance("SSLv3");
-      sslContext.init(keyManagerFactory.getKeyManagers(), getAllTrustingManager(), new SecureRandom());
+      KeyManager[] keyManagers = keyManagerFactory.getKeyManagers();
+      sslContext.init(keyManagers, getAllTrustingManager(), new SecureRandom());
       factory = sslContext.getSocketFactory();
-
       return factory;
     } catch (Exception e) {
       e.printStackTrace();
@@ -80,98 +174,163 @@ public class SSLHelper {
     return (SSLSocketFactory) SSLSocketFactory.getDefault();
   }
 
-  public static KeyManagerFactory getKeyManagerFactoryForRemoteFetch() throws UnrecoverableKeyException, NoSuchAlgorithmException,
-    KeyStoreException, FileNotFoundException, CertificateException, IOException {
+  public KeyManagerFactory getKeyManagerFactoryForRemoteFetch() throws UnrecoverableKeyException, NoSuchAlgorithmException,
+    KeyStoreException, CertificateException, IOException {
     String fileWithPath = Configuration.getSSLClientCertPath();
     logger.info(fileWithPath == null ? "No SSL Client Cert specified" : ("\n----\nSSL Client Cert Path = " + fileWithPath + "\n----"));
-    String password = Configuration.getSSLClientCertPassword();
-    return getKeyManagerFactory(fileWithPath, password, Configuration.getSSLClientKeyStoreType());
+    return getKeyManagerFactory();
   }
 
-  public static KeyManagerFactory getKeyManagerFactory(final String fileWithPath, final String password, String keyStoreType)
-    throws NoSuchAlgorithmException, KeyStoreException, FileNotFoundException, IOException,
+  public KeyManagerFactory getKeyManagerFactory()
+    throws NoSuchAlgorithmException, KeyStoreException, IOException,
     CertificateException, UnrecoverableKeyException {
-    char[] passphrase = password == null ? null : password.toCharArray();
+    char[] passphrase = keystorePassword == null ? null : keystorePassword.toCharArray();
     KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance(Configuration.getSSLAlgorithm());
-    KeyStore keyStore = KeyStore.getInstance(keyStoreType);
-    FileInputStream fileInputStream = null;
-    if (fileWithPath != null) {
-      try {
-        fileInputStream = new FileInputStream(fileWithPath);
-      } catch (IOException ioe) {
-        //ioe.printStackTrace();
-        logger.warning("\n----\nCertificate not found: " + fileWithPath + "\n----");
-      }
-    }
-    keyStore.load(fileInputStream, passphrase);
-    keyManagerFactory.init(keyStore, passphrase);
+
+    keyManagerFactory.init(keystore, passphrase);
     return keyManagerFactory;
   }
 
-  private String getTrustStoreFilePath(final String domain) {
-    String fileWithPath = Utils.concatPaths(Configuration.getCertsPath(), getCertsFileName(domain));
-    if ((new File(fileWithPath)).exists()) {
-      return fileWithPath;
+
+  // TODO replace with java keystore object
+  private void putKeyInKeyStore(final String domain) {
+    // get or create keystore
+    if (keystore == null) {
+      checkRootCA();
+      // has private key for domain
     }
-    if (!Configuration.autoCreateSSLCertificates()) {
-      return defaultFilePath;
-    }
-    String command = getSSLCommand(domain, fileWithPath, Configuration.getSSLPassword(), Configuration
-      .getKeytoolPath());
+    PrivateKey key = null;
     try {
-      executeCommand(command);
-      return fileWithPath;
-    } catch (Exception e) {
-      System.out.println("\n\n\n--------------------HTTPS/SSL START--------------------"
-        + "\n\nSahi is trying to create a certificate for domain: \n" + domain
-        + "\n\nIf you are unable to connect to this HTTPS site, do the following:"
-        + "\nCheck on your filesystem to see if a file like " + "\n" + fileWithPath + "\nhas been created."
-        + "\n\nIf not, then create it by running the command below on a command prompt."
-        + "\nNote that you need 'keytool' to be in your path. "
-        + "\nkeytool comes with the JDK by default and is present in <JAVA_HOME>/bin."
-        + "\n\nOnce you create that file, SSL/HTTPS should work properly for that site."
-        + "\n\n\n-------COMMAND START-------\n\n" + getPrintableSSLCommand(command)
-        + "\n\n-------COMMAND END-------"
-        + "\n\nThe files in certs can be copied over to other systems to make ssl/https work there."
-        + "\n\n--------------------HTTPS/SSL END--------------------\n\n\n");
-      return fileWithPath;
+      key = (PrivateKey) keystore.getKey(domain, keystorePassword.toCharArray());
+    } catch (KeyStoreException e) {
+      throw new RuntimeException(e);
+    } catch (NoSuchAlgorithmException e) {
+      throw new RuntimeException(e);
+    } catch (UnrecoverableKeyException e) {
+      throw new RuntimeException(e);
     }
+    if (key == null) {
+      System.err.println("Generate key for: " + domain);
+
+      newKeyPair();
+      X509Certificate _cert = null;
+      try {
+        _cert = createCert(domain, false);
+      } catch (CertificateException e) {
+        throw new RuntimeException(e);
+      } catch (OperatorCreationException e) {
+        throw new RuntimeException(e);
+      }
+      try {
+        addCertToKeystore(_cert, domain);
+      } catch (KeyStoreException e) {
+        throw new RuntimeException(e);
+      }
+    }
+    // no, create one
+  }
+
+  private void createKeystore() throws Exception {
+
+    Security.addProvider(new BouncyCastleProvider());
+    keystore = KeyStore.getInstance(Configuration.getSSLClientKeyStoreType(), bouncyCastleProvider);
+    newKeyPair();
+    keystore.load(null, keystorePassword.toCharArray());
+  }
+
+  private void newKeyPair() {
+    KeyPairGenerator keyPairGenerator = null;
+    try {
+      keyPairGenerator = KeyPairGenerator.getInstance("RSA", bouncyCastleProvider.getName());
+    } catch (NoSuchAlgorithmException e) {
+      throw new RuntimeException(e);
+    } catch (NoSuchProviderException e) {
+      throw new RuntimeException(e);
+    }
+    keyPairGenerator.initialize(2048, new SecureRandom());
+    keyPair = keyPairGenerator.generateKeyPair();
+  }
+
+  private X500Name buildIssuer(String domain) {
+    X500NameBuilder builder = new X500NameBuilder(BCStyle.INSTANCE);
+    builder.addRDN(BCStyle.OU, "infrastructure");
+    builder.addRDN(BCStyle.O, "headissue GmbH");
+    builder.addRDN(BCStyle.CN, domain);
+    builder.addRDN(BCStyle.L, "Munich");
+    builder.addRDN(BCStyle.ST, "Bavaria");
+    builder.addRDN(BCStyle.C, "DE");
+    return builder.build();
+  }
+
+  public void writeCertificateToFile(String target, X509Certificate cert) throws IOException, CertificateEncodingException {
+
+    PEMWriter writer = new PEMWriter(new FileWriter(target));
+    writer.writeObject(cert);
+    writer.flush();
+    writer.close();
+
+ /*   final FileOutputStream os = new FileOutputStream(target);
+    os.write("-----BEGIN CERTIFICATE-----\n".getBytes("US-ASCII"));
+    os.write(Base64.encode(cert.getEncoded()));
+    os.write("-----END CERTIFICATE-----\n".getBytes("US-ASCII"));
+    os.close(); */
+  }
+
+  /**
+   * We need a root CA to add to the browser under which all certificates will be trusted.
+   *
+   * @throws Exception
+   */
+  private void createRootCA() throws CertificateException, OperatorCreationException {
+    rootCA = createCert(rootCAHost, true);
+  }
+
+  public X509Certificate createCert(String domain, boolean isRoot) throws CertificateException, OperatorCreationException {
+    X500Name issuer = buildIssuer(domain);
+    Date startDate = new Date();
+    long aYear = 1000 * 60 * 24 * 365;
+    Date expiryDate = new Date(startDate.getTime() + aYear);
+    SubjectPublicKeyInfo subjectPublicKeyInfo = getSubjectPublicKeyInfo();
+    X509v3CertificateBuilder certificateBuilder = new X509v3CertificateBuilder(issuer, BigInteger.valueOf(1), new Date(), expiryDate, issuer, subjectPublicKeyInfo);
+    if (isRoot) {
+      try {
+        certificateBuilder.addExtension(Extension.basicConstraints, true, new BasicConstraints(true));
+      } catch (CertIOException e) {
+        throw new RuntimeException(e);
+      }
+    }
+
+    ContentSigner signer = new JcaContentSignerBuilder("SHA256WithRSAEncryption").setProvider(bouncyCastleProvider).build(keyPair.getPrivate());
+
+    return new JcaX509CertificateConverter().setProvider(bouncyCastleProvider)
+      .getCertificate(certificateBuilder.build(signer));
+  }
+
+  private void addCertToKeystore(X509Certificate _cert, String domain) throws KeyStoreException {
+    keystore.setKeyEntry(domain, keyPair.getPrivate(), keystorePassword.toCharArray(), new java.security.cert.Certificate[]{_cert});
+  }
+
+  private SubjectPublicKeyInfo getSubjectPublicKeyInfo() {
+    byte[] encodedPublicKey = keyPair.getPublic().getEncoded();
+    return new SubjectPublicKeyInfo(
+      ASN1Sequence.getInstance(encodedPublicKey));
   }
 
   private synchronized static void executeCommand(String command) throws Exception {
     Utils.executeCommand(Utils.getCommandTokens(command));
   }
 
-  private String getCertsFileName(final String domain) {
-    return domain.replace('.', '_');
-  }
-
-  String getPrintableSSLCommand(final String command) {
-    return command.replace('\n', ' ').replaceAll("\r", "");
-  }
-
-  String getSSLCommand(final String domain, final String keyStoreFilePath, final String password, final String keytool) {
-    String contents = new String(Utils.readCachedFile(Configuration.getSSLCommandFile())).trim();
-    Properties props = new Properties();
-    props.put("domain", domain);
-    props.put("keystore", Utils.escapeDoubleQuotesAndBackSlashes(keyStoreFilePath));
-    props.put("password", password);
-    props.put("keytool", Utils.escapeDoubleQuotesAndBackSlashes(keytool));
-    String command = Utils.substitute(contents, props);
-    return command;
-  }
-
   public static TrustManager[] getAllTrustingManager() {
     TrustManager[] trustAllCerts = new TrustManager[]{new X509TrustManager() {
 
-      public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+      public X509Certificate[] getAcceptedIssuers() {
         return null;
       }
 
-      public void checkClientTrusted(java.security.cert.X509Certificate[] certs, String authType) {
+      public void checkClientTrusted(X509Certificate[] certs, String authType) {
       }
 
-      public void checkServerTrusted(java.security.cert.X509Certificate[] certs, String authType) {
+      public void checkServerTrusted(X509Certificate[] certs, String authType) {
       }
     }};
     return trustAllCerts;

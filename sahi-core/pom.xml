@@ -44,6 +44,12 @@
             <artifactId>rhino</artifactId>
             <version>1.7R4</version>
         </dependency>
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcpkix-jdk15on</artifactId>
+            <version>1.50</version>
+        </dependency>
+
     </dependencies>
     <build>
         <plugins>

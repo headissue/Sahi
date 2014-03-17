@@ -31,6 +31,8 @@ import net.sf.sahi.response.SimpleHttpResponse;
 import net.sf.sahi.util.URLParser;
 
 public class LocalRequestProcessor {
+
+  // FIXME there has to be a better way to do this, this does not scale well and is hard to maintain
   public HttpResponse getLocalResponse(String uri, HttpRequest requestFromBrowser) throws Exception {
     HttpResponse httpResponse = new NoCacheHttpResponse("");
     if (uri.indexOf("/dyn/pro/") != -1) {
@@ -50,6 +52,8 @@ public class LocalRequestProcessor {
       httpResponse = new HttpModifiedResponse2(new HttpFileResponse(fileName, null, true, true), requestFromBrowser.isSSL(), requestFromBrowser.fileExtension());
     } else if (uri.indexOf("/logs") != -1) {
       httpResponse = new NoCacheHttpResponse(LogViewer.getLogsList(Configuration.getPlayBackLogsRoot()));
+    } else if (uri.indexOf("/userdata") != -1) {
+      httpResponse = new HttpFileResponse(Configuration.getRootCaPath());
     } else {
       httpResponse = new HttpFileResponse(Configuration.getHtdocsRoot() + "/spr/launch.htm");
     }

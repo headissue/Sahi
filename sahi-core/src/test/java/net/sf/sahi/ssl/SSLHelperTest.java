@@ -3,10 +3,14 @@ package net.sf.sahi.ssl;
 import net.sf.sahi.config.Configuration;
 import net.sf.sahi.util.Utils;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
+import java.io.File;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.cert.X509Certificate;
+
+import static org.junit.Assert.assertTrue;
 
 /**
  * Sahi - Web Automation and Test Tool
@@ -30,13 +34,10 @@ public class SSLHelperTest {
   @Before
   public void setup() {
     Configuration.init();
-  }
-
-  @Test
-  @Ignore("FIXME")
-  public void xtestSSLCommand() {
-    SSLHelper helper = new SSLHelper();
-    assertEquals("keytool.exe -genkey -alias www.sahi.co.in -keypass pwd -storepass pwd -keyalg RSA -keystore filekarasta -dname \"CN=www.sahi.co.in, OU=Sahi, O=Sahi, L=Bangalore, S=Karnataka, C=IN\"", helper.getPrintableSSLCommand(helper.getSSLCommand("www.sahi.co.in", "filekarasta", "pwd", "keytool.exe")).trim());
+    try {
+      new File(SSLHelper.getInstance().rootCAPath).delete();
+    } catch (Exception e) {
+    }
   }
 
   @Test
@@ -48,4 +49,20 @@ public class SSLHelperTest {
     }
   }
 
+  @Test
+  public void createKeyStoreAndRootCa() {
+    // create root ca and keystore
+    SSLHelper sslHelper = SSLHelper.getInstance();
+    sslHelper.checkRootCA();
+    KeyStore _keystore = sslHelper.getKeyStore();
+    assertTrue(_keystore != null);
+    //is root ca in keystore?
+    X509Certificate rootCA;
+    try {
+      rootCA = (X509Certificate) _keystore.getCertificate(Configuration.getCommonDomain());
+    } catch (KeyStoreException e) {
+      throw new RuntimeException(e);
+    }
+    assertTrue(rootCA != null);
+  }
 }
