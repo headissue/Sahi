@@ -339,6 +339,16 @@ public class Configuration {
     return Utils.concatPaths(userDataDir, getUserProperty("certs.dir", "certs"));
   }
 
+  public static String getRootKeyPath() {
+    return Configuration.getRootCaPath() + ".key";
+  }
+
+  public static String getRootCaName() {
+    return getUserProperty("ssl.ca.cn", "Sahi Root Ca");
+  }
+
+
+
   public static String getRootCaPath() {
     return Configuration.getCertsPath() + "/ca.crt";
   }

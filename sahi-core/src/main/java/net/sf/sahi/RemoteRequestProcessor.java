@@ -46,7 +46,7 @@ public class RemoteRequestProcessor {
 
   static {
     try {
-      SSLContext sslContext = SSLContext.getInstance("SSL");
+      SSLContext sslContext = SSLContext.getInstance("SSLv3");
       sslContext.init(SSLHelper.getInstance().getKeyManagerFactoryForRemoteFetch().getKeyManagers(), SSLHelper.getAllTrustingManager(), new java.security.SecureRandom());
       HttpsURLConnection.setDefaultSSLSocketFactory(sslContext.getSocketFactory());
       HostnameVerifier hostnameVerifier = new HostnameVerifier() {
