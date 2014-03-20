@@ -11,5 +11,6 @@
     <modules>
         <module>sahi-core</module>
         <module>sahi-ant-runner</module>
+        <module>sahi-test-webapp</module>
     </modules>
 </project>
