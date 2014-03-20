@@ -65,7 +65,7 @@ public class SSLHelperTest {
   public void testChainOfTrust() throws Exception {
     SSLHelper sslHelper = SSLHelper.getInstance();
     sslHelper.checkRootCA();
-    sslHelper.putKeyInKeyStore("www.test.com");
+    sslHelper.generateKeyAndPutIntoKeyStore("www.test.com");
     KeyStore _keystore = sslHelper.getKeyStore();
     Certificate[] certificateChain = _keystore.getCertificateChain("www.test.com");
     System.out.println(_keystore);
