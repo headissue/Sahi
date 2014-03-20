@@ -5,3 +5,4 @@
 .gif 	image/gif
 .jpg 	image/jpeg
 .jpeg 	image/jpeg
+.crt  application/x-x509-ca-cert

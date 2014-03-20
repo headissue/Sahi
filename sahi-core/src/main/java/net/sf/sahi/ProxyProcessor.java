@@ -28,6 +28,7 @@ import net.sf.sahi.ssl.SSLHelper;
 import net.sf.sahi.util.ThreadLocalMap;
 import net.sf.sahi.util.TrafficLogger;
 import net.sf.sahi.util.Utils;
+import org.bouncycastle.operator.OperatorCreationException;
 
 import javax.net.ssl.SSLHandshakeException;
 import javax.net.ssl.SSLSocket;
@@ -37,6 +38,10 @@ import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Properties;
@@ -101,7 +106,6 @@ public class ProxyProcessor implements Runnable {
     } catch (SSLHandshakeException ssle) {
       logger.fine(ssle.getMessage());
     } catch (Exception e) {
-      //e.printStackTrace();
       logger.fine(e.getMessage());
       try {
         // should close only in case of exception. Do not move this to finally. Will cause sockets to not be reused.
@@ -130,14 +134,9 @@ public class ProxyProcessor implements Runnable {
   }
 
   private void processAsProxy(HttpRequest requestFromBrowser) throws Exception {
-    final String fileName = requestFromBrowser.fileName();
-    Date time = new Date();
-    TrafficLogger.createLoggerForThread(fileName, "unmodified", Configuration.isUnmodifiedTrafficLoggingOn(), time);
-    TrafficLogger.createLoggerForThread(fileName, "modified", Configuration.isModifiedTrafficLoggingOn(), time);
-
+    logTraffic(requestFromBrowser);
     if (requestFromBrowser.isConnect()) {
-      TrafficLogger.storeRequestHeader(requestFromBrowser.rawHeaders(), "unmodified");
-      TrafficLogger.storeRequestBody(requestFromBrowser.data(), "unmodified");
+      logHeaderAndBody(requestFromBrowser);
       processConnect(requestFromBrowser);
     } else {
       if (handleDifferently(requestFromBrowser)) {
@@ -158,6 +157,18 @@ public class ProxyProcessor implements Runnable {
     }
   }
 
+  private void logHeaderAndBody(HttpRequest requestFromBrowser) {
+    TrafficLogger.storeRequestHeader(requestFromBrowser.rawHeaders(), "unmodified");
+    TrafficLogger.storeRequestBody(requestFromBrowser.data(), "unmodified");
+  }
+
+  private void logTraffic(HttpRequest requestFromBrowser) {
+    final String fileName = requestFromBrowser.fileName();
+    Date time = new Date();
+    TrafficLogger.createLoggerForThread(fileName, "unmodified", Configuration.isUnmodifiedTrafficLoggingOn(), time);
+    TrafficLogger.createLoggerForThread(fileName, "modified", Configuration.isModifiedTrafficLoggingOn(), time);
+  }
+
   private boolean handleDifferently(final HttpRequest request) throws Exception {
     final MockResponder mockResponder = request.session().mockResponder();
     HttpResponse response = mockResponder.getResponse(request);
@@ -176,10 +187,27 @@ public class ProxyProcessor implements Runnable {
         return;
       }
       client.getOutputStream().write(("HTTP/1.0 200 OK\r\n\r\n").getBytes());
-      SSLSocket sslSocket = new SSLHelper().convertToSecureServerSocket(client,
-        requestFromBrowser.host());
+      SSLSocket sslSocket = null;
+      try {
+        sslSocket = SSLHelper.getInstance().convertToSecureServerSocket(client,
+          requestFromBrowser.host());
+      } catch (OperatorCreationException e) {
+        throw new RuntimeException(e);
+      } catch (CertificateException e) {
+        throw new RuntimeException(e);
+      } catch (NoSuchAlgorithmException e) {
+        throw new RuntimeException(e);
+      } catch (KeyStoreException e) {
+        throw new RuntimeException(e);
+      } catch (UnrecoverableKeyException e) {
+        throw new RuntimeException(e);
+      } catch (Exception e) {
+        throw new RuntimeException(e);
+      }
       ProxyProcessor delegatedProcessor = new ProxyProcessor(sslSocket);
       delegatedProcessor.run();
+    } catch (SSLHandshakeException e) {
+      // FIXME logging
     } catch (IOException e) {
       try {
         client.close();

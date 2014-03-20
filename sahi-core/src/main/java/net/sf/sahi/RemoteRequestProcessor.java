@@ -18,39 +18,10 @@
 
 package net.sf.sahi;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.Authenticator;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.regex.Pattern;
-import java.util.zip.GZIPInputStream;
-
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLHandshakeException;
-import javax.net.ssl.SSLSession;
-
 import net.sf.sahi.config.Configuration;
 import net.sf.sahi.config.SahiAuthenticator;
 import net.sf.sahi.request.HttpRequest;
-import net.sf.sahi.response.HttpFileResponse;
-import net.sf.sahi.response.HttpModifiedResponse2;
-import net.sf.sahi.response.HttpResponse;
-import net.sf.sahi.response.NoContentResponse;
-import net.sf.sahi.response.SimpleHttpResponse;
-import net.sf.sahi.response.StreamingHttpResponse;
+import net.sf.sahi.response.*;
 import net.sf.sahi.session.Session;
 import net.sf.sahi.ssl.SSLHelper;
 import net.sf.sahi.stream.filter.ChunkedFilter;
@@ -58,14 +29,25 @@ import net.sf.sahi.util.ThreadLocalMap;
 import net.sf.sahi.util.TrafficLogger;
 import net.sf.sahi.util.Utils;
 
+import javax.net.ssl.*;
+import java.io.*;
+import java.net.Authenticator;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.regex.Pattern;
+import java.util.zip.GZIPInputStream;
+
 public class RemoteRequestProcessor {
   private boolean useStreaming = false;
   private static final Logger logger = Logger.getLogger("net.sf.sahi.RemoteRequestProcessor");
 
   static {
     try {
-      SSLContext sslContext = SSLContext.getInstance("SSL");
-      sslContext.init(SSLHelper.getKeyManagerFactoryForRemoteFetch().getKeyManagers(), SSLHelper.getAllTrustingManager(), new java.security.SecureRandom());
+      SSLContext sslContext = SSLContext.getInstance("SSLv3");
+      sslContext.init(SSLHelper.getInstance().getKeyManagerFactoryForRemoteFetch().getKeyManagers(), SSLHelper.getAllTrustingManager(), new java.security.SecureRandom());
       HttpsURLConnection.setDefaultSSLSocketFactory(sslContext.getSocketFactory());
       HostnameVerifier hostnameVerifier = new HostnameVerifier() {
         public boolean verify(String urlHostName, SSLSession session) {

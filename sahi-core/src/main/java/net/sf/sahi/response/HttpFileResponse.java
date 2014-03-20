@@ -50,7 +50,6 @@ public class HttpFileResponse extends HttpResponse {
 
   public HttpFileResponse(final String fileName) {
     this(fileName, null, false, false);
-//		this(fileName, null, true, true);
   }
 
   private void setHeaders() {

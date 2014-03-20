@@ -18,18 +18,19 @@
 
 package net.sf.sahi;
 
+import net.sf.sahi.config.Configuration;
+import net.sf.sahi.ssl.SSLHelper;
+import net.sf.sahi.util.BrowserTypesLoader;
+import net.sf.sahi.util.Diagnostics;
+import net.sf.sahi.util.ProxySwitcher;
+import net.sf.sahi.util.Utils;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
-import net.sf.sahi.config.Configuration;
-import net.sf.sahi.util.BrowserTypesLoader;
-import net.sf.sahi.util.Diagnostics;
-import net.sf.sahi.util.ProxySwitcher;
-import net.sf.sahi.util.Utils;
 
 /**
  * Proxy manages Sahi's proxy server. <br/>
@@ -160,6 +161,8 @@ public class Proxy {
 
       server.setReuseAddress(true);
       server.bind(new InetSocketAddress(port), 300);
+      SSLHelper.getInstance().checkRootCA();
+
       System.out.println(">>>> Sahi started. Listening on port: " + port);
       System.out.println(">>>> Configure your browser to use this server and port as its proxy");
       System.out.println(">>>> Browse any page and CTRL-ALT-DblClick on the page to bring up the Sahi Controller");
