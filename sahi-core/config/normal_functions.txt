@@ -164,3 +164,13 @@ _dTerm
 _dDesc
 _paragraph
 _scriptStartTime
+
+_section
+_header
+_nav
+_aside
+_footer
+_article
+_main
+_figure
+_address

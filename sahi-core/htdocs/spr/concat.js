@@ -5015,6 +5015,15 @@ Sahi.prototype.prepareADs = function(){
 	this.addAD({tag: "DT", type: null, event:"click", name: "_dTerm", attributes: ["sahiText", "id", "className", "index"], action: "_click", value: "sahiText"});
 	this.addAD({tag: "DD", type: null, event:"click", name: "_dDesc", attributes: ["sahiText", "id", "className", "index"], action: "_click", value: "sahiText"});
 
+	this.addAD({tag: "SECTION", type: null, event:"click", name: "_section", attributes: ["sahiText", "id", "className", "index"], action: "_click", value: "sahiText"});
+	this.addAD({tag: "HEADER", type: null, event:"click", name: "_header", attributes: ["sahiText", "id", "className", "index"], action: "_click", value: "sahiText"});
+	this.addAD({tag: "NAV", type: null, event:"click", name: "_nav", attributes: ["sahiText", "id", "className", "index"], action: "_click", value: "sahiText"});
+	this.addAD({tag: "ASIDE", type: null, event:"click", name: "_aside", attributes: ["sahiText", "id", "className", "index"], action: "_click", value: "sahiText"});
+	this.addAD({tag: "FOOTER", type: null, event:"click", name: "_footer", attributes: ["sahiText", "id", "className", "index"], action: "_click", value: "sahiText"});
+  this.addAD({tag: "ARTICLE", type: null, event:"click", name: "_article", attributes: ["sahiText", "id", "className", "index"], action: "_click", value: "sahiText"});
+  this.addAD({tag: "MAIN", type: null, event:"click", name: "_main", attributes: ["sahiText", "id", "className", "index"], action: "_click", value: "sahiText"});
+  this.addAD({tag: "FIGURE", type: null, event:"click", name: "_figure", attributes: ["sahiText", "id", "className", "index"], action: "_click", value: "sahiText"});
+  this.addAD({tag: "ADDRESS", type: null, event:"click", name: "_address", attributes: ["sahiText", "id", "className", "index"], action: "_click", value: "sahiText"});
 };
 Sahi.prototype.getAssertions = function(accs, info){
 	var a = [this.language.ASSERT_EXISTS, this.language.ASSERT_VISIBLE];
