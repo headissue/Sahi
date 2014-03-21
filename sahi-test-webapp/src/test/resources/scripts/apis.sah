@@ -68,7 +68,7 @@ function _check(){}
 function _checkbox(){return new Node();};
 function _image(){return new Node();};
 function _imageSubmitButton(){return new Node();};
-function _link(){return new Node();};
+function _link($){return new Node();};
 function _password(){return new Node();};
 function _radio(){return new Node();};
 function _select(){return new Node();};
