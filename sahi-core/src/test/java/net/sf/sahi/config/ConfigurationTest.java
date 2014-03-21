@@ -4,8 +4,10 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
+import java.util.Iterator;
+import java.util.Properties;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 /**
  * Sahi - Web Automation and Test Tool
@@ -68,5 +70,24 @@ public class ConfigurationTest {
     assertEquals(userDataDirectory + "/certs", Configuration.getCertsPath().replace('\\', '/'));
     assertEquals(userDataDirectory + "/temp/download", Configuration.tempDownloadDir().replace('\\', '/'));
     assertEquals("java", Configuration.getControllerMode());
+  }
+
+  @Test
+  public void readDefaultProperties() {
+    Configuration config = new Configuration();
+    config.initWithOptionalProperties(null);
+    assertNotNull(config.getUserProperties());
+    assertTrue(config.getUserProperties().entrySet().size() > 30);
+  }
+
+  @Test
+  public void allPropertiesHaveNotNullDefaultValues() {
+    Configuration config = new Configuration();
+    config.initWithOptionalProperties(null);
+    Properties properties = config.getUserProperties();
+    for (Iterator iterator = properties.keySet().iterator(); iterator.hasNext(); ) {
+      String key = (String) iterator.next();
+      assertNotNull(properties.getProperty(key));
+    }
   }
 }

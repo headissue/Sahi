@@ -20,10 +20,7 @@ package net.sf.sahi.config;
 import net.sf.sahi.util.FileUtils;
 import net.sf.sahi.util.Utils;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Properties;
 import java.util.logging.Logger;
@@ -35,10 +32,7 @@ import java.util.regex.Pattern;
  */
 public class Configuration {
 
-  // static Properties properties = new Properties();
-
-  static Properties userProperties; // = new Properties(properties);
-
+  public static final String PLAYBACK_LOG_ROOT = "playback";
   private static final String HTDOCS_ROOT = "htdocs/";
 
   private static final String SAHI_PROPERTIES = "config/sahi.properties";
@@ -46,11 +40,9 @@ public class Configuration {
   private static final String SAHI_USER_PROPERTIES = "config/userdata.properties";
 
   private static final String LOG_PROPERITES = "config/log.properties";
-
   private static final String TMP_DOWNLOAD_DIR = "temp/download";
-
-  public static final String PLAYBACK_LOG_ROOT = "playback";
-
+  static Properties userProperties; // = new Properties(properties);
+  static int enableKeepAlive = 0;
   private static String userDataDir = null;
 
   private static String basePath = null;
@@ -60,6 +52,14 @@ public class Configuration {
   private static String keytoolPath;
 
   private static boolean keytoolFound;
+  private static String overriddenControllerMode;
+  private static String[] downloadURLList;
+  private static String[] blockableSSLDomainList;
+  private static String domainFixInfo;
+
+  public Properties getUserProperties() {
+    return userProperties;
+  }
 
   /**
    * Initializes Sahi's properties and relative paths.<br/>
@@ -78,13 +78,41 @@ public class Configuration {
   }
 
   /**
-   * Initializes Sahi's properties and relative paths.<br/>
+   * Reads the default configuration and an optional properties file
+   *
    * A call to <code>init</code> or <code>initJava</code> is required before
    * invoking Proxy.start()
    *
-   * @param basePath1         String basePath to folder where sahi is located
-   * @param userDataDirectory String path to user data directory
+   * @param modifiedProperties String .properties file
    */
+  public static void initWithOptionalProperties(String modifiedProperties) {
+
+    // why?
+    Utils.BUFFER_SIZE = getBufferSize();
+
+    System.setProperty("java.util.logging.config.file", getLogPropertyFile());
+    System.setProperty("java.util.logging.config.file", LOG_PROPERITES);
+
+    InputStream propertiesIn = Configuration.class.getResourceAsStream("sahi.properties");
+    if (propertiesIn == null) {
+      throw new RuntimeException("sahi.properties not found");
+    }
+
+    try {
+      userProperties = loadProperties(propertiesIn);
+    } catch (IOException e) {
+      throw new RuntimeException("could not load properties");
+    }
+
+    if (modifiedProperties != null) {
+      try {
+        userProperties.load(new FileInputStream(modifiedProperties));
+      } catch (IOException e) {
+        // FIXME logging
+      }
+    }
+  }
+
   public static void init(String basePath1, String userDataDirectory) {
     try {
       basePath = basePath1;
@@ -112,6 +140,13 @@ public class Configuration {
     }
   }
 
+  private static Properties loadProperties(InputStream in) throws IOException {
+    Properties properties = new Properties();
+    properties.load(in);
+    in.close();
+    return properties;
+  }
+
   private static String getLogPropertyFile() {
     return Utils.concatPaths(userDataDir, "/config/log.properties");
   }
@@ -129,6 +164,14 @@ public class Configuration {
     FileInputStream inStream = new FileInputStream(sahiProperties);
     props.load(inStream);
     inStream.close();
+  }
+
+  public static Properties loadProperties(File props) throws IOException {
+    FileInputStream inStream = new FileInputStream(props.getAbsolutePath());
+    Properties thisProperties = new Properties();
+    thisProperties.load(inStream);
+    inStream.close();
+    return thisProperties;
   }
 
   /**
@@ -347,8 +390,6 @@ public class Configuration {
     return getUserProperty("ssl.ca.cn", "Sahi Root Ca");
   }
 
-
-
   public static String getRootCaPath() {
     return Configuration.getCertsPath() + "/ca.crt";
   }
@@ -473,16 +514,6 @@ public class Configuration {
     }
     return domainFixInfo;
   }
-
-  static int enableKeepAlive = 0;
-
-  private static String overriddenControllerMode;
-
-  private static String[] downloadURLList;
-
-  private static String[] blockableSSLDomainList;
-
-  private static String domainFixInfo;
 
   public static void enableKeepAlive() {
     enableKeepAlive++;
