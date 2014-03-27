@@ -45,7 +45,7 @@ public class SuiteLoaderTest {
   @Before
   public void setup() {
     Configuration.init();
-    dir = new File(Configuration.getUserDataDir() + "/scripts/junir");
+    dir = new File(Configuration.getUserDataDir() + "/scripts/junit");
     Utils.deleteDir(dir);
     dir.mkdirs();
   }

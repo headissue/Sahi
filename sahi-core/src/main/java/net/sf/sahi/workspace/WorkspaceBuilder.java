@@ -20,6 +20,7 @@ public class WorkspaceBuilder {
 
   private static final String CERTS_ROOT = "userdata/certs";
   private static final String DOWNLOAD_ROOT = "userdata/downloads";
+  private static final String USER_CONFIG_ROOT = "userdata/config";
   final private String LOGS_ROOT = "userdata/logs";
 
   public WorkspaceBuilder(String target) {
@@ -63,6 +64,19 @@ public class WorkspaceBuilder {
 
   public void copyNeededFiles() throws IOException {
     copyFireFoxProfile();
+    copyUserDataConfig();
+  }
+
+  private void copyUserDataConfig() {
+    final String template = this.getClass().getResource("userdata_template.config").getPath();
+    final String userConfig = Utils.concatPaths(target, USER_CONFIG_ROOT);
+
+    File toDir = new File(userConfig);
+    toDir.mkdirs();
+    for (int i = 0; i < toDir.list().length; i++) {
+      String thisFile = toDir.list()[i];
+      copyFile(template, userConfig, thisFile);
+    }
   }
 
   private void copyFireFoxProfile() throws IOException {

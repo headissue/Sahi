@@ -3,6 +3,7 @@ package net.sf.sahi.util;
 import net.sf.sahi.command.Command;
 import net.sf.sahi.config.Configuration;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -35,11 +36,13 @@ public class URLParserTest {
   }
 
   @Test
+  @Ignore("FIXME")
   public void xtestScriptFileNamefromURI() {
     assertEquals(Configuration.getUserDataDir() + "/scripts/sahi_demo_include.sah", URLParser.scriptFileNamefromURI(uri, "/Log_highlight/"));
   }
 
   @Test
+  @Ignore("FIXME")
   public void xtestScriptFileNamefromURI2() {
     final String uri2 = "/_s_/dyn/scripts/sahi_demo_include.sah?n=2";
     assertEquals(Configuration.getUserDataDir() + "/scripts/sahi_demo_include.sah", URLParser.scriptFileNamefromURI(uri2, "/scripts/"));
