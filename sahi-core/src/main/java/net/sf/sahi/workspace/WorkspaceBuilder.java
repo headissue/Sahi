@@ -68,13 +68,14 @@ public class WorkspaceBuilder {
   }
 
   private void copyUserDataConfig() {
-    final String template = this.getClass().getResource("userdata_template.config").getPath();
+    final String template = this.getClass().getResource("userdata_template").getPath();
     final String userConfig = Utils.concatPaths(target, USER_CONFIG_ROOT);
 
+    File fromDir = new File(template);
     File toDir = new File(userConfig);
     toDir.mkdirs();
-    for (int i = 0; i < toDir.list().length; i++) {
-      String thisFile = toDir.list()[i];
+    for (int i = 0; i < fromDir.list().length; i++) {
+      String thisFile = fromDir.list()[i];
       copyFile(template, userConfig, thisFile);
     }
   }
