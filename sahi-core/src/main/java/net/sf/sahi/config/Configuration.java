@@ -119,10 +119,12 @@ public class Configuration {
       userDataDir = userDataDirectory;
 
       String propsPath = Utils.concatPaths(basePath, SAHI_PROPERTIES);
-      System.out.println("Sahi properties file = " + propsPath);
+      // TODO log if needed
+      //System.out.println("Sahi properties file = " + propsPath);
 
       String userPropsPath = Utils.concatPaths(userDataDir, SAHI_USER_PROPERTIES);
-      System.out.println("Sahi user properties file = " + userPropsPath);
+      // TODO log if needed
+      //System.out.println("Sahi user properties file = " + userPropsPath);
 
       Properties properties = new Properties();
       loadProperties(propsPath, properties);
@@ -428,10 +430,11 @@ public class Configuration {
   private static boolean isExecutable(String keytoolPath) {
     try {
       Utils.executeCommand(new String[]{keytoolPath});
-      System.out.println("Keytool command found at: " + keytoolPath);
+      // TODO log if needed
+      //System.out.println("Keytool command found at: " + keytoolPath);
       return true;
     } catch (Exception e) {
-      System.out.println("Keytool command not found at: " + keytoolPath);
+      System.err.println("Keytool command not found at: " + keytoolPath);
       return false;
     }
   }
@@ -721,7 +724,8 @@ public class Configuration {
 
   public static void main(String args[]) {
     String[] scriptRoots = Configuration.getScriptRoots();
-    System.out.println(scriptRoots[0]);
+    // TODO log if needed
+    //System.out.println(scriptRoots[0]);
   }
 
   public static boolean downloadIfContentDispositionIsAttachment() {

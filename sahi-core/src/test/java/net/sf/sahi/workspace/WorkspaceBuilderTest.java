@@ -16,7 +16,6 @@ public class WorkspaceBuilderTest {
     String workingDirectory = Utils.concatPaths(this.getClass().getResource(".").getPath(), "tmp");
     WorkspaceBuilder workspaceBuilder = new WorkspaceBuilder(workingDirectory);
     workspaceBuilder.build();
-    System.out.println(workingDirectory);
     assertTrue(new File(workingDirectory).exists());
     assertTrue(new File(workingDirectory, "userdata/logs").exists());
     assertTrue(new File(workingDirectory, "userdata/browser").exists());

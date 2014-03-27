@@ -18,12 +18,6 @@
 
 package net.sf.sahi;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.Socket;
-import java.util.logging.Logger;
-
 import net.sf.sahi.config.Configuration;
 import net.sf.sahi.request.HttpRequest;
 import net.sf.sahi.response.HttpFileResponse;
@@ -31,6 +25,12 @@ import net.sf.sahi.response.HttpResponse;
 import net.sf.sahi.response.NoCacheHttpResponse;
 import net.sf.sahi.util.FileIsDirectoryException;
 import net.sf.sahi.util.FileNotFoundRuntimeException;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.Socket;
+import java.util.logging.Logger;
 
 /**
  * User: nraman Date: May 13, 2005 Time: 7:06:11 PM To
@@ -72,7 +72,8 @@ public class WebProcessor implements Runnable {
       }
       logger.warning(fnfre.getMessage());
     } catch (Exception e) {
-      System.out.println(">>>>>>>>>>" + e.getClass().getName());
+      // TODO log if needed
+      //System.out.println(">>>>>>>>>>" + e.getClass().getName());
       logger.warning(e.getMessage());
     } finally {
       try {

@@ -52,7 +52,8 @@ public class WebServer {
     ServerSocket server = null;
     try {
       server = new ServerSocket(port);
-      System.out.println(">>>> Sahi demo web server started. Listening on port:" + port);
+      // TODO log if needed
+      //System.out.println(">>>> Sahi demo web server started. Listening on port:" + port);
       while (true) {
         Socket client = server.accept();
         new Thread(new WebProcessor(client)).start();

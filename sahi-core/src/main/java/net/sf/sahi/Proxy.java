@@ -81,7 +81,8 @@ public class Proxy {
     try {
       Thread thread = new Thread(new ResetProxy());
       Runtime.getRuntime().addShutdownHook(thread);
-      System.out.println("Added shutdown hook.");
+      // TODO log if needed
+      //System.out.println("Added shutdown hook.");
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -150,9 +151,9 @@ public class Proxy {
     try {
       byte[] probe = Utils.readURL("http://localhost:" + Configuration.getPort() + "/_s_/spr/probe.htm", false);
       if (probe != null) {
-        System.out.println("---");
-        System.out.println("--- ERROR: Port " + Configuration.getPort() + " is already being used ---");
-        System.out.println("---");
+        System.err.println("---");
+        System.err.println("--- ERROR: Port " + Configuration.getPort() + " is already being used ---");
+        System.err.println("---");
         return;
       }
 
@@ -163,9 +164,10 @@ public class Proxy {
       server.bind(new InetSocketAddress(port), 300);
       SSLHelper.getInstance().checkRootCA();
 
-      System.out.println(">>>> Sahi started. Listening on port: " + port);
-      System.out.println(">>>> Configure your browser to use this server and port as its proxy");
-      System.out.println(">>>> Browse any page and CTRL-ALT-DblClick on the page to bring up the Sahi Controller");
+      // TODO log if needed
+      //System.out.println(">>>> Sahi started. Listening on port: " + port);
+      //System.out.println(">>>> Configure your browser to use this server and port as its proxy");
+      //System.out.println(">>>> Browse any page and CTRL-ALT-DblClick on the page to bring up the Sahi Controller");
 
       BrowserTypesLoader.getAvailableBrowserTypes(true);
 
@@ -175,8 +177,8 @@ public class Proxy {
           Socket client = server.accept();
           pool.execute(new ProxyProcessor(client));
         } catch (Exception e) {
-          System.out.println(e.getMessage());
-//                    e.printStackTrace();
+          System.err.println(e.getMessage());
+          e.printStackTrace();
         }
       }
     } catch (Exception e) {
