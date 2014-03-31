@@ -19,6 +19,7 @@ package net.sf.sahi.config;
 
 import net.sf.sahi.util.FileUtils;
 import net.sf.sahi.util.Utils;
+import net.sf.sahi.workspace.WorkspaceBuilder;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -113,12 +114,14 @@ public class Configuration {
     }
   }
 
-  public static void init(String basePath1, String userDataDirectory) {
+  public static void init(String basePath1, String workingDirectory) {
     try {
       basePath = basePath1;
-      userDataDir = userDataDirectory;
+      buildWorkspace(workingDirectory);
+      userDataDir = Utils.concatPaths(workingDirectory, "userdata");
 
-      String propsPath = Utils.concatPaths(basePath, SAHI_PROPERTIES);
+
+      String propsPath = Configuration.class.getResource("sahi.properties").getPath();
       // TODO log if needed
       //System.out.println("Sahi properties file = " + propsPath);
 
@@ -140,6 +143,11 @@ public class Configuration {
     } catch (IOException e) {
       e.printStackTrace();
     }
+  }
+
+  private static void buildWorkspace(String workingDirectory) {
+    WorkspaceBuilder wb = new WorkspaceBuilder(workingDirectory);
+    wb.build();
   }
 
   private static Properties loadProperties(InputStream in) throws IOException {
@@ -832,7 +840,7 @@ public class Configuration {
   }
 
   public static String getOSPropertiesFile() throws Exception {
-    return Utils.concatPaths(getConfigPath(), "os.properties");
+    return Utils.concatPaths(getConfigPath(), Configuration.class.getResource("os.properties").getPath());
   }
 
   public static String getVersion() {

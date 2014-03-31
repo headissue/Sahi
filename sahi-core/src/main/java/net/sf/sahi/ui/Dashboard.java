@@ -292,7 +292,7 @@ public class Dashboard extends JFrame {
   }
 
   public static void main(String args[]) {
-    if (args.length > 0) {
+    if (args.length > 1) {
       Configuration.init(args[0], args[1]);
     } else {
       Configuration.init();

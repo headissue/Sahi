@@ -13,7 +13,7 @@ import java.io.IOException;
 public class WorkspaceBuilder {
 
   private static final String BROWSER_PROFILES = "userdata/browser";
-  private static final String FIREFOX_PREFIX = "FF";
+  private static final String FIREFOX_PREFIX = "ff/profiles/sahi";
   // Todo create as needed
   private static final int BROWSER_PROFILE_NUMBER = 10;
   private String target;
@@ -65,19 +65,45 @@ public class WorkspaceBuilder {
   public void copyNeededFiles() throws IOException {
     copyFireFoxProfile();
     copyUserDataConfig();
+    copyRootCaAndKey();
+    copyBrowserXml();
+  }
+
+  private void copyBrowserXml() throws IOException {
+    final String userConfig = Utils.concatPaths(target, USER_CONFIG_ROOT);
+// FIXME OS independence?
+    copyFile(this.getClass().getResource("browser_types").getPath(), userConfig, "linux.xml");
+    renameFile(new File(userConfig, "linux.xml"), new File(userConfig, "browser_types.xml"));
+  }
+
+  private void renameFile(File src, File dest) throws IOException{
+    if (!src.renameTo(dest)){
+      throw new IOException("did not copy");
+    }
+  }
+
+  private void copyRootCaAndKey() {
+    final String template = this.getClass().getResource("certs").getPath();
+    final String certsDir = Utils.concatPaths(target, CERTS_ROOT);
+
+    createAndCopyDirectory(template, certsDir);
+  }
+
+  private void createAndCopyDirectory(String s, String d) {
+    File fromDir = new File(s);
+    File toDir = new File(d);
+    toDir.mkdirs();
+    for (int i = 0; i < fromDir.list().length; i++) {
+      String thisFile = fromDir.list()[i];
+      copyFile(s, d, thisFile);
+    }
   }
 
   private void copyUserDataConfig() {
     final String template = this.getClass().getResource("userdata_template").getPath();
     final String userConfig = Utils.concatPaths(target, USER_CONFIG_ROOT);
 
-    File fromDir = new File(template);
-    File toDir = new File(userConfig);
-    toDir.mkdirs();
-    for (int i = 0; i < fromDir.list().length; i++) {
-      String thisFile = fromDir.list()[i];
-      copyFile(template, userConfig, thisFile);
-    }
+    createAndCopyDirectory(template, userConfig);
   }
 
   private void copyFireFoxProfile() throws IOException {
