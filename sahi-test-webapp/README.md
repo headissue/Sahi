@@ -14,4 +14,5 @@ Repeatedly check the status with:
 
     curl -v "http://localhost:9999/_s_/dyn/Suite_status?s&sahisid=sahi_b3d244c306259042b90943f0256ac9ebadd2"
 
+But there must be a better way....
 
