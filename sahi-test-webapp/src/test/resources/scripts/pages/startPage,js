@@ -1,8 +1,0 @@
-$StartPage = {
-  /**
-   * Check your local deployment settings for the right port
-   */
-  goTo: function() {
-    _navigateTo("http://localhost:7733/index.htm")
-  }
-}

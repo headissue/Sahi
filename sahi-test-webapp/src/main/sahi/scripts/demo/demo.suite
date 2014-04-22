@@ -1,5 +1,5 @@
-sahi_demo.sah index.htm
-clicksTest.sah clicks.htm
+sahi_demo.sah
+clicksTest.sah
 events.sah
 wait_long.sah
 verify_shorthands.sah
