@@ -1,4 +1,4 @@
-_include ("../if_include.sah");
+_include ("../ifInIncluded.sah");
 function recover(){
 	_click(_link("Back"));
 	_click(_link("Link Test"));

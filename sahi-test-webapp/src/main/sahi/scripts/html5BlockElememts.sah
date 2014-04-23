@@ -1,3 +1,0 @@
-_include("pages/includeAll.sah");
-
-$Html5BlockElements.goTo();
