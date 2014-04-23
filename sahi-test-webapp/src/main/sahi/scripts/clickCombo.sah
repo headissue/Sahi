@@ -1,3 +1,8 @@
+_include("pages/includeAll.js");
+
+_navigateTo($Root.url +"/clickCombo.htm");
+
+
 function click($combo, $expected){
 	_click(_div("Experiment Zone"), $combo);
 	_assertEqual($expected, _textbox("tb").value);
@@ -33,5 +38,4 @@ function testCombinationClicks(){
 	click("CTRL|ALT|SHIFT", "<ctrl><alt><shift>click");
 }
 
-_navigateTo("clickCombo.htm");
 _runUnitTests();

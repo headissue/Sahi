@@ -1,4 +1,6 @@
-_navigateTo("/demo/clicks.htm");
+_include("pages/includeAll.js");
+
+_navigateTo($Root.url +"/clicks.htm");
 
 _doubleClick(_div("dbl click me"));
 _assertEqual("[DOUBLE_CLICK]", _textarea("t2").value);

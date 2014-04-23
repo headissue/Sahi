@@ -1,3 +1,7 @@
+_include("pages/includeAll.js");
+
+$Form.goTo();
+
 <browser>
 function getFirstLink(){
 	return document.links[0];
@@ -7,3 +11,4 @@ function getFirstLink(){
 _click(getFirstLink());
 _click(getFirstLink());
 _click(getFirstLink());
+_assertExists(_heading2("Link By Content Test"));

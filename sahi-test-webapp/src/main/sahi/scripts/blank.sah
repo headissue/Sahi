@@ -1,3 +1,7 @@
+_include("pages/includeAll.js");
+
+$Index.goTo();
+
 _click(_link("Link Test"));
 _click(_link("Back"));
 _click(_link("Blank Page"));

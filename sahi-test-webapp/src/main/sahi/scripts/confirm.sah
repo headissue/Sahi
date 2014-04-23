@@ -1,3 +1,6 @@
+_include("pages/includeAll.js");
+
+
 function check(){
 	//_expectConfirm("Some question?", true)
 	_click(_link("Confirm Page"));
@@ -30,6 +33,7 @@ function check(){
 	_click(_link("Back"));
 }
 
+$Index.goTo();
 check();
 _click(_link("Frames Test"));
 check();

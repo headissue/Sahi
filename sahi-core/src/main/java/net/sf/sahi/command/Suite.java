@@ -17,8 +17,6 @@
  */
 package net.sf.sahi.command;
 
-import java.io.IOException;
-
 import net.sf.sahi.config.Configuration;
 import net.sf.sahi.issue.JiraIssueCreator;
 import net.sf.sahi.report.HtmlReporter;
@@ -33,6 +31,8 @@ import net.sf.sahi.session.Status;
 import net.sf.sahi.test.SahiTestSuite;
 import net.sf.sahi.util.BrowserType;
 import net.sf.sahi.util.BrowserTypesLoader;
+
+import java.io.IOException;
 
 public class Suite {
   public void startSingleSession(final HttpRequest request) throws Exception {
@@ -113,7 +113,7 @@ public class Suite {
     return (threads < capacity) ? threads : capacity;
   }
 
-  private void runSuite(final SahiTestSuite suite) {
+  public void runSuite(final SahiTestSuite suite) {
     new Thread() {
       @Override
       public void run() {

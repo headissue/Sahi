@@ -1,4 +1,7 @@
-_click(_link("Form Test"));
+_include("pages/includeAll.js");
+
+$Form.goTo();
+
 _setValue(_textbox("t1"), "abc");
 _setValue(_textbox(1), "def");
 _call(history.back())

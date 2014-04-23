@@ -1,4 +1,6 @@
-_navigateTo("/demo/count.htm");
+_include("pages/includeAll.js");
+
+_navigateTo($Root.url + "/count.htm");
 
 _assertEqual(4, _count("_link", "group 0 link"));
 

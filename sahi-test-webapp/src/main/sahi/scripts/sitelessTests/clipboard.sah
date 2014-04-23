@@ -21,7 +21,6 @@ function setClipboard(s){
 }
 
 var $contents = readClipboard();
-_alert($contents);
 setClipboard("some text in clipboard");
 $contents = readClipboard();
-_alert($contents);
+_assertEqual("some text in clipboard" ,$contents);

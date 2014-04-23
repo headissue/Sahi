@@ -17,14 +17,14 @@
  */
 package net.sf.sahi.command;
 
-import java.lang.reflect.Method;
-import java.util.logging.Logger;
-
 import net.sf.sahi.request.HttpRequest;
 import net.sf.sahi.response.HttpResponse;
 import net.sf.sahi.response.NoCacheHttpResponse;
 import net.sf.sahi.util.ClassLoadHelper;
 import net.sf.sahi.util.Utils;
+
+import java.lang.reflect.Method;
+import java.util.logging.Logger;
 
 public class CommandExecuter {
 
@@ -55,6 +55,7 @@ public class CommandExecuter {
       final Object returned = method.invoke(clazz.newInstance(), new Object[]{request});
       return returned == null ? new NoCacheHttpResponse() : (HttpResponse) returned;
     } catch (Exception e) {
+      e.printStackTrace();
       logger.warning("commandClass = >" + commandClass + "< commandMethod = >" + commandMethod + "<");
       logger.warning(Utils.getStackTraceString(e));
       return new NoCacheHttpResponse("SAHI_ERROR");

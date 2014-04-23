@@ -79,6 +79,7 @@ function getY(){
 _sahi.robot = new java.awt.Robot(); 
 for (var i=0; i<2; i++)
 {
+/* FIXME what is going on here?
 	_focus(_file("f1"));
 	_wait(1000);
 	_set($x, getX() + _sahi.findPosX(_file("f2")) + _file("f2").offsetWidth - 20 ); 
@@ -89,4 +90,5 @@ for (var i=0; i<2; i++)
 	_wait(1000);
 	_sahi._typeNativeKeyCode(java.awt.event.KeyEvent.VK_ENTER);
 	_wait(1000);
+  */
 }

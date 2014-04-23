@@ -1,3 +1,7 @@
+_include("pages/includeAll.js");
+
+$Index.goTo();
+
 _click(_link("Contain Test"));
 _assertNotNull(_byId("a"));
 _assertContainsText("find me here", _byId("a"));
