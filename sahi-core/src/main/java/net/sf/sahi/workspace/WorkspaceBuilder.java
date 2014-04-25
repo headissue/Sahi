@@ -73,10 +73,10 @@ public class WorkspaceBuilder {
     copyBrowserXml();
   }
 
-  private void copyBrowserXml() throws IOException {
+  private void copyBrowserXml() throws IOException, URISyntaxException {
     final String userConfig = Utils.concatPaths(target, USER_CONFIG_ROOT);
 // FIXME OS independence?
-    copyFile(this.getClass().getResource("browser_types").getPath(), userConfig, "linux.xml");
+    copyFile(getPath("browser_types"), userConfig, "linux.xml");
     renameFile(new File(userConfig, "linux.xml"), new File(userConfig, "browser_types.xml"));
   }
 
@@ -87,7 +87,7 @@ public class WorkspaceBuilder {
   }
 
   private void copyRootCaAndKey() {
-    final String template = this.getClass().getResource("certs").getPath();
+    final String template = getPath("certs");
     final String certsDir = Utils.concatPaths(target, CERTS_ROOT);
 
     createAndCopyDirectory(template, certsDir);
@@ -103,9 +103,13 @@ public class WorkspaceBuilder {
     }
   }
 
+  private String getPath(String res) throws URISyntaxException {
+    URI uri = new URI(this.getClass().getResource(res).toString());
+    return uri.getPath();
+  }
+
   private void copyUserDataConfig() throws URISyntaxException {
-    URI uri = new URI(this.getClass().getResource("userdata_template").toString());
-    final String template = uri.getPath();
+    final String template = getPath("userdata_template");
     final String userConfig = Utils.concatPaths(target, USER_CONFIG_ROOT);
 
     if (!new File(template).exists()) {
@@ -119,8 +123,8 @@ public class WorkspaceBuilder {
     createAndCopyDirectory(template, userConfig);
   }
 
-  private void copyFireFoxProfile() throws IOException {
-    final String template = this.getClass().getResource("ff_profile_template").getPath();
+  private void copyFireFoxProfile() throws IOException, URISyntaxException {
+    final String template = getPath("ff_profile_template");
     final String profile = Utils.concatPaths(target, BROWSER_PROFILES);
 
     File toFile = new File(profile);
