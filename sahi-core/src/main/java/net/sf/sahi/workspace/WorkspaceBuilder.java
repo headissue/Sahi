@@ -1,10 +1,12 @@
 package net.sf.sahi.workspace;
 
+import com.sun.jndi.toolkit.url.Uri;
 import net.sf.sahi.util.FileUtils;
 import net.sf.sahi.util.Utils;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 
 /**
  * Created by wormi on 21.03.14.
@@ -99,8 +101,8 @@ public class WorkspaceBuilder {
     }
   }
 
-  private void copyUserDataConfig() {
-    final String template = this.getClass().getResource("userdata_template").getPath();
+  private void copyUserDataConfig() throws URISyntaxException {
+    final String template = this.getClass().getResource("userdata_template").toURI().toString();
     final String userConfig = Utils.concatPaths(target, USER_CONFIG_ROOT);
 
     if (!new File(template).exists()) {
