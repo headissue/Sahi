@@ -23,7 +23,7 @@ import static org.junit.Assert.assertEquals;
  * Created by wormi on 25.04.14.
  */
 
-public class IntegrationTests {
+public class TestApiIntegration {
 
   Thread server = new Thread(new DemoPageServer());
 
@@ -38,7 +38,7 @@ public class IntegrationTests {
   }
 
   @Test
-  public void runTestSuites(){
+  public void runTestSuite(){
     SahiTestSuite suite = null;
     BrowserTypesLoader browserLoader = new BrowserTypesLoader();
     BrowserType browserType = browserLoader.getBrowserType("firefox");
