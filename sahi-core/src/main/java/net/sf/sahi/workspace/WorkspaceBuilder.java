@@ -103,6 +103,14 @@ public class WorkspaceBuilder {
     final String template = this.getClass().getResource("userdata_template").getPath();
     final String userConfig = Utils.concatPaths(target, USER_CONFIG_ROOT);
 
+    if (!new File(template).exists()) {
+      throw new RuntimeException("Userdata template not found at '"+template+"'");
+    }
+
+    if (!new File(template).exists()) {
+      throw new RuntimeException("Userdata target not found at '"+userConfig+"'");
+    }
+
     createAndCopyDirectory(template, userConfig);
   }
 
