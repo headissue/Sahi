@@ -15,6 +15,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.net.URISyntaxException;
 import java.util.Date;
 
 import static org.junit.Assert.assertEquals;
@@ -43,7 +44,12 @@ public class TestApiIntegration {
     BrowserTypesLoader browserLoader = new BrowserTypesLoader();
     BrowserType browserType = browserLoader.getBrowserType("firefox");
     Session session = Session.getInstance("1");
-    String suitePath = this.getClass().getClassLoader().getResource("integration").getPath();
+    String suitePath = null;
+    try {
+      suitePath = this.getClass().getClassLoader().getResource("integration").toURI().getPath();
+    } catch (URISyntaxException e) {
+      throw new RuntimeException(e);
+    }
     String base = "http://localhost:7733";
     boolean isSingleSession = true;
     final int threads = 1;

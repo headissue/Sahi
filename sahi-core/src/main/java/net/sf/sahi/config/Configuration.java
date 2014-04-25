@@ -22,6 +22,7 @@ import net.sf.sahi.util.Utils;
 import net.sf.sahi.workspace.WorkspaceBuilder;
 
 import java.io.*;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Properties;
 import java.util.logging.Logger;
@@ -121,7 +122,12 @@ public class Configuration {
       userDataDir = workingDirectory;
 
 
-      String propsPath = Configuration.class.getResource("sahi.properties").getPath();
+      String propsPath = null;
+      try {
+        propsPath = Configuration.class.getResource("sahi.properties").toURI().getPath();
+      } catch (URISyntaxException e) {
+        throw new RuntimeException(e);
+      }
       // TODO log if needed
       //System.out.println("Sahi properties file = " + propsPath);
 
@@ -840,7 +846,7 @@ public class Configuration {
   }
 
   public static String getOSPropertiesFile() throws Exception {
-    return Utils.concatPaths(getConfigPath(), Configuration.class.getResource("os.properties").getPath());
+    return Utils.concatPaths(getConfigPath(), Configuration.class.getResource("os.properties").toURI().getPath());
   }
 
   public static String getVersion() {

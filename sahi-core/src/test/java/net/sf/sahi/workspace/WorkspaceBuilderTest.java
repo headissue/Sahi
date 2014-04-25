@@ -18,7 +18,7 @@ import static org.junit.Assert.assertTrue;
 public class WorkspaceBuilderTest {
   @Test
   public void testBuild() throws Exception {
-    String workingDirectory = Utils.concatPaths(this.getClass().getResource(".").getPath(), "tmp");
+    String workingDirectory = Utils.concatPaths(this.getClass().getResource(".").toURI().getPath(), "tmp");
     WorkspaceBuilder workspaceBuilder = new WorkspaceBuilder(workingDirectory);
     workspaceBuilder.build();
     assertTrue(new File(workingDirectory).exists());
