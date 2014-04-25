@@ -71,7 +71,7 @@ public class Configuration {
    * invoking Proxy.start()
    */
   public static void init() {
-    init(".", "userdata");
+    init(".", new File("./userdata").getAbsolutePath());
   }
 
   public static void init(String basePath) {

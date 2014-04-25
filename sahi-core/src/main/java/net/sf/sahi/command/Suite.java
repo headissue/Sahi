@@ -122,9 +122,9 @@ public class Suite {
     }.start();
   }
 
-  private SahiTestSuite prepareSuite(String suitePath, String base, String browser, String sessionId,
-                                     String browserOption, String browserProcessName, String threadCapacity, boolean useSystemProxy,
-                                     boolean isSingleSession, HttpRequest request) {
+  public SahiTestSuite prepareSuite(String suitePath, String base, String browser, String sessionId,
+                                    String browserOption, String browserProcessName, String threadCapacity, boolean useSystemProxy,
+                                    boolean isSingleSession, HttpRequest request) {
     final SahiTestSuite suite = new SahiTestSuite(net.sf.sahi.config.Configuration.getAbsoluteUserPath(suitePath),
       base, browser, sessionId, browserOption, browserProcessName, isSingleSession);
     int threads = 1;
@@ -139,10 +139,13 @@ public class Suite {
     } catch (IOException e) {
       e.printStackTrace();
     }
-    suite.setExtraInfo(request.getParameter("extraInfo"));
-    suite.setInitJS(request.getParameter("initJS"));
-    setReporters(suite, request);
-    setIssueCreators(suite, request);
+
+    if (request != null) {
+      suite.setExtraInfo(request.getParameter("extraInfo"));
+      suite.setInitJS(request.getParameter("initJS"));
+      setReporters(suite, request);
+      setIssueCreators(suite, request);
+    }
     return suite;
   }
 
