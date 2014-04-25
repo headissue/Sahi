@@ -1,6 +1,5 @@
 package net.sf.sahi.workspace;
 
-import com.sun.jndi.toolkit.url.Uri;
 import net.sf.sahi.util.FileUtils;
 import net.sf.sahi.util.Utils;
 
@@ -38,6 +37,8 @@ public class WorkspaceBuilder {
       copyNeededFiles();
     } catch (IOException e) {
       throw new RuntimeException(e);
+    } catch (URISyntaxException e) {
+      throw new RuntimeException(e);
     }
   }
 
@@ -64,7 +65,7 @@ public class WorkspaceBuilder {
     }
   }
 
-  public void copyNeededFiles() throws IOException {
+  public void copyNeededFiles() throws IOException, URISyntaxException {
     copyFireFoxProfile();
     copyUserDataConfig();
     copyRootCaAndKey();
