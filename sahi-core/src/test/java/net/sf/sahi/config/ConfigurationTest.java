@@ -1,9 +1,9 @@
 package net.sf.sahi.config;
 
+import net.sf.sahi.util.Utils;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.File;
 import java.util.Iterator;
 import java.util.Properties;
 
@@ -33,7 +33,7 @@ public class ConfigurationTest {
   @Before
   public void setUp() throws Exception {
     basePath = ".";
-    userDataDirectory = new File(basePath, "userdata/").getCanonicalPath().replace('\\', '/');
+    userDataDirectory = Utils.concatPaths(basePath, "userdata");
   }
 
   @Test
@@ -55,7 +55,7 @@ public class ConfigurationTest {
 
   @Test
   public void testInit() {
-    Configuration.init(basePath + "", userDataDirectory);
+    Configuration.init(basePath);
     assertEquals(userDataDirectory + "/logs/playback", Configuration.getPlayBackLogsRoot().replace('\\', '/'));
     assertEquals(userDataDirectory + "/certs", Configuration.getCertsPath().replace('\\', '/'));
     assertEquals(userDataDirectory + "/temp/download", Configuration.tempDownloadDir().replace('\\', '/'));

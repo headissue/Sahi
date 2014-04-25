@@ -12,16 +12,16 @@ import java.io.IOException;
 
 public class WorkspaceBuilder {
 
-  private static final String BROWSER_PROFILES = "userdata/browser";
+  private static final String BROWSER_PROFILES = "browser";
   private static final String FIREFOX_PREFIX = "ff/profiles/sahi";
   // Todo create as needed
   private static final int BROWSER_PROFILE_NUMBER = 10;
   private String target;
 
-  private static final String CERTS_ROOT = "userdata/certs";
-  private static final String DOWNLOAD_ROOT = "userdata/downloads";
-  private static final String USER_CONFIG_ROOT = "userdata/config";
-  final private String LOGS_ROOT = "userdata/logs";
+  private static final String CERTS_ROOT = "certs";
+  private static final String DOWNLOAD_ROOT = "downloads";
+  private static final String USER_CONFIG_ROOT = "config";
+  final private String LOGS_ROOT = "logs";
 
   public WorkspaceBuilder(String target) {
     this.target = target;

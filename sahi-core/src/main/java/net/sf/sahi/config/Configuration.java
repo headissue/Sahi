@@ -118,7 +118,7 @@ public class Configuration {
     try {
       basePath = basePath1;
       buildWorkspace(workingDirectory);
-      userDataDir = Utils.concatPaths(workingDirectory, "userdata");
+      userDataDir = workingDirectory;
 
 
       String propsPath = Configuration.class.getResource("sahi.properties").getPath();
