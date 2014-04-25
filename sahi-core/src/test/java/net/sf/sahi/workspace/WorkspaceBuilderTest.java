@@ -4,7 +4,12 @@ import net.sf.sahi.util.Utils;
 import org.junit.Test;
 
 import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -48,5 +53,13 @@ public class WorkspaceBuilderTest {
   @Test
   public void testCopyFile() throws Exception {
 
+  }
+
+  @Test
+  public void testEqualsInpath() throws MalformedURLException, URISyntaxException {
+    URL url = new URL("http://www.www/a=b/c");
+    assertEquals(new URI(url.toString()), url.toURI());
+    assertEquals(new URI(url.toString()).getPath(), url.toURI().getPath());
+    assertEquals("/a=b/c", url.toURI().getPath());
   }
 }

@@ -5,7 +5,6 @@ import net.sf.sahi.util.Utils;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
 import java.net.URISyntaxException;
 
 /**
@@ -86,7 +85,7 @@ public class WorkspaceBuilder {
     }
   }
 
-  private void copyRootCaAndKey() {
+  private void copyRootCaAndKey() throws URISyntaxException {
     final String template = getPath("certs");
     final String certsDir = Utils.concatPaths(target, CERTS_ROOT);
 
@@ -104,8 +103,7 @@ public class WorkspaceBuilder {
   }
 
   private String getPath(String res) throws URISyntaxException {
-    URI uri = new URI(this.getClass().getResource(res).toString());
-    return uri.getPath();
+    return this.getClass().getResource(res).toURI().getPath();
   }
 
   private void copyUserDataConfig() throws URISyntaxException {
