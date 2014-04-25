@@ -5,6 +5,7 @@ import net.sf.sahi.util.Utils;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.net.URISyntaxException;
 
 /**
@@ -103,7 +104,8 @@ public class WorkspaceBuilder {
   }
 
   private void copyUserDataConfig() throws URISyntaxException {
-    final String template = this.getClass().getResource("userdata_template").toURI().toString();
+    URI uri = new URI(this.getClass().getResource("userdata_template").toString());
+    final String template = uri.getPath();
     final String userConfig = Utils.concatPaths(target, USER_CONFIG_ROOT);
 
     if (!new File(template).exists()) {
