@@ -1,4 +1,4 @@
-package com.headissue.sahi.com.headissue.sahi.integration;
+package com.headissue.sahi.integration;
 
 import com.headissue.demopages.DemoPageServer;
 import net.sf.sahi.Proxy;
