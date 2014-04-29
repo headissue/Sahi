@@ -35,6 +35,7 @@ public class WorkspaceBuilderTest {
     assertTrue(new File(workingDirectory, "config/log.properties").exists());
     assertTrue(new File(workingDirectory, "config/userdata.properties").exists());
     assertTrue(new File(workingDirectory, "config/browser_types.xml").exists());
+    assertTrue(new File(workingDirectory, "phantomscript/phantom.js").exists());
   }
 
   @Test

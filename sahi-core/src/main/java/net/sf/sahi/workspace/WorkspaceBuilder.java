@@ -72,6 +72,7 @@ public class WorkspaceBuilder {
     copyUserDataConfig();
     copyRootCaAndKey();
     copyBrowserXml();
+    copyPhantomScripts();
   }
 
   private void copyBrowserXml() throws IOException, URISyntaxException {
@@ -86,7 +87,7 @@ public class WorkspaceBuilder {
 
   private void renameFile(File src, File dest) throws IOException{
     if (!src.renameTo(dest)){
-      throw new IOException("did not copy");
+      throw new IOException("could not rename");
     }
   }
 
@@ -143,6 +144,13 @@ public class WorkspaceBuilder {
     resources.add("log.properties");
     resources.add("userdata.properties");
     File destDir = new File(Utils.concatPaths(target, USER_CONFIG_ROOT));
+    copyResources(resources, destDir);
+  }
+
+ private void copyPhantomScripts() throws IOException {
+    List<String> resources = new LinkedList<>();
+    resources.add("phantom.js");
+    File destDir = new File(Utils.concatPaths(target, "phantomscript"));
     copyResources(resources, destDir);
   }
 
