@@ -1,9 +1,10 @@
 package net.sf.sahi.util;
 
+import net.sf.sahi.config.Configuration;
+
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
-
-import net.sf.sahi.config.Configuration;
 
 /**
  * Sahi - Web Automation and Test Tool
@@ -36,8 +37,8 @@ public class OSUtils {
 
   public static void init() {
     try {
-//			System.out.println("Sahi OS properties file = " + Configuration.getOSPropertiesFile());
-      Configuration.loadProperties(Configuration.getOSPropertiesFile(), properties);
+
+      Configuration.loadProperties(new FileInputStream(Configuration.getOSPropertiesFile()), properties);
     } catch (IOException e) {
       e.printStackTrace();
     } catch (Exception e) {

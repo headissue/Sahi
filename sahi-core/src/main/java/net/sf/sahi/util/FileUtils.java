@@ -17,10 +17,10 @@
  */
 package net.sf.sahi.util;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import com.google.common.io.Files;
+import net.sf.sahi.config.Configuration;
+
+import java.io.*;
 import java.nio.channels.FileChannel;
 
 public class FileUtils {
@@ -69,5 +69,44 @@ public class FileUtils {
   public static String cleanFileName(String fileName) {
     if (fileName == null) return fileName;
     return fileName.replaceAll("[\\\\/:*?\"<>|]", "");
+  }
+
+  public static File copyToTempFile(String filename) {
+    File tempProp = null;
+    InputStream in = null;
+    FileOutputStream out = null;
+    try {
+      File tempDir;
+      tempDir = Files.createTempDir();
+      in = Configuration.class.getResourceAsStream(filename);
+      tempProp = new File(tempDir, filename);
+      out = new FileOutputStream(tempProp);
+
+      int read = 0;
+      byte[] bytes = new byte[1024];
+
+      while ((read = in.read(bytes)) != -1) {
+        out.write(bytes, 0, read);
+      }
+    } catch (IOException e) {
+      e.printStackTrace();
+    } finally {
+      if (in != null) {
+        try {
+          in.close();
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
+      }
+      if (out != null) {
+        try {
+          out.close();
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
+
+      }
+    }
+    return tempProp;
   }
 }

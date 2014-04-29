@@ -32,7 +32,7 @@ public class TestApiIntegration {
 
   @Before
   public void setup() throws Exception {
-    Configuration.init("../sahi-core");
+    Configuration.init("../sahi-core", "./userdata");
     proxy.start(true);
     server.start();
 
@@ -46,7 +46,7 @@ public class TestApiIntegration {
     Session session = Session.getInstance("1");
     String suitePath = null;
     try {
-      suitePath = this.getClass().getClassLoader().getResource("integration").toURI().getPath();
+      suitePath = this.getClass().getResource("/integration").toURI().getPath();
     } catch (URISyntaxException e) {
       throw new RuntimeException(e);
     }

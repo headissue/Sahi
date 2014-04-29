@@ -22,7 +22,6 @@ import net.sf.sahi.util.Utils;
 import net.sf.sahi.workspace.WorkspaceBuilder;
 
 import java.io.*;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Properties;
 import java.util.logging.Logger;
@@ -122,13 +121,9 @@ public class Configuration {
       userDataDir = workingDirectory;
 
 
-      String propsPath = null;
-      try {
-        propsPath = Configuration.class.getResource("sahi.properties").toURI().getPath();
-      } catch (URISyntaxException e) {
-        throw new RuntimeException(e);
-      }
-      // TODO log if needed
+      InputStream props;
+      props = Configuration.class.getResourceAsStream("sahi.properties");
+       // TODO log if needed
       //System.out.println("Sahi properties file = " + propsPath);
 
       String userPropsPath = Utils.concatPaths(userDataDir, SAHI_USER_PROPERTIES);
@@ -136,7 +131,7 @@ public class Configuration {
       //System.out.println("Sahi user properties file = " + userPropsPath);
 
       Properties properties = new Properties();
-      loadProperties(propsPath, properties);
+      loadProperties(props, properties);
       userProperties = new Properties(properties);
       loadProperties(userPropsPath, userProperties);
       System.setProperty("java.util.logging.config.file", LOG_PROPERITES);
@@ -175,20 +170,17 @@ public class Configuration {
     }
   }
 
-  public static void loadProperties(String sahiProperties, Properties props) throws FileNotFoundException,
-    IOException {
+  public static void loadProperties(String sahiProperties, Properties props) throws IOException {
     FileInputStream inStream = new FileInputStream(sahiProperties);
     props.load(inStream);
     inStream.close();
   }
 
-  public static Properties loadProperties(File props) throws IOException {
-    FileInputStream inStream = new FileInputStream(props.getAbsolutePath());
-    Properties thisProperties = new Properties();
-    thisProperties.load(inStream);
-    inStream.close();
-    return thisProperties;
+  public static void loadProperties(InputStream sahiProperties, Properties props) throws IOException {
+    props.load(sahiProperties);
+    sahiProperties.close();
   }
+
 
   /**
    * Initializes Sahi's properties and relative paths and additionally sets
@@ -845,8 +837,10 @@ public class Configuration {
     return Utils.concatPaths(getConfigPath(), "../docs/changelog.txt");
   }
 
-  public static String getOSPropertiesFile() throws Exception {
-    return Utils.concatPaths(getConfigPath(), Configuration.class.getResource("os.properties").toURI().getPath());
+  public static File getOSPropertiesFile() throws Exception {
+    String filename = "os.properties";
+    File tempProp = FileUtils.copyToTempFile(filename);
+    return tempProp;
   }
 
   public static String getVersion() {

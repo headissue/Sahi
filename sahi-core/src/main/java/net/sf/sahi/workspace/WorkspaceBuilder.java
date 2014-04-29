@@ -74,7 +74,10 @@ public class WorkspaceBuilder {
 
   private void copyBrowserXml() throws IOException, URISyntaxException {
     final String userConfig = Utils.concatPaths(target, USER_CONFIG_ROOT);
+
 // FIXME OS independence?
+    if (new File(userConfig, "browser_types.xml").exists()) return;
+
     copyFile(getPath("browser_types"), userConfig, "linux.xml");
     renameFile(new File(userConfig, "linux.xml"), new File(userConfig, "browser_types.xml"));
   }
@@ -88,6 +91,7 @@ public class WorkspaceBuilder {
   private void copyRootCaAndKey() throws URISyntaxException {
     final String template = getPath("certs");
     final String certsDir = Utils.concatPaths(target, CERTS_ROOT);
+    if (new  File(certsDir).exists() && new File(certsDir, "ca.crt").exists()) return;
 
     createAndCopyDirectory(template, certsDir);
   }
@@ -103,32 +107,32 @@ public class WorkspaceBuilder {
   }
 
   private String getPath(String res) throws URISyntaxException {
-    return this.getClass().getResource(res).toURI().getPath();
+   return this.getClass().getResource(res).toURI().getPath();
   }
 
   private void copyUserDataConfig() throws URISyntaxException {
     final String template = getPath("userdata_template");
     final String userConfig = Utils.concatPaths(target, USER_CONFIG_ROOT);
 
-    System.out.println("template " + template);
-    System.out.println("target " + userConfig);
+    if (new File(userConfig).exists()) return;
 
     if (!new File(template).exists()) {
       throw new RuntimeException("Userdata template not found at '"+template+"'");
-    }
-
-    if (!new File(template).exists()) {
-      throw new RuntimeException("Userdata target not found at '"+userConfig+"'");
     }
 
     createAndCopyDirectory(template, userConfig);
   }
 
   private void copyFireFoxProfile() throws IOException, URISyntaxException {
-    final String template = getPath("ff_profile_template");
     final String profile = Utils.concatPaths(target, BROWSER_PROFILES);
-
     File toFile = new File(profile);
+    if (toFile.exists()) return;
+
+    final String template = getPath("ff_profile_template");
+    if (!new File(template).exists()) {
+      // FIXME logging?
+    }
+
     toFile.mkdirs();
     String prefix = FIREFOX_PREFIX;
 
