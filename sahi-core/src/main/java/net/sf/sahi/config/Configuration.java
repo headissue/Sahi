@@ -839,7 +839,7 @@ public class Configuration {
 
   public static File getOSPropertiesFile() throws Exception {
     String filename = "os.properties";
-    File tempProp = FileUtils.copyToTempFile(filename);
+    File tempProp = FileUtils.copyToTempFile(filename, Configuration.class);
     return tempProp;
   }
 

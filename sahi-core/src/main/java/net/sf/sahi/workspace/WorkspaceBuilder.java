@@ -6,6 +6,9 @@ import net.sf.sahi.util.Utils;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Created by wormi on 21.03.14.
@@ -15,7 +18,6 @@ public class WorkspaceBuilder {
 
   private static final String BROWSER_PROFILES = "browser";
   private static final String FIREFOX_PREFIX = "ff/profiles/sahi";
-  // Todo create as needed
   private static final int BROWSER_PROFILE_NUMBER = 10;
   private String target;
 
@@ -73,13 +75,13 @@ public class WorkspaceBuilder {
   }
 
   private void copyBrowserXml() throws IOException, URISyntaxException {
-    final String userConfig = Utils.concatPaths(target, USER_CONFIG_ROOT);
-
-// FIXME OS independence?
-    if (new File(userConfig, "browser_types.xml").exists()) return;
-
-    copyFile(getPath("browser_types"), userConfig, "linux.xml");
-    renameFile(new File(userConfig, "linux.xml"), new File(userConfig, "browser_types.xml"));
+    List<String> resources = new LinkedList<>();
+    resources.add("linux.xml");
+    File destDir = new File(Utils.concatPaths(target, USER_CONFIG_ROOT));
+    copyResources(resources, destDir);
+    if (new File(destDir, "linux.xml").exists()) {
+      renameFile(new File(destDir, "linux.xml"), new File(destDir, "browser_types.xml"));
+    }
   }
 
   private void renameFile(File src, File dest) throws IOException{
@@ -88,77 +90,67 @@ public class WorkspaceBuilder {
     }
   }
 
-  private void copyRootCaAndKey() throws URISyntaxException {
-    final String template = getPath("certs");
-    final String certsDir = Utils.concatPaths(target, CERTS_ROOT);
-    if (new  File(certsDir).exists() && new File(certsDir, "ca.crt").exists()) return;
+  /**
+   * Copies the mentioned resources from the ff_profile_template directory to the browser/ff/profiles/sahi0/
+   * directory.
+   * @throws IOException
+   */
+  private void copyFireFoxProfile() throws IOException {
+    List<String> resources = new LinkedList<>();
+    resources.add("cert8.db");
+    resources.add("prefs.js");
 
-    createAndCopyDirectory(template, certsDir);
-  }
-
-  private void createAndCopyDirectory(String s, String d) {
-    File fromDir = new File(s);
-    File toDir = new File(d);
-    toDir.mkdirs();
-    for (int i = 0; i < fromDir.list().length; i++) {
-      String thisFile = fromDir.list()[i];
-      copyFile(s, d, thisFile);
-    }
-  }
-
-  private String getPath(String res) throws URISyntaxException {
-   return this.getClass().getResource(res).toURI().getPath();
-  }
-
-  private void copyUserDataConfig() throws URISyntaxException {
-    final String template = getPath("userdata_template");
-    final String userConfig = Utils.concatPaths(target, USER_CONFIG_ROOT);
-
-    if (new File(userConfig).exists()) return;
-
-    if (!new File(template).exists()) {
-      throw new RuntimeException("Userdata template not found at '"+template+"'");
-    }
-
-    createAndCopyDirectory(template, userConfig);
-  }
-
-  private void copyFireFoxProfile() throws IOException, URISyntaxException {
-    final String profile = Utils.concatPaths(target, BROWSER_PROFILES);
-    File toFile = new File(profile);
-    if (toFile.exists()) return;
-
-    final String template = getPath("ff_profile_template");
-    if (!new File(template).exists()) {
-      // FIXME logging?
-    }
-
-    toFile.mkdirs();
     String prefix = FIREFOX_PREFIX;
+    File destDir = new File(Utils.concatPaths(target, BROWSER_PROFILES));
+    destDir.mkdirs();
+    destDir = new File(Utils.concatPaths(destDir.getCanonicalPath(), prefix + 0));
 
-    String profile0 = Utils.concatPaths(toFile.getCanonicalPath(), prefix + 0);
-    if (!new File(profile0).exists()) {
-      try {
-        FileUtils.copyDir(template, profile0);
-      } catch (InterruptedException e) {
-        e.printStackTrace();
-      }
-    }
+    copyResources(resources, destDir);
+  }
 
-    for (int i = 1; i < BROWSER_PROFILE_NUMBER; i++) {
-      String profileN = Utils.concatPaths(toFile.getCanonicalPath(), prefix + i);
-      copyFile(profile0, profileN, "prefs.js");
+  private void copyResources(List<String> resources, File destDir) throws IOException {
+    destDir.mkdirs();
+    for (Iterator<String> iterator = resources.iterator(); iterator.hasNext(); ) {
+      String next = iterator.next();
+      if (new File(destDir, next).exists()) continue;
+      File f = getResourceFile(next, WorkspaceBuilder.class);
+      copyFile(f, destDir, next);
     }
   }
 
-  public static void copyFile(final String origDir, final String destDir, final String fileName) {
-    try {
-      final File src = new File(origDir, fileName);
-      if (src.exists())
-        FileUtils.copyFile(src, new File(destDir, fileName));
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
+  private void copyRootCaAndKey() throws  IOException {
+    List<String> resources = new LinkedList<>();
+    resources.add("ca.crt");
+    resources.add("ca.crt.key");
+    File destDir = new File(Utils.concatPaths(target, CERTS_ROOT));
+    copyResources(resources, destDir);
+  }
+
+
+
+  private File getResourceFile(String res, Class location) throws IOException {
+    File f = FileUtils.copyToTempFile(res, location);
+    if (f == null) throw new IOException("Resource " + res + "not found");
+    return f;
+  }
+
+  private void copyUserDataConfig() throws IOException {
+    List<String> resources = new LinkedList<>();
+    resources.add("download_contenttypes.txt");
+    resources.add("download_urls.txt");
+    resources.add("exclude_inject.txt");
+    resources.add("jira.properties");
+    resources.add("log.properties");
+    resources.add("userdata.properties");
+    File destDir = new File(Utils.concatPaths(target, USER_CONFIG_ROOT));
+    copyResources(resources, destDir);
+  }
+
+
+
+  public static void copyFile(File origFile, File destDir, String fileName) throws IOException {
+    if (!origFile.exists()) throw new IOException("source file " + origFile + "not found");
+    FileUtils.copyFile(origFile, new File(destDir, fileName));
   }
 
 
