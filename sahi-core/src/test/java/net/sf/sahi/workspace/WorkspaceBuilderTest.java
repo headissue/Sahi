@@ -25,9 +25,6 @@ public class WorkspaceBuilderTest {
     assertTrue(new File(workingDirectory, "logs").exists());
     assertTrue(new File(workingDirectory, "browser/ff/profiles/sahi0").exists());
     assertTrue(new File(workingDirectory, "browser/ff/profiles/sahi0/prefs.js").exists());
-    assertTrue(new File(workingDirectory, "browser/ff/profiles/sahi0/cert8.db").exists());
-    assertTrue(new File(workingDirectory, "certs/ca.crt").exists());
-    assertTrue(new File(workingDirectory, "certs/ca.crt.key").exists());
     assertTrue(new File(workingDirectory, "config/download_contenttypes.txt").exists());
     assertTrue(new File(workingDirectory, "config/download_urls.txt").exists());
     assertTrue(new File(workingDirectory, "config/exclude_inject.txt").exists());
