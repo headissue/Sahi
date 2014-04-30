@@ -165,6 +165,7 @@ public class SahiTestSuite {
   }
 
   private void executeTest(final int threadNo) throws Exception {
+    SahiTestSuite.debug("execute Test");
     TestLauncher test = (TestLauncher) tests.get(currentTestIndex);
     test.setThreadNo(threadNo, isMultiThreaded);
     Session session = Session.getInstance(test.getChildSessionId());
@@ -231,7 +232,12 @@ public class SahiTestSuite {
     session.setStatus(status);
   }
 
+  public static void debug(String txt) {
+    System.out.println(txt);
+  }
+
   public void run() {
+    SahiTestSuite.debug("start suite");
     Session session = Session.getInstance(this.sessionId);
     session.setStatus(Status.RUNNING);
     if (useSystemProxy) {
@@ -290,6 +296,7 @@ public class SahiTestSuite {
 
   private synchronized void executeSuite() {
     try {
+      SahiTestSuite.debug("launch browser");
       launchBrowserForSingleSession();
     } catch (Exception e1) {
       e1.printStackTrace();
@@ -327,6 +334,7 @@ public class SahiTestSuite {
   }
 
   public void launchBrowserForSingleSession() throws Exception {
+    SahiTestSuite.debug("issinglesession " + isSingleSession);
     if (isSingleSession) {
       singleSessionBrowserLauncher = new BrowserLauncher(browser, browserProcessName, browserOption, useSystemProxy);
       singleSessionBrowserLauncher.openURL(singleSessionBrowserLauncher.getPlayerAutoURL(singleSessionChildSessionId, base, isSingleSession));
