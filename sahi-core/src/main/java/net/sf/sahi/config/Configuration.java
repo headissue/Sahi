@@ -17,6 +17,7 @@
  */
 package net.sf.sahi.config;
 
+import com.google.common.io.Files;
 import net.sf.sahi.util.FileUtils;
 import net.sf.sahi.util.Utils;
 import net.sf.sahi.workspace.WorkspaceBuilder;
@@ -57,6 +58,7 @@ public class Configuration {
   private static String[] downloadURLList;
   private static String[] blockableSSLDomainList;
   private static String domainFixInfo;
+  private static File tempDir;
 
   public Properties getUserProperties() {
     return userProperties;
@@ -839,7 +841,8 @@ public class Configuration {
 
   public static File getOSPropertiesFile() throws Exception {
     String filename = "os.properties";
-    File tempProp = FileUtils.copyToTempFile(filename, Configuration.class, null);
+    if (tempDir == null) tempDir = Files.createTempDir();
+    File tempProp = FileUtils.copyToTempFile(filename, Configuration.class, tempDir);
     return tempProp;
   }
 

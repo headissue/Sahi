@@ -11,6 +11,7 @@ import net.sf.sahi.session.Status;
 import net.sf.sahi.test.SahiTestSuite;
 import net.sf.sahi.util.BrowserType;
 import net.sf.sahi.util.BrowserTypesLoader;
+import net.sf.sahi.util.Utils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,7 +28,6 @@ import static org.junit.Assert.assertEquals;
 public class TestApiIntegration {
 
   Thread server = new Thread(new DemoPageServer());
-
   Proxy proxy = new Proxy();
 
   @Before
@@ -42,6 +42,14 @@ public class TestApiIntegration {
   public void runTestSuite(){
     SahiTestSuite suite = null;
     BrowserTypesLoader browserLoader = new BrowserTypesLoader();
+
+    String userdata = Configuration.getUserDataDir();
+
+    try {
+      Utils.executeCommand(Utils.getCommandTokens("certutil -A -n Sahi_Root -t \"C,,\" -i "+userdata+"/certs/ca.crt -d "+ userdata +"/browser/ff/profiles/sahi0"));
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
     BrowserType browserType = browserLoader.getBrowserType("firefox");
     Session session = Session.getInstance("1");
     String suitePath = null;
