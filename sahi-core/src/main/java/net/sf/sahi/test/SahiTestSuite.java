@@ -17,13 +17,6 @@
  */
 package net.sf.sahi.test;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.Semaphore;
-
 import net.sf.sahi.config.Configuration;
 import net.sf.sahi.issue.IssueCreator;
 import net.sf.sahi.issue.IssueReporter;
@@ -35,6 +28,9 @@ import net.sf.sahi.session.Session;
 import net.sf.sahi.session.Status;
 import net.sf.sahi.util.ProxySwitcher;
 import net.sf.sahi.util.Utils;
+
+import java.util.*;
+import java.util.concurrent.Semaphore;
 
 public class SahiTestSuite {
 
@@ -296,7 +292,7 @@ public class SahiTestSuite {
     try {
       launchBrowserForSingleSession();
     } catch (Exception e1) {
-      //e1.printStackTrace();
+      e1.printStackTrace();
       abort();
       return;
     }

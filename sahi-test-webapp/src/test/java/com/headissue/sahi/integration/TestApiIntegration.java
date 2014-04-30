@@ -64,8 +64,8 @@ public class TestApiIntegration {
     // launches browser with pre configured browser settings
     suite = new Suite().prepareSuite(suitePath, base, browserType.path(), session.id(), browserType.options(), browserType.processName(), ("" + threads), browserType.useSystemProxy(), isSingleSession, null);
     Date d = new Date();
-    suite.addReporter(new JunitReporter("./target/junitReporter/"+d.toLocaleString()));
-    suite.addReporter(new HtmlReporter("./target/htmlReporter/"+d.toLocaleString()));
+    suite.addReporter(new JunitReporter("./target/junitReporter/"));
+    suite.addReporter(new HtmlReporter("./target/htmlReporter/"));
     suite.loadScripts();
     suite.run();
     // to make sure the status is set

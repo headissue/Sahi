@@ -1,12 +1,12 @@
 package net.sf.sahi.test;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-
 import net.sf.sahi.config.Configuration;
 import net.sf.sahi.util.BrowserType;
 import net.sf.sahi.util.ProxySwitcher;
 import net.sf.sahi.util.Utils;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 
 /**
  * Sahi - Web Automation and Test Tool
@@ -53,7 +53,7 @@ public class BrowserLauncher {
       toggleProxy(true);
     }
     String cmd = buildCommand(url);
-    //System.out.println(">>>> " + cmd);
+    System.out.println(">>>> " + cmd);
     cmd = cmd.replaceAll("%20", " ").replaceAll("[&]", "__SahiAmpersandSahi__");
     cmd = cmd.replaceAll("[$]userDir", Configuration.getUserDataDir().replace('\\', '/'));
     cmd = cmd.replaceAll("[$]threadNo", "0"); // if this has not been substituted, change it to 0.
