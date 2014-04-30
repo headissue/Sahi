@@ -49,7 +49,6 @@ public class BrowserLauncher {
   }
 
   public ProcessHelper openURL(final String url) throws Exception {
-    SahiTestSuite.debug("start browser");
     if (useProxy) {
       toggleProxy(true);
     }
