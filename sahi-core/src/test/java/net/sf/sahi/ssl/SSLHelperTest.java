@@ -68,11 +68,6 @@ public class SSLHelperTest {
     sslHelper.generateKeyAndPutIntoKeyStore("www.test.com");
     KeyStore _keystore = sslHelper.getKeyStore();
     Certificate[] certificateChain = _keystore.getCertificateChain("www.test.com");
-    System.out.println(_keystore);
     assertEquals(2, certificateChain.length);
-    X509Certificate _cert = (X509Certificate) _keystore.getCertificate("www.test.com");
-    System.out.println(_cert);
-
-
   }
 }

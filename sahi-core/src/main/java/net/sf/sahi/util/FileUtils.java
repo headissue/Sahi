@@ -17,8 +17,6 @@
  */
 package net.sf.sahi.util;
 
-import com.google.common.io.Files;
-
 import java.io.*;
 import java.nio.channels.FileChannel;
 
@@ -75,7 +73,6 @@ public class FileUtils {
     InputStream in = null;
     FileOutputStream out = null;
     try {
-      if (tempDir == null) tempDir = Files.createTempDir();
       in = resourceLocation.getResourceAsStream(filename);
       temp = new File(tempDir, filename);
       out = new FileOutputStream(temp);
@@ -107,9 +104,5 @@ public class FileUtils {
     }
 
     return temp;
-  }
-
-  public static File copyToTempFile(String res, Class location) {
-    return copyToTempFile(res, location, null);
   }
 }

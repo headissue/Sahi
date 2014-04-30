@@ -1,5 +1,6 @@
 package net.sf.sahi.workspace;
 
+import com.google.common.io.Files;
 import net.sf.sahi.util.FileUtils;
 import net.sf.sahi.util.Utils;
 
@@ -30,6 +31,8 @@ public class WorkspaceBuilder {
     this.target = target;
   }
 
+  File tempDir;
+
   public void build(){
     createWorkspaceDirectory();
     createLogRoot();
@@ -37,9 +40,7 @@ public class WorkspaceBuilder {
     createDownloadDirectory();
     try {
       copyNeededFiles();
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    } catch (URISyntaxException e) {
+    } catch (Exception e) {
       throw new RuntimeException(e);
     }
   }
@@ -67,10 +68,9 @@ public class WorkspaceBuilder {
     }
   }
 
-  public void copyNeededFiles() throws IOException, URISyntaxException {
+  public void copyNeededFiles() throws Exception {
     copyFireFoxProfile();
     copyUserDataConfig();
-    copyRootCaAndKey();
     copyBrowserXml();
     copyPhantomScripts();
   }
@@ -98,7 +98,6 @@ public class WorkspaceBuilder {
    */
   private void copyFireFoxProfile() throws IOException {
     List<String> resources = new LinkedList<>();
-    resources.add("cert8.db");
     resources.add("prefs.js");
 
     String prefix = FIREFOX_PREFIX;
@@ -119,18 +118,10 @@ public class WorkspaceBuilder {
     }
   }
 
-  private void copyRootCaAndKey() throws  IOException {
-    List<String> resources = new LinkedList<>();
-    resources.add("ca.crt");
-    resources.add("ca.crt.key");
-    File destDir = new File(Utils.concatPaths(target, CERTS_ROOT));
-    copyResources(resources, destDir);
-  }
-
-
 
   private File getResourceFile(String res, Class location) throws IOException {
-    File f = FileUtils.copyToTempFile(res, location);
+    if (tempDir == null) tempDir = Files.createTempDir();
+    File f = FileUtils.copyToTempFile(res, location, tempDir);
     if (f == null) throw new IOException("Resource " + res + "not found");
     return f;
   }
