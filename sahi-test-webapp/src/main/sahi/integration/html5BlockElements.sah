@@ -1,0 +1,26 @@
+_include("pages/includeAll.js");
+
+$Index.goTo();
+_click(_link("HTML5 tags"));
+
+_assertExists(_header(0));
+_assertExists(_header("headerid"));
+_assertExists(_header("headerclass"));
+_assertExists(_aside(0));
+_assertExists(_nav(0));
+_assertExists(_footer(0));
+_assertExists(_article(0));
+_assertExists(_figure(0));
+_assertExists(_address(0));
+
+
+
+
+
+
+
+
+
+
+
+

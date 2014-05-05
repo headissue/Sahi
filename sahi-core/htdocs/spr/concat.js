@@ -5021,7 +5021,6 @@ Sahi.prototype.prepareADs = function(){
 	this.addAD({tag: "ASIDE", type: null, event:"click", name: "_aside", attributes: ["sahiText", "id", "className", "index"], action: "_click", value: "sahiText"});
 	this.addAD({tag: "FOOTER", type: null, event:"click", name: "_footer", attributes: ["sahiText", "id", "className", "index"], action: "_click", value: "sahiText"});
   this.addAD({tag: "ARTICLE", type: null, event:"click", name: "_article", attributes: ["sahiText", "id", "className", "index"], action: "_click", value: "sahiText"});
-  this.addAD({tag: "MAIN", type: null, event:"click", name: "_main", attributes: ["sahiText", "id", "className", "index"], action: "_click", value: "sahiText"});
   this.addAD({tag: "FIGURE", type: null, event:"click", name: "_figure", attributes: ["sahiText", "id", "className", "index"], action: "_click", value: "sahiText"});
   this.addAD({tag: "ADDRESS", type: null, event:"click", name: "_address", attributes: ["sahiText", "id", "className", "index"], action: "_click", value: "sahiText"});
 };

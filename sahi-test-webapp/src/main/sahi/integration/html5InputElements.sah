@@ -1,0 +1,21 @@
+_include("pages/includeAll.js");
+
+$Index.goTo();
+
+_click(_link("HTML5 input types"));
+_assertExists(_datebox("date"));
+_setValue(_datebox("date"), "2002-03-02");
+_assertEqual("2002-03-02", _getValue(_datebox("date")));
+_assertExists(_numberbox("number"));
+_setValue(_numberbox("number"), "532");
+_assertEqual("532", _getValue(_numberbox("number")));
+_assertExists(_rangebox("range"));
+_setValue(_rangebox("range"), "80");
+_assertEqual("80", _getValue(_rangebox("range")));
+
+
+
+
+
+
+

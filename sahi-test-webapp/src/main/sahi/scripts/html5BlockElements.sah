@@ -1,3 +1,0 @@
-_include("pages/includeAll.js");
-
-$Html5BlockElements.goTo();
