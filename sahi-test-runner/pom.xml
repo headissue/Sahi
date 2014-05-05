@@ -40,10 +40,10 @@
                    <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>
-                            <mainClass>net.sf.sahi.Proxy</mainClass>
+                            <mainClass>net.sf.sahi.test.TestRunner</mainClass>
                         </manifest>
                     </archive>
-                    <finalName>ant-sahi</finalName>
+                    <finalName>testrunner</finalName>
                     <outputDirectory>${project.basedir}/lib</outputDirectory>
                 </configuration>
             </plugin>
