@@ -10,14 +10,14 @@
         <version>1.0</version>
     </parent>
     <groupId>net.sf.sahi</groupId>
-    <artifactId>sahi-ant-runner</artifactId>
+    <artifactId>sahi-test-runner</artifactId>
     <version>4.4</version>
     <packaging>jar</packaging>
     <dependencies>
       <dependency>
           <groupId>net.sf.sahi</groupId>
           <artifactId>sahi-core</artifactId>
-          <version>4.4</version>
+          <version>4.4.0-H7E1</version>
       </dependency>
         <dependency>
             <groupId>javax.mail</groupId>
