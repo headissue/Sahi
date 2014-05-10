@@ -123,19 +123,20 @@ public class Configuration {
       userDataDir = workingDirectory;
 
 
-      InputStream props;
-      props = Configuration.class.getResourceAsStream("sahi.properties");
-       // TODO log if needed
-      //System.out.println("Sahi properties file = " + propsPath);
+      InputStream sahiProperties;
+      sahiProperties = Configuration.class.getResourceAsStream("sahi.properties");
+      Properties properties = new Properties();
+      loadProperties(sahiProperties, properties);
+
 
       String userPropsPath = Utils.concatPaths(userDataDir, SAHI_USER_PROPERTIES);
-      // TODO log if needed
-      //System.out.println("Sahi user properties file = " + userPropsPath);
-
-      Properties properties = new Properties();
-      loadProperties(props, properties);
-      userProperties = new Properties(properties);
+      userProperties = new Properties();
       loadProperties(userPropsPath, userProperties);
+      Properties combinedProperties = new Properties();
+      combinedProperties.putAll(properties);
+      combinedProperties.putAll(userProperties);
+      userProperties=combinedProperties;
+
       System.setProperty("java.util.logging.config.file", LOG_PROPERITES);
       createFolders(new File(getPlayBackLogsRoot()));
       createFolders(new File(getCertsPath()));
@@ -178,9 +179,9 @@ public class Configuration {
     inStream.close();
   }
 
-  public static void loadProperties(InputStream sahiProperties, Properties props) throws IOException {
-    props.load(sahiProperties);
-    sahiProperties.close();
+  public static void loadProperties(InputStream source, Properties propertiesToFill) throws IOException {
+    propertiesToFill.load(source);
+    source.close();
   }
 
 
@@ -656,6 +657,10 @@ public class Configuration {
       // this
       // used?
     }
+  }
+
+  public static String getBasePath() {
+    return basePath;
   }
 
   public static boolean isHttpProxyEnabled() {

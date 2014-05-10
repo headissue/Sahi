@@ -1,9 +1,11 @@
 package net.sf.sahi.config;
 
+import com.google.common.io.Files;
 import net.sf.sahi.util.Utils;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.Properties;
 
@@ -89,5 +91,14 @@ public class ConfigurationTest {
       String key = (String) iterator.next();
       assertNotNull(properties.getProperty(key));
     }
+  }
+
+  @Test
+  public void initReadsUserProperties() throws IOException {
+   Configuration.init(".", Files.createTempDir().getPath());
+    String scripts = Configuration.userProperties.getProperty("scripts.dir");
+    String keytool = Configuration.userProperties.getProperty("keytool.path");
+    assertEquals("forConfigTesting", scripts);
+    assertEquals("keytool", keytool);
   }
 }
