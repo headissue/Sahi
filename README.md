@@ -23,7 +23,7 @@ sahi-test-webapp:
 - set the default run/debug configuration to use the sahi-core module as default working directory (or else your unittests will fail and the dashboard wont start) [how?](http://youtrack.jetbrains.com/issue/IDEA-52112)
 - run the Dashboard.main()
 
-## Packaging and running Sahi from the cloned repo
+## Packaging and running Sahi
 
 Run
 
