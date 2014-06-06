@@ -20,15 +20,19 @@ sahi-test-webapp:
 
 - clone Sahi from this git repo
 - import the project [how?](http://www.jetbrains.com/idea/webhelp/importing-project-from-maven-model.html)
-- set the default run/debug configuration to use the sahi-core module as default working directory (or else your unittests will fail) [how?](http://youtrack.jetbrains.com/issue/IDEA-52112)
+- set the default run/debug configuration to use the sahi-core module as default working directory (or else your unittests will fail and the dashboard wont start) [how?](http://youtrack.jetbrains.com/issue/IDEA-52112)
+- run the Dashboard.main()
 
-## Running Sahi from the cloned repo
+## Packaging and running Sahi from the cloned repo
 
 Run
 
+    cd sahi-core
     mvn package verify
+    cd bin
+    sh dashboard.sh
 
-on the sahi-core project. Then the required jars are built to run sahi with the scripts under sahi-core/bin.
+Then the required jars are built to run sahi with the scripts under sahi-core/bin.
 
 Licenses
 --------
