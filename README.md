@@ -7,11 +7,11 @@
 
 sahi-core:
 
-- Firefox
 - Unix like OS
 
 sahi-test-webapp:
 
+- Firefox
 - [certutil](https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS/tools/NSS_Tools_certutil#__Availability_)
 
 ## Setting up the workspace
