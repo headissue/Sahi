@@ -116,6 +116,13 @@ public class Session {
     return session;
   }
 
+  public static synchronized boolean hasInstance(final String sessionId) {
+    if (sessions.containsKey(sessionId)) {
+      return true;
+    }
+    return false;
+  }
+
   public static synchronized Session getExistingInstance(final String sessionId) {
     return sessions.get(sessionId);
   }

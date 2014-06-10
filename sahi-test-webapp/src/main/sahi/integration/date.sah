@@ -1,0 +1,17 @@
+_include("pages/includeAll.js");
+
+$Index.goTo();
+
+_assertEqual(1266015600000, new Date(2010,1,13).getTime());
+_assertEqual(1263337200000, new Date("2010,1,13").getTime());
+_assertEqual(1263337200000, new Date(["2010","1","13"]).getTime());
+_assertEqual(1263337200000, new Date([2010,1,13]).getTime());
+_assertTrue(1266015600000 <= new Date(2010,1,13).getTime());
+
+var $date1=new Date(2010,1,13);
+
+var $dateText=" 02.02.2010 - 13.01.2010".split("-")[1].split(".");
+$dateText = $dateText.reverse();
+var $date2= new Date($dateText[0],$dateText[1],$dateText[2]);
+_assertTrue($date1.getTime()<=$date2.getTime());
+
