@@ -1,4 +1,9 @@
-if [ ! $SAHI_HOME ] 
+#!/bin/sh
+US=`dirname $0`;
+US=`(cd $US; pwd)`;
+
+
+if [ ! $SAHI_HOME ]
 then
 	# working directory $SAHI_HOME/bin expected
 	export SAHI_HOME=..

@@ -1,4 +1,6 @@
 #!/bin/sh
+US=`dirname $0`;
+US=`(cd $US; pwd)`;
 
 if [ ! $SAHI_HOME ]; then
   export SAHI_HOME=..
