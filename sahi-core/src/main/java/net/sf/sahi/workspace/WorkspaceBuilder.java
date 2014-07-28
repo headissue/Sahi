@@ -80,7 +80,7 @@ public class WorkspaceBuilder {
     resources.add("linux.xml");
     File destDir = new File(Utils.concatPaths(target, USER_CONFIG_ROOT));
     copyResources(resources, destDir);
-    if (new File(destDir, "linux.xml").exists()) {
+    if (!new File(destDir, "browser_types.xml").exists() && new File(destDir, "linux.xml").exists()) {
       renameFile(new File(destDir, "linux.xml"), new File(destDir, "browser_types.xml"));
     }
   }
