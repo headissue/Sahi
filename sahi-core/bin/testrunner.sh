@@ -12,6 +12,6 @@ US=`(cd $US; pwd)`;
 
 java -cp ../lib/sahi-test-runner-4.4-jar-with-dependencies.jar  \
 net.sf.sahi.test.TestRunner \
--test $script -browserType firefox \
+-test $script -browserType phantomjs \
 -baseURL http://sahi.example.com/_s_/dyn/Driver_initialized \
 -threads 1

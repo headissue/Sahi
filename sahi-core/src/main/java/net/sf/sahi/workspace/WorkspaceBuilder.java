@@ -19,13 +19,13 @@ public class WorkspaceBuilder {
 
   private static final String BROWSER_PROFILES = "browser";
   private static final String FIREFOX_PREFIX = "ff/profiles/sahi";
-  private static final int BROWSER_PROFILE_NUMBER = 10;
-  private String target;
-
+  protected static final String BROWSER_TYPES="browser_types.xml";
   private static final String CERTS_ROOT = "certs";
   private static final String DOWNLOAD_ROOT = "downloads";
-  private static final String USER_CONFIG_ROOT = "config";
-  final private String LOGS_ROOT = "logs";
+  protected static final String USER_CONFIG_ROOT = "config";
+  private static final String LOGS_ROOT = "logs";
+
+  private String target;
 
   public WorkspaceBuilder(String target) {
     this.target = target;
@@ -80,8 +80,8 @@ public class WorkspaceBuilder {
     resources.add("linux.xml");
     File destDir = new File(Utils.concatPaths(target, USER_CONFIG_ROOT));
     copyResources(resources, destDir);
-    if (!new File(destDir, "browser_types.xml").exists() && new File(destDir, "linux.xml").exists()) {
-      renameFile(new File(destDir, "linux.xml"), new File(destDir, "browser_types.xml"));
+    if (!new File(destDir, BROWSER_TYPES).exists() && new File(destDir, "linux.xml").exists()) {
+      renameFile(new File(destDir, "linux.xml"), new File(destDir, BROWSER_TYPES));
     }
   }
 
