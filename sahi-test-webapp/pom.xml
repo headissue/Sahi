@@ -47,7 +47,7 @@
         <dependency>
             <groupId>net.sf.sahi</groupId>
             <artifactId>sahi-core</artifactId>
-            <version>4.4.0-H7E1</version>
+            <version>4.4.0-H7E4</version>
         </dependency>
 
     </dependencies>

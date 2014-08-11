@@ -10,7 +10,7 @@
     </parent>
     <groupId>net.sf.sahi</groupId>
     <artifactId>sahi-core</artifactId>
-    <version>4.4.0-H7E3</version>
+    <version>4.4.0-H7E4</version>
     <packaging>jar</packaging>
     <dependencies>
         <dependency>

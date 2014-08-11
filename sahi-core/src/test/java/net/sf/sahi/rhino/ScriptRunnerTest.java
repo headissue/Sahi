@@ -99,7 +99,6 @@ public class ScriptRunnerTest {
   }
 
   private void check(String s) {
-    System.out.println(evaluate(s));
     assertEquals(s.replace('\'', '"'), evaluate(s));
   }
 
