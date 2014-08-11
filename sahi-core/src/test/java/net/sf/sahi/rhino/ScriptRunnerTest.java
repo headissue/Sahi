@@ -1,10 +1,13 @@
 package net.sf.sahi.rhino;
 
+import jdk.nashorn.api.scripting.ScriptObjectMirror;
 import net.sf.sahi.config.Configuration;
 import net.sf.sahi.session.Status;
 import org.junit.Before;
 import org.junit.Test;
 import org.mozilla.javascript.*;
+
+import javax.script.*;
 
 import static org.junit.Assert.*;
 
@@ -51,35 +54,22 @@ public class ScriptRunnerTest {
   }
 
   private String evaluate(String code) {
+
+    ScriptEngineManager scriptManager = new ScriptEngineManager();
+    ScriptEngine nashornEngine = scriptManager.getEngineByName("nashorn");
     String lib = Configuration.getRhinoLibJS();
-    // Creates and enters a Context. The Context stores information
-    // about the execution environment of a script.
-    Context cx = Context.enter();
+    Bindings scope = new SimpleBindings();
+    RhinoScriptRunner runner = new RhinoScriptRunner(code);
+    scope.put("ScriptRunner", runner);
+    Object result;
     try {
-      // Initialize the standard objects (Object, Function, etc.)
-      // This must be done before scripts can be executed. Returns
-      // a scope object that we use in later calls.
-      Scriptable scope = cx.initStandardObjects();
-
-      Object wrappedOut = Context.javaToJS(new RhinoScriptRunner(""), scope);
-      ScriptableObject.putProperty(scope, "ScriptRunner", wrappedOut);
-
-      // Now evaluate the string we've colected.
-      cx.evaluateString(scope, lib, "<cmd>", 1, null);
-      Object result = cx.evaluateString(scope, code + ".toString()", "<cmd>", 1, null);
-
-      // Convert the result to a string and print it.
-      return (Context.toString(result.toString()));
-
-    } catch (JavaScriptException e1) {
-      System.out.println(e1.getMessage());
-    } catch (RhinoException e) {
+      nashornEngine.eval(lib, scope);
+      result = nashornEngine.eval(code, scope);
+      return ((ScriptObjectMirror) result).get("s").toString();
+    } catch (ScriptException e) {
       e.printStackTrace();
-    } finally {
-      // Exit from the context.
-      Context.exit();
     }
-    return "";
+  return "";
   }
 
   @Test

@@ -10,11 +10,8 @@ import net.sf.sahi.session.Status;
 import net.sf.sahi.test.SahiTestSuite;
 import net.sf.sahi.test.TestLauncher;
 import net.sf.sahi.util.Utils;
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.RhinoException;
-import org.mozilla.javascript.Scriptable;
-import org.mozilla.javascript.ScriptableObject;
 
+import javax.script.*;
 import java.util.logging.Logger;
 
 /**
@@ -48,7 +45,7 @@ public class RhinoScriptRunner extends ScriptRunner implements Runnable {
 
   private static final Logger logger = Logger.getLogger("net.sf.sahi.rhino.ScriptRunner");
 
-  private Scriptable scope;
+  private Bindings scope;
 
   private Status scriptStatus = Status.INITIAL;
 
@@ -99,44 +96,48 @@ public class RhinoScriptRunner extends ScriptRunner implements Runnable {
     this.recoveryScript = recoveryScript;
   }
 
+  private void initializeScope() {
+    // make ScriptRunner available to JS
+    scope = new SimpleBindings();
+    scope.put("ScriptRunner", this);
+  }
+
   public void run() {
 //		long initialFreeMemory = Runtime.getRuntime().freeMemory();
     report.startTimer();
+
+    ScriptEngineManager scriptManager = new ScriptEngineManager();
+    ScriptEngine nashornEngine = scriptManager.getEngineByName("nashorn");
+
+    if (scope == null) initializeScope();
+
     String lib = Configuration.getRhinoLibJS();
-    Context cx = Context.enter();
-    cx.setOptimizationLevel(Configuration.getRhinoOptimizationLevel());
-
-    scope = cx.initStandardObjects();
     try {
-      Object wrappedOut = Context.javaToJS(this, scope);
-      ScriptableObject.putProperty(scope, "ScriptRunner", wrappedOut);
-
-      cx.evaluateString(scope, lib, "RhinoScriptRunner.run", 1, null);
-      cx.evaluateString(scope, js, "RhinoScriptRunner.run", 1, null);
-
+      nashornEngine.eval(lib, scope);
+      nashornEngine.eval(js, scope);
       // System.out.println("End of script: " + script.getScriptName());
-    } catch (RhinoException ee) {
+    } catch (ScriptException ee) {
       if (browserException != null) {
         this.scriptStatus = Status.FAILURE;
         report.addResult(browserException + "\n" + stackTrace, ResultType.ERROR, debugInfo, null);
         browserException = null;
       } else {
         this.scriptStatus = Status.FAILURE;
-        report.addResult("ERROR " + "\n" + stackTrace, ResultType.ERROR, script.getLineDebugInfo(ee.lineNumber() - 1), ee.details());
+        report.addResult("ERROR " + "\n" + stackTrace, ResultType.ERROR, script.getLineDebugInfo(ee.getLineNumber() - 1), ee.getMessage());
       }
       setHasError();
 
       if (recoveryScript != null) {
         try {
           report.addResult("--- Recovery Start ---", ResultType.INFO, null, null);
-          cx.evaluateString(scope, recoveryScript, "RhinoScriptRunner.run", 1, null);
-        } catch (RhinoException ee2) {
+          nashornEngine.eval(recoveryScript, scope);
+        } catch (ScriptException ee2) {
           if (browserException != null) {
             this.scriptStatus = Status.FAILURE;
             report.addResult(browserException, ResultType.ERROR, debugInfo, null);
           } else {
             this.scriptStatus = Status.FAILURE;
-            report.addResult("ERROR ", ResultType.ERROR, script.getDebugInfo(ee2.lineNumber() - 1), ee2.details());
+            report.addResult("ERROR ", ResultType.ERROR, script.getDebugInfo(ee2.getLineNumber() - 1), ee2.getMessage());
           }
         } finally {
           report.addResult("--- Recovery End ---", ResultType.INFO, null, null);
@@ -154,14 +155,12 @@ public class RhinoScriptRunner extends ScriptRunner implements Runnable {
 //							"Memory used during this test is: " + ((initialFreeMemory - Runtime.getRuntime().freeMemory())/(1024*1024)) + " MB", 
 //							ResultType.CUSTOM2, "", null);
       try {
-        cx.evaluateString(scope, "_sahi.callOnScriptEnd();", "RhinoScriptRunner.run", 1, null);
+        nashornEngine.eval("_sahi.callOnScriptEnd();", scope);
       } catch (Exception e2) {
         report.addResult("ERROR ", ResultType.ERROR, e2.getMessage(), e2.getMessage());
       }
-      Context.exit();
       if (this.scriptStatus == Status.INITIAL) this.scriptStatus = Status.SUCCESS;
       stop();
-      cx = null;
     }
   }
 
@@ -270,15 +269,18 @@ public class RhinoScriptRunner extends ScriptRunner implements Runnable {
   }
 
   public String eval(String js) {
-    Context cx = Context.enter();
+    ScriptEngineManager scriptManager = new ScriptEngineManager();
+    ScriptEngine nashornEngine = scriptManager.getEngineByName("nashorn");
+
+    if (scope == null) initializeScope();
+
     Object result;
     try {
-      result = cx.evaluateString(scope, "_sahi.toJSON(" + js + ")", "RhinoScriptRunner.eval", 1, null);
+      result = nashornEngine.eval("_sahi.toJSON(" + js + ")", scope);
     } catch (Exception e) {
       result = e.getLocalizedMessage();
     }
-//		System.out.println("<<< >>> " + result.toString());
-    Context.exit();
+    //System.out.println("<<< >>> " + result.toString());
     return result.toString();
   }
 
