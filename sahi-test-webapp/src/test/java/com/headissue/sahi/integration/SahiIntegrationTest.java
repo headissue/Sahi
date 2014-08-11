@@ -29,7 +29,7 @@ public class SahiIntegrationTest {
   final protected Proxy proxy = new Proxy();
   final protected String base = "http://localhost:7733";
   final protected boolean isSingleSession = true;
-  final protected int threads = 5;
+  final protected int threads = 1;
 
   protected Session session;
   protected BrowserType browserType;
