@@ -1,6 +1,5 @@
 _include("pages/includeAll.js");
 
-$Index.goTo();
 
 _assertEqual(1266015600000, new Date(2010,1,13).getTime());
 _assertEqual(1263337200000, new Date("2010,1,13").getTime());
@@ -15,3 +14,15 @@ $dateText = $dateText.reverse();
 var $date2= new Date($dateText[0],$dateText[1],$dateText[2]);
 _assertTrue($date1.getTime()<=$date2.getTime());
 
+function formatDate($origDate, $inFormat, $outFormat){
+  var $inFormatter = new java.text.SimpleDateFormat($inFormat);
+  var $outFormatter = new java.text.SimpleDateFormat($outFormat);
+  return $outFormatter.format($inFormatter.parse($origDate));
+}
+
+var $origDate = "2009-09-04 13:40:43"
+var $inFormat = "yyyy-MM-dd HH:mm:ss"
+var $outFormat = "MM-dd-yyyy HH:mm:ss"
+
+var $formatted = formatDate($origDate, $inFormat, $outFormat);
+_assertEqual("09-04-2009 13:40:43", $formatted);

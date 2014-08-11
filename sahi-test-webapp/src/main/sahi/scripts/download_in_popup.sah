@@ -1,6 +1,13 @@
+_include("pages/includeAll.js");
+
+$Index.goTo();
+
+
+
 function saveOnPopup() {
 	_click(_link("Save As Test"));
-	_click(_link("testsaveas.pdf"));
+	_click(_link("testsaveas.zip"));
+	_click(_link("Back"));
 	_click(_link("Back"));
 	_assertExists(_link("Link Test"));
 	//_popup("/File Downloaded/")._closeWindow();
@@ -11,7 +18,8 @@ function saveOnBaseWindow() {
 	_click(_link("Save As Test"));
 	_click(_link("testsaveas.zip"));
 	_click(_link("Back"));
-	_assertExists(_link("Link Test"));	
+	_click(_link("Back"));
+	_assertExists(_link("Link Test"));
 }
 
 _sendHTMLResponseAfterFileDownload(true);

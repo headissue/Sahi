@@ -1,4 +1,0 @@
-
-function verifyTotal($total){
-	_assertEqual($total, _textbox("total").value);	
-}

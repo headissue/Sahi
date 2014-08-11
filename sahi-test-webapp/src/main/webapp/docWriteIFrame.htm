@@ -6,7 +6,7 @@ function $(id){
 	return document.getElementById(id);
 }
 function oc(close){
-    $("iframe1").contentWindow.document.write("<a href='/demo/docWriteIFrame.htm'>My link</a><br/>Check me <input type=\"checkbox\" name=\"check1\" onclick='alert(window==top)'/><br/>");    
+    $("iframe1").contentWindow.document.write("<a href='/docWriteIFrame.htm'>My link</a><br/>Check me <input type=\"checkbox\" name=\"check1\" onclick='alert(window==top)'/><br/>");
     if (close) $("iframe1").contentWindow.document.close();
 }
 </script>
