@@ -24,7 +24,7 @@
     <displayName>PhantomJS</displayName>
     <icon>safari.png</icon>
     <path>phantomjs</path>
-    <options>--proxy=localhost:9999 $userDir/phantomscript/phantom.js</options>
+    <options>--proxy=localhost:9999 --ssl-certificates-path=$userDir/certs $userDir/phantomscript/phantom.js</options>
     <processName>phantomjs</processName>
     <capacity>100</capacity>
     <useSystemProxy>false</useSystemProxy>
