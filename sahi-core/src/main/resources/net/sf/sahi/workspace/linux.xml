@@ -18,16 +18,17 @@
 		<processName>chrome</processName> 
 		<capacity>5</capacity>  
 	</browserType>
-    <browserType>
-        <name>phantomjs</name>
-        <displayName>PhantomJS</displayName>
-        <icon>safari.png</icon>
-        <path>/usr/bin/phantomjs</path>
-        <options>--proxy=localhost:9999 $userDir/phantomscript/phantom.js</options>
-        <processName>phantomjs</processName>
-        <capacity>100</capacity>
-        <useSystemProxy>false</useSystemProxy>
-    </browserType>
+
+  <browserType>
+    <name>phantomjs</name>
+    <displayName>PhantomJS</displayName>
+    <icon>safari.png</icon>
+    <path>phantomjs</path>
+    <options>--proxy=localhost:9999 $userDir/phantomscript/phantom.js</options>
+    <processName>phantomjs</processName>
+    <capacity>100</capacity>
+    <useSystemProxy>false</useSystemProxy>
+  </browserType>
 </browserTypes>
 
 
