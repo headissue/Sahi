@@ -109,7 +109,6 @@ public class TestLauncher {
   }
 
   public void kill() {
-    System.out.println("Killing " + scriptName);
     logger.fine("Killing " + scriptName);
     if (!isSingleSession) browserLauncher.kill();
   }
