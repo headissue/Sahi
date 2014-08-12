@@ -64,7 +64,7 @@ public class ConsoleFormatter implements Formatter {
       .append(summary.hasFailed() ? ResultType.FAILURE.getName() : ResultType.SUCCESS.getName())
       .append("] ")
       .append(summary.getScriptName())
-      .append("\n\tTests run: ").append(summary.getSteps())
+      .append("\nSahi Tests run: ").append(summary.getSteps())
       .append(", Failures: ").append(summary.getFailures())
       .append(", Errors: ").append(summary.getErrors())
       /*
