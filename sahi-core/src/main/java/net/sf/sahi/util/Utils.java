@@ -507,15 +507,8 @@ public class Utils {
   }
 
   public static Process executeAndGetProcess(String[] command) throws Exception {
-    Process p = Runtime.getRuntime().exec(command);
-    InputStream stdInput = p.getInputStream();
-    InputStream stdError = p.getErrorStream();
-    StringBuffer inBuffer = new StringBuffer();
-    StringBuffer errBuffer = new StringBuffer();
-    Thread inThread = new Thread(new StreamReader(stdInput, inBuffer));
-    inThread.start();
-    Thread errThread = new Thread(new StreamReader(stdError, errBuffer));
-    errThread.start();
+    // use inheritIO to see the output of the browser and other tools on console
+    Process p = new ProcessBuilder().inheritIO().command(command).start();
     return p;
   }
 

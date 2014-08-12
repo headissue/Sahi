@@ -7,7 +7,7 @@ $Root = new $Page();
  */
 
 $Root.port=7733;
-$Root.url="http://localhost:"+ $Root.port;
+$Root.url="http://127.0.1.1:"+ $Root.port;
 
 $Index.url = $Root.url +"/index.htm";
 
