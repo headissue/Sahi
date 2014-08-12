@@ -83,8 +83,6 @@ public class SahiIntegrationTest {
     return suitePath;
   }
 
-
-
   @Before
   public void setup() throws Exception {
     Configuration.init("../sahi-core", "./userdata");
@@ -92,12 +90,16 @@ public class SahiIntegrationTest {
     //browserType = browserLoader.getBrowserType("firefox");
     browserType = browserLoader.getBrowserType("phantomjs");
     userdata = Configuration.getUserDataDir();
-    proxy.start(true);
     server.start();
-    System.out.println("°!°!°!°!°!!");
-    System.out.println(demoPageServer.port);
-    System.out.println("°!°!°!°!°!!");
-    //addCertToFirefox(userdata);
+    synchronized (demoPageServer) {
+      while (demoPageServer.port == 0) {
+        demoPageServer.wait();
+      }
+    }
+    if (browserType.name().equals("firefox")) {
+      addCertToFirefox(userdata);
+    }
+    proxy.start(true);
   }
 
   @After

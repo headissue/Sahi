@@ -27,9 +27,11 @@ public class DemoPageServer implements Runnable {
     server.setHandler(context);
     try {
       server.start();
-      server.join();
       port = _socketConnector.getLocalPort();
-      notify();
+      synchronized (this) {
+        notifyAll();
+      }
+      server.join();
     } catch (InterruptedException e) {
       try {
         server.stop();
