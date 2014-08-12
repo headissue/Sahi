@@ -1,4 +1,4 @@
-# Sahi
+# Sahi [![Build Status](https://travis-ci.org/headissue/Sahi.svg?branch=master)](https://travis-ci.org/headissue/Sahi)
 
 ## Requirements
 
