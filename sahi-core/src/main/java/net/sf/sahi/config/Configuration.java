@@ -25,6 +25,7 @@ import net.sf.sahi.workspace.WorkspaceBuilder;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Properties;
+import java.util.jar.Manifest;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
@@ -59,6 +60,8 @@ public class Configuration {
   private static String[] blockableSSLDomainList;
   private static String domainFixInfo;
   private static File tempDir;
+
+  private static String version;
 
   public Properties getUserProperties() {
     return userProperties;
@@ -852,8 +855,25 @@ public class Configuration {
   }
 
   public static String getVersion() {
-    String path = Utils.concatPaths(getConfigPath(), "version.txt");
-    return new String(Utils.readCachedFile(path));
+    if (version != null) {
+      return version;
+    }
+    String v = null;
+    try {
+      InputStream in = Configuration.class.getResourceAsStream("/META-INF/MANIFEST.MF");
+      Manifest m = new Manifest(in);
+      v = m.getMainAttributes().getValue("Implementation-Version");
+      final String SNAPSHOT_SUFFIX = "-SNAPSHOT";
+      if (v != null && v.endsWith((SNAPSHOT_SUFFIX))) {
+        v = v.substring(0, v.length() - SNAPSHOT_SUFFIX.length());
+        v +=  "-" + m.getMainAttributes().getValue("Implementation-Build");
+      }
+    } catch (IOException ex) {
+      ex.printStackTrace();
+    }
+
+    version = v == null ? "DEV-" + Long.toString(System.currentTimeMillis(), 36): v;
+    return version;
   }
 
   public static int getRhinoOptimizationLevel() {
