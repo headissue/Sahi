@@ -8,6 +8,9 @@
     <artifactId>sahi-parent</artifactId>
     <packaging>pom</packaging>
     <version>1.0</version>
+    <properties>
+      <SAHI_VERSION>4.4.0-H7E4</SAHI_VERSION>
+    </properties>
     <modules>
         <module>sahi-core</module>
         <module>sahi-test-runner</module>

@@ -11,7 +11,7 @@ function navigate($link1, $link2){
 }
 
 _dataDrive(navigate, $data);
-         
+
 var $preFnCalled = false;
 var $postFnCalled = false;
 
@@ -23,9 +23,11 @@ function postFn1(){
 }
 
 function navigate2($link1, $link2){
-	_assertTrue($preFnCalled);
-	_assertFalse($postFnCalled);
-  $preFnCalled = false;
-  $postFnCalled = false;
+  _assertTrue($preFnCalled);
+  $preFnCalled=false;
 }
+
+_assertTrue(!$preFnCalled)
+_assertTrue(!$postFnCalled)
 _dataDrive(navigate2, $data, preFn1, postFn1);
+_assertTrue($postFnCalled)

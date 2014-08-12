@@ -1,3 +1,0 @@
-_include("debug_include_2_1.sah");
-var a = 10;
-a = a + 10;
