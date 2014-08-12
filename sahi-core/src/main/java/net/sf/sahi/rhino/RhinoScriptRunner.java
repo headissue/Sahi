@@ -256,6 +256,7 @@ public class RhinoScriptRunner extends ScriptRunner implements Runnable {
   }
 
   public void stop() {
+    if (this.stopped) return;
     super.stop();
     try {
       report.stopTimer();
