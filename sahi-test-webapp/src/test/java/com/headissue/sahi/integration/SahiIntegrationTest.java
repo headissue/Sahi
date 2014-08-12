@@ -4,6 +4,7 @@ import com.headissue.demopages.DemoPageServer;
 import net.sf.sahi.Proxy;
 import net.sf.sahi.command.Suite;
 import net.sf.sahi.config.Configuration;
+import net.sf.sahi.report.ConsoleReporter;
 import net.sf.sahi.report.HtmlReporter;
 import net.sf.sahi.report.JunitReporter;
 import net.sf.sahi.session.Session;
@@ -66,6 +67,7 @@ public class SahiIntegrationTest {
     Date d = new Date();
     suite.addReporter(new JunitReporter("./target/junitReporter/"));
     suite.addReporter(new HtmlReporter("./target/htmlReporter/"));
+    suite.addReporter(new ConsoleReporter());
     suite.loadScripts();
     suite.run();
     // to make sure the status is set
