@@ -1,11 +1,6 @@
 _include("pages/includeAll.js");
 
-
-_assertEqual(1266015600000, new Date(2010,1,13).getTime());
-_assertEqual(1263337200000, new Date("2010,1,13").getTime());
-_assertEqual(1263337200000, new Date(["2010","1","13"]).getTime());
-_assertEqual(1263337200000, new Date([2010,1,13]).getTime());
-_assertTrue(1266015600000 <= new Date(2010,1,13).getTime());
+_assertEqual(1266019200000, Date.UTC(2010,1,13));
 
 var $date1=new Date(2010,1,13);
 
