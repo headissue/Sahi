@@ -11,8 +11,7 @@ sahi-core:
 
 sahi-test-webapp:
 
-- Firefox
-- [certutil](https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS/tools/NSS_Tools_certutil#__Availability_)
+- [phantomjs](http://phantomjs.org)
 
 ## Setting up the workspace
 
