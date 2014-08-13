@@ -130,14 +130,16 @@ public class TestRunner {
 		String port2 = map.get("port");
 		if (host == null) host = "localhost";
 		if (port2 == null) port2 = "9999";
+    String threads = map.get("threads");
+    if (threads == null) threads = "1";
 		final String browserType2 = map.get("browserType");
 		final TestRunner testRunner;
 		if (browserType2 != null){
 			testRunner = new TestRunner(testName, browserType2, map.get("baseURL"), 
-					host, port2, map.get("threads"));
+					host, port2, threads);
 		} else {
 			testRunner = new TestRunner(testName, map.get("browser"), map.get("baseURL"), 
-					host, port2, map.get("threads"), map.get("browserOption"), map.get("browserProcessName"));
+					host, port2, threads, map.get("browserOption"), map.get("browserProcessName"));
 		}
 		if ("true".equals(map.get("htmlLog"))) {
 			String logDir =  map.get("htmlLogDir");
@@ -154,6 +156,9 @@ public class TestRunner {
 			if (logDir == null || "default".equals(logDir)) logDir = "";
 			testRunner.addReport(new Report("junit", logDir));
 		}
+    if ("true".equals(map.get("consoleLog"))) {
+      testRunner.addReport(new Report("console", "true"));
+    }
 		if (map.get("initJS") != null) {
 			testRunner.setInitJS(map.get("initJS"));
 		}
@@ -188,11 +193,11 @@ public class TestRunner {
 
 	protected static void help() {
         System.out.println("------------------------");
-        System.out.println("New Usage 1: java -cp /path/to/ant-sahi.jar net.sf.sahi.test.TestRunner -test <test_or_suite_name> -browserType <browser_type> -baseURL <start_url> -threads <number_of_threads>");
+        System.out.println("Usage: java -cp /path/to/sahi-test-runner.jar net.sf.sahi.test.TestRunner -test <test_or_suite_name> -browserType <browser_type> -baseURL <start_url>");
         System.out.println("--- More options ---");
         System.out.println(" -test \t\t\tpath to test or suite");
         System.out.println(" -baseURL \t\tbaseURL for all tests");
-        System.out.println(" -threads \t\tno. of browser instances to run in parallel");
+        System.out.println(" -threads \t\tno. of browser instances to run in parallel. Default is 1");
         System.out.println(" -browserType \t\tbrowserType as specified in sahi/userdata/config/browser_types.xml");
         System.out.println(" -browser \t\tfull browser to browser. Ignored if browserType specified.");
         System.out.println(" -browserProcessName \tbrowser process name used to find the pid when using ps or tasklist commands. Ignored if browserType specified.");
@@ -201,12 +206,13 @@ public class TestRunner {
         System.out.println(" -junitLogDir \t\tpath to junit log dir. If not specified, uses default location in userdata/logs");
         System.out.println(" -htmlLog \t\ttrue or false. Enable or disable html logs");
         System.out.println(" -htmlLogDir \t\tpath to html log dir. If not specified, uses default location in userdata/logs");
+        System.out.println(" -consoleLog \t\ttrue or false. Enable or disable console logs");
         System.out.println(" -initJS \t\tAny javascript which would be executed before every script");
-        System.out.println(" -useSingSession \t\ttrue or false. Execute all scripts sequentially in a single browser session. Default is false.");
+        System.out.println(" -useSingleSession \ttrue or false. Execute all scripts sequentially in a single browser session. Default is false.");
         System.out.println(" -extraInfo \t\tAny extra info that may be accessed using _extraInfo()");
         
         System.out.println("--- OR ---");
-        System.out.println("Usage: java -cp /path/to/ant-sahi.jar net.sf.sahi.test.TestRunner <test_or_suite_name> <browser_executable> <start_url> <log_dir> <sahi_host> <sahi_port> <number_of_threads> <browser_executable> [<browser_option>]");
+        System.out.println("Usage: java -cp /path/to/sahi-test-runner.jar net.sf.sahi.test.TestRunner <test_or_suite_name> <browser_executable> <start_url> <log_dir> <sahi_host> <sahi_port> <number_of_threads> <browser_executable> [<browser_option>]");
         System.out.println("Set log_dir to \"default\" to log to the default log dir");
         System.out.println("Set number_of_threads to a number which is compatible with your machine CPU and RAM.");
         System.out.println("Look at http://sahi.co.in/w/Running+multiple+tests+in+batch+mode for details on browser options for various browsers.");

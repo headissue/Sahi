@@ -19,6 +19,7 @@ package net.sf.sahi.command;
 
 import net.sf.sahi.config.Configuration;
 import net.sf.sahi.issue.JiraIssueCreator;
+import net.sf.sahi.report.ConsoleReporter;
 import net.sf.sahi.report.HtmlReporter;
 import net.sf.sahi.report.JunitReporter;
 import net.sf.sahi.report.TM6Reporter;
@@ -176,6 +177,9 @@ public class Suite {
       logDir = getLogDir(defaultLogDir, logDir);
       suite.setHtmlLogDir(logDir);
       suite.addReporter(new HtmlReporter(logDir));
+    }
+    if (request.getParameter("console") != null) {
+      suite.addReporter(new ConsoleReporter());
     }
     logDir = request.getParameter("tm6");
     if (logDir != null) {
