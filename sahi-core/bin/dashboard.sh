@@ -3,7 +3,7 @@ US=`dirname $0`;
 US=`(cd $US; pwd)`;
 
 if [ ! $SAHI_HOME ]; then
-  export SAHI_HOME=..
+  export SAHI_HOME=$US/..
 fi
 
 if [ ! $SAHI_USERDATA_DIR ]
