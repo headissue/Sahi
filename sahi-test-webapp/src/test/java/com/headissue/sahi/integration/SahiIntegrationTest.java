@@ -4,6 +4,7 @@ import com.headissue.demopages.DemoPageServer;
 import net.sf.sahi.Proxy;
 import net.sf.sahi.command.Suite;
 import net.sf.sahi.config.Configuration;
+import net.sf.sahi.report.ConsoleReporter;
 import net.sf.sahi.report.HtmlReporter;
 import net.sf.sahi.report.JunitReporter;
 import net.sf.sahi.session.Session;
@@ -25,9 +26,10 @@ import static org.junit.Assert.assertEquals;
  */
 public class SahiIntegrationTest {
 
-  final protected Thread server = new Thread(new DemoPageServer());
+  final protected DemoPageServer demoPageServer = new DemoPageServer();
+  final protected Thread server = new Thread(demoPageServer);
   final protected Proxy proxy = new Proxy();
-  final protected String base = "http://localhost:7733";
+  final protected String base = "http://127.0.1.1";
   final protected boolean isSingleSession = true;
   final protected int threads = 1;
 
@@ -50,8 +52,6 @@ public class SahiIntegrationTest {
     return number;
   }
 
-  ;
-
   private void addCertToFirefox(String userdata) {
     try {
       Utils.executeCommand(Utils.getCommandTokens("certutil -A -n Sahi_Root -t \"C,,\" -i " + userdata + "/certs/ca.crt -d " + userdata + "/browser/ff/profiles/sahi0"));
@@ -62,10 +62,12 @@ public class SahiIntegrationTest {
 
   protected void runSuite(String suitePath) {
     createSession();
-    SahiTestSuite suite = new Suite().prepareSuite(suitePath, base, browserType.path(), session.id(), browserType.options(), browserType.processName(), ("" + threads), browserType.useSystemProxy(), isSingleSession, null);
+    String url = base + ":" + demoPageServer.port;
+    SahiTestSuite suite = new Suite().prepareSuite(suitePath, url, browserType.path(), session.id(), browserType.options(), browserType.processName(), ("" + threads), browserType.useSystemProxy(), isSingleSession, null);
     Date d = new Date();
     suite.addReporter(new JunitReporter("./target/junitReporter/"));
     suite.addReporter(new HtmlReporter("./target/htmlReporter/"));
+    suite.addReporter(new ConsoleReporter());
     suite.loadScripts();
     suite.run();
     // to make sure the status is set
@@ -83,17 +85,23 @@ public class SahiIntegrationTest {
     return suitePath;
   }
 
-
-
   @Before
   public void setup() throws Exception {
     Configuration.init("../sahi-core", "./userdata");
     browserLoader = new BrowserTypesLoader();
-    browserType = browserLoader.getBrowserType("firefox");
+    //browserType = browserLoader.getBrowserType("firefox");
+    browserType = browserLoader.getBrowserType("phantomjs");
     userdata = Configuration.getUserDataDir();
-    proxy.start(true);
     server.start();
-    addCertToFirefox(userdata);
+    synchronized (demoPageServer) {
+      while (demoPageServer.port == 0) {
+        demoPageServer.wait();
+      }
+    }
+    if (browserType.name().equals("firefox")) {
+      addCertToFirefox(userdata);
+    }
+    proxy.start(true);
   }
 
   @After

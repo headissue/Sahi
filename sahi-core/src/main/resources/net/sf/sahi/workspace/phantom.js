@@ -60,10 +60,6 @@ if (phantom.args.length === 0) {
   page.open(address, function(status) {
     if (status === 'success') {
       page.viewportSize = { width: 1000, height: 1000 };
-      var title = page.evaluate(function() {
-        return document.title;
-      });
-      console.log('Page title is ' + title);
     } else {
       console.log('FAIL to load the address');
     }

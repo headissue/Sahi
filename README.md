@@ -1,4 +1,4 @@
-# Sahi
+# Sahi [![Build Status](https://travis-ci.org/headissue/Sahi.svg?branch=master)](https://travis-ci.org/headissue/Sahi)
 
 ## Requirements
 
@@ -11,8 +11,7 @@ sahi-core:
 
 sahi-test-webapp:
 
-- Firefox
-- [certutil](https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS/tools/NSS_Tools_certutil#__Availability_)
+- [phantomjs](http://phantomjs.org)
 
 ## Setting up the workspace
 
