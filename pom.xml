@@ -10,6 +10,7 @@
     <version>1.0</version>
     <properties>
       <SAHI_VERSION>4.4.0-H7E4</SAHI_VERSION>
+      <TESRUNNER_VERSION>4.4.0-H7E4</TESRUNNER_VERSION>
     </properties>
     <modules>
         <module>sahi-core</module>
