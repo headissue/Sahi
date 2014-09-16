@@ -11,7 +11,11 @@ import net.sf.sahi.test.SahiTestSuite;
 import net.sf.sahi.test.TestLauncher;
 import net.sf.sahi.util.Utils;
 
-import javax.script.*;
+import javax.script.Bindings;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
+import javax.script.SimpleBindings;
 import java.util.logging.Logger;
 
 /**
