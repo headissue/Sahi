@@ -52,43 +52,43 @@ public class ScriptRunnerTest {
     assertEquals("a.example.com", scriptRunner.getDomainFromStep("_sahi._domain ('a.example.com')._click()"));
   }
 
-  private String evaluate(String code) {
+  private String evaluate(String code) throws ScriptException{
 
     ScriptEngineManager scriptManager = new ScriptEngineManager();
     ScriptEngine nashornEngine = scriptManager.getEngineByName("nashorn");
     String lib = Configuration.getRhinoLibJS();
-    Bindings scope = new SimpleBindings();
     RhinoScriptRunner runner = new RhinoScriptRunner(code);
-    scope.put("ScriptRunner", runner);
+    nashornEngine.put("ScriptRunner", runner);
     Object result;
-    try {
-      nashornEngine.eval(lib, scope);
-      result = nashornEngine.eval(code, scope);
-      return ((ScriptObjectMirror) result).get("s").toString();
-    } catch (ScriptException e) {
-      e.printStackTrace();
-    }
-  return "";
+    nashornEngine.eval(lib);
+    result = nashornEngine.eval(code);
+    if (result instanceof String) return (String) result;
+   return ((ScriptObjectMirror) result).get("s").toString();
   }
 
   @Test
   public void testStubs() {
-    check("_sahi.log('sadasd')");
-    check("_sahi._cell('AA')");
-    check("document.forms[0]");
-    check("_sahi._cell('AA').parentNode.parentNode");
-    check("_sahi._link('abcd').getElementsByTagName('DIV')[0]");
-    check("_sahi._link('abcd').getElementsByTagName('DIV')[25]");
-    check("_sahi._link('abcd').getElementsByTagName('DIV')[99]");
-    check("_sahi._cell('AA').parentNode.childNodes[22].previousSibling");
-    check("_sahi._cell('AA').document.forms[0].elements[11].value");
-    check("_sahi._checkbox(0, _sahi._near(_sahi._spandiv(\"To: narayan.raman\")))");
-    check("_sahi._textbox(0).value.substring(_sahi._textbox(0).value.indexOf('aa'), 12)");
-    check("_sahi._link(/hi/)");
-    check("_sahi._table('t1').rows[0].cells[1]");
+    try {
+      check("_sahi.log('sadasd')");
+      check("_sahi._cell('AA')");
+      check("document.forms[0]");
+      check("_sahi._cell('AA').parentNode.parentNode");
+      check("_sahi._link('abcd').getElementsByTagName('DIV')[0]");
+      check("_sahi._link('abcd').getElementsByTagName('DIV')[25]");
+      check("_sahi._link('abcd').getElementsByTagName('DIV')[99]");
+      check("_sahi._cell('AA').parentNode.childNodes[22].previousSibling");
+      check("_sahi._cell('AA').document.forms[0].elements[11].value");
+      check("_sahi._checkbox(0, _sahi._near(_sahi._spandiv(\"To: narayan.raman\")))");
+      check("_sahi._textbox(0).value.substring(_sahi._textbox(0).value.indexOf('aa'), 12)");
+      check("_sahi._link(/hi/)");
+      check("_sahi._table('t1').rows[0].cells[1]");
+    } catch (ScriptException e) {
+      e.printStackTrace();
+      fail();
+    }
   }
 
-  private void check(String s) {
+  private void check(String s) throws ScriptException {
     assertEquals(s.replace('\'', '"'), evaluate(s));
   }
 
@@ -115,7 +115,12 @@ public class ScriptRunnerTest {
 
   @Test
   public void testSahiException() {
-    evaluate("throw new SahiException('Step took too long')");
+    try {
+      assertEquals("catched", evaluate("try { throw new SahiException('Step took too long' , 'debug') } catch(e) { 'catched'}"));
+    } catch (ScriptException e) {
+      e.printStackTrace();
+      fail();
+    }
   }
 
   @Test
