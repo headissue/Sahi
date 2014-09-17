@@ -19,15 +19,15 @@ import java.util.logging.Logger;
 
 /**
  * Sahi - Web Automation and Test Tool
- * <p/>
+ * <p>
  * Copyright  2006  V Narayan Raman
- * <p/>
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p/>
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -39,21 +39,14 @@ import java.util.logging.Logger;
 public class RhinoScriptRunner extends ScriptRunner implements Runnable {
 
 
-  private SahiScript script;
-
-  Report report;
-
-  TestLauncher launcher;
-
-  private String recoveryScript;
-
   private static final Logger logger = Logger.getLogger("net.sf.sahi.rhino.ScriptRunner");
-
-  private Status scriptStatus = Status.INITIAL;
-
   protected String stackTrace = "";
-
+  Report report;
+  TestLauncher launcher;
   ScriptEngine nashornEngine;
+  private SahiScript script;
+  private String recoveryScript;
+  private Status scriptStatus = Status.INITIAL;
 
   RhinoScriptRunner(String js) {
     setJS(js);
@@ -141,7 +134,7 @@ public class RhinoScriptRunner extends ScriptRunner implements Runnable {
       }
     } catch (Exception e) {
       logger.warning(Utils.getStackTraceString(e, false));
-     setScriptStatus(Status.FAILURE);
+      setScriptStatus(Status.FAILURE);
       incrementErrors();
       report.addResult("ERROR ", ResultType.ERROR, e.getMessage(), e.getMessage());
     } finally {
@@ -262,12 +255,12 @@ public class RhinoScriptRunner extends ScriptRunner implements Runnable {
     logException(message, script.getDebugInfo(lineNumber), isFailure);
   }
 
-  public void setScriptStatus(Status scriptStatus) {
-    this.scriptStatus = scriptStatus;
-  }
-
   public Status getScriptStatus() {
     return this.scriptStatus;
+  }
+
+  public void setScriptStatus(Status scriptStatus) {
+    this.scriptStatus = scriptStatus;
   }
 
   public boolean isPartOfSuite() {
