@@ -5,7 +5,6 @@ import net.sf.sahi.config.Configuration;
 import net.sf.sahi.session.Status;
 import org.junit.Before;
 import org.junit.Test;
-import org.mozilla.javascript.*;
 
 import javax.script.*;
 
@@ -74,6 +73,7 @@ public class ScriptRunnerTest {
 
   @Test
   public void testStubs() {
+    check("_sahi.log('sadasd')");
     check("_sahi._cell('AA')");
     check("document.forms[0]");
     check("_sahi._cell('AA').parentNode.parentNode");
@@ -138,7 +138,7 @@ public class ScriptRunnerTest {
   public void testSetHasErrorIncrementsErrorCount() throws Exception {
     RhinoScriptRunner scriptRunner = new RhinoScriptRunner("");
     final int errorCount = scriptRunner.errorCount();
-    scriptRunner.setHasError();
+    scriptRunner.incrementErrors();
     assertEquals(errorCount + 1, scriptRunner.errorCount());
   }
 }
