@@ -1,16 +1,21 @@
 /**
  * Copyright  2006  V Narayan Raman
  */
-Sahi.prototype.getSahiScriptStackTrace = function(isBreadCrumb){
+
+// sahi is using __defineGetter__ and other rhino specific extensions
+// so load the compatibility library
+load("nashorn:mozilla_compat.js");
+
+Sahi.prototype.getSahiScriptStackTrace = function(isBreadCrumb){ //FIXME NASHORN
 //	this.print("getSahiScriptStackTrace called " + (new Date()));
 	try{
 		var ss=null;
 		ss.toString();
 	}catch(edd){
 		try {
-			var s = "";
-			var stackTrace = edd.rhinoException.getScriptStackTrace();
-			var lines = stackTrace.split("\n");
+			var s = edd.message + "\n";
+			var stackTrace = edd.getStackTrace();
+			var lines = stackTrace.split(",");
 			for (var i=0; i<lines.length; i++){
 				var line = "" + lines[i];
 				if (line.indexOf("(") != -1){
@@ -108,8 +113,10 @@ Stub.prototype.getNodesArrayFn = function(fnName){
 		return new Stub(this.s + "." + fnName + "(" + s + ")");
 	};
 };
-Stub.prototype.__noSuchMethod__ = function(fnName, args){
-	var s = "";
+Stub.prototype.__noSuchMethod__ = function(/* fnName, args... */){
+  var args = [];
+  Array.prototype.push.apply(args, arguments);
+  var fnName = args.shift(), s = "";
 	for (var i=0; i<args.length; i++){
 		s += s_v(args[i]);
 		if (i != args.length-1) s += ", ";
@@ -148,68 +155,75 @@ function Sahi(){
 	this.stopOnError = true;
 	this.includedFiles = {};
 };
-Sahi.prototype.toJSON = function(el, map){
-	try {
-		if (!map) map = new SahiHashMap();
-		var j = map.get(el);
-		if (j && j == "___in_progress___") {
-			return '"recursive_access"'; 
-		}
-		map.put(el, '___in_progress___');
-		var v = this.toJSON2(el, map);
-		map.put(el, v);
-		return v;
-	} catch (e) {
-		return "error during toJSON conversion";
-	}
-}
-Sahi.prototype.toJSON2 = function(el, map){
-    if (el == null || el == undefined) return 'null';
-	try{
-		if (el.getClass().getName().indexOf("String")!=-1){
-			el = "" + el.toString();
-		}
-	}catch(e){}    
-    
-    if (el instanceof Stub) return el.toString();
-    if (el instanceof RegExp) return el.toString();
-    if (el instanceof Date){
-        return String(el);
-    }else if (typeof el == 'string'){
-        if (/["\\\x00-\x1f]/.test(el)) {
-            return '"' + el.replace(/([\x00-\x1f\\"])/g, function (a, b) {
-                var c = _sahi.escapeMap[b];
-                if (c) {
-                    return c;
-                }
-                c = b.charCodeAt();
-                return '\\u00' +
-                    Math.floor(c / 16).toString(16) +
-                    (c % 16).toString(16);
-            }) + '"';
-        }
-        return '"' + el + '"';
-    }else if (el instanceof Array){
-        var ar = [];
-        for (var i=0; i<el.length; i++){
-            ar[i] = this.toJSON(el[i], map);
-        }
-        return '[' + ar.join(',') + ']';
-    }else if (typeof el == 'number'){
-        return new String(el);
-    }else if (typeof el == 'boolean'){
-        return String(el);
-    }else if (el instanceof Object){
-        var ar = [];
-        for (var k in el){
-            var v = el[k];
-            if (typeof v != 'function'){
-                ar[ar.length] = this.toJSON(k, map) + ':' + this.toJSON(v, map);
-            }
-        }
-        return '{' + ar.join(',') + '}';
-    }
+Sahi.prototype.toJSON = function(el, map) {
+  if (el instanceof Stub) return el.toString();
+  if (el instanceof RegExp) return el.toString();
+  return JSON.stringify(el);
 };
+/*
+Sahi.prototype.toJSONOld = function(el, map) {
+  try {
+    if (!map) map = new SahiHashMap();
+    var j = map.get(el);
+    if (j && j == "___in_progress___") {
+      return '"recursive_access"';
+    }
+    map.put(el, '___in_progress___');
+    var v = this.toJSON2(el, map);
+    map.put(el, v);
+    return v;
+  } catch (e) {
+    return "error during toJSON conversion";
+  }
+}
+Sahi.prototype.toJSON2 = function(el, map) {
+  if (el == null || el == undefined) return 'null';
+  try {
+    if (el.getClass().getName().indexOf("String") != -1) {
+      el = "" + el.toString();
+    }
+  } catch (e) {}
+
+  if (el instanceof Stub) return el.toString();
+  if (el instanceof RegExp) return el.toString();
+  if (el instanceof Date) {
+    return String(el);
+  } else if (typeof el == 'string') {
+    if (/["\\\x00-\x1f]/.test(el)) {
+      return '"' + el.replace(/([\x00-\x1f\\"])/g, function(a, b) {
+        var c = _sahi.escapeMap[b];
+        if (c) {
+          return c;
+        }
+        c = b.charCodeAt();
+        return '\\u00' +
+          Math.floor(c / 16).toString(16) +
+          (c % 16).toString(16);
+      }) + '"';
+    }
+    return '"' + el + '"';
+  } else if (el instanceof Array) {
+    var ar = [];
+    for (var i = 0; i < el.length; i++) {
+      ar[i] = this.toJSON(el[i], map);
+    }
+    return '[' + ar.join(',') + ']';
+  } else if (typeof el == 'number') {
+    return new String(el);
+  } else if (typeof el == 'boolean') {
+    return String(el);
+  } else if (el instanceof Object) {
+    var ar = [];
+    for (var k in el) {
+      var v = el[k];
+      if (typeof v != 'function') {
+        ar[ar.length] = this.toJSON(k, map) + ':' + this.toJSON(v, map);
+      }
+    }
+    return '{' + ar.join(',') + '}';
+  }
+};
+*/
 Sahi.prototype.convertUnicode = function (source) {
     if (source == null) return null;
     var result = '';
@@ -254,13 +268,15 @@ Sahi.prototype.wait = function (n){
     java.lang.Thread.sleep(n);
 }
 
-Sahi.prototype.__noSuchMethod__ = function(fnName, args){
-	var s = "";
+Sahi.prototype.__noSuchMethod__ = function(/*fnName, args...*/){
+  var args = [];
+  Array.prototype.push.apply(args, arguments);
+  var fnName = args.shift(), s = "";
 	for (var i=0; i<args.length; i++){
 		s += s_v(args[i]);
 		if (i != args.length-1) s += ", ";
 	}
-	return new Stub("_sahi." + fnName + "(" + s + ")");		
+	return new Stub("_sahi." + fnName + "(" + s + ")");
 };
 
 Sahi.prototype.justStarted = false;
@@ -800,7 +816,8 @@ _sahi.global = this;
 
 Sahi.prototype.showFunctions = function(){
 	var done = [];
-	for(var [$n, $v] in Iterator(_sahi.global)){
+  for (var $n in _sahi.global) {
+    var $v = _sahi.global[$n];
 		if (typeof $v == 'function' && $n.indexOf("Sahi") == -1 && $n != "s_v" && $n != "Stub" && $n != "stubBinder" && $n != "indexBinder") {
 			_sahi.global[$n] = this.getWrapped($n, $v);
 		}
@@ -818,7 +835,8 @@ Sahi.prototype.getWrapped = function($n, $v){
 Sahi.prototype._runUnitTests = function(testAr){
 	if (!testAr){
 		testAr = [];
-		for(var [$n, v] in Iterator(_sahi.global)){
+    for (var $n in _sahi.global) {
+      var $v = _sahi.global[$n];
 			if (typeof v == 'function' && $n.indexOf("test") == 0 && $n.indexOf("_sahiorig") == -1) {
 				testAr[testAr.length] = $n;
 			}
@@ -938,7 +956,7 @@ Sahi.prototype.fetchFn = function (name){
 		for (var i=0; i<arguments.length; i++){
 			s += s_v(arguments[i]);
 			if (i != arguments.length-1) s += ", ";
-		}			
+		}
 		return this._fetch("_sahi." + fnName + "(" + s + ")");
 	}
 };

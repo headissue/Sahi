@@ -1,10 +1,12 @@
 package net.sf.sahi.rhino;
 
+import jdk.nashorn.api.scripting.ScriptObjectMirror;
 import net.sf.sahi.config.Configuration;
 import net.sf.sahi.session.Status;
 import org.junit.Before;
 import org.junit.Test;
-import org.mozilla.javascript.*;
+
+import javax.script.*;
 
 import static org.junit.Assert.*;
 
@@ -50,55 +52,43 @@ public class ScriptRunnerTest {
     assertEquals("a.example.com", scriptRunner.getDomainFromStep("_sahi._domain ('a.example.com')._click()"));
   }
 
-  private String evaluate(String code) {
+  private String evaluate(String code) throws ScriptException{
+
+    ScriptEngineManager scriptManager = new ScriptEngineManager();
+    ScriptEngine nashornEngine = scriptManager.getEngineByName("nashorn");
     String lib = Configuration.getRhinoLibJS();
-    // Creates and enters a Context. The Context stores information
-    // about the execution environment of a script.
-    Context cx = Context.enter();
-    try {
-      // Initialize the standard objects (Object, Function, etc.)
-      // This must be done before scripts can be executed. Returns
-      // a scope object that we use in later calls.
-      Scriptable scope = cx.initStandardObjects();
-
-      Object wrappedOut = Context.javaToJS(new RhinoScriptRunner(""), scope);
-      ScriptableObject.putProperty(scope, "ScriptRunner", wrappedOut);
-
-      // Now evaluate the string we've colected.
-      cx.evaluateString(scope, lib, "<cmd>", 1, null);
-      Object result = cx.evaluateString(scope, code + ".toString()", "<cmd>", 1, null);
-
-      // Convert the result to a string and print it.
-      return (Context.toString(result.toString()));
-
-    } catch (JavaScriptException e1) {
-      System.out.println(e1.getMessage());
-    } catch (RhinoException e) {
-      e.printStackTrace();
-    } finally {
-      // Exit from the context.
-      Context.exit();
-    }
-    return "";
+    RhinoScriptRunner runner = new RhinoScriptRunner(code);
+    nashornEngine.put("ScriptRunner", runner);
+    Object result;
+    nashornEngine.eval(lib);
+    result = nashornEngine.eval(code);
+    if (result instanceof String) return (String) result;
+   return ((ScriptObjectMirror) result).get("s").toString();
   }
 
   @Test
   public void testStubs() {
-    check("_sahi._cell('AA')");
-    check("document.forms[0]");
-    check("_sahi._cell('AA').parentNode.parentNode");
-    check("_sahi._link('abcd').getElementsByTagName('DIV')[0]");
-    check("_sahi._link('abcd').getElementsByTagName('DIV')[25]");
-    check("_sahi._link('abcd').getElementsByTagName('DIV')[99]");
-    check("_sahi._cell('AA').parentNode.childNodes[22].previousSibling");
-    check("_sahi._cell('AA').document.forms[0].elements[11].value");
-    check("_sahi._checkbox(0, _sahi._near(_sahi._spandiv(\"To: narayan.raman\")))");
-    check("_sahi._textbox(0).value.substring(_sahi._textbox(0).value.indexOf('aa'), 12)");
-    check("_sahi._link(/hi/)");
-    check("_sahi._table('t1').rows[0].cells[1]");
+    try {
+      check("_sahi.log('sadasd')");
+      check("_sahi._cell('AA')");
+      check("document.forms[0]");
+      check("_sahi._cell('AA').parentNode.parentNode");
+      check("_sahi._link('abcd').getElementsByTagName('DIV')[0]");
+      check("_sahi._link('abcd').getElementsByTagName('DIV')[25]");
+      check("_sahi._link('abcd').getElementsByTagName('DIV')[99]");
+      check("_sahi._cell('AA').parentNode.childNodes[22].previousSibling");
+      check("_sahi._cell('AA').document.forms[0].elements[11].value");
+      check("_sahi._checkbox(0, _sahi._near(_sahi._spandiv(\"To: narayan.raman\")))");
+      check("_sahi._textbox(0).value.substring(_sahi._textbox(0).value.indexOf('aa'), 12)");
+      check("_sahi._link(/hi/)");
+      check("_sahi._table('t1').rows[0].cells[1]");
+    } catch (ScriptException e) {
+      e.printStackTrace();
+      fail();
+    }
   }
 
-  private void check(String s) {
+  private void check(String s) throws ScriptException {
     assertEquals(s.replace('\'', '"'), evaluate(s));
   }
 
@@ -125,7 +115,12 @@ public class ScriptRunnerTest {
 
   @Test
   public void testSahiException() {
-    evaluate("throw new SahiException('Step took too long')");
+    try {
+      assertEquals("catched", evaluate("try { throw new SahiException('Step took too long' , 'debug') } catch(e) { 'catched'}"));
+    } catch (ScriptException e) {
+      e.printStackTrace();
+      fail();
+    }
   }
 
   @Test
@@ -148,7 +143,7 @@ public class ScriptRunnerTest {
   public void testSetHasErrorIncrementsErrorCount() throws Exception {
     RhinoScriptRunner scriptRunner = new RhinoScriptRunner("");
     final int errorCount = scriptRunner.errorCount();
-    scriptRunner.setHasError();
+    scriptRunner.incrementErrors();
     assertEquals(errorCount + 1, scriptRunner.errorCount());
   }
 }
