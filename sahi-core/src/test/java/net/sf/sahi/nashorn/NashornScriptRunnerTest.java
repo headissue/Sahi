@@ -146,4 +146,19 @@ public class NashornScriptRunnerTest {
     scriptRunner.incrementErrors();
     assertEquals(errorCount + 1, scriptRunner.errorCount());
   }
+
+  @Test
+  public void getStackTrace() throws ScriptException {
+    Configuration.init();
+    NashornScriptRunner scriptRunner = new NashornScriptRunner("");
+    scriptRunner.initializeEngine();
+    scriptRunner.loadSahiLibary();
+    //Object result = scriptRunner.eval("x=3");
+    //result = scriptRunner.eval("x");
+    scriptRunner.getEngine().put(ScriptEngine.FILENAME, "testFile");
+    String result = (String) scriptRunner.getEngine().eval("var call = function(){return _sahi._stackTrace()}; call" +
+        "()");
+    assertTrue(result.endsWith("testFile:1)"));
+  }
+
 }
