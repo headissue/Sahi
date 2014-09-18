@@ -28,11 +28,11 @@ import java.util.logging.Logger;
 
 import net.sf.sahi.command.MockResponder;
 import net.sf.sahi.config.Configuration;
+import net.sf.sahi.nashorn.NashornScriptRunner;
 import net.sf.sahi.playback.RequestCredentials;
 import net.sf.sahi.playback.SahiScript;
 import net.sf.sahi.record.Recorder;
 import net.sf.sahi.report.Report;
-import net.sf.sahi.rhino.ScriptRunner;
 import net.sf.sahi.test.BrowserLauncher;
 import net.sf.sahi.test.SahiTestSuite;
 import net.sf.sahi.util.Utils;
@@ -66,7 +66,7 @@ public class Session {
 
   private long timestamp = System.currentTimeMillis();
 
-  private ScriptRunner scriptRunner;
+  private NashornScriptRunner scriptRunner;
 
   private boolean sendHTMLResponseAfterFileDownload = false;
 
@@ -220,11 +220,11 @@ public class Session {
     return timestamp;
   }
 
-  public ScriptRunner getScriptRunner() {
+  public NashornScriptRunner getScriptRunner() {
     return scriptRunner;
   }
 
-  public void setScriptRunner(ScriptRunner scriptRunner) {
+  public void setScriptRunner(NashornScriptRunner scriptRunner) {
     this.scriptRunner = scriptRunner;
     scriptRunner.setSession(this);
   }

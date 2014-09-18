@@ -4,10 +4,10 @@
 
 package net.sf.sahi.command;
 
+import net.sf.sahi.nashorn.NashornScriptRunner;
 import net.sf.sahi.playback.SahiScript;
 import net.sf.sahi.report.Report;
 import net.sf.sahi.request.HttpRequest;
-import net.sf.sahi.rhino.ScriptRunner;
 import net.sf.sahi.session.Session;
 
 
@@ -33,7 +33,7 @@ import net.sf.sahi.session.Session;
 public class TestReporter {
   public void logTestResult(final HttpRequest request) {
     Session session = request.session();
-    ScriptRunner scriptRunner = session.getScriptRunner();
+    NashornScriptRunner scriptRunner = session.getScriptRunner();
     if (scriptRunner == null) return;
     Report report = scriptRunner.getReport();
     if (report != null) {

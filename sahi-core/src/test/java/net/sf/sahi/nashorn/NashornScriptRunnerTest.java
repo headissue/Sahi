@@ -1,4 +1,4 @@
-package net.sf.sahi.rhino;
+package net.sf.sahi.nashorn;
 
 import jdk.nashorn.api.scripting.ScriptObjectMirror;
 import net.sf.sahi.config.Configuration;
@@ -27,7 +27,7 @@ import static org.junit.Assert.*;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-public class ScriptRunnerTest {
+public class NashornScriptRunnerTest {
 
   @Before
   public void setup() {
@@ -36,7 +36,7 @@ public class ScriptRunnerTest {
 
   @Test
   public void testGetPopupNameFromStep() {
-    ScriptRunner scriptRunner = new RhinoScriptRunner("");
+    NashornScriptRunner scriptRunner = new NashornScriptRunner("");
     assertEquals("abca", scriptRunner.getPopupNameFromStep("_sahi._popup('abca')._click()"));
     assertEquals("abca", scriptRunner.getPopupNameFromStep("_sahi._popup( 'abca')._click()"));
     assertEquals("abca", scriptRunner.getPopupNameFromStep("_sahi._popup('abca' )._click()"));
@@ -45,7 +45,7 @@ public class ScriptRunnerTest {
 
   @Test
   public void testGetDomainFromStep() {
-    ScriptRunner scriptRunner = new RhinoScriptRunner("");
+    NashornScriptRunner scriptRunner = new NashornScriptRunner("");
     assertEquals("a.example.com", scriptRunner.getDomainFromStep("_sahi._domain('a.example.com')._click()"));
     assertEquals("x.example.co.in", scriptRunner.getDomainFromStep("_sahi._domain( 'x.example.co.in')._click()"));
     assertEquals("a.example.com", scriptRunner.getDomainFromStep("_sahi._domain('a.example.com' )._click()"));
@@ -57,8 +57,8 @@ public class ScriptRunnerTest {
     ScriptEngineManager scriptManager = new ScriptEngineManager();
     ScriptEngine nashornEngine = scriptManager.getEngineByName("nashorn");
     String lib = Configuration.getRhinoLibJS();
-    RhinoScriptRunner runner = new RhinoScriptRunner(code);
-    nashornEngine.put("ScriptRunner", runner);
+    NashornScriptRunner runner = new NashornScriptRunner(code);
+    nashornEngine.put("NashornScriptRunner", runner);
     Object result;
     nashornEngine.eval(lib);
     result = nashornEngine.eval(code);
@@ -94,13 +94,13 @@ public class ScriptRunnerTest {
 
   @Test
   public void testAreSameShouldReturnFalseIfStringIsBlank() {
-    ScriptRunner scriptRunner = new RhinoScriptRunner("");
+    NashornScriptRunner scriptRunner = new NashornScriptRunner("");
     assertFalse(scriptRunner.areSame("", "/.*/")); // blank should always return false
   }
 
   @Test
   public void testAreSame() {
-    ScriptRunner scriptRunner = new RhinoScriptRunner("");
+    NashornScriptRunner scriptRunner = new NashornScriptRunner("");
 //		assertTrue(scriptRunner.areSame("abcd", "/bc/"));
     assertTrue(scriptRunner.areSame("abcd", "/.*/"));
     assertTrue(scriptRunner.areSame("abcd", "abcd"));
@@ -125,7 +125,7 @@ public class ScriptRunnerTest {
 
   @Test
   public void testFailureIncrementsErrorCount() throws Exception {
-    ScriptRunner scriptRunner = new RhinoScriptRunner("");
+    NashornScriptRunner scriptRunner = new NashornScriptRunner("");
     final int errorCount = scriptRunner.errorCount();
     scriptRunner.setStatus(Status.FAILURE);
     assertEquals(errorCount + 1, scriptRunner.errorCount());
@@ -133,7 +133,7 @@ public class ScriptRunnerTest {
 
   @Test
   public void testErrorDoesNotIncrementErrorCount() throws Exception {
-    ScriptRunner scriptRunner = new RhinoScriptRunner("");
+    NashornScriptRunner scriptRunner = new NashornScriptRunner("");
     final int errorCount = scriptRunner.errorCount();
     scriptRunner.setStatus(Status.ERROR);
     assertEquals(errorCount, scriptRunner.errorCount());
@@ -141,7 +141,7 @@ public class ScriptRunnerTest {
 
   @Test
   public void testSetHasErrorIncrementsErrorCount() throws Exception {
-    RhinoScriptRunner scriptRunner = new RhinoScriptRunner("");
+    NashornScriptRunner scriptRunner = new NashornScriptRunner("");
     final int errorCount = scriptRunner.errorCount();
     scriptRunner.incrementErrors();
     assertEquals(errorCount + 1, scriptRunner.errorCount());

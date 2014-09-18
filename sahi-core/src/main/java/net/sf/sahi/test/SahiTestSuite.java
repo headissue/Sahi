@@ -22,8 +22,7 @@ import net.sf.sahi.issue.IssueCreator;
 import net.sf.sahi.issue.IssueReporter;
 import net.sf.sahi.report.Report;
 import net.sf.sahi.report.SahiReporter;
-import net.sf.sahi.rhino.RhinoScriptRunner;
-import net.sf.sahi.rhino.ScriptRunner;
+import net.sf.sahi.nashorn.NashornScriptRunner;
 import net.sf.sahi.session.Session;
 import net.sf.sahi.session.Status;
 import net.sf.sahi.util.ProxySwitcher;
@@ -221,7 +220,7 @@ public class SahiTestSuite {
     Session session;
     for (Iterator<TestLauncher> iterator = tests.iterator(); iterator.hasNext(); ) {
       TestLauncher testLauncher = (TestLauncher) iterator.next();
-      RhinoScriptRunner scriptRunner = testLauncher.getScriptRunner();
+      NashornScriptRunner scriptRunner = testLauncher.getScriptRunner();
       if (scriptRunner == null || scriptRunner.hasErrors()) {
         status = Status.FAILURE;
         break;
@@ -271,7 +270,7 @@ public class SahiTestSuite {
         String message = "*** Forcefully terminating script. \nNo response from browser within expected time ("
           + inactivityLimit / 1000 + " seconds).";
         System.out.println(message);
-        ScriptRunner scriptRunner = session.getScriptRunner();
+        NashornScriptRunner scriptRunner = session.getScriptRunner();
         scriptRunner.setStatus(Status.FAILURE);
         Report report = scriptRunner.getReport();
         if (report != null) {

@@ -1,6 +1,5 @@
-package net.sf.sahi.rhino;
+package net.sf.sahi.nashorn;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
