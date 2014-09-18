@@ -57,7 +57,7 @@ fetchAPIs.sah
 browser.sah
 //diffDomainExt.sah
 204.sah
-evalOnRhino.sah
+evalOnServer.sah
 under.sah
 clickCombo.sah
 collect.sah

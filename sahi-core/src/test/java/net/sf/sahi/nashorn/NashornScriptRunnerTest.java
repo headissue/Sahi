@@ -6,7 +6,10 @@ import net.sf.sahi.session.Status;
 import org.junit.Before;
 import org.junit.Test;
 
-import javax.script.*;
+
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptEngine;
+import javax.script.ScriptException;
 
 import static org.junit.Assert.*;
 
@@ -56,7 +59,7 @@ public class NashornScriptRunnerTest {
 
     ScriptEngineManager scriptManager = new ScriptEngineManager();
     ScriptEngine nashornEngine = scriptManager.getEngineByName("nashorn");
-    String lib = Configuration.getRhinoLibJS();
+    String lib = Configuration.getSahiJavascriptLib();
     NashornScriptRunner runner = new NashornScriptRunner(code);
     nashornEngine.put("NashornScriptRunner", runner);
     Object result;
@@ -145,5 +148,22 @@ public class NashornScriptRunnerTest {
     final int errorCount = scriptRunner.errorCount();
     scriptRunner.incrementErrors();
     assertEquals(errorCount + 1, scriptRunner.errorCount());
+  }
+
+  @Test
+  public void getStackTrace() {
+    Configuration.init();
+    NashornScriptRunner scriptRunner = new NashornScriptRunner("");
+    scriptRunner.initializeEngine();
+    String result = null;
+    try {
+      scriptRunner.loadSahiLibary();
+      scriptRunner.getEngine().put(ScriptEngine.FILENAME, "testFile");
+      result = (String) scriptRunner.getEngine().eval("var call = function(){return _sahi._stackTrace()}; call" +
+          "()");
+    } catch (ScriptException e) {
+     fail();
+    }
+    assertNotNull(result);
   }
 }

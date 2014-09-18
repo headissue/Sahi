@@ -6,34 +6,9 @@
 // so load the compatibility library
 load("nashorn:mozilla_compat.js");
 
-Sahi.prototype.getSahiScriptStackTrace = function(isBreadCrumb){ //FIXME NASHORN
-//	this.print("getSahiScriptStackTrace called " + (new Date()));
-	try{
-		var ss=null;
-		ss.toString();
-	}catch(edd){
-		try {
-			var s = edd.message + "\n";
-			var stackTrace = edd.getStackTrace();
-			var lines = stackTrace.split(",");
-			for (var i=0; i<lines.length; i++){
-				var line = "" + lines[i];
-				if (line.indexOf("(") != -1){
-					var usefulPart = line.replace(/\r/g, '').replace("at NashornNashornScriptRunner.run:", "");
-					var fnName = usefulPart.replace(/^.*[(]/, "").replace(/[)][ ]*$/, "");
-					if (isBreadCrumb) {
-						s = " >> " + fnName + s;
-					} else {
-						var lineNo = parseInt(usefulPart.substring(0, usefulPart.indexOf(" ")));
-						if (""+lineNo != "NaN") s += "at " + fnName + " (" + NashornScriptRunner.getScript().getLineDebugInfo(lineNo-1).replace("&n=", ":") + ")\n" ;
-					}
-				}
-			}
-		} catch(e) {
-			s = "Some error occured: " + e.message;
-		}
-	}
-	return s;
+Sahi.prototype.getSahiScriptStackTrace = function(isBreadCrumb){
+  var err = new Error();
+  return err.stack;
 }
 // stub start
 var __SAHI_NOT_SET__ = "__SAHI_NOT_SET__"
@@ -262,7 +237,7 @@ Sahi.prototype.escapeMap = {
         '\\': '\\\\'
 };
 Sahi.prototype.print = function (s){
-    java.lang.System.out.println("Rhino lib:" + s);
+    java.lang.System.out.println("Nashorn lib:" + s);
 }
 Sahi.prototype.wait = function (n){
     java.lang.Thread.sleep(n);

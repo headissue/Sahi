@@ -8,20 +8,7 @@ import javax.script.ScriptEngineFactory;
 import javax.script.ScriptEngineManager;
 import java.util.List;
 
-public class RhinoEngineTest {
-
-  @Test
-  public void threadSafeTest() {
-    ScriptEngineManager mgr = new ScriptEngineManager();
-    List<ScriptEngineFactory> factories = mgr.getEngineFactories();
-    for ( ScriptEngineFactory factory : factories ) {
-      System.out.println( String.format(
-          "engineName: %s, THREADING: %s",
-          factory.getParameter(ScriptEngine.NAME),
-          factory.getParameter( "THREADING" ) ) );
-    }
-  }
-
+public class NashornEngineTest {
 
   @Test
   public void testBinding() throws Exception {

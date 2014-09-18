@@ -750,10 +750,10 @@ Sahi.prototype._activeElement = function (win) {
 	return el;
 }
 //Sahi.prototype._readFile = function (fileName) {
-//	return this._evalOnRhino("_readFile("+this.quotedEscapeValue(fileName)+")");
+//	return this._evalOnProxy("_readFile("+this.quotedEscapeValue(fileName)+")");
 //};
 //Sahi.prototype._readCSVFile = function (fileName) {
-//	return this._evalOnRhino("_readCSVFile("+this.quotedEscapeValue(fileName)+")");
+//	return this._evalOnProxy("_readCSVFile("+this.quotedEscapeValue(fileName)+")");
 //};
 Sahi.prototype._getDB = function (driver, jdbcurl, username, password) {
     return new Sahi.dB(driver, jdbcurl, username, password, this);
@@ -4465,7 +4465,7 @@ Sahi.prototype._re = function(s){
     return eval("/"+s.replace(/\s+/g, '\\s+')+"/");
 };
 //Sahi.prototype._scriptName = function(){
-//	this._evalOnRhino("_scriptName()");
+//	this._evalOnProxy("_scriptName()");
 ////    return this.__scriptName;
 //};
 //Sahi.prototype._scriptPath = function(){
@@ -4882,20 +4882,20 @@ Sahi.prototype.makeLibFunctionsAvailable = function(){
 	           "_readURL", "_scriptStatus", "_stackTrace", "_selectWindow", 
 	           "_resolvePath"];
 	for (var i=0; i<fns.length; i++){		
-		this.addRhinoFn(fns[i]);
+		this.addNashornFn(fns[i]);
 	}
 }
-Sahi.prototype.addRhinoFn = function(fnName){
+Sahi.prototype.addNashornFn = function(fnName){
 	this[fnName] = function(){
 		var s = "";
 		for (var i=0; i<arguments.length; i++){
 			if (i != 0) s += ", ";
 			s += this.toJSON(arguments[i]); 
 		}
-		return this._evalOnRhino(fnName + "(" + s + ")");
+		return this._evalOnProxy(fnName + "(" + s + ")");
 	}	
 }
-Sahi.prototype._evalOnRhino = function (s){
+Sahi.prototype._evalOnProxy = function (s){
 	try{
 		var v = this.sendToServer("/_s_/dyn/NashornRuntime_eval?toEval=" + this.encode(s));
 		return eval("(" + this.decode(v) + ")");
