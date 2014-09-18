@@ -376,7 +376,7 @@ public class NashornScriptRunner implements Runnable {
   }
 
   private void loadSahiLibary() throws ScriptException {
-    String lib = Configuration.getRhinoLibJS();
+    String lib = Configuration.getSahiJavascriptLib();
     nashornEngine.eval(lib);
   }
 

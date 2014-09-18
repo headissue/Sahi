@@ -262,7 +262,7 @@ Sahi.prototype.escapeMap = {
         '\\': '\\\\'
 };
 Sahi.prototype.print = function (s){
-    java.lang.System.out.println("Rhino lib:" + s);
+    java.lang.System.out.println("Nashorn lib:" + s);
 }
 Sahi.prototype.wait = function (n){
     java.lang.Thread.sleep(n);

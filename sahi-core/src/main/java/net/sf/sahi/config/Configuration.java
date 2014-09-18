@@ -329,7 +329,7 @@ public class Configuration {
     return addHtdocsRoot ? Utils.concatPaths(getHtdocsRoot(), path) : path;
   }
 
-  public static String getRhinoLibJS() {
+  public static String getSahiJavascriptLib() {
     return new String(Utils.readFileAsString(Utils.concatPaths(getHtdocsRoot(),
       "spr/lib.js")));
   }
@@ -874,14 +874,6 @@ public class Configuration {
 
     version = v == null ? "DEV-" + Long.toString(System.currentTimeMillis(), 36): v;
     return version;
-  }
-
-  public static int getRhinoOptimizationLevel() {
-    try {
-      return Integer.parseInt(getUserProperty("rhino.optimization_level"));
-    } catch (Exception e) {
-      return 0;
-    }
   }
 
   public static int getStabilityIndex() {

@@ -56,7 +56,7 @@ public class NashornScriptRunnerTest {
 
     ScriptEngineManager scriptManager = new ScriptEngineManager();
     ScriptEngine nashornEngine = scriptManager.getEngineByName("nashorn");
-    String lib = Configuration.getRhinoLibJS();
+    String lib = Configuration.getSahiJavascriptLib();
     NashornScriptRunner runner = new NashornScriptRunner(code);
     nashornEngine.put("NashornScriptRunner", runner);
     Object result;
