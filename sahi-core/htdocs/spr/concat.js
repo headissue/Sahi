@@ -4897,7 +4897,7 @@ Sahi.prototype.addRhinoFn = function(fnName){
 }
 Sahi.prototype._evalOnRhino = function (s){
 	try{
-		var v = this.sendToServer("/_s_/dyn/RhinoRuntime_eval?toEval=" + this.encode(s));
+		var v = this.sendToServer("/_s_/dyn/NashornRuntime_eval?toEval=" + this.encode(s));
 		return eval("(" + this.decode(v) + ")");
 	}catch(e){return null;}
 }

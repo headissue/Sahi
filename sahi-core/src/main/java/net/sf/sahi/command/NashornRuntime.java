@@ -23,25 +23,18 @@ import net.sf.sahi.playback.SahiScript;
 import net.sf.sahi.request.HttpRequest;
 import net.sf.sahi.response.HttpResponse;
 import net.sf.sahi.response.NoCacheHttpResponse;
-import net.sf.sahi.rhino.RhinoScriptRunner;
-import net.sf.sahi.rhino.ScriptRunner;
+import net.sf.sahi.nashorn.NashornScriptRunner;
 import net.sf.sahi.session.Session;
 
-public class RhinoRuntime {
-  private static final Logger logger = Logger.getLogger("net.sf.sahi.command.RhinoRuntime");
+public class NashornRuntime {
+  private static final Logger logger = Logger.getLogger("net.sf.sahi.command.NashornRuntime");
 
   public HttpResponse eval(final HttpRequest request) {
     Session session = request.session();
     String toEval = request.getParameter("toEval");
-    ScriptRunner scriptRunner = session.getScriptRunner();
-    String result = "null";
-    if (scriptRunner instanceof RhinoScriptRunner) {
-      RhinoScriptRunner rsr = (RhinoScriptRunner) session.getScriptRunner();
-      toEval = SahiScript.modifyFunctionNames(toEval);
-      result = rsr.eval(toEval);
-    } else {
-      logger.warning("Should not have come here: RhinoRuntime.eval: " + toEval);
-    }
+    NashornScriptRunner rsr = session.getScriptRunner();
+    toEval = SahiScript.modifyFunctionNames(toEval);
+    String result = rsr.eval(toEval);
     return new NoCacheHttpResponse(result);
   }
 }

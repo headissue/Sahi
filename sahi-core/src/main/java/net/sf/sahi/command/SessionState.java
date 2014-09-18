@@ -20,12 +20,12 @@ package net.sf.sahi.command;
 import java.util.Properties;
 
 import net.sf.sahi.config.Configuration;
+import net.sf.sahi.nashorn.NashornScriptRunner;
 import net.sf.sahi.request.HttpRequest;
 import net.sf.sahi.response.HttpFileResponse;
 import net.sf.sahi.response.HttpResponse;
 import net.sf.sahi.response.NoCacheHttpResponse;
 import net.sf.sahi.response.SimpleHttpResponse;
-import net.sf.sahi.rhino.ScriptRunner;
 import net.sf.sahi.session.Session;
 import net.sf.sahi.test.SahiTestSuite;
 import net.sf.sahi.util.Utils;
@@ -100,7 +100,7 @@ public class SessionState {
     }
     props.setProperty("waitConditionTime", "" + waitTime);
     props.setProperty("stabilityIndex", "" + Configuration.getStabilityIndex());
-    ScriptRunner scriptRunner = session.getScriptRunner();
+    NashornScriptRunner scriptRunner = session.getScriptRunner();
     if (scriptRunner != null && scriptRunner.getScript() != null) {
       props.setProperty("scriptPath", Utils.escapeDoubleQuotesAndBackSlashes(Utils.escapeDoubleQuotesAndBackSlashes(scriptRunner.getScript().getFilePath())));
       props.setProperty("scriptName", scriptRunner.getScriptName());
@@ -190,24 +190,4 @@ public class SessionState {
     session.removeAllRequestCredentials();
   }
 
-//    public HttpResponse getSessionInfo(final HttpRequest request) {
-//    	Session session = request.session();
-//    	StringBuffer sb = new StringBuffer();
-//    	sb.append("{");
-//    	ScriptRunner scriptRunner = session.getScriptRunner();
-//    	if (scriptRunner != null){
-//    		sb.append("script:{");
-//    		sb.append("name: " + Utils.makeString(scriptRunner.getScriptName()));
-//    		sb.append("path: " + Utils.makeString(scriptRunner.getScript().getFilePath()));
-//    		sb.append("}");
-//    		SahiTestSuite suite = session.getSuite();
-//    		if (suite != null){
-//    			sb.append(", suite:{");
-//    			
-//        		sb.append("}");
-//    		}
-//    	}
-//    	sb.append("}");
-//    	return new SimpleHttpResponse(sb.toString());
-//    }
 }

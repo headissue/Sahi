@@ -4,12 +4,12 @@ import java.util.Properties;
 import java.util.logging.Logger;
 
 import net.sf.sahi.config.Configuration;
+import net.sf.sahi.nashorn.NashornScriptRunner;
 import net.sf.sahi.request.HttpRequest;
 import net.sf.sahi.response.HttpFileResponse;
 import net.sf.sahi.response.HttpModifiedResponse2;
 import net.sf.sahi.response.HttpResponse;
 import net.sf.sahi.response.SimpleHttpResponse;
-import net.sf.sahi.rhino.ScriptRunner;
 import net.sf.sahi.session.Session;
 import net.sf.sahi.session.Status;
 import net.sf.sahi.test.BrowserLauncher;
@@ -108,13 +108,13 @@ public class Driver {
 
   public HttpResponse start(final HttpRequest request) {
     Session session = request.session();
-    session.setScriptRunner(new ScriptRunner());
+    session.setScriptRunner(new NashornScriptRunner());
     return new Player().autoJava(request);
   }
 
   public void restart(final HttpRequest request) {
     Session session = request.session();
-    session.setScriptRunner(new ScriptRunner());
+    session.setScriptRunner(new NashornScriptRunner());
     session.setIsPlaying(true);
     session.setIsReadyForDriver(true);
   }
@@ -134,10 +134,7 @@ public class Driver {
   }
 
   public HttpResponse isReady(final HttpRequest request) {
-//		ScriptRunner scriptRunner = request.session().getScriptRunner();
-//		boolean isReady = scriptRunner != null && scriptRunner.isRunning();
-//		return new SimpleHttpResponse("" + isReady);		
-    return new SimpleHttpResponse("" + request.session().isReadyForDriver());
+   return new SimpleHttpResponse("" + request.session().isReadyForDriver());
   }
 
   public void setStep(final HttpRequest request) {
@@ -163,7 +160,7 @@ public class Driver {
 
   public HttpResponse doneStep(final HttpRequest request) {
     Session session = request.session();
-    ScriptRunner scriptRunner = session.getScriptRunner();
+    NashornScriptRunner scriptRunner = session.getScriptRunner();
     if (scriptRunner == null) {
       return new SimpleHttpResponse("error:Playback session not started. Verify that proxy is set on the browser.");
     }

@@ -30,8 +30,7 @@ import net.sf.sahi.response.HttpFileResponse;
 import net.sf.sahi.response.HttpResponse;
 import net.sf.sahi.response.NoCacheHttpResponse;
 import net.sf.sahi.response.SimpleHttpResponse;
-import net.sf.sahi.rhino.RhinoScriptRunner;
-import net.sf.sahi.rhino.ScriptRunner;
+import net.sf.sahi.nashorn.NashornScriptRunner;
 import net.sf.sahi.session.Session;
 import net.sf.sahi.session.Status;
 import net.sf.sahi.test.ProcessHelper;
@@ -52,26 +51,6 @@ public class Player {
     if (session.getRecorder() != null) session.getRecorder().stop();
     if (session.getScriptRunner() != null) session.getScriptRunner().stop();
   }
-
-//    public void stop(final Session session) {
-//        try {
-//            if (session.getRecorder() != null) session.getRecorder().stop();
-//            if (session.getScriptRunner() != null) session.getScriptRunner().stop();
-////            if (session.getReport() != null) {
-////            	session.getReport().generateTestReport();
-////	            Status testStatus = session.getReport().getTestSummary().hasFailed() ? Status.FAILURE : Status.SUCCESS;
-////	            session.setStatus(testStatus);
-////            }
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            session.getScriptRunner().setStatus(Status.FAILURE);
-//        }
-//        SahiTestSuite suite = SahiTestSuite.getSuite(session.id());
-//        if (suite != null) {
-//        	//System.out.println("Player.stop: "+session.id());
-//            suite.notifyComplete(session.id());
-//        }
-//    }
 
   public void setScriptFile(final HttpRequest request) {
     Session session = request.session();
@@ -98,7 +77,7 @@ public class Player {
 
   private void setScript(Session session, String scriptPath) {
     SahiScript script = new ScriptFactory().getScript(scriptPath);
-    RhinoScriptRunner scriptRunner = new RhinoScriptRunner(script);
+    NashornScriptRunner scriptRunner = new NashornScriptRunner(script);
     session.setScriptRunner(scriptRunner);
     startPlayback(session, true, "1");
   }
@@ -107,7 +86,7 @@ public class Player {
     if (resetConditions) {
       session.removeVariables(".*");
     }
-    ScriptRunner scriptRunner = session.getScriptRunner();
+    NashornScriptRunner scriptRunner = session.getScriptRunner();
     scriptRunner.setStatus(Status.RUNNING);
     session.setIsPlaying(true);
 //        session.setVariable("sahi_play", "1");
@@ -120,13 +99,11 @@ public class Player {
   public HttpResponse isPlaying(final HttpRequest request) {
     Session session = request.session();
     return new SimpleHttpResponse(session.isPlaying() ? "1" : "0");
-//        ScriptRunner scriptRunner = session.getScriptRunner();
-//    	return new SimpleHttpResponse(scriptRunner != null && scriptRunner.getStatus() == Status.RUNNING ? "1" : "0");
   }
 
   public HttpResponse getCurrentStep(final HttpRequest request) {
     Session session = request.session();
-    ScriptRunner scriptRunner = session.getScriptRunner();
+    NashornScriptRunner scriptRunner = session.getScriptRunner();
     if (scriptRunner == null) return new SimpleHttpResponse("{'type':'WAIT'}");
     String derivedName = request.getParameter("derivedName");
     String windowName = request.getParameter("windowName");
@@ -139,7 +116,7 @@ public class Player {
 
   public void markStepDone(final HttpRequest request) {
     Session session = request.session();
-    ScriptRunner scriptRunner = session.getScriptRunner();
+    NashornScriptRunner scriptRunner = session.getScriptRunner();
     String failureMessage = request.getParameter("failureMsg");
     String type = request.getParameter("type");
     scriptRunner.markStepDone(request.getParameter("stepId"), ResultType.getType(type), failureMessage);
@@ -158,7 +135,7 @@ public class Player {
 
   public void markStepInProgress(final HttpRequest request) {
     Session session = request.session();
-    ScriptRunner scriptRunner = session.getScriptRunner();
+    NashornScriptRunner scriptRunner = session.getScriptRunner();
     String type = request.getParameter("type");
     scriptRunner.markStepInProgress(request.getParameter("stepId"), ResultType.getType(type));
   }
@@ -175,7 +152,7 @@ public class Player {
   }
 
   private SahiScript getScript(Session session) {
-    RhinoScriptRunner scriptRunner = (RhinoScriptRunner) session.getScriptRunner();
+    NashornScriptRunner scriptRunner = (NashornScriptRunner) session.getScriptRunner();
     return scriptRunner.getScript();
   }
 
@@ -206,7 +183,7 @@ public class Player {
 
   public HttpResponse script(final HttpRequest request) {
     Session session = request.session();
-    ScriptRunner scriptRunner = session.getScriptRunner();
+    NashornScriptRunner scriptRunner = session.getScriptRunner();
     String s = null;
     if (scriptRunner != null) {
       if (scriptRunner.getScript() != null) {
@@ -226,7 +203,7 @@ public class Player {
 
     final String scriptFileWithPath;
     scriptFileWithPath = fileName;
-    RhinoScriptRunner scriptRunner = new RhinoScriptRunner(new FileScript(scriptFileWithPath));
+    NashornScriptRunner scriptRunner = new NashornScriptRunner(new FileScript(scriptFileWithPath));
     session.setScriptRunner(scriptRunner);
     session.setIsPlaying(true);
     String startUrl = request.getParameter("startUrl");
@@ -256,18 +233,18 @@ public class Player {
   }
 
   public void setRetries(final HttpRequest request) {
-    ScriptRunner scriptRunner = request.session().getScriptRunner();
+    NashornScriptRunner scriptRunner = request.session().getScriptRunner();
     if (scriptRunner != null)
       scriptRunner.setBrowserRetries(Integer.parseInt(request.getParameter("retries")));
   }
 
   public HttpResponse getRetries(final HttpRequest request) {
-    ScriptRunner scriptRunner = request.session().getScriptRunner();
+    NashornScriptRunner scriptRunner = request.session().getScriptRunner();
     return new SimpleHttpResponse(scriptRunner != null ? "" + scriptRunner.getBrowserRetries() : "-1");
   }
 
   public HttpResponse hasErrors(final HttpRequest request) {
-    ScriptRunner scriptRunner = request.session().getScriptRunner();
+    NashornScriptRunner scriptRunner = request.session().getScriptRunner();
     return new SimpleHttpResponse("" + scriptRunner.hasErrors());
   }
 

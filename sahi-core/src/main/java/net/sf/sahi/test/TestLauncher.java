@@ -21,7 +21,7 @@ import java.util.logging.Logger;
 
 import net.sf.sahi.config.Configuration;
 import net.sf.sahi.playback.ScriptFactory;
-import net.sf.sahi.rhino.RhinoScriptRunner;
+import net.sf.sahi.nashorn.NashornScriptRunner;
 import net.sf.sahi.session.Session;
 import net.sf.sahi.session.Status;
 
@@ -50,7 +50,7 @@ public class TestLauncher {
   @SuppressWarnings("unused")
   private boolean isMultiThreaded;
 
-  private RhinoScriptRunner scriptRunner;
+  private NashornScriptRunner scriptRunner;
 
   private String browserProcessName;
 
@@ -92,7 +92,7 @@ public class TestLauncher {
 
   public void execute(Session session, boolean async, boolean setDefaultReporters) throws Exception {
     System.out.println("#### Running Script: " + scriptName);
-    scriptRunner = new RhinoScriptRunner(new ScriptFactory().getScript(scriptName), session.getSuite(), this, setDefaultReporters);
+    scriptRunner = new NashornScriptRunner(new ScriptFactory().getScript(scriptName), session.getSuite(), this, setDefaultReporters);
     session.setScriptRunner(scriptRunner);
     if (!isSingleSession) {
       launchBrowser();
@@ -130,7 +130,7 @@ public class TestLauncher {
     return scriptRunner.getScriptStatus();
   }
 
-  public RhinoScriptRunner getScriptRunner() {
+  public NashornScriptRunner getScriptRunner() {
     return scriptRunner;
   }
 

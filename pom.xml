@@ -9,8 +9,8 @@
     <packaging>pom</packaging>
     <version>1.0</version>
     <properties>
-      <SAHI_VERSION>4.4.0-H7E4</SAHI_VERSION>
-      <TESTRUNNER_VERSION>4.4.0-H7E4</TESTRUNNER_VERSION>
+      <SAHI_VERSION>4.4.0-H7E4-SNAPSHOT</SAHI_VERSION>
+      <TESRUNNER_VERSION>4.4.0-H7E4</TESRUNNER_VERSION>
     </properties>
     <modules>
         <module>sahi-core</module>

@@ -2,7 +2,7 @@
  * Copyright  2006  V Narayan Raman
  */
 
-// sahi is using __defineGetter__ and other rhino specific extensions
+// sahi is using __defineGetter__ and other nashorn specific extensions
 // so load the compatibility library
 load("nashorn:mozilla_compat.js");
 
@@ -19,13 +19,13 @@ Sahi.prototype.getSahiScriptStackTrace = function(isBreadCrumb){ //FIXME NASHORN
 			for (var i=0; i<lines.length; i++){
 				var line = "" + lines[i];
 				if (line.indexOf("(") != -1){
-					var usefulPart = line.replace(/\r/g, '').replace("at RhinoScriptRunner.run:", "");
+					var usefulPart = line.replace(/\r/g, '').replace("at NashornNashornScriptRunner.run:", "");
 					var fnName = usefulPart.replace(/^.*[(]/, "").replace(/[)][ ]*$/, "");
 					if (isBreadCrumb) {
 						s = " >> " + fnName + s;
 					} else {
 						var lineNo = parseInt(usefulPart.substring(0, usefulPart.indexOf(" ")));
-						if (""+lineNo != "NaN") s += "at " + fnName + " (" + ScriptRunner.getScript().getLineDebugInfo(lineNo-1).replace("&n=", ":") + ")\n" ;
+						if (""+lineNo != "NaN") s += "at " + fnName + " (" + NashornScriptRunner.getScript().getLineDebugInfo(lineNo-1).replace("&n=", ":") + ")\n" ;
 					}
 				}
 			}
@@ -148,8 +148,8 @@ SahiHashMap = function(){
 	}
 }
 function Sahi(){
-	this.stepInterval = ScriptRunner.getTimeBetweenSteps();
-	this.maxCycles = ScriptRunner.getMaxCyclesForPageLoad() + 300; // 30 seconds more than page load timeout to account for errors.
+	this.stepInterval = NashornScriptRunner.getTimeBetweenSteps();
+	this.maxCycles = NashornScriptRunner.getMaxCyclesForPageLoad() + 300; // 30 seconds more than page load timeout to account for errors.
 	this.maxTimeout = this.stepInterval * this.maxCycles;
 	this.countSuffix = 0;
 	this.stopOnError = true;
@@ -289,7 +289,7 @@ Sahi.prototype.retry = function(cmd, debugInfo, interval){
 };
 Sahi.prototype.setStep = function(cmd, debugInfo, stepType){
     //this.print(cmd);
-    return ScriptRunner.setStep(cmd, debugInfo, stepType);
+    return NashornScriptRunner.setStep(cmd, debugInfo, stepType);
 };
 Sahi.prototype.executeWait = function(cmd, debugInfo){
     var cycles = eval(cmd) / this.stepInterval;
@@ -298,22 +298,22 @@ Sahi.prototype.executeWait = function(cmd, debugInfo){
 Sahi.prototype.executeWithLogging  = function(cmd, debugInfo, stepType){
 	try {
 		eval(cmd);		
-		ScriptRunner.stripAndLog(cmd, debugInfo, stepType, "");
+		NashornScriptRunner.stripAndLog(cmd, debugInfo, stepType, "");
 	} catch (e) {
 		if (e.debugInfo == "FORCED_FAIL") {
-			ScriptRunner.stripAndLog(cmd, debugInfo, "ERROR", e.message);
+			NashornScriptRunner.stripAndLog(cmd, debugInfo, "ERROR", e.message);
 		} else {
-			ScriptRunner.stripAndLog(cmd, debugInfo, "ERROR", e.message);				
+			NashornScriptRunner.stripAndLog(cmd, debugInfo, "ERROR", e.message);				
 		}
 		throw new SahiException(cmd, debugInfo);
 	}
 }
 Sahi.prototype.sL = function (cmd, debugInfo, e) {
 	if (e) {
-		ScriptRunner.stripAndLog(cmd, debugInfo, "ERROR", (e && e.message) ? e.message : e);
+		NashornScriptRunner.stripAndLog(cmd, debugInfo, "ERROR", (e && e.message) ? e.message : e);
 		throw new SahiException(cmd, debugInfo);
 	} else {
-		ScriptRunner.stripAndLog(cmd, debugInfo, "INFO", "");
+		NashornScriptRunner.stripAndLog(cmd, debugInfo, "INFO", "");
 	}
 }
 Sahi.prototype.scheduleNoLog = function(cmd){
@@ -341,7 +341,7 @@ Sahi.prototype.quoteAndEscapeSlash = function (s) {
 };
 Sahi.prototype._condition = function(c, debugInfo){
 	var key = "__lastConditionValue__" + (this.countSuffix++);
-	ScriptRunner.setVariable(key, __SAHI_NOT_SET__);
+	NashornScriptRunner.setVariable(key, __SAHI_NOT_SET__);
 	this.scheduleNoLog("_sahi.saveCondition(\"" + key + "\", " + c + ")", debugInfo);
 	var i = 0;
 	while(i++ < 5){
@@ -355,15 +355,15 @@ Sahi.prototype._condition = function(c, debugInfo){
 }
 Sahi.prototype.schedule2 = function(cmd, debugInfo, cycles, stepType, throwException){
     if (cmd == 'done') return;
-    ScriptRunner.setStackTrace("");
+    NashornScriptRunner.setStackTrace("");
     this.lastId = this.setStep(cmd, debugInfo, stepType);
     //this.print(cmd);
     var i=0;
     while(i++ < cycles){
-        if (ScriptRunner.doneStep(this.lastId) || ScriptRunner.isStopped()){
+        if (NashornScriptRunner.doneStep(this.lastId) || NashornScriptRunner.isStopped()){
 
-        	var status = ScriptRunner.getStatus().getName();
-        	var exception = new SahiException(ScriptRunner.getBrowserException(), debugInfo);
+        	var status = NashornScriptRunner.getStatus().getName();
+        	var exception = new SahiException(NashornScriptRunner.getBrowserException(), debugInfo);
         	var result = true;
         	if (status == "ERROR") {
         		result = this.callOnScriptError(exception);
@@ -373,13 +373,13 @@ Sahi.prototype.schedule2 = function(cmd, debugInfo, cycles, stepType, throwExcep
         	if (status == "ERROR" && this.stopOnError && result != true) {
 		    	throw exception;
         	}
-            if (ScriptRunner.isStopped()) {
+            if (NashornScriptRunner.isStopped()) {
             	throw new SahiException("Stopped from UI", debugInfo);
             }
             return;
         }else{
-        	if (ScriptRunner.needsStackTrace()) {
-        		ScriptRunner.setStackTrace(this.getSahiScriptStackTrace());
+        	if (NashornScriptRunner.needsStackTrace()) {
+        		NashornScriptRunner.setStackTrace(this.getSahiScriptStackTrace());
         	}
             this.wait(this.stepInterval);
         }
@@ -390,7 +390,7 @@ Sahi.prototype.schedule2 = function(cmd, debugInfo, cycles, stepType, throwExcep
 	    throw new SahiException(msg, debugInfo);
     }else{
     	var resultType = (stepType == "NO_LOG") ? "NO_LOG" : "INFO";
-    	ScriptRunner.markStepDoneFromLib(""+this.lastId, resultType, null);
+    	NashornScriptRunner.markStepDoneFromLib(""+this.lastId, resultType, null);
     }
 };
 
@@ -401,14 +401,14 @@ Sahi.prototype.start = function(){
     var i=0;
     var cycles = this.maxCycles;
     while(i++ < cycles){
-        if (!ScriptRunner.isRunning()) {
+        if (!NashornScriptRunner.isRunning()) {
             this.wait(this.stepInterval);
         }else{
             this.justStarted = true;
             return;
         }
     }
-    if (ScriptRunner.isPartOfSuite()) {
+    if (NashornScriptRunner.isPartOfSuite()) {
     	throw new SahiException('Script did not start within ' + (this.maxTimeout/1000) + ' seconds.');
     }
 };
@@ -423,16 +423,16 @@ Sahi.prototype._dynamicInclude = function ($fileName) {
 	if (this.includedFiles[filePath]) return;
 	this.includedFiles[filePath] = true;
 	var includedScript = (new net.sf.sahi.playback.ScriptFactory()).getScript(filePath);
-	var script = ScriptRunner.getScript();
+	var script = NashornScriptRunner.getScript();
 	var includedJS = "" + includedScript.jsString();
 	script.addIncludeInfo(includedScript);
 	with (this.global){eval(includedJS)};
 }
 Sahi.prototype._setRecovery = function (recoveryScript, forceAtEnd){
-	ScriptRunner.setRecoveryScript("("+recoveryScript+")();");
+	NashornScriptRunner.setRecoveryScript("("+recoveryScript+")();");
 }
 Sahi.prototype._removeRecovery = function (){
-	ScriptRunner.setRecoveryScript(null);
+	NashornScriptRunner.setRecoveryScript(null);
 }
 Sahi.prototype._readFile = function (filePath) {
 	filePath = this._resolvePath(filePath);
@@ -452,7 +452,7 @@ Sahi.prototype.xfocusWindow = function (newTitle) {
 	}
 };
 Sahi.prototype._log = function (s, type){
-	ScriptRunner.log(s, "", type);
+	NashornScriptRunner.log(s, "", type);
 };
 Sahi.prototype._writeFile = function (str, filePath, overwrite) {
 	filePath = this._resolvePath(filePath);
@@ -467,15 +467,15 @@ Sahi.prototype._renameFile = function (oldPath, newPath) {
 	return "" + Packages.net.sf.sahi.util.FileUtils.renameFile(oldPath, newPath) == "true";
 };
 Sahi.prototype._scriptStatus = function(){
-	return ScriptRunner.hasErrors() ? "FAILURE" : "SUCCESS";
+	return NashornScriptRunner.hasErrors() ? "FAILURE" : "SUCCESS";
 }
 Sahi.prototype._stopOnError = function(){
 	this.stopOnError = true;
-    ScriptRunner.setStopOnError(true);
+    NashornScriptRunner.setStopOnError(true);
 };
 Sahi.prototype._continueOnError = function(){
 	this.stopOnError = false;
-    ScriptRunner.setStopOnError(false);
+    NashornScriptRunner.setStopOnError(false);
 };
 Sahi.prototype._setSpeed = function(ms){
 	net.sf.sahi.config.Configuration.setTimeBetweenSteps(ms);
@@ -634,16 +634,16 @@ Sahi.dB = function (driver, jdbcurl, username, password) {
     };
 };
 Sahi.prototype.end = function(){
-	ScriptRunner.stop();
+	NashornScriptRunner.stop();
     //this.print('script ended.');
 };
 Sahi.prototype._getGlobal = function(key){
-	var suite = ScriptRunner.getSession().getSuite();
-	var val = (suite == null) ? ScriptRunner.getSession().getVariable(key) : suite.getVariable(key);
+	var suite = NashornScriptRunner.getSession().getSuite();
+	var val = (suite == null) ? NashornScriptRunner.getSession().getVariable(key) : suite.getVariable(key);
 	return eval('('+val+')');
 }
 Sahi.prototype.getServerVar = function(key){
-    var val = ScriptRunner.getVariable(key);
+    var val = NashornScriptRunner.getVariable(key);
     //this.print(val);
     return eval('('+val+')');
 };
@@ -651,10 +651,10 @@ Sahi.prototype._random = function (n) {
     return Math.floor(Math.random() * (n + 1));
 };
 Sahi.prototype._scriptName = function(){
-	var $scriptName = ""+ScriptRunner.getScriptName();
+	var $scriptName = ""+NashornScriptRunner.getScriptName();
 	if ($scriptName == "excelfw.sah") {
 		try {
-			$scriptName = "" + ScriptRunner.getReport().getScriptName();
+			$scriptName = "" + NashornScriptRunner.getReport().getScriptName();
 		}catch(e){}
 	}
     return $scriptName;
@@ -667,13 +667,13 @@ Sahi.prototype._logExceptionAsFailure = function(e){
 };
 Sahi.prototype.logExceptionCommon = function(e, fail){
     if (e instanceof SahiException)
-          ScriptRunner.logException(e.message, e.debugInfo, fail);
+          NashornScriptRunner.logException(e.message, e.debugInfo, fail);
     else {
 		var msg = e.message ? e.message : e;
     	if (e.lineNumber != null && ("" + parseInt(e.lineNumber)) != "NaN"){
-    		ScriptRunner.logExceptionWithLineNumber(e.message, e.lineNumber-1, fail);
+    		NashornScriptRunner.logExceptionWithLineNumber(e.message, e.lineNumber-1, fail);
     	}else {
-    		ScriptRunner.logException(msg, null, fail);
+    		NashornScriptRunner.logException(msg, null, fail);
     	}
     }
 };
@@ -688,19 +688,19 @@ SahiException = function(message, debugInfo){
 	this.toString = function(){return this.message;};
 };
 Sahi.prototype._scriptPath = function(){
-    return "" + ScriptRunner.getScript().getFilePath();
+    return "" + NashornScriptRunner.getScript().getFilePath();
 };
 Sahi.prototype._scriptStartTime = function(){
-	return "" + ScriptRunner.getReport().getStartTime();
+	return "" + NashornScriptRunner.getReport().getStartTime();
 };
 Sahi.prototype._sessionInfo = function(){
-    var info = eval("(" + ScriptRunner.getSession().getInfoJSON() + ")");
-    info.threadNumber = ScriptRunner.getThreadNo();
+    var info = eval("(" + NashornScriptRunner.getSession().getInfoJSON() + ")");
+    info.threadNumber = NashornScriptRunner.getThreadNo();
     info.scriptPath = this._scriptPath();
     return info;
 };
 Sahi.prototype._suiteInfo = function(){
-	var suite = ScriptRunner.getSession().getSuite();
+	var suite = NashornScriptRunner.getSession().getSuite();
 	if (suite == null) return null;
     var info = eval("(" + suite.getInfoJSON() + ")");
     return info;
@@ -808,7 +808,7 @@ Sahi.prototype._collect = function (apiType, id, inEl) {
 	return els;
 }
 Sahi.prototype._sendHTMLResponseAfterFileDownload = function(b){
-	ScriptRunner.getSession().setSendHTMLResponseAfterFileDownload(b);
+	NashornScriptRunner.getSession().setSendHTMLResponseAfterFileDownload(b);
 }
 
 /* Unit test style start */
@@ -848,14 +848,14 @@ Sahi.prototype._runUnitTests = function(testAr){
 		if (typeof setUp != "undefined") setUp();
 		try {
 			
-			ScriptRunner.log("---- TEST START: " + fnName + " ----", "", "CUSTOM2");
+			NashornScriptRunner.log("---- TEST START: " + fnName + " ----", "", "CUSTOM2");
 			eval(testAr[i])();
 		} catch (e) {
 			$status = "failure";
 			this._logExceptionAsFailure(e);
 		}
 		finally {
-			ScriptRunner.log("---- TEST FINISH: " + fnName + " ----", "", "CUSTOM2");
+			NashornScriptRunner.log("---- TEST FINISH: " + fnName + " ----", "", "CUSTOM2");
 			if (typeof tearDown != "undefined") tearDown();
 		}
 	}
@@ -1004,11 +1004,11 @@ Sahi.prototype.callOnScriptFailure = function (e){
 };
 /* callbacks end */
 Sahi.prototype.getExtraInfo = function (){
-	 return ScriptRunner.getSession().getSuite().getExtraInfo();
+	 return NashornScriptRunner.getSession().getSuite().getExtraInfo();
 }
 Sahi.prototype.getInitJS = function(){
-	if(ScriptRunner.getSession() != null && ScriptRunner.getSession().getSuite() != null)
-		return "" + ScriptRunner.getSession().getSuite().getInitJS();
+	if(NashornScriptRunner.getSession() != null && NashornScriptRunner.getSession().getSuite() != null)
+		return "" + NashornScriptRunner.getSession().getSuite().getInitJS();
 }
 /* TestCase Start */
 Sahi.TestCase = function(id, msg){
@@ -1021,13 +1021,13 @@ Sahi.TestCase = function(id, msg){
 } 
 Sahi.TestCase.prototype.start = function(){
 	var $s = "[" + this.id + "] " + this.msg;
-	this.ecBef = ScriptRunner.errorCount();
+	this.ecBef = NashornScriptRunner.errorCount();
 	this.startTime = new Date();
 	_sahi._log($s, this.isGroup ? "GROUP_START" : "TESTCASE_START");
 	return this;
 }
 Sahi.TestCase.prototype.end = function(){
-	this.ecAft = ScriptRunner.errorCount();
+	this.ecAft = NashornScriptRunner.errorCount();
 	this.endTime = new Date();
 	this.ended = true;
 	if (this.ecAft > this.ecBef) {
@@ -1038,7 +1038,7 @@ Sahi.TestCase.prototype.end = function(){
 	}
 	try {
 		// this works only for non distributed runs.
-		var summary = ScriptRunner.getSession().getSuite().getTestCaseResultSummary();
+		var summary = NashornScriptRunner.getSession().getSuite().getTestCaseResultSummary();
 		summary.update(this.id, this.status, "" + (this.endTime.getTime() - this.startTime.getTime()));
 	}catch(e){}
 	_sahi._log("", this.isGroup ? "GROUP_END" : "TESTCASE_END");

@@ -16,7 +16,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import net.sf.sahi.config.Configuration;
-import net.sf.sahi.rhino.RhinoScriptRunner;
+import net.sf.sahi.nashorn.NashornScriptRunner;
 import net.sf.sahi.test.TestLauncher;
 import net.sf.sahi.util.Utils;
 
@@ -83,7 +83,7 @@ public abstract class SahiReporter {
     for (Iterator<TestLauncher> iter = tests.iterator(); iter.hasNext(); ) {
       try {
         TestLauncher test = iter.next();
-        RhinoScriptRunner scriptRunner = test.getScriptRunner();
+        NashornScriptRunner scriptRunner = test.getScriptRunner();
         if (scriptRunner == null) {
           continue;
         }

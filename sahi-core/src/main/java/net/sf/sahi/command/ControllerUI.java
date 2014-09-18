@@ -24,7 +24,7 @@ import net.sf.sahi.request.HttpRequest;
 import net.sf.sahi.response.HttpResponse;
 import net.sf.sahi.response.NoCacheHttpResponse;
 import net.sf.sahi.response.SimpleHttpResponse;
-import net.sf.sahi.rhino.RhinoScriptRunner;
+import net.sf.sahi.nashorn.NashornScriptRunner;
 import net.sf.sahi.session.Session;
 import net.sf.sahi.util.Diagnostics;
 import net.sf.sahi.util.Utils;
@@ -64,7 +64,7 @@ public class ControllerUI {
   }
 
   private String getScriptPath(final Session session) {
-    RhinoScriptRunner scriptRunner = (RhinoScriptRunner) session.getScriptRunner();
+    NashornScriptRunner scriptRunner = (NashornScriptRunner) session.getScriptRunner();
     if (scriptRunner == null) return "";
     SahiScript script = scriptRunner.getScript();
     if (script == null) {
