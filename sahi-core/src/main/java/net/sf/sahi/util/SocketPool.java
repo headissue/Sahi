@@ -17,6 +17,8 @@
  */
 package net.sf.sahi.util;
 
+import org.apache.log4j.Logger;
+
 import java.io.IOException;
 import java.net.BindException;
 import java.net.InetSocketAddress;
@@ -37,6 +39,7 @@ public class SocketPool {
   private static int START_PORT = 13300;
 
   private int lastPort;
+  private static Logger logger = Logger.getLogger(SocketPool.class);
 
   public SocketPool(final int size) {
     for (int i = 0; i < size; i++) {
@@ -63,7 +66,7 @@ public class SocketPool {
     synchronized (unused) {
       while (unused.isEmpty()) {
         try {
-          System.out.println("Waiting for socket");
+          logger.debug("Waiting for socket");
           unused.wait();
         } catch (InterruptedException e) {
           System.out.println("Interrupted!");
@@ -72,14 +75,14 @@ public class SocketPool {
       port = ((Integer) unused.remove(0)).intValue();
       socket = createSocket(port);
     }
-    // System.out.println("Get: " + port);
+    logger.debug("Get: " + port);
     return socket;
   }
 
   public Socket get(final String host, final int port) throws IOException {
     Socket socket = get();
     try {
-      // System.out.println("Trying: " + socket.getLocalPort());
+      logger.debug("Trying: " + socket.getLocalPort());
       socket.connect(new InetSocketAddress(host, port));
     } catch (BindException e) {
       e.printStackTrace();
@@ -101,17 +104,17 @@ public class SocketPool {
     } catch (IOException e) {
       e.printStackTrace();
     }
-    // System.out.println("#socket.getLocalPort()="+socket.getLocalPort());
-    // System.out.println("#socket.isClosed()="+socket.isClosed());
-    // System.out.println("#socket.isBound()="+socket.isBound());
-    // System.out.println("#socket.isInputShutdown()="+socket.isInputShutdown());
-    // System.out.println("#socket.isOutputShutdown()="+socket.isOutputShutdown());
-    // System.out.println("#socket.isConnected()="+socket.isConnected());
+    logger.debug("#socket.getLocalPort()="+socket.getLocalPort());
+    logger.debug("#socket.isClosed()="+socket.isClosed());
+    logger.debug("#socket.isBound()="+socket.isBound());
+    logger.debug("#socket.isInputShutdown()="+socket.isInputShutdown());
+    logger.debug("#socket.isOutputShutdown()="+socket.isOutputShutdown());
+    logger.debug("#socket.isConnected()="+socket.isConnected());
     returnToPool(socket.getLocalPort());
   }
 
   void returnToPool(final int port) {
-    // System.out.println("returned to Pool " + port);
+    logger.debug("returned to Pool " + port);
     synchronized (unused) {
       unused.add(new Integer(port));
       unused.notifyAll();

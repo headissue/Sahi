@@ -32,10 +32,14 @@ import net.sf.sahi.session.Status;
 import net.sf.sahi.test.SahiTestSuite;
 import net.sf.sahi.util.BrowserType;
 import net.sf.sahi.util.BrowserTypesLoader;
+import org.apache.log4j.Logger;
 
 import java.io.IOException;
 
 public class Suite {
+
+  private static Logger logger = Logger.getLogger(Suite.class);
+
   public void startSingleSession(final HttpRequest request) throws Exception {
     final SahiTestSuite suite = getSuite(request);
     suite.launchBrowserForSingleSession();
@@ -45,7 +49,7 @@ public class Suite {
     Session session = request.session();
     final SahiTestSuite suite = session.getSuite();
     String initJS = request.getParameter("initJS");
-    System.out.println("Setting initJS" + initJS);
+    logger.debug("Setting initJS" + initJS);
     suite.setInitJS(initJS);
     Status status = suite.executeTestForSingleSession(request.getParameter("testName"), request.getParameter("startURL"));
     return new SimpleHttpResponse(status.getName());

@@ -28,6 +28,7 @@ import net.sf.sahi.ssl.SSLHelper;
 import net.sf.sahi.util.ThreadLocalMap;
 import net.sf.sahi.util.TrafficLogger;
 import net.sf.sahi.util.Utils;
+import org.apache.log4j.Logger;
 import org.bouncycastle.operator.OperatorCreationException;
 
 import javax.net.ssl.SSLHandshakeException;
@@ -45,7 +46,7 @@ import java.security.cert.CertificateException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Properties;
-import java.util.logging.Logger;
+
 
 /**
  * User: nraman Date: May 13, 2005 Time: 7:06:11 PM To
@@ -55,7 +56,7 @@ public class ProxyProcessor implements Runnable {
 
   private boolean isSSLSocket = false;
 
-  private static Logger logger = Configuration.getLogger("net.sf.sahi.ProxyProcessor");
+  private static Logger logger = Logger.getLogger(ProxyProcessor.class);
   public RemoteRequestProcessor remoteRequestProcessor = new RemoteRequestProcessor();
 
   private static HashMap<String, String> hostAddresses = new HashMap<String, String>(100);
@@ -82,7 +83,7 @@ public class ProxyProcessor implements Runnable {
     try {
       requestFromBrowser = getRequestFromBrowser();
       String uri = requestFromBrowser.uri();
-      logger.finest(uri);
+      logger.debug(uri);
       if (uri != null) {
         int _s_ = uri.indexOf("/_s_/");
         int q = uri.indexOf("?");
@@ -104,14 +105,14 @@ public class ProxyProcessor implements Runnable {
         new Thread(new ProxyProcessor(client)).start();
       }
     } catch (SSLHandshakeException ssle) {
-      logger.fine(ssle.getMessage());
+      logger.info(ssle.getMessage());
     } catch (Exception e) {
-      logger.fine(e.getMessage());
+      logger.info(e.getMessage());
       try {
         // should close only in case of exception. Do not move this to finally. Will cause sockets to not be reused.
         client.close();
       } catch (IOException e2) {
-        logger.warning(e2.getMessage());
+        logger.warn(e2.getMessage());
       }
     }
   }
@@ -152,7 +153,7 @@ public class ProxyProcessor implements Runnable {
       if (responseFromHost == null) {
         responseFromHost = new SimpleHttpResponse("");
       }
-//          System.out.println("Fetching >> :" + new String(requestFromBrowser.url()));
+      logger.debug("Fetching >> :" + new String(requestFromBrowser.url()));
       sendResponseToBrowser(responseFromHost);
     }
   }

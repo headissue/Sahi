@@ -86,7 +86,6 @@ public class UtilsTest {
     Matcher matcher = pattern.matcher(inputStr);
     while (matcher.find()) {
       String includeStatement = matcher.group(0);
-      System.out.println(includeStatement);
     }
   }
 
@@ -131,8 +130,6 @@ public class UtilsTest {
   public void checkGetUUID() {
     String uuid1 = Utils.getUUID();
     String uuid2 = Utils.getUUID();
-//    	System.out.println(uuid1);
-//    	System.out.println(uuid2);
     assertFalse(uuid1.equals(uuid2));
   }
 
@@ -156,7 +153,6 @@ public class UtilsTest {
     if ("Windows 7".equals(osName)) {
       final long start = System.currentTimeMillis();
       final String str2 = Utils.executeCommand("cmd.exe /c dir", true, 10000);
-      System.out.println(">> str2: " + str2 + " " + (System.currentTimeMillis() - start));
     }
   }
 }

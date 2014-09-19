@@ -134,7 +134,8 @@ public class SahiScriptTest {
       TestScript.lineStartsWithActionKeyword("_alert()");
     }
     long t2 = System.currentTimeMillis() - start;
-    System.out.println(t1 + "\n" + t2);
+    assertTrue( t1 < 100);
+    assertTrue( t2 < 100);
   }
 
   @Test
@@ -293,8 +294,6 @@ public class SahiScriptTest {
 
   @Test
   public void testProcessSet() {
-//		String tempVarName = "$aaaa[$i]".replaceAll("[$]", "\\\\\\$");
-//		System.out.println("tempVarName="+tempVarName);		
     assertEquals("_sahi.schedule(\"_sahi.setServerVar('abc', document.links);\", \"scrName&n=23\");\r\nabc = _sahi.getServerVar('abc');\r\n", testScript.processSet("_set(abc, document.links)", 23));
     assertEquals("_sahi.schedule(\"_sahi.setServerVar('abc', getLinks());\", \"scrName&n=23\");\r\nabc = _sahi.getServerVar('abc');\r\n", testScript.processSet("_set(  	abc, getLinks())", 23));
     assertEquals("_sahi.schedule(\"_sahi.setServerVar('\\\\$abc', getLinks());\", \"scrName&n=23\");\r\n$abc = _sahi.getServerVar('\\$abc');\r\n", testScript.processSet("_set(  	$abc, getLinks())", 23));

@@ -25,18 +25,18 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Properties;
 import java.util.Set;
-import java.util.logging.Logger;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import net.sf.sahi.config.Configuration;
 import net.sf.sahi.report.LogViewer;
 import net.sf.sahi.util.Utils;
+import org.apache.log4j.Logger;
 
 public abstract class SahiScript {
 
-  private static Logger logger = Configuration
-    .getLogger("net.sf.sahi.playback.SahiScript");
+  private static Logger logger = Logger.getLogger(SahiScript.class);
 
   private static ArrayList<String> actionKeywords;
 
@@ -215,7 +215,7 @@ public abstract class SahiScript {
       if (!isInclude) lineDebugInfo.add(getDebugInfo(lineNumber));
     }
     String toString = sb.toString();
-    logger.fine(toString);
+    logger.debug("modified script:" + toString);
     return toString;
   }
 
@@ -241,7 +241,7 @@ public abstract class SahiScript {
       String varValue = matcher.group(3);
       StringBuffer sb = new StringBuffer();
       String tempVarName = varName.replaceAll("[$]", "\\\\\\$");
-//			System.out.println("tempVarName="+tempVarName);
+      logger.debug("tempVarName="+tempVarName);
       sb.append(scheduleLine(popupPrefix + "_sahi.setServerVar('" + tempVarName + "', " + varValue + ");", lineNumber, true));
       sb.append(modifyLine(varName + " = _sahi.getServerVar('" + tempVarName + "');"));
       return sb.toString();
@@ -598,7 +598,7 @@ public abstract class SahiScript {
     sb.append(prefix);
     String separated = "\"" + separateVariables(condition) + "\"";
     sb.append(separated);
-//		System.out.println(separated);
+    logger.debug(separated);
     sb.append(", \"" + getDebugInfo(lineNumber) + "\"");
     sb.append(suffix);
     return modifyFunctionNames(sb.toString());
@@ -670,10 +670,6 @@ public abstract class SahiScript {
     browserJS += included.browserJS;
     browserJSWithLineNumbers += included.browserJSWithLineNumbers;
     lineDebugInfo.addAll(included.lineDebugInfo);
-  }
-
-  public static void main(String args[]) {
-    System.out.println("x" + "<browser>aaa\nbb\ncc\n</browser>".replaceAll("[^\\n]", "") + "y");
   }
 
   public String getBrowserJSWithLineNumbers() {

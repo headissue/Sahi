@@ -141,7 +141,6 @@ public class StreamingHttpResponse extends HttpResponse {
   }
 
   private void pipe(InputStream in, OutputStream out, int contentLength) throws IOException {
-//		System.out.println("### contentLength="+contentLength);
     InputStream pin = new PipedInputStream();
     OutputStream pout = new PipedOutputStream((PipedInputStream) pin);
     pin = applyFilters(pin);

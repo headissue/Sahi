@@ -30,6 +30,7 @@ import net.sf.sahi.StreamHandler;
 import net.sf.sahi.config.Configuration;
 import net.sf.sahi.util.TrafficLogger;
 import net.sf.sahi.util.Utils;
+import org.apache.log4j.Logger;
 
 /**
  * User: nraman
@@ -37,14 +38,14 @@ import net.sf.sahi.util.Utils;
  * Time: 10:25:31 PM
  */
 public class HttpResponse extends StreamHandler {
+  private Logger logger = Logger.getLogger(HttpResponse.class);
+
   protected HttpResponse() {
   }
 
   public HttpResponse(InputStream in, HttpURLConnection connection) {
     setHeaders(connection);
     setFirstLine(connection);
-//	    int contentLength = connection.getContentLength();
-//	    System.out.println("))))))))))))) contentLength="+contentLength);
     setContentLength(-1);
     try {
       populateData(in);
@@ -111,7 +112,7 @@ public class HttpResponse extends StreamHandler {
     OutputStream outputStreamToBrowser = new BufferedOutputStream(out);
     modifyHeaders(isKeepAlive);
     resetRawHeaders();
-//        System.out.println("--\n" + new String(rawHeaders()) + "\n--");
+    logger.debug(new String(rawHeaders()));
     TrafficLogger.storeResponseHeader(rawHeaders(), "modified");
     outputStreamToBrowser.write(rawHeaders());
     outputStreamToBrowser.flush();

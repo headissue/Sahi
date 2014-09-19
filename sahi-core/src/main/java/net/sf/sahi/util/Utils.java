@@ -20,6 +20,7 @@ package net.sf.sahi.util;
 //
 
 import org.apache.commons.io.FileUtils;
+import org.apache.log4j.Logger;
 
 import java.io.*;
 import java.net.*;
@@ -34,6 +35,7 @@ import java.util.regex.Pattern;
  */
 public class Utils {
   final static public SimpleDateFormat COMMON_DATE_FORMAT = new SimpleDateFormat("MMM dd, yyyy hh:mm:ss a");
+  private static Logger logger = Logger.getLogger(Utils.class);
 
   public static String escapeDoubleQuotesAndBackSlashes(final String line) {
     if (line == null) {
@@ -198,8 +200,7 @@ public class Utils {
       out.close();
     } catch (IOException e) {
       e.printStackTrace();
-      System.out.println("File:" + filePath + " xx " + filePath.replace('\\', '/'));
-      System.out.println(str);
+      logger.error("Exception on writing file", e);
     }
   }
 
@@ -554,7 +555,6 @@ public class Utils {
         if (i + 1 < args.length) {
           final String key = args[i].substring(1);
           final String value = args[i + 1];
-          System.out.println(key + "=" + value);
           map.put(key, value);
           i++;
         }

@@ -7,6 +7,7 @@ import net.sf.sahi.response.HttpResponse;
 import net.sf.sahi.response.SimpleHttpResponse;
 import net.sf.sahi.util.FileUtils;
 import net.sf.sahi.util.Utils;
+import org.apache.log4j.Logger;
 
 /**
  * Sahi - Web Automation and Test Tool
@@ -29,6 +30,8 @@ import net.sf.sahi.util.Utils;
 
 public class SaveAs {
 
+  private static Logger logger = Logger.getLogger(SaveAs.class);
+
   public void xexpect(final HttpRequest request) {
     String pattern = request.getParameter("urlPattern");
     if (pattern.indexOf("[.]") == -1) {
@@ -41,14 +44,14 @@ public class SaveAs {
     String tempFileName = request.session().getVariable("download_lastFile");
     String destination = request.getParameter("destination");
     try {
-      System.out.println("tempDownloadDir " + net.sf.sahi.config.Configuration.tempDownloadDir());
-      System.out.println("tempFileName " + tempFileName);
+      logger.info("tempDownloadDir " + net.sf.sahi.config.Configuration.tempDownloadDir());
+      logger.info("tempFileName " + tempFileName);
       destination = net.sf.sahi.config.Configuration.getAbsoluteUserPath(destination);
-      System.out.println("destination " + destination);
+      logger.info("destination " + destination);
       FileUtils.copyFile(Utils.concatPaths(net.sf.sahi.config.Configuration.tempDownloadDir(),
         request.session().id() + "__" + tempFileName), destination);
     } catch (IOException e) {
-      e.printStackTrace();
+      logger.error("failed to save file" ,e);
     }
   }
 

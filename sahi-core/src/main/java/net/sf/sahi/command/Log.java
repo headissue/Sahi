@@ -37,11 +37,8 @@ public class Log {
   public HttpResponse viewLogs(final HttpRequest request) {
     String fileName = URLParser.logFileNamefromURI(request.uri());
     if ("".equals(fileName)) {
-//        	long start = System.currentTimeMillis();
       String logsList = LogViewer.getLogsList(Configuration.getPlayBackLogsRoot());
-//            System.out.println((System.currentTimeMillis() - start));
       NoCacheHttpResponse response = new NoCacheHttpResponse(logsList);
-//            System.out.println((System.currentTimeMillis() - start));
       return response;
     } else {
       return new HttpFileResponse(fileName, null, false, false);

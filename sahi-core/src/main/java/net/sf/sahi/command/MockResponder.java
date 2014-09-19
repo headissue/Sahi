@@ -29,10 +29,12 @@ import net.sf.sahi.response.HttpFileResponse;
 import net.sf.sahi.response.HttpModifiedResponse2;
 import net.sf.sahi.response.HttpResponse;
 import net.sf.sahi.util.Utils;
+import org.apache.log4j.Logger;
 
 public class MockResponder {
 
   private HashMap<String, String> map = new HashMap<String, String>();
+  private Logger logger = Logger.getLogger(MockResponder.class);
 
   public void add(final String urlPattern, final String className) {
     map.put(urlPattern, className);
@@ -59,8 +61,8 @@ public class MockResponder {
     if (command == null) {
       return null;
     }
-    System.out.println("url: " + url);
-    System.out.println("command: " + command);
+    logger.info("url: " + url);
+    logger.info("command: " + command);
     return new CommandExecuter(command, request, false).execute();
   }
 

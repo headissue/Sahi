@@ -17,13 +17,14 @@
  */
 package net.sf.sahi.test;
 
-import java.util.logging.Logger;
+
 
 import net.sf.sahi.config.Configuration;
 import net.sf.sahi.playback.ScriptFactory;
 import net.sf.sahi.nashorn.NashornScriptRunner;
 import net.sf.sahi.session.Session;
 import net.sf.sahi.session.Status;
+import org.apache.log4j.Logger;
 
 /**
  * @author nraman Launches browser with test and kills it on completion
@@ -40,8 +41,7 @@ public class TestLauncher {
 
   private String browser;
 
-  private static Logger logger = Configuration
-    .getLogger("net.sf.sahi.test.TestLauncher");
+  private static Logger logger = Logger.getLogger(TestLauncher.class);
 
   private String browserOption;
 
@@ -91,7 +91,7 @@ public class TestLauncher {
   }
 
   public void execute(Session session, boolean async, boolean setDefaultReporters) throws Exception {
-    System.out.println("#### Running Script: " + scriptName);
+    logger.info("Running Script: " + scriptName);
     scriptRunner = new NashornScriptRunner(new ScriptFactory().getScript(scriptName), session.getSuite(), this, setDefaultReporters);
     session.setScriptRunner(scriptRunner);
     if (!isSingleSession) {
@@ -109,7 +109,7 @@ public class TestLauncher {
   }
 
   public void kill() {
-    logger.fine("Killing " + scriptName);
+    logger.info("Killing " + scriptName);
     if (!isSingleSession) browserLauncher.kill();
   }
 

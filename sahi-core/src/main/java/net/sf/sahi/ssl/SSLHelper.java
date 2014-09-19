@@ -19,6 +19,7 @@ package net.sf.sahi.ssl;
 
 import net.sf.sahi.config.Configuration;
 import net.sf.sahi.util.Utils;
+import org.apache.log4j.Logger;
 import org.bouncycastle.asn1.ASN1Sequence;
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x500.X500NameBuilder;
@@ -48,13 +49,13 @@ import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.logging.Logger;
+
 
 public class SSLHelper {
 
   private static final SSLHelper instance = new SSLHelper();
   private static final String KEYSTORE_PASSWORD = "DUMMYPASSWORD";
-  private static final Logger logger = Logger.getLogger("net.sf.sahi.ssl.SSLHelper");
+  private static final Logger logger = Logger.getLogger(SSLHelper.class);
   static HashMap<String, SSLSocketFactory> sslSocketFactories = new HashMap<>();
   public final String rootCAPath = Configuration.getRootCaPath();
   private final Provider bouncyCastleProvider = new BouncyCastleProvider();
@@ -136,7 +137,7 @@ public class SSLHelper {
       try {
         fileInputStream = new FileInputStream(clientCertPath);
       } catch (IOException ioe) {
-        logger.warning("\n----\nCertificate not found: " + clientCertPath + "\n----");
+        logger.error("\n----\nCertificate not found: " + clientCertPath + "\n----");
       }
     }
     String password = Configuration.getSSLClientCertPassword();

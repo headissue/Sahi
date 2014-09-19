@@ -4,6 +4,7 @@ import net.sf.sahi.config.Configuration;
 import net.sf.sahi.util.BrowserType;
 import net.sf.sahi.util.ProxySwitcher;
 import net.sf.sahi.util.Utils;
+import org.apache.log4j.Logger;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -35,6 +36,7 @@ public class BrowserLauncher {
   private ProcessHelper process;
   private final boolean useProxy;
   private int maxTimeToWaitForPIDs = Configuration.getMaxTimeForPIDGather();
+  private Logger logger = Logger.getLogger(BrowserLauncher.class);
 
   public BrowserLauncher(String browser, String browserProcessName,
                          String browserOption, boolean useProxy) {
@@ -53,7 +55,7 @@ public class BrowserLauncher {
       toggleProxy(true);
     }
     String cmd = buildCommand(url);
-    System.out.println(">>>> " + cmd);
+    logger.info("start browser: " + cmd);
     cmd = cmd.replaceAll("%20", " ").replaceAll("[&]", "__SahiAmpersandSahi__");
     cmd = cmd.replaceAll("[$]userDir", Configuration.getUserDataDir().replace('\\', '/'));
     cmd = cmd.replaceAll("[$]threadNo", "0"); // if this has not been substituted, change it to 0.

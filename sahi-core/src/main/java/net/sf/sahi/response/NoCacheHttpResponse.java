@@ -18,9 +18,10 @@
 package net.sf.sahi.response;
 
 import java.util.logging.Level;
-import java.util.logging.Logger;
+
 
 import net.sf.sahi.util.Utils;
+import org.apache.log4j.Logger;
 
 /**
  * User: nraman
@@ -29,7 +30,7 @@ import net.sf.sahi.util.Utils;
  */
 public class NoCacheHttpResponse extends HttpResponse {
 
-  private static final Logger logger = Logger.getLogger("net.sf.sahi.response.NoCacheHttpResponse");
+  private static final Logger logger = Logger.getLogger(NoCacheHttpResponse.class);
   private int status = 200;
   private String statusMessage = "OK";
 
@@ -66,9 +67,7 @@ public class NoCacheHttpResponse extends HttpResponse {
     setHeader("Expires", "-1");
     setHeader("Content-Length", "" + data().length);
     resetRawHeaders();
-    if (logger.isLoggable(Level.FINEST)) {
-      logger.finest(new String(rawHeaders()));
-    }
+    logger.debug(new String(rawHeaders()));
   }
 
   public NoCacheHttpResponse(final HttpResponse httpResponse) {

@@ -7,6 +7,7 @@ import net.sf.sahi.util.BrowserType;
 import net.sf.sahi.util.BrowserTypesLoader;
 import net.sf.sahi.util.ProxySwitcher;
 import net.sf.sahi.util.Utils;
+import org.apache.log4j.Logger;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -19,7 +20,7 @@ import java.io.InputStream;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.logging.Level;
-import java.util.logging.Logger;
+
 
 /**
  * Dashboard exposes various Sahi components from a convenient place.
@@ -27,7 +28,7 @@ import java.util.logging.Logger;
 
 public class Dashboard extends JFrame {
   // Useful link: http://download.oracle.com/javase/tutorial/uiswing/layout/box.html#filler
-
+  private static Logger logger = Logger.getLogger(Dashboard.class);
 
   private static final long serialVersionUID = 8348788972744726483L;
 
@@ -270,7 +271,7 @@ public class Dashboard extends JFrame {
     try {
       Utils.executeCommand(Utils.getCommandTokens(cmd));
     } catch (Exception ex) {
-      Logger.getLogger(Dashboard.class.getName()).log(Level.SEVERE, null, ex);
+      logger.error("Tried to execute " + cmd, ex);
     }
   }
 

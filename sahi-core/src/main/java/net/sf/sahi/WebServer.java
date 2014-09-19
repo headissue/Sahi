@@ -19,6 +19,7 @@
 package net.sf.sahi;
 
 import net.sf.sahi.config.Configuration;
+import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -33,6 +34,8 @@ public class WebServer {
   static {
     Configuration.init("..", "../userdata/");
   }
+
+  private static Logger logger = Logger.getLogger(WebServer.class);
 
   private int port = 10000;
 
@@ -52,8 +55,7 @@ public class WebServer {
     ServerSocket server = null;
     try {
       server = new ServerSocket(port);
-      // TODO log if needed
-      //System.out.println(">>>> Sahi demo web server started. Listening on port:" + port);
+      logger.info("Sahi demo web server started. Listening on port:" + port);
       while (true) {
         Socket client = server.accept();
         new Thread(new WebProcessor(client)).start();

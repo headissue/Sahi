@@ -61,7 +61,6 @@ public class SahiTestTest {
     while (keys.hasMoreElements()) {
       key = keys.nextElement().toString();
       props[i] = key + "=" + envVars.getProperty(key);
-      System.out.println(props[i]);
       i++;
     }
     props[i] = "MOZ_NO_REMOTE=1";
@@ -117,7 +116,6 @@ public class SahiTestTest {
     Process p = Runtime.getRuntime().exec("MOZ_NO_REMOTE=1");
     Process p2 = Runtime.getRuntime().exec("C:\\Program Files\\Mozilla Firefox\\firefox.exe");
     Thread.sleep(2000);
-    System.out.println(p.toString());
     p2.destroy();
   }
 }

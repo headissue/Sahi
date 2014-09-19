@@ -28,16 +28,17 @@ import net.sf.sahi.response.SimpleHttpResponse;
 import net.sf.sahi.session.Session;
 import net.sf.sahi.util.FileNotFoundRuntimeException;
 import net.sf.sahi.util.Utils;
+import org.apache.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Logger;
+
 
 public class FileUpload {
-  private static Logger logger = Configuration.getLogger("net.sf.sahi.command.FileUpload");
+  private static Logger logger = Logger.getLogger(FileUpload.class);
 
   @SuppressWarnings("unchecked")
   public HttpResponse setFile(final HttpRequest request) {
@@ -82,7 +83,7 @@ public class FileUpload {
         try {
           fileContent = Utils.readFile(absolutePath);
         } catch (FileNotFoundRuntimeException e) {
-          logger.warning(Utils.getStackTraceString(e));
+          logger.error(Utils.getStackTraceString(e));
         }
         part.setData(fileContent);
         part.removeHeader("Content-Length");

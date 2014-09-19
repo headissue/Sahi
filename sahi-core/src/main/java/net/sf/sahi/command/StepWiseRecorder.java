@@ -9,6 +9,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import net.sf.sahi.request.HttpRequest;
 import net.sf.sahi.response.SimpleHttpResponse;
 import net.sf.sahi.session.Session;
+import org.apache.log4j.Logger;
 
 /**
  * Sahi - Web Automation and Test Tool
@@ -31,6 +32,7 @@ import net.sf.sahi.session.Session;
 
 public class StepWiseRecorder {
 
+  private static Logger logger = Logger.getLogger(StepWiseRecorder.class);
   // This will cause a leak. Fix this by setting property in session itself.
   static HashMap<String, RecordedSteps> recorders = new HashMap<String, RecordedSteps>();
 
@@ -46,10 +48,10 @@ public class StepWiseRecorder {
     RecordedSteps recordedSteps = recorders.get(request.session().id());
     String step = request.getParameter("step");
     if (recordedSteps == null || !request.session().isRecording()) {
-//    		System.out.println("Recording not started, but step received was: " + step);
+    logger.warn("Recording not started, but step received was: " + step);
       return;
     }
-//    	System.out.println(step);
+    logger.debug("record: " + step);
     recordedSteps.record(step);
   }
 

@@ -22,13 +22,14 @@ import net.sf.sahi.response.HttpResponse;
 import net.sf.sahi.response.NoCacheHttpResponse;
 import net.sf.sahi.util.ClassLoadHelper;
 import net.sf.sahi.util.Utils;
+import org.apache.log4j.Logger;
 
 import java.lang.reflect.Method;
-import java.util.logging.Logger;
+
 
 public class CommandExecuter {
 
-  private static final Logger logger = Logger.getLogger("net.sf.sahi.command.CommandExecuter");
+  private static final Logger logger = Logger.getLogger(CommandExecuter.class);
   private String commandMethod;
   private String commandClass;
   private final HttpRequest request;
@@ -56,8 +57,8 @@ public class CommandExecuter {
       return returned == null ? new NoCacheHttpResponse() : (HttpResponse) returned;
     } catch (Exception e) {
       e.printStackTrace();
-      logger.warning("commandClass = >" + commandClass + "< commandMethod = >" + commandMethod + "<");
-      logger.warning(Utils.getStackTraceString(e));
+      logger.warn("commandClass = >" + commandClass + "< commandMethod = >" + commandMethod + "<");
+      logger.warn(Utils.getStackTraceString(e));
       return new NoCacheHttpResponse("SAHI_ERROR");
     }
   }

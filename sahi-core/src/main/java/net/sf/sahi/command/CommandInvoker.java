@@ -24,12 +24,14 @@ import net.sf.sahi.request.HttpRequest;
 import net.sf.sahi.response.HttpResponse;
 import net.sf.sahi.response.SimpleHttpResponse;
 import net.sf.sahi.util.Utils;
+import org.apache.log4j.Logger;
 
 public class CommandInvoker {
 
   private static final int NORMAL_TERMINATION = 0;
   public static final String SUCCESS = "success";
   public static final String FAILURE = "failure";
+  private static Logger logger = Logger.getLogger(CommandInvoker.class);
 
   public HttpResponse execute(final HttpRequest request) throws InterruptedException {
     String command = request.getParameter(RequestConstants.COMMAND);
@@ -53,7 +55,7 @@ public class CommandInvoker {
     String cmd = "";
     try {
       cmd = command; // getCommandForOS(command);
-      System.out.println("Executing: " + cmd);
+      logger.info("Executing: " + cmd);
       Process process = Runtime.getRuntime().exec(Utils.getCommandTokens(cmd));
       return (isSynchronous) ? getExitStatus(process) : SUCCESS;
       /**

@@ -24,7 +24,7 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.logging.Level;
-import java.util.logging.Logger;
+
 
 import net.sf.sahi.command.MockResponder;
 import net.sf.sahi.config.Configuration;
@@ -36,12 +36,13 @@ import net.sf.sahi.report.Report;
 import net.sf.sahi.test.BrowserLauncher;
 import net.sf.sahi.test.SahiTestSuite;
 import net.sf.sahi.util.Utils;
+import org.apache.log4j.Logger;
 
 /**
  * User: nraman Date: Jun 21, 2005 Time: 8:03:28 PM
  */
 public class Session {
-  private static final Logger logger = Logger.getLogger("net.sf.sahi.session.Session");
+  private static final Logger logger = Logger.getLogger(Session.class);
   private final Hashtable<String, String> ajaxRedirects = new Hashtable<String, String>();
 
   private Status status;
@@ -161,8 +162,7 @@ public class Session {
   }
 
   public String getVariable(final String name) {
-    // System.out.println("get name="+name);
-    // System.out.println("get value="+(String) (variables.get(name)));
+    logger.debug("get name="+name + " value=" + (String) (variables.get(name)));
     return (String) (variables.get(name));
   }
 
@@ -176,8 +176,7 @@ public class Session {
   }
 
   public void setVariable(final String name, final String value) {
-    // System.out.println("set name="+name);
-    // System.out.println("set value="+value);
+    logger.debug("set name="+name + " value=" + value);
     variables.put(name, value);
     if (scriptRunner != null)
       scriptRunner.setVariable(name, value);
@@ -309,7 +308,7 @@ public class Session {
       e.printStackTrace();
     }
     System.gc();
-    //System.out.println("sessions.size() = " + sessions.size());
+    logger.debug("sessions.size() = " + sessions.size());
   }
 
   public void setObject(String key, Object value) {
@@ -321,32 +320,24 @@ public class Session {
   }
 
   public void addAjaxRedirect(String redirectedTo) {
-    if (logger.isLoggable(Level.FINE)) {
-      logger.fine("Adding AJAX redirect for: " + redirectedTo);
-    }
+    logger.debug("Adding AJAX redirect for: " + redirectedTo);
     ajaxRedirects.put(redirectedTo, redirectedTo);
   }
 
   public boolean isAjaxRedirect(String url) {
     boolean isRedirect = ajaxRedirects.containsKey(url);
-    if (logger.isLoggable(Level.FINE)) {
-      logger.fine("AJAX redirect for: " + url + ": " + isRedirect);
-    }
+    logger.debug("AJAX redirect for: " + url + ": " + isRedirect);
     if (isRedirect) ajaxRedirects.remove(url);
     return isRedirect;
   }
 
   public void set204(boolean is204) {
     this.is204 = is204;
-    if (logger.isLoggable(Level.FINE)) {
-      logger.fine("Setting is204 = " + is204);
-    }
+    logger.debug("Setting is204 = " + is204);
   }
 
   public boolean is204() {
-    if (logger.isLoggable(Level.FINE)) {
-      logger.fine("is204 = " + is204);
-    }
+    logger.debug("is204 = " + is204);
     return is204;
   }
 

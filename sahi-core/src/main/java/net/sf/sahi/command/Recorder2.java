@@ -7,6 +7,7 @@ import net.sf.sahi.response.NoCacheHttpResponse;
 import net.sf.sahi.response.SimpleHttpResponse;
 import net.sf.sahi.session.Session;
 import net.sf.sahi.util.Utils;
+import org.apache.log4j.Logger;
 
 /**
  * Sahi - Web Automation and Test Tool
@@ -28,6 +29,8 @@ import net.sf.sahi.util.Utils;
 
 
 public class Recorder2 {
+  private Logger logger = org.apache.log4j.Logger.getLogger(Recorder2.class);
+
   public void addRecordedStep(HttpRequest request) {
     Session session = request.session();
     String steps = session.getVariable("CONTROLLER_RecordedSteps");
@@ -49,10 +52,7 @@ public class Recorder2 {
   public void setRecordedSteps(HttpRequest request) {
     Session session = request.session();
     String content = request.getParameter("content");
-//        boolean append = "1".equals(request.getParameter("append"));
-//		String fileName = "" + session.getVariable("CONTROLLER_recordFile");
-//		if (append) content = Utils.readFileAsString(fileName) + "\n" + content;
-//        System.out.println(content);
+logger.debug(content);
     session.setVariable("CONTROLLER_RecordedSteps", content);
 //		if (!Utils.isBlankOrNull(fileName)){
 //			Utils.writeFile(content, fileName, !append);

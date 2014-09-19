@@ -26,12 +26,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.logging.Level;
-import java.util.logging.Logger;
+
 
 import net.sf.sahi.StreamHandler;
 import net.sf.sahi.config.Configuration;
 import net.sf.sahi.session.Session;
 import net.sf.sahi.util.Utils;
+import org.apache.log4j.Logger;
 
 /**
  * User: nraman Date: May 13, 2005 Time: 10:01:13 PM
@@ -50,7 +51,7 @@ public class HttpRequest extends StreamHandler {
 
 //	private Map<String, String> cookies = null;
 
-  private static final Logger logger = Logger.getLogger("net.sf.sahi.request.HttpRequest");
+  private static final Logger logger = Logger.getLogger(HttpRequest.class);
 
   private boolean isSSLSocket;
 
@@ -67,6 +68,19 @@ public class HttpRequest extends StreamHandler {
   private String sahiCookie = "";
 
   HttpRequest() {
+  }
+
+  @Override
+  public String toString() {
+    return "HttpRequest{" +
+        "host='" + host + '\'' +
+        ", port=" + port +
+        ", uri='" + uri + '\'' +
+        ", queryString='" + queryString + '\'' +
+        ", params=" + params +
+        ", isSSLSocket=" + isSSLSocket +
+        ", isAjax=" + isAjax +
+        '}';
   }
 
   public HttpRequest(final InputStream in) throws IOException {
@@ -259,10 +273,8 @@ public class HttpRequest extends StreamHandler {
   }
 
   public HttpRequest modifyForFetch() {
-    if (logger.isLoggable(Level.FINEST)) {
-      logger.finest("REQUEST HEADERS BEFORE MODIFICATION");
-      logger.finest(new String(rawHeaders()));
-    }
+    logger.debug("REQUEST HEADERS BEFORE MODIFICATION");
+    logger.debug(new String(rawHeaders()));
     removeHeader("Proxy-Connection");
     removeHeader("Accept-Encoding");
     addHeader("Accept-Encoding", "gzip");
@@ -274,34 +286,25 @@ public class HttpRequest extends StreamHandler {
 //		cookies().remove("sahisid");
 //		setHeader("Cookie", rebuildCookies());
     resetRawHeaders();
-    if (logger.isLoggable(Level.FINEST)) {
-      logger.finest("REQUEST HEADERS AFTER MODIFICATION");
-      logger.finest(firstLine());
-      logger.finest("\n------------\n\nRequest Headers:\n" + headers());
-    }
+    logger.debug("REQUEST HEADERS AFTER MODIFICATION");
+    logger.debug(firstLine());
+    logger.debug("\n------------\n\nRequest Headers:\n" + headers());
     return this;
   }
 
   public Session session() {
-    boolean finest = logger.isLoggable(Level.FINEST);
     if (this.session == null) {
       String sessionId;
       sessionId = getParameter("sahisid");
 //			sessionId = "SAHI_HARDCODED_IDsahixSAHI_CHILD_IDx"; // Change in Utils too
-      if (finest) {
-        logger.finest("SessionId from parameter:" + sessionId);
-      }
+      logger.debug("SessionId from parameter:" + sessionId);
       if (Utils.isBlankOrNull(sessionId)) {
         sessionId = sahiCookie;
-        if (finest) {
-          logger.finest("SessionId from cookie:" + sessionId);
-        }
+        logger.debug("SessionId from cookie:" + sessionId);
       }
       if (Utils.isBlankOrNull(sessionId)) {
         sessionId = Utils.generateId();
-        if (finest) {
-          logger.finest("SessionId generated:" + sessionId);
-        }
+        logger.debug("SessionId generated:" + sessionId);
       }
       this.session = Session.getInstance(sessionId);
     }
@@ -381,9 +384,7 @@ public class HttpRequest extends StreamHandler {
   }
 
   public boolean isExcluded() {
-    if (logger.isLoggable(Level.FINER)) {
-      logger.finer("isAjax=" + isAjax + " for " + url());
-    }
+    logger.debug("isAjax=" + isAjax + " for " + url());
     if (isAjax) {
       return true;
     }

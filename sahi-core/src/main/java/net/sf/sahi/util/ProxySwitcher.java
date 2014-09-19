@@ -1,14 +1,16 @@
 package net.sf.sahi.util;
 
 import java.util.logging.Level;
-import java.util.logging.Logger;
+
 
 import net.sf.sahi.config.Configuration;
+import org.apache.log4j.Logger;
 
 public class ProxySwitcher {
 
   private static String toolsBasePath = Configuration.getToolsPath();
   private static int counter = 0;
+  private static Logger logger = Logger.getLogger(ProxySwitcher.class);
 
   /**
    * Restores System Proxy settings to what was before.
@@ -39,7 +41,7 @@ public class ProxySwitcher {
     try {
       Utils.executeCommand(Utils.getCommandTokens(cmd));
     } catch (Exception ex) {
-      Logger.getLogger(ProxySwitcher.class.getName()).log(Level.SEVERE, null, ex);
+      logger.error("Tried to execute: " + cmd, ex);
     }
   }
 

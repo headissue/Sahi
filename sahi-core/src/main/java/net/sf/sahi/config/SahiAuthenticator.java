@@ -2,11 +2,12 @@ package net.sf.sahi.config;
 
 import java.net.Authenticator;
 import java.net.PasswordAuthentication;
-import java.util.logging.Logger;
+
 
 import net.sf.sahi.playback.RequestCredentials;
 import net.sf.sahi.session.Session;
 import net.sf.sahi.util.ThreadLocalMap;
+import org.apache.log4j.Logger;
 
 /**
  * Sahi - Web Automation and Test Tool
@@ -28,7 +29,7 @@ import net.sf.sahi.util.ThreadLocalMap;
 
 
 public class SahiAuthenticator extends Authenticator {
-  private static final Logger logger = Logger.getLogger("net.sf.sahi.config.SahiAuthenticator");
+  private static final Logger logger = Logger.getLogger(SahiAuthenticator.class);
 
   protected PasswordAuthentication getPasswordAuthentication() {
     logger.info("getRequestingProtocol() = " + getRequestingProtocol());
@@ -60,7 +61,7 @@ public class SahiAuthenticator extends Authenticator {
         return new PasswordAuthentication(credentials.username(),
           credentials.password().toCharArray());
       }
-      logger.fine("No credentials found. Should get prompt on browser.");
+      logger.debug("No credentials found. Should get prompt on browser.");
     }
     return null;
   }

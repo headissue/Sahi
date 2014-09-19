@@ -17,21 +17,21 @@
  */
 package net.sf.sahi.command;
 
-import java.util.logging.Logger;
-
 import net.sf.sahi.playback.SahiScript;
 import net.sf.sahi.request.HttpRequest;
 import net.sf.sahi.response.HttpResponse;
 import net.sf.sahi.response.NoCacheHttpResponse;
 import net.sf.sahi.nashorn.NashornScriptRunner;
 import net.sf.sahi.session.Session;
+import org.apache.log4j.Logger;
 
 public class NashornRuntime {
-  private static final Logger logger = Logger.getLogger("net.sf.sahi.command.NashornRuntime");
+  private static final Logger logger = Logger.getLogger(NashornRuntime.class);
 
   public HttpResponse eval(final HttpRequest request) {
     Session session = request.session();
     String toEval = request.getParameter("toEval");
+    logger.debug("Eval: " + toEval);
     NashornScriptRunner rsr = session.getScriptRunner();
     toEval = SahiScript.modifyFunctionNames(toEval);
     String result = rsr.eval(toEval);

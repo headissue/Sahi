@@ -16,6 +16,7 @@ import net.sf.sahi.config.Configuration;
 import net.sf.sahi.request.HttpRequest;
 import net.sf.sahi.util.Utils;
 
+import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -27,6 +28,8 @@ public class BrowserTypesLoader {
   static {
     loadBrowserTypes();
   }
+
+  private static Logger logger = Logger.getLogger(BrowserTypesLoader.class);
 
   public static void loadBrowserTypes() {
     DocumentBuilder parser;
@@ -84,8 +87,7 @@ public class BrowserTypesLoader {
 
   public static Map<String, BrowserType> getAvailableBrowserTypes(boolean printMessage) {
     if (printMessage) {
-      System.out.println("-----");
-      System.out.println("Reading browser types from: " + getBrowserTypesFilePath());
+      logger.info("Reading browser types from: " + getBrowserTypesFilePath());
     }
     Map<String, BrowserType> availableBrowserTypes = new HashMap<String, BrowserType>();
     for (Iterator<String> iterator = browserTypes.keySet().iterator(); iterator.hasNext(); ) {
