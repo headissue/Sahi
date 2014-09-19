@@ -1,7 +1,7 @@
 package net.sf.sahi.command;
 
 import java.util.Properties;
-import java.util.logging.Logger;
+
 
 import net.sf.sahi.config.Configuration;
 import net.sf.sahi.nashorn.NashornScriptRunner;
@@ -17,6 +17,7 @@ import net.sf.sahi.util.BrowserType;
 import net.sf.sahi.util.BrowserTypesLoader;
 import net.sf.sahi.util.ProxySwitcher;
 import net.sf.sahi.util.Utils;
+import org.apache.log4j.Logger;
 
 /**
  * Sahi - Web Automation and Test Tool
@@ -38,7 +39,7 @@ import net.sf.sahi.util.Utils;
 
 
 public class Driver {
-  private static Logger logger = Configuration.getLogger("net.sf.sahi.command.Driver");
+  private static Logger logger = Logger.getLogger(Driver.class);
   private Boolean useSystemProxy = false;
 
 
@@ -151,10 +152,10 @@ public class Driver {
 
   public HttpResponse getVariable(final HttpRequest request) {
     String key = request.getParameter("key");
-//    	System.out.println("key="+key);
+    logger.debug("key="+key);
     Session session = request.session();
     String val = session.getVariable(key);
-//    	System.out.println("val="+val);
+    logger.debug("val="+val);
     return new SimpleHttpResponse(val != null ? val : "");
   }
 
@@ -234,7 +235,7 @@ public class Driver {
   public void setSpeed(final HttpRequest request) {
     try {
       String speed = request.getParameter("speed");
-      logger.fine("Setting speed to " + speed);
+      logger.debug("setTimeBetweenSteps to " + speed);
       Configuration.setTimeBetweenSteps(Integer.parseInt(speed));
     } catch (Exception e) {
       e.printStackTrace();

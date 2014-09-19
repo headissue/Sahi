@@ -1,5 +1,7 @@
 package net.sf.sahi.test;
 
+import org.apache.log4j.Logger;
+
 import java.io.IOException;
 import java.net.URL;
 
@@ -27,6 +29,7 @@ public class ShutDownHook implements Runnable {
   private String sahiHost;
   private String port;
   private String sessionId;
+  private Logger logger = Logger.getLogger(ShutDownHook.class);
 
   public ShutDownHook(final String sahiHost, final String port, final String sessionId) {
     this.sahiHost = sahiHost;
@@ -36,7 +39,7 @@ public class ShutDownHook implements Runnable {
 
   public void run() {
     try {
-      System.out.println("Shutting down ...");
+      logger.info("Shutting down ...");
       String urlStr = "http://" + this.sahiHost + ":" + this.port + "/_s_/dyn/Suite_kill/?sahisid=" + sessionId;
       URL url = new URL(urlStr);
       url.getContent();

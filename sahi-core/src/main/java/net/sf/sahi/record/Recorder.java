@@ -20,9 +20,10 @@ package net.sf.sahi.record;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.logging.Logger;
+
 
 import net.sf.sahi.config.Configuration;
+import org.apache.log4j.Logger;
 
 /**
  * User: nraman Date: May 20, 2005 Time: 6:59:26 PM
@@ -31,12 +32,12 @@ public class Recorder {
 
   private FileOutputStream out;
   boolean isStarted = false;
-  private static Logger logger = Configuration.getLogger("net.sf.sahi.record.Recorder");
+  private static Logger logger = Logger.getLogger(Recorder.class);
   private File file = null;
   private String dir;
 
   public void start(final String fileName) {
-    logger.fine("Starting to write  to " + fileName + ".");
+    logger.info("Starting to write  to " + fileName);
     if (isStarted) {
       return;
     }
@@ -51,7 +52,7 @@ public class Recorder {
   }
 
   public void stop() {
-    logger.fine("Stopping.");
+    logger.info("Stopping");
     if (!isStarted) {
       return;
     }
@@ -79,7 +80,7 @@ public class Recorder {
     if (file == null) {
       return;
     }
-    logger.fine("Record:" + cmd);
+    logger.debug("Record:" + cmd);
     try {
       out = new FileOutputStream(file, true);
       out.write(cmd.getBytes("UTF8"));

@@ -21,12 +21,13 @@ import com.google.common.io.Files;
 import net.sf.sahi.util.FileUtils;
 import net.sf.sahi.util.Utils;
 import net.sf.sahi.workspace.WorkspaceBuilder;
+import org.apache.log4j.Logger;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Properties;
 import java.util.jar.Manifest;
-import java.util.logging.Logger;
+
 import java.util.regex.Pattern;
 
 /**
@@ -37,6 +38,8 @@ public class Configuration {
 
   public static final String PLAYBACK_LOG_ROOT = "playback";
   private static final String HTDOCS_ROOT = "htdocs/";
+
+  private static Logger logger = Logger.getLogger(Configuration.class);
 
   private static final String SAHI_PROPERTIES = "config/sahi.properties";
 
@@ -235,7 +238,6 @@ public class Configuration {
     int maxProfiles = Integer.parseInt(getUserProperty("ff.profiles.max_number", "10"));
     for (int i = 1; i < maxProfiles; i++) {
       String profileN = Utils.concatPaths(profileDir.getCanonicalPath(), prefix + i);
-      // System.out.println("Copying profile to " + profileN);
       copyFile(profile0, profileN, "prefs.js");
       copyFile(profile0, profileN, "cert8.db");
       copyFile(profile0, profileN, "key3.db");
@@ -265,10 +267,6 @@ public class Configuration {
     } catch (Exception e) {
       return 9999;
     }
-  }
-
-  public static Logger getLogger(final String name) {
-    return Logger.getLogger(name);
   }
 
   public static String getLogsRoot() {
@@ -442,11 +440,9 @@ public class Configuration {
   private static boolean isExecutable(String keytoolPath) {
     try {
       Utils.executeCommand(new String[]{keytoolPath});
-      // TODO log if needed
-      //System.out.println("Keytool command found at: " + keytoolPath);
       return true;
     } catch (Exception e) {
-      System.err.println("Keytool command not found at: " + keytoolPath);
+      logger.warn("Keytool command not found at: " + keytoolPath);
       return false;
     }
   }
@@ -740,8 +736,6 @@ public class Configuration {
 
   public static void main(String args[]) {
     String[] scriptRoots = Configuration.getScriptRoots();
-    // TODO log if needed
-    //System.out.println(scriptRoots[0]);
   }
 
   public static boolean downloadIfContentDispositionIsAttachment() {

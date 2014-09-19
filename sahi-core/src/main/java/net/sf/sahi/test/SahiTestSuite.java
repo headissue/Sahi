@@ -27,6 +27,7 @@ import net.sf.sahi.session.Session;
 import net.sf.sahi.session.Status;
 import net.sf.sahi.util.ProxySwitcher;
 import net.sf.sahi.util.Utils;
+import org.apache.log4j.Logger;
 
 import java.util.*;
 import java.util.concurrent.Semaphore;
@@ -90,6 +91,7 @@ public class SahiTestSuite {
   private String singleSessionChildSessionId;
 
   private BrowserLauncher singleSessionBrowserLauncher;
+  private static Logger logger = Logger.getLogger(SahiTestSuite.class);
 
   public SahiTestSuite(final String suitePath, final String base,
                        final String browser, final String sessionId,
@@ -139,7 +141,8 @@ public class SahiTestSuite {
 
   public void loadScripts() {
     this.tests = new SuiteLoader(suitePath, base).getListTest();
-    System.out.println(">>>>>>                Tests size = " + this.tests.size());
+    logger.info("Suite = " + suitePath);
+    logger.info("Tests size = " + this.tests.size());
     for (Iterator<TestLauncher> iterator = tests.iterator(); iterator.hasNext(); ) {
       TestLauncher launcher = (TestLauncher) iterator.next();
       prepareTestLauncher(launcher);
@@ -269,7 +272,7 @@ public class SahiTestSuite {
         && now - lastActiveTime > inactivityLimit) {
         String message = "*** Forcefully terminating script. \nNo response from browser within expected time ("
           + inactivityLimit / 1000 + " seconds).";
-        System.out.println(message);
+        logger.info(message);
         NashornScriptRunner scriptRunner = session.getScriptRunner();
         scriptRunner.setStatus(Status.FAILURE);
         Report report = scriptRunner.getReport();
@@ -412,13 +415,12 @@ public class SahiTestSuite {
   }
 
   public void kill() {
-    System.out.println("Shutting down ...");
+    logger.info("Shutting down ...");
     killed = true;
   }
 
   public String getVariable(final String name) {
-//    	System.out.println("get name="+name);
-//    	System.out.println("get value="+(String) (variables.get(name)));
+    logger.debug("get name="+name + " value="+(String) (variables.get(name)));
     return (String) (variables.get(name));
   }
 
@@ -432,8 +434,7 @@ public class SahiTestSuite {
   }
 
   public void setVariable(final String name, final String value) {
-//    	System.out.println("set name="+name);
-//    	System.out.println("set value="+value);
+    logger.debug("set name="+name + " value=" + value);
     variables.put(name, value);
   }
 

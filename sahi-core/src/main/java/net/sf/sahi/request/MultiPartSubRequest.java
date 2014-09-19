@@ -18,6 +18,7 @@
 package net.sf.sahi.request;
 
 import net.sf.sahi.StreamHandler;
+import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -30,6 +31,7 @@ import java.util.StringTokenizer;
  */
 public class MultiPartSubRequest extends StreamHandler {
 
+  private final Logger logger = Logger.getLogger(MultiPartSubRequest.class);
   private String name;
   private String fileName;
 
@@ -42,7 +44,7 @@ public class MultiPartSubRequest extends StreamHandler {
     populateData(in);
     setNameAndFileName(getLastSetValueOfHeader("Content-Disposition"));
     removeHeader("Content-Length");
-    // System.out.println(new String(rawHeaders()));
+    logger.debug(new String(rawHeaders()));
   }
 
   void setNameAndFileName(final String s) {

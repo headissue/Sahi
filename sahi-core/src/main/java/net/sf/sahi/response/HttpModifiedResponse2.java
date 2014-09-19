@@ -22,6 +22,7 @@ import java.io.UnsupportedEncodingException;
 import net.sf.sahi.config.Configuration;
 import net.sf.sahi.stream.filter.HTMLModifierFilter;
 import net.sf.sahi.stream.filter.JSModifierFilter;
+import org.apache.log4j.Logger;
 
 /**
  * User: nraman Date: May 14, 2005 Time: 1:43:05 AM
@@ -32,6 +33,7 @@ public class HttpModifiedResponse2 extends HttpResponse {
   private String fileExtension;
   private String charset;
   private String dataString;
+  private static Logger logger = Logger.getLogger(HttpModifiedResponse2.class);
 
   public HttpModifiedResponse2(final HttpResponse response, final boolean isSSL, String fileExtension, int responseCode) {
     this.fileExtension = fileExtension;
@@ -134,8 +136,7 @@ public class HttpModifiedResponse2 extends HttpResponse {
       try {
         new String(new byte[]{}, charset);
       } catch (UnsupportedEncodingException e) {
-//	            e.printStackTrace();
-        System.out.println("Defaulting to charset iso-8859-1");
+        logger.debug("Defaulting to charset iso-8859-1", e);
         charset = "iso-8859-1";
       }
     }

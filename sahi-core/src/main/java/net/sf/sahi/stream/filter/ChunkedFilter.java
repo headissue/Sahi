@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 import net.sf.sahi.response.HttpResponse;
+import org.apache.log4j.Logger;
 
 /**
  * Sahi - Web Automation and Test Tool
@@ -25,13 +26,15 @@ import net.sf.sahi.response.HttpResponse;
 
 
 public class ChunkedFilter extends StreamFilter {
+  private static Logger logger = Logger.getLogger(ChunkedFilter.class);
+
   public ChunkedFilter() {
     super();
-//		System.out.println("In ChunkedFilter");
+    logger.debug("In ChunkedFilter");
   }
 
   public byte[] modify(byte[] data) throws IOException {
-//		System.out.println(">>>>>> length = " + data.length);
+    logger.debug("length = " + data.length);
     if (data == null || data.length == 0) return data;
     ByteArrayOutputStream ar = new ByteArrayOutputStream();
     ar.write((Integer.toHexString(data.length) + "\r\n").getBytes());
@@ -41,7 +44,7 @@ public class ChunkedFilter extends StreamFilter {
   }
 
   public void modifyHeaders(HttpResponse response) throws IOException {
-//		System.out.println(">>>>>> In modifyHeaders");
+    logger.debug("In modifyHeaders");
     response.removeHeader("Transfer-encoding");
     response.removeHeader("Content-Length");
     response.removeHeader("Content-length");

@@ -1,5 +1,7 @@
 package net.sf.sahi.util;
 
+import org.apache.log4j.Logger;
+
 /**
  * Sahi - Web Automation and Test Tool
  * <p/>
@@ -22,6 +24,7 @@ package net.sf.sahi.util;
 public class Diagnostics implements Runnable {
 
   public static boolean TASKLIST_STATUS;
+  private static Logger logger = Logger.getLogger(Diagnostics.class);
 
   public void run() {
     String tasklistCmd = OSUtils.getPIDListCommand().replaceAll(
@@ -31,7 +34,7 @@ public class Diagnostics implements Runnable {
       Utils.executeCommand(Utils.getCommandTokens(tasklistCmd));
       TASKLIST_STATUS = true;
     } catch (Exception e) {
-      System.out.println(e.getMessage());
+      logger.warn("Exception on running Diagnostics", e);
     }
   }
 }

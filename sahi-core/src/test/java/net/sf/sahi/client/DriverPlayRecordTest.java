@@ -55,7 +55,6 @@ public class DriverPlayRecordTest {
   @Test
   @Ignore("OS dependent")
   public void testRecorder() throws ExecutionException {
-    System.out.println("--- startRecording");
     browser.startRecording(); // check that controller window is opened, and navigateTo is added.
     int i = 0;
     while (i++ < 30) {
@@ -66,7 +65,6 @@ public class DriverPlayRecordTest {
       }
       browser.waitFor(1000);
     }
-    System.out.println("--- stopRecording");
     browser.stopRecording();
     browser.waitFor(1000); // check that controller window is closed.
 
@@ -78,8 +76,6 @@ public class DriverPlayRecordTest {
     browser.link("Link Test").click();
     browser.link("Back").click();
 
-    // Start recording
-    System.out.println("--- startRecording");
     browser.startRecording(); // check that controller window is opened.
 
     // Simple loop to wait for 30 seconds while looking for recorded steps.
@@ -98,8 +94,6 @@ public class DriverPlayRecordTest {
       browser.waitFor(1000);
     }
 
-    // Stop recording
-    System.out.println("--- stopRecording");
     browser.stopRecording();
     browser.waitFor(1000); // check that controller window is closed.
     // Continue with further steps like Twist does.

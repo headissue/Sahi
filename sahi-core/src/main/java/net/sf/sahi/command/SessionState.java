@@ -29,8 +29,11 @@ import net.sf.sahi.response.SimpleHttpResponse;
 import net.sf.sahi.session.Session;
 import net.sf.sahi.test.SahiTestSuite;
 import net.sf.sahi.util.Utils;
+import org.apache.log4j.Logger;
 
 public class SessionState {
+
+  private Logger logger = Logger.getLogger(SessionState.class);
 
   public HttpResponse ping(final HttpRequest request) {
     return new SimpleHttpResponse(request.session().getInfoJSON());
@@ -61,7 +64,7 @@ public class SessionState {
 
   public void setXHRReadyStatesToWaitFor(final HttpRequest request) {
     final String states = request.getParameter("states");
-    System.out.println(states);
+    logger.info(states);
     request.session().setXHRReadyStatesToWaitFor(states);
   }
 

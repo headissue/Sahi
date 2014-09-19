@@ -48,7 +48,6 @@ public class HTMLDecorator {
 
   private static void decorate(final String layout, final File file, final String outputPath) {
     try {
-      System.out.println(file.getName());
       StringBuffer sb = new StringBuffer(layout);
 
       final String fileContents = new String(Utils.readFileAsString(file));

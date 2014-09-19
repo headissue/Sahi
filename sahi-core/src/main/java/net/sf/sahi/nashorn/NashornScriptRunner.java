@@ -10,6 +10,7 @@ import net.sf.sahi.session.Status;
 import net.sf.sahi.test.SahiTestSuite;
 import net.sf.sahi.test.TestLauncher;
 import net.sf.sahi.util.Utils;
+import org.apache.log4j.Logger;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
@@ -17,12 +18,9 @@ import javax.script.ScriptException;
 import javax.script.ScriptContext;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 import java.util.logging.Level;
-import java.util.logging.Logger;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -47,7 +45,7 @@ import java.util.regex.Pattern;
 
 public class NashornScriptRunner implements Runnable {
 
-  private static final Logger logger = Logger.getLogger("net.sf.sahi.nashorn.NashornScriptRunner");
+  private static final Logger logger = Logger.getLogger(NashornScriptRunner.class);
   protected int counter = 0;
   protected String step;
   protected String js;
@@ -122,16 +120,12 @@ public class NashornScriptRunner implements Runnable {
   }
 
   protected void setBrowserException(String failureMessage) {
-    if (logger.isLoggable(Level.FINER)) {
-      logger.finer("setBrowserException: failureMessage=" + failureMessage);
-    }
+    logger.debug("setBrowserException: failureMessage=" + failureMessage);
     this.browserException = failureMessage;
   }
 
   public boolean doneStep(String lastId) {
-    if (logger.isLoggable(Level.FINER)) {
-      logger.finer("doneStep with (unused) lastId=" + lastId);
-    }
+    logger.debug("doneStep with (unused) lastId=" + lastId);
     return done;
   }
 
@@ -231,12 +225,12 @@ public class NashornScriptRunner implements Runnable {
     } else {
       this.retries++;
       if (this.retries > 490) {
-        System.out.println(">>>> step=" + step);
+        logger.debug("step=" + step);
         String message = "Window/Domain not found:  popupNameFromStep=" + popupNameFromStep +
             "; derivedName=" + derivedName +
             "; windowName=" + windowName + "; windowTitle=" + windowTitle +
             "; wasOpened=" + wasOpened + "; domain=" + domain;
-        System.out.println(message);
+        logger.debug(message);
         if (this.retries > 500) {
           markStepDone("" + counter, ResultType.ERROR, message);
           return encode("{'origStep': \"" + Utils.makeString(step) + "\", " +
@@ -277,9 +271,7 @@ public class NashornScriptRunner implements Runnable {
   }
 
   public void markStepInProgress(String stepId, ResultType type) {
-    if (logger.isLoggable(Level.FINER)) {
-      logger.finer("markStepInProgress: stepId=" + stepId + " type=" + type);
-    }
+    logger.debug("markStepInProgress: stepId=" + stepId + " type=" + type);
 
     if (stepTimer != null) stepTimer.cancel();
     inProgress = true;
@@ -292,9 +284,7 @@ public class NashornScriptRunner implements Runnable {
   }
 
   public synchronized int setStep(String step, String debugInfo, String type) {
-    if (logger.isLoggable(Level.FINER)) {
-      logger.finer("step=" + step + "; debugInfo=" + debugInfo + "; type=" + type);
-    }
+    logger.debug("setStep: step=" + step + "; debugInfo=" + debugInfo + "; type=" + type);
 
     counter++;
     this.retries = 0;
@@ -343,7 +333,7 @@ public class NashornScriptRunner implements Runnable {
         }
       }
     } catch (Exception e) {
-      logger.warning(Utils.getStackTraceString(e, false));
+      logger.warn(Utils.getStackTraceString(e, false));
       setScriptStatus(Status.FAILURE);
       incrementErrors();
       report.addResult("ERROR ", ResultType.ERROR, e.getMessage(), e.getMessage());
@@ -390,7 +380,6 @@ public class NashornScriptRunner implements Runnable {
   }
 
   private void assertIsSahiPresent() {
-    //System.out.println(new Date() + " " + Thread.currentThread().getName() + " " + debug);
     assert nashornEngine.get("_sahi") != null;
   }
 
@@ -407,9 +396,7 @@ public class NashornScriptRunner implements Runnable {
   }
 
   public void markStepDone(String stepId, ResultType type, String failureMessage) {
-    if (logger.isLoggable(Level.FINER)) {
-      logger.finer("markStepDone: stepId=" + stepId + " type=" + type + " failureMessage=" + failureMessage);
-    }
+    logger.debug("markStepDone: stepId=" + stepId + " type=" + type + " failureMessage=" + failureMessage);
     if (stepId.equals("" + this.counter)) {
       if (this.done) return;
       if (type == ResultType.FAILURE) {
@@ -425,9 +412,7 @@ public class NashornScriptRunner implements Runnable {
       this.done = true;
       cancelStepInProgressTimer(); // make inprogress false only after marking done.
     } else {
-      if (logger.isLoggable(Level.FINER)) {
-        logger.finer("Different step received (NOT a problem mostly): " + stepId + "; current:" + this.counter + "; type=" + type + "; failureMessage=" + failureMessage);
-      }
+        logger.debug("Different step received (NOT a problem mostly): " + stepId + "; current:" + this.counter + "; type=" + type + "; failureMessage=" + failureMessage);
     }
     if (stepId.equals("" + this.counter)) {
       if (type == ResultType.ERROR) {
@@ -450,9 +435,7 @@ public class NashornScriptRunner implements Runnable {
   }
 
   public void cancelStepInProgressTimer() {
-    if (logger.isLoggable(Level.FINER)) {
-      logger.finer("cancelStepInProgressTimer");
-    }
+    logger.debug("cancelStepInProgressTimer");
     try {
       if (stepTimer != null) stepTimer.cancel();
       inProgress = false;
@@ -461,7 +444,7 @@ public class NashornScriptRunner implements Runnable {
   }
 
   public void setVariable(String key, String value) {
-    // System.out.println("Setting key="+key+" value="+value);
+    logger.debug("Setting key="+key+" value="+value);
     variables.put(key, value);
   }
 
@@ -483,7 +466,6 @@ public class NashornScriptRunner implements Runnable {
   }
 
   public String getVariable(String key) {
-    // System.out.println(variables);
     return (String) variables.get(key);
   }
 
@@ -500,9 +482,7 @@ public class NashornScriptRunner implements Runnable {
   }
 
   public void setBrowserRetries(int browserRetries) {
-    if (logger.isLoggable(Level.FINER)) {
-      logger.finer("setBrowserRetries: browserRetries=" + browserRetries);
-    }
+    logger.debug("setBrowserRetries: browserRetries=" + browserRetries);
     this.browserRetries = browserRetries;
     if (browserRetries > 0) {
       cancelStepInProgressTimer();
@@ -565,9 +545,7 @@ public class NashornScriptRunner implements Runnable {
 
   public void stop() {
     if (this.stopped) return;
-    if (logger.isLoggable(Level.FINER)) {
-      logger.finer("stop");
-    }
+    logger.debug("stop");
     this.stopped = true;
     try {
       report.stopTimer();
@@ -594,7 +572,7 @@ public class NashornScriptRunner implements Runnable {
       result = e.getLocalizedMessage();
     }
     assertIsSahiPresent();
-    //System.out.println("<<< >>> " + result.toString());
+    logger.debug("Result for "+ js + ": " + result.toString());
     return result.toString();
   }
 

@@ -24,6 +24,8 @@ import net.sf.sahi.util.BrowserTypesLoader;
 import net.sf.sahi.util.Diagnostics;
 import net.sf.sahi.util.ProxySwitcher;
 import net.sf.sahi.util.Utils;
+import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -55,6 +57,7 @@ import java.util.concurrent.Executors;
  */
 public class Proxy {
   static Proxy currentInstance;
+  private static Logger logger = Logger.getLogger(Proxy.class);
 
   private int port = 9999;
   private ServerSocket server;
@@ -70,7 +73,12 @@ public class Proxy {
     this.port = Configuration.getPort();
   }
 
+  private static void configureLogging() {
+    PropertyConfigurator.configureAndWatch("log4j.properties");
+  }
+
   public static void main(String[] args) {
+    configureLogging();
     if (args.length == 2) {
       Configuration.init(args[0], args[1]);
     } else if (args.length == 1) {
@@ -83,8 +91,7 @@ public class Proxy {
     try {
       Thread thread = new Thread(new ResetProxy());
       Runtime.getRuntime().addShutdownHook(thread);
-      // TODO log if needed
-      //System.out.println("Added shutdown hook.");
+      logger.debug("Added shutdown hook.");
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -153,9 +160,7 @@ public class Proxy {
     try {
       byte[] probe = Utils.readURL("http://localhost:" + Configuration.getPort() + "/_s_/spr/probe.htm", false);
       if (probe != null) {
-        System.err.println("---");
-        System.err.println("--- ERROR: Port " + Configuration.getPort() + " is already being used ---");
-        System.err.println("---");
+        logger.warn("Port " + Configuration.getPort() + " is already being used");
         return;
       }
 
@@ -166,10 +171,9 @@ public class Proxy {
       server.bind(new InetSocketAddress(port), 300);
       SSLHelper.getInstance().checkRootCA();
 
-      // TODO log if needed
-      //System.out.println(">>>> Sahi started. Listening on port: " + port);
-      //System.out.println(">>>> Configure your browser to use this server and port as its proxy");
-      //System.out.println(">>>> Browse any page and CTRL-ALT-DblClick on the page to bring up the Sahi Controller");
+      logger.info("Sahi started. Listening on port: " + port);
+      logger.info("Configure your browser to use this server and port as its proxy");
+      logger.info("Browse any page and CTRL-ALT-DblClick on the page to bring up the Sahi Controller");
 
       BrowserTypesLoader.getAvailableBrowserTypes(true);
 
@@ -179,7 +183,7 @@ public class Proxy {
           Socket client = server.accept();
           pool.execute(new ProxyProcessor(client));
         } catch (Exception e) {
-          System.err.println(e.getMessage());
+          logger.error(e.getMessage(), e);
           e.printStackTrace();
         }
       }

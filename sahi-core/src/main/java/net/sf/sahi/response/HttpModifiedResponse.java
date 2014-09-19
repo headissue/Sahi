@@ -25,6 +25,7 @@ import net.sf.sahi.stream.filter.CharacterFilter;
 import net.sf.sahi.stream.filter.HTMLModifierFilter;
 import net.sf.sahi.stream.filter.JSModifierFilter;
 import net.sf.sahi.util.Utils;
+import org.apache.log4j.Logger;
 
 /**
  * User: nraman Date: May 14, 2005 Time: 1:43:05 AM
@@ -35,6 +36,7 @@ public class HttpModifiedResponse extends StreamingHttpResponse {
   private String fileExtension;
   private String charset;
   private byte[] sampleBytes;
+  private Logger logger = Logger.getLogger(HttpModifiedResponse.class);
 
   public HttpModifiedResponse(final StreamingHttpResponse response, final boolean isSSL, String fileExtension, int responseCode) {
 //    	long start = System.currentTimeMillis();
@@ -119,8 +121,7 @@ public class HttpModifiedResponse extends StreamingHttpResponse {
       try {
         new String(new byte[]{}, charset);
       } catch (UnsupportedEncodingException e) {
-//	            e.printStackTrace();
-        System.out.println("Defaulting to charset iso-8859-1");
+        logger.debug("Defaulting to charset iso-8859-1", e);
         charset = "iso-8859-1";
       }
     }
@@ -141,8 +142,7 @@ public class HttpModifiedResponse extends StreamingHttpResponse {
         in.reset();
       } catch (IOException e) {
         e.printStackTrace();
-        System.out.println("If you get 'java.io.IOException: Resetting to invalid mark' errors,");
-        System.out.println("change response.sample_length in sahi.properties to a nearby value (450), restart Sahi and check.");
+        logger.info("If you get 'java.io.IOException: Resetting to invalid mark' errors, change response.sample_length in sahi.properties to a nearby value (450), restart Sahi and check.", e);
         try {
           in.reset();
         } catch (Exception e2) {

@@ -28,6 +28,7 @@ import net.sf.sahi.stream.filter.ChunkedFilter;
 import net.sf.sahi.util.ThreadLocalMap;
 import net.sf.sahi.util.TrafficLogger;
 import net.sf.sahi.util.Utils;
+import org.apache.log4j.Logger;
 
 import javax.net.ssl.*;
 import java.io.*;
@@ -36,13 +37,13 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.*;
 import java.util.logging.Level;
-import java.util.logging.Logger;
+
 import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
 
 public class RemoteRequestProcessor {
   private boolean useStreaming = false;
-  private static final Logger logger = Logger.getLogger("net.sf.sahi.RemoteRequestProcessor");
+  private static final Logger logger = Logger.getLogger(RemoteRequestProcessor.class);
 
   static {
     try {
@@ -56,7 +57,7 @@ public class RemoteRequestProcessor {
       };
       HttpsURLConnection.setDefaultHostnameVerifier(hostnameVerifier);
     } catch (Exception e) {
-      logger.warning(Utils.getStackTraceString(e));
+      logger.warn(Utils.getStackTraceString(e));
     }
     Configuration.setProxyProperties();
     Authenticator.setDefault(new SahiAuthenticator());
@@ -77,32 +78,21 @@ public class RemoteRequestProcessor {
       TrafficLogger.storeRequestHeader(requestFromBrowser.rawHeaders(), "modified");
       String urlStr = requestFromBrowser.url();
       URL url = new URL(urlStr);
-      if (logger.isLoggable(Level.FINE)) {
-        logger.fine(url.toString());
-      }
+      logger.debug(url.toString());
       HttpURLConnection connection = (HttpURLConnection) url.openConnection();
       connection.setDefaultUseCaches(true);
       connection.setUseCaches(true);
       HttpURLConnection.setFollowRedirects(false);
-      if (logger.isLoggable(Level.FINEST)) {
-        logger.finest("requestFromBrowser.headers():");
-        logger.finest(requestFromBrowser.headers().toString());
-      }
+      logger.debug("requestFromBrowser.headers(): " + requestFromBrowser.headers().toString());
       setConnectionRequestHeaders(requestFromBrowser, connection);
-
-      if (logger.isLoggable(Level.FINEST)) {
-        logger.finest("Request headers set on connection:");
-        logger.finest(getReqHeaders(connection));
-      }
+      logger.debug("Request headers set on connection: " + getReqHeaders(connection));
 
       HttpResponse response = null;
       int responseCode = -1;
       try {
         connection.setRequestMethod(requestFromBrowser.method().toUpperCase());
         if (requestFromBrowser.isPost() || requestFromBrowser.isPut()) {
-          if (logger.isLoggable(Level.FINEST)) {
-            logger.finest("In post requestFromBrowser.data() = " + requestFromBrowser.data());
-          }
+          logger.debug("In post requestFromBrowser.data(): " + requestFromBrowser.data());
           connection.setDoOutput(true);
           OutputStream outputStreamToHost = connection.getOutputStream();
           outputStreamToHost.write(requestFromBrowser.data());
@@ -110,25 +100,17 @@ public class RemoteRequestProcessor {
         }
         InputStream inputStreamFromHost = null;
         responseCode = connection.getResponseCode();
-        if (logger.isLoggable(Level.FINE)) {
-          logger.fine("responseCode  = " + responseCode);
-        }
+        logger.debug("responseCode: " + responseCode);
         if (responseCode < 400) {
           inputStreamFromHost = connection.getInputStream();
         } else {
-          if (logger.isLoggable(Level.FINE)) {
-            logger.fine("Fetching error stream");
-          }
+          logger.debug("Fetching error stream");
           inputStreamFromHost = connection.getErrorStream();
         }
         boolean isGZIP = "gzip".equals(connection.getContentEncoding());
-        if (logger.isLoggable(Level.FINER)) {
-          logger.finer("isGZIP=" + isGZIP + "; connection.getContentEncoding()=" + connection.getContentEncoding());
-        }
+        logger.debug("isGZIP: " + isGZIP + "; connection.getContentEncoding(): " + connection.getContentEncoding());
         if (isGZIP) {
-          if (logger.isLoggable(Level.FINE)) {
-            logger.fine("Using GZIPInputStream");
-          }
+          logger.debug("Using GZIPInputStream");
           try {
             inputStreamFromHost = new GZIPInputStream(inputStreamFromHost);
           } catch (IOException ioe) {
@@ -136,14 +118,9 @@ public class RemoteRequestProcessor {
           }
         }
         if (responseCode >= 500 && !requestFromBrowser.isAjax()) {
-          if (logger.isLoggable(Level.FINE)) {
-            logger.fine("Returning get5xxResponse");
-          }
           response = getWrappedResponse(get5xxResponse(responseCode, inputStreamFromHost));
+          logger.warn("got 5xxResponse\n request: " + requestFromBrowser + "\n response: " + response);
         } else if (responseCode == 401) {
-          if (logger.isLoggable(Level.FINE)) {
-            logger.fine("Returning process401");
-          }
           response = process401(connection, inputStreamFromHost);
         } else {
           response = getResponse(inputStreamFromHost, connection);
@@ -164,11 +141,8 @@ public class RemoteRequestProcessor {
       } catch (IOException uhe) {
         if (uhe instanceof SSLHandshakeException)
           uhe.printStackTrace();
-        if (logger.isLoggable(Level.WARNING) && !urlStr.contains("DesignerOutput")) {
-          logger.warning("Returning CannotConnectResponse for: " + urlStr);
-          logger.fine(Utils.getStackTraceString(uhe));
-        }
-        response = getWrappedResponse(getCannotConnectResponse(uhe));
+          logger.warn("Returning CannotConnectResponse for: " + urlStr);
+          logger.debug(Utils.getStackTraceString(uhe));
       }
       if (responseCode != 204 && responseCode != 304) {
         String contentTypeHeader = response.contentTypeHeader();
@@ -181,32 +155,28 @@ public class RemoteRequestProcessor {
         if (fileName == null) fileName = requestFromBrowser.fileName();
 
         boolean downloadURL = isDownloadURL(urlStr);
-        if (logger.isLoggable(Level.FINER)) {
-          logger.finer("downloadURL = " + downloadURL);
-          logger.finer("response.isAttachment() = " + attachment);
-          logger.finer("fileName = " + fileName);
-          logger.finer("contentTypeHeader = " + contentTypeHeader);
-          logger.finer("downloadContentType = " + downloadContentType);
-          logger.finer("Content-Disposition=" + response.getLastSetValueOfHeader("Content-Disposition"));
-        }
+        logger.debug("downloadURL = " + downloadURL);
+        logger.debug("response.isAttachment() = " + attachment);
+        logger.debug("fileName = " + fileName);
+        logger.debug("contentTypeHeader = " + contentTypeHeader);
+        logger.debug("downloadContentType = " + downloadContentType);
+        logger.debug("Content-Disposition=" + response.getLastSetValueOfHeader("Content-Disposition"));
         if (responseCode == 200
           && (downloadContentType ||
           contentDispositionForcesDownload ||
           downloadURL)) {
-          if (logger.isLoggable(Level.INFO)) {
-            StringBuilder sb = new StringBuilder();
-            sb.append("\n-- Calling downloadFile --\n");
-            sb.append(requestFromBrowser.url());
-            sb.append("\ndownloadURL = " + downloadURL);
-            sb.append("\nresponse.isAttachment() = " + attachment);
-            sb.append("\nfileName = " + fileName);
-            sb.append("\ncontentTypeHeader = " + contentTypeHeader);
-            sb.append("\ndownloadContentType = " + downloadContentType);
-            sb.append("\nContent-Disposition=" + response.getLastSetValueOfHeader("Content-Disposition"));
-            sb.append("\ncontentDispositionForcesDownload = " + contentDispositionForcesDownload);
-            sb.append("\n--");
-            logger.info(sb.toString());
-          }
+          StringBuilder sb = new StringBuilder();
+          sb.append("\n-- Calling downloadFile --\n");
+          sb.append(requestFromBrowser.url());
+          sb.append("\ndownloadURL = " + downloadURL);
+          sb.append("\nresponse.isAttachment() = " + attachment);
+          sb.append("\nfileName = " + fileName);
+          sb.append("\ncontentTypeHeader = " + contentTypeHeader);
+          sb.append("\ndownloadContentType = " + downloadContentType);
+          sb.append("\nContent-Disposition=" + response.getLastSetValueOfHeader("Content-Disposition"));
+          sb.append("\ncontentDispositionForcesDownload = " + contentDispositionForcesDownload);
+          sb.append("\n--");
+          logger.info(sb.toString());
           downloadFile(requestFromBrowser, response, fileName);
           if (session.sendHTMLResponseAfterFileDownload()) {
             response = getWrappedResponse(getFileDownloadedResponse(fileName));
@@ -226,9 +196,7 @@ public class RemoteRequestProcessor {
 //			}
       return response;
     } catch (Exception e) {
-      if (logger.isLoggable(Level.WARNING)) {
-        logger.warning(Utils.getStackTraceString(e));
-      }
+      logger.warn(Utils.getStackTraceString(e));
       return null;
     }
   }
@@ -275,15 +243,11 @@ public class RemoteRequestProcessor {
     response = getResponse(inputStreamFromHost, connection);
     String wwwAuthenticate = response.getLastSetValueOfHeader("WWW-Authenticate");
     List<String> cookieHeaders = response.headers().getHeaders("Set-Cookie");
-    if (logger.isLoggable(Level.INFO)) {
-      logger.info("wwwAuthenticate: " + wwwAuthenticate);
-    }
+    logger.info("authentication required: " + wwwAuthenticate);
     if (wwwAuthenticate != null) {
       String scheme = getScheme(wwwAuthenticate);
       String realm = getRealm(wwwAuthenticate);
-      if (logger.isLoggable(Level.INFO)) {
-        logger.info("scheme=" + scheme + "; realm=" + realm);
-      }
+      logger.info("scheme=" + scheme + "; realm=" + realm);
       Properties props = new Properties();
       props.put("realm", "" + realm);
       props.put("scheme", "" + scheme);
@@ -325,17 +289,12 @@ public class RemoteRequestProcessor {
   private void downloadFile(HttpRequest requestFromBrowser, HttpResponse response, String fileName) {
     Session session = requestFromBrowser.session();
     save(response, requestFromBrowser.session().id() + "__" + fileName);
-    if (logger.isLoggable(Level.INFO)) {
-      logger.info("Setting download_lastFile = " + fileName + "\nSession Id: " + session.id());
-    }
+    logger.debug("Setting download_lastFile = " + fileName + "\nSession Id: " + session.id());
     session.setVariable("download_lastFile", fileName);
   }
 
-
   public void save(HttpResponse response, final String fileName) {
-    if (logger.isLoggable(Level.INFO)) {
       logger.info("Downloading " + fileName + " to temp directory:\n" + Configuration.tempDownloadDir());
-    }
     try {
       File file = new File(Configuration.tempDownloadDir(), fileName);
       if (file.exists()) {
@@ -348,10 +307,8 @@ public class RemoteRequestProcessor {
       out.flush();
       out.close();
     } catch (IOException e) {
-      if (logger.isLoggable(Level.WARNING)) {
-        logger.warning("Could not write to file");
-        logger.warning(Utils.getStackTraceString(e));
-      }
+        logger.warn("Could not write to file");
+        logger.warn(Utils.getStackTraceString(e));
     }
   }
 
@@ -376,7 +333,7 @@ public class RemoteRequestProcessor {
       return false;
     }
     contentType = contentType.toLowerCase();
-//        System.out.println(Configuration.getDownloadContentTypesRegExp());
+    logger.debug(Configuration.getDownloadContentTypesRegExp());
     return p.matcher(contentType).matches();
   }
 
@@ -445,8 +402,8 @@ public class RemoteRequestProcessor {
         props, false, true);
       return httpFileResponse;
     } catch (Exception e1) {
-      logger.warning("Could not send getCannotConnectResponse");
-      logger.warning(Utils.getStackTraceString(e1));
+      logger.warn("Could not send getCannotConnectResponse");
+      logger.warn(Utils.getStackTraceString(e1));
       return new SimpleHttpResponse("");
     }
   }

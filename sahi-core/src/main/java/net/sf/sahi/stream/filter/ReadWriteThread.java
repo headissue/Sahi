@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import net.sf.sahi.util.Utils;
+import org.apache.log4j.Logger;
 
 /**
  * Sahi - Web Automation and Test Tool
@@ -32,6 +33,7 @@ public class ReadWriteThread implements Runnable {
   private boolean closeOut = false;
   @SuppressWarnings("unused")
   private final String name;
+  private Logger logger = Logger.getLogger(ReadWriteThread.class);
 
   public ReadWriteThread(InputStream in, OutputStream out, String name) {
     this(in, out, -1, false, name);
@@ -65,7 +67,7 @@ public class ReadWriteThread implements Runnable {
           } catch (IOException e) {
             e.printStackTrace();
             out.close();
-            System.out.println("Closing and returning");
+            logger.debug("Closing and returning");
             return;
           }
         } else {

@@ -25,20 +25,20 @@ import net.sf.sahi.response.HttpResponse;
 import net.sf.sahi.response.NoCacheHttpResponse;
 import net.sf.sahi.util.FileIsDirectoryException;
 import net.sf.sahi.util.FileNotFoundRuntimeException;
+import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.util.logging.Logger;
+
 
 /**
  * User: nraman Date: May 13, 2005 Time: 7:06:11 PM To
  */
 public class WebProcessor implements Runnable {
   private Socket client;
-  private static Logger logger = Configuration
-    .getLogger("net.sf.sahi.WebProcessor");
+  private static Logger logger = Logger.getLogger(WebProcessor.class);
 
   public WebProcessor(Socket client) {
     this.client = client;
@@ -61,25 +61,23 @@ public class WebProcessor implements Runnable {
         if (uri.endsWith("/")) uri = uri.substring(0, uri.length() - 1);
         sendResponseToBrowser(new NoCacheHttpResponse(200, "OK", "<script>location.href='" + uri + "/index.htm'</script>"));
       } catch (IOException e) {
-        logger.warning(dirEx.getMessage());
+        logger.warn(dirEx.getMessage());
       }
-      logger.warning(dirEx.getMessage());
+      logger.warn(dirEx.getMessage());
     } catch (FileNotFoundRuntimeException fnfre) {
       try {
         sendResponseToBrowser(new NoCacheHttpResponse(404, "FileNotFound", "<html><h2>404 File Not Found</h2></html>"));
       } catch (IOException e) {
-        logger.warning(fnfre.getMessage());
+        logger.warn(fnfre.getMessage());
       }
-      logger.warning(fnfre.getMessage());
+      logger.warn(fnfre.getMessage());
     } catch (Exception e) {
-      // TODO log if needed
-      //System.out.println(">>>>>>>>>>" + e.getClass().getName());
-      logger.warning(e.getMessage());
+      logger.warn(e.getMessage());
     } finally {
       try {
         client.close();
       } catch (IOException e) {
-        logger.severe(e.getMessage());
+        logger.error(e.getMessage());
       }
     }
   }
@@ -88,7 +86,7 @@ public class WebProcessor implements Runnable {
     StringBuffer sb = new StringBuffer();
     sb.append(Configuration.getHtdocsRoot());
     sb.append(uri.substring(uri.indexOf("/")));
-    logger.fine(sb.toString());
+    logger.debug(sb.toString());
     return sb.toString();
   }
 

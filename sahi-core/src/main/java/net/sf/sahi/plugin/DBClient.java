@@ -31,8 +31,11 @@ import net.sf.sahi.response.HttpResponse;
 import net.sf.sahi.response.SimpleHttpResponse;
 import net.sf.sahi.util.ClassLoadHelper;
 import net.sf.sahi.util.Utils;
+import org.apache.log4j.Logger;
 
 public class DBClient {
+
+  private static Logger logger = Logger.getLogger(DBClient.class);
 
   public String driverName;
 
@@ -152,16 +155,23 @@ public class DBClient {
 
   }
 
+  @Override
+  public String toString() {
+    return "DBClient{" +
+        "driverName='" + driverName + '\'' +
+        ", jdbcurl='" + jdbcurl + '\'' +
+        ", username='" + username + '\'' +
+        ", password='" + password + '\'' +
+        ", sql='" + sql + '\'' +
+        '}';
+  }
+
   private void init(final HttpRequest request) {
     driverName = request.getParameter("driver");
     jdbcurl = request.getParameter("jdbcurl");
     username = request.getParameter("username");
     password = request.getParameter("password");
     sql = request.getParameter("sql");
-    System.out.println("Driver: " + driverName);
-    System.out.println("JDBC URL: " + jdbcurl);
-    System.out.println("Username: " + username);
-    System.out.println("Password: " + password);
-    System.out.println("SQL: " + sql);
+    logger.info(this);
   }
 }

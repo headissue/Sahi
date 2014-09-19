@@ -11,6 +11,7 @@ import java.util.Set;
 import net.sf.sahi.config.Configuration;
 import net.sf.sahi.test.ProcessHelper;
 import net.sf.sahi.util.Utils;
+import org.apache.log4j.Logger;
 
 /**
  * Sahi - Web Automation and Test Tool
@@ -71,6 +72,7 @@ public class Browser extends BrowserElements {
   private String browserPath;
   private String browserOption;
   private String browserProcessName;
+  private static Logger logger = Logger.getLogger(Browser.class);
 
   /**
    * Constructs a Browser object and associates it with a session on Sahi Proxy
@@ -209,7 +211,7 @@ public class Browser extends BrowserElements {
 
   public void executeStep(String step) throws ExecutionException {
     QueryStringBuilder qs = new QueryStringBuilder();
-    // System.out.println("step=" + step);
+    logger.debug("executeStep: " + step);
     qs.add("step", step);
     execCommand("setStep", qs);
     int i = 0;
@@ -223,12 +225,12 @@ public class Browser extends BrowserElements {
       i++;
       String checkDone = execCommand("doneStep");
       boolean done = "true".equals(checkDone);
-//			System.out.println(checkDone);
+      logger.debug(checkDone);
       boolean error = checkDone.startsWith("error:");
       if (done)
         return;
       if (error) {
-//				System.out.println(checkDone);
+      logger.debug(checkDone);
         throw new ExecutionException(checkDone);
       }
     }
@@ -252,7 +254,7 @@ public class Browser extends BrowserElements {
     while (i < 500) {
       i++;
       String isReady = execCommand("isReady");
-//			System.out.println(isReady);
+    	logger.debug("isReady: " +isReady);
       if ("true".equals(isReady)) {
         opened = true;
         ProcessHelper.setProcessStarted();

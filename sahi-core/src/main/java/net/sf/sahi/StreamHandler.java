@@ -26,11 +26,14 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 import net.sf.sahi.util.Utils;
+import org.apache.log4j.Logger;
 
 /**
  * User: nraman Date: May 13, 2005 Time: 7:24:06 PM
  */
 public abstract class StreamHandler {
+
+  private static Logger logger = Logger.getLogger(StreamHandler.class);
   HttpHeaders headers = new HttpHeaders();
   private byte[] rawHeaders;
   private int contentLength = -1;
@@ -40,7 +43,7 @@ public abstract class StreamHandler {
   protected void populateData(InputStream in) throws IOException {
     data = Utils.getBytes(in, contentLength());
     setContentLength(data.length);
-    //System.out.println("## Contentlength = "+ contentLength);
+    logger.debug("Contentlength = " + contentLength);
   }
 
   protected void populateHeaders(InputStream in,

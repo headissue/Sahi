@@ -6,10 +6,11 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.StringTokenizer;
 import java.util.concurrent.Semaphore;
-import java.util.logging.Logger;
+
 
 import net.sf.sahi.util.OSUtils;
 import net.sf.sahi.util.Utils;
+import org.apache.log4j.Logger;
 
 /**
  * Sahi - Web Automation and Test Tool
@@ -31,7 +32,7 @@ import net.sf.sahi.util.Utils;
 
 
 public class ProcessHelper {
-  private static final Logger logger = Logger.getLogger("net.sf.sahi.test.ProcessHelper");
+  private static final Logger logger = Logger.getLogger(ProcessHelper.class);
   private String cmd;
 
   private enum Status {
@@ -71,11 +72,8 @@ public class ProcessHelper {
         e1.printStackTrace();
       }
       ArrayList<String> allPIDsBefore = getPIDs();
-      logger.info(cmd);
+      logger.info("execute: "+ cmd);
       String[] tokens = Utils.getCommandTokens(cmd.replaceAll("%20", " "));
-//			for (int i = 0; i < tokens.length; i++) {
-//				System.out.println(tokens[i]);
-//			}
       process = Utils.executeAndGetProcess(tokens);
       new Thread(new PIDGatherer(allPIDsBefore)).start();
 
@@ -148,9 +146,7 @@ public class ProcessHelper {
       StringTokenizer tokenizer = new StringTokenizer(output, "\r\n");
       while (tokenizer.hasMoreTokens()) {
         String line = tokenizer.nextToken();
-        // System.out.println(line);
         line = line.replaceAll("\\s+", " ").trim();
-        // System.out.println(line);
         if (line.equals(""))
           break;
         StringTokenizer spaceTokenizer = new StringTokenizer(line);
@@ -211,7 +207,6 @@ public class ProcessHelper {
     int interval = 0;
     while (time <= maxTime) {
       ArrayList<String> allPIDs = getPIDs();
-//			System.out.println(pids2 + " " + allPIDs);
       Iterator<String> it = pids2.iterator();
       boolean allDone = true;
       while (it.hasNext()) {

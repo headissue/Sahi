@@ -35,8 +35,11 @@ import net.sf.sahi.session.Session;
 import net.sf.sahi.session.Status;
 import net.sf.sahi.test.ProcessHelper;
 import net.sf.sahi.util.Utils;
+import org.apache.log4j.Logger;
 
 public class Player {
+
+  private Logger logger = Logger.getLogger(Player.class);
 
   public void stepWisePlay(final HttpRequest request) {
     startPlayback(request.session(), false, "1");
@@ -110,7 +113,7 @@ public class Player {
     String windowTitle = request.getParameter("windowTitle");
     String domain = request.getParameter("domain");
     String wasOpened = request.getParameter("wasOpened");
-    //System.out.println("scriptRunner="+scriptRunner);
+    logger.debug("scriptRunner=" + scriptRunner);
     return new SimpleHttpResponse(scriptRunner.getStepJSON(derivedName, windowName, windowTitle, domain, wasOpened));
   }
 
