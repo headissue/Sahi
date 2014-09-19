@@ -311,9 +311,7 @@ public class NashornScriptRunner implements Runnable {
 
   public void run() {
 
-    ScriptEngineManager scriptManager = new ScriptEngineManager();
-    nashornEngine = scriptManager.getEngineByName("nashorn");
-    nashornEngine.getBindings(ScriptContext.ENGINE_SCOPE).put("NashornScriptRunner", this);
+    initializeEngine();
     report.startTimer();
     try {
       loadSahiLibary();
@@ -367,16 +365,27 @@ public class NashornScriptRunner implements Runnable {
     }
   }
 
+  protected void initializeEngine() {
+    ScriptEngineManager scriptManager = new ScriptEngineManager();
+    nashornEngine = scriptManager.getEngineByName("nashorn");
+    nashornEngine.getBindings(ScriptContext.ENGINE_SCOPE).put("NashornScriptRunner", this);
+  }
+
   private void addBrowserExceptionToReport() {
     report.addResult(browserException + "\n" + stackTrace, ResultType.ERROR, debugInfo, null);
   }
 
   private void runScript() throws ScriptException {
+    if (script != null) {
+      nashornEngine.put(ScriptEngine.FILENAME, script.getScriptName());
+    }
     nashornEngine.eval(js);
   }
 
-  private void loadSahiLibary() throws ScriptException {
-    String lib = Configuration.getRhinoLibJS();
+  protected void loadSahiLibary() throws ScriptException {
+    String lib = Configuration.getSahiJavascriptLib();
+    nashornEngine.put(ScriptEngine.FILENAME, Utils.concatPaths(Configuration.getHtdocsRoot(),
+        "spr/lib.js"));
     nashornEngine.eval(lib);
   }
 
@@ -587,6 +596,10 @@ public class NashornScriptRunner implements Runnable {
     assertIsSahiPresent();
     //System.out.println("<<< >>> " + result.toString());
     return result.toString();
+  }
+
+  public ScriptEngine getEngine() {
+    return nashornEngine;
   }
 
   class StepInProgressMonitor extends TimerTask {

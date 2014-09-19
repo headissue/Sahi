@@ -131,7 +131,7 @@ _setSpeed
 _selectWindow
 _selectDomain
 _userDataPath
-_evalOnRhino
+_evalOnProxy
 _scriptStatus
 _flex
 _stackTrace

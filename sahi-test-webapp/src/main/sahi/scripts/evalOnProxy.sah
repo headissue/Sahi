@@ -1,9 +1,9 @@
 function testScriptName(){
-	_assertEqual("evalOnRhino.sah", _scriptName());
+	_assertEqual("evalOnProxy.sah", _scriptName());
 }
 function testScriptPath(){
 	var $path = _scriptPath();
-	_assert($path.indexOf("evalOnRhino.sah") != -1);
+	_assert($path.indexOf("evalOnProxy.sah") != -1);
 	_assertEqual($path, _scriptPath());
 	_assertNotEqual(_scriptName(), _scriptPath());
 }
@@ -23,25 +23,25 @@ function testReadCSVFile(){
 }
 function xtestLocalVariable(){
 	var $x = 10;
-	_alert(_evalOnRhino("$x"));
-	_assertEqual(10, _evalOnRhino("$x"));
+	_alert(_evalOnProxy("$x"));
+	_assertEqual(10, _evalOnProxy("$x"));
 	$x = 20;
-	_assertEqual(20, _evalOnRhino("$x"));
+	_assertEqual(20, _evalOnProxy("$x"));
 }
 var $y = 10;
 function testGlobalVariable(){
-	_assertEqual(10, _evalOnRhino("$y"));
+	_assertEqual(10, _evalOnProxy("$y"));
 	$y = 20;
-	_assertEqual(20, _evalOnRhino("$y"));
+	_assertEqual(20, _evalOnProxy("$y"));
 }
 _runUnitTests();
 
 //_alert(_readFile("D:\\Dev\\sahi\\sahi_993\\sahi0.log"));
 //var $x = 20;
-//_alert(_evalOnRhino("_sessionInfo()").scriptPath);
+//_alert(_evalOnProxy("_sessionInfo()").scriptPath);
 ////_click(_link("Frames Test"));
 //var $x = 50;
 //_click(_link("Form Test"));
-//_alert(_evalOnRhino("$x"));
-//_alert(_evalOnRhino("null"));
-//_alert(_evalOnRhino(null));
+//_alert(_evalOnProxy("$x"));
+//_alert(_evalOnProxy("null"));
+//_alert(_evalOnProxy(null));

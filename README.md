@@ -36,7 +36,7 @@ Then the required jars are built to run sahi with the scripts under sahi-core/bi
 Licenses
 --------
 
-See sahi/docs/licenses
+See [License](./license.md)
 
 Notes
 -----
