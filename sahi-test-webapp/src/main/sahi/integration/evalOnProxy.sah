@@ -36,10 +36,5 @@ function testGlobalVariable(){
 	$y = 20;
 	_assertEqual(20, _evalOnProxy("$y"));
 }
-testScriptName();
-testReadCSVFile();
-testGlobalVariable();
-testReadFile();
-testScriptPath();
-testUserDataPath();
-xtestLocalVariable();
+
+_runUnitTests();
