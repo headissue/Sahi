@@ -41,8 +41,6 @@ public class Configuration {
 
   private static Logger logger = Logger.getLogger(Configuration.class);
 
-  private static final String SAHI_PROPERTIES = "config/sahi.properties";
-
   private static final String SAHI_USER_PROPERTIES = "config/userdata.properties";
 
   private static final String LOG_PROPERITES = "config/log.properties";
@@ -278,10 +276,6 @@ public class Configuration {
     return fileName;
   }
 
-  public static String getSSLPassword() {
-    return getUserProperty("ssl.password");
-  }
-
   public static String[] getScriptRoots() {
     String[] propertyArray = getPropertyArray("scripts.dir", userProperties, "scripts");
     for (int i = 0; i < propertyArray.length; i++) {
@@ -328,8 +322,8 @@ public class Configuration {
   }
 
   public static String getSahiJavascriptLib() {
-    return new String(Utils.readFileAsString(Utils.concatPaths(getHtdocsRoot(),
-      "spr/lib.js")));
+    return Utils.readFileAsString(Utils.concatPaths(getHtdocsRoot(),
+        "spr/lib.js"));
   }
 
   public static boolean isKeepAliveEnabled() {
@@ -355,8 +349,7 @@ public class Configuration {
 
   public static void createScriptsDirIfNeeded() {
     String[] scriptRoots = Configuration.getScriptRoots();
-    for (int i = 0; i < scriptRoots.length; i++) {
-      String scriptRoot = scriptRoots[i];
+    for (String scriptRoot : scriptRoots) {
       File file = new File(scriptRoot);
       file.mkdirs();
     }
@@ -376,10 +369,6 @@ public class Configuration {
 
   public static boolean isDevMode() {
     return "true".equals(System.getProperty("sahi.mode.dev"));
-  }
-
-  public static boolean autoCreateSSLCertificates() {
-    return "true".equals(getUserProperty("ssl.auto_create_keystore"));
   }
 
   public static boolean isStrictVisibilityCheckEnabled() {
@@ -412,39 +401,6 @@ public class Configuration {
 
   public static String getToolsPath() {
     return Utils.concatPaths(basePath, "tools/");
-  }
-
-  public static String getKeytoolPath() {
-    if (keytoolPath == null)
-      keytoolPath = fixKeytoolPath();
-    return keytoolPath;
-  }
-
-  private static String fixKeytoolPath() {
-    keytoolFound = true;
-    String keytoolPath = getUserProperty("keytool.path", "keytool");
-    if (isExecutable(keytoolPath))
-      return keytoolPath;
-    keytoolPath = Utils.concatPaths(System.getProperty("java.home"), "bin/keytool");
-    if (isExecutable(keytoolPath))
-      return keytoolPath;
-    keytoolFound = false;
-    return keytoolPath;
-  }
-
-  public static boolean isKeytoolFound() {
-    getKeytoolPath();
-    return keytoolFound;
-  }
-
-  private static boolean isExecutable(String keytoolPath) {
-    try {
-      Utils.executeCommand(new String[]{keytoolPath});
-      return true;
-    } catch (Exception e) {
-      logger.warn("Keytool command not found at: " + keytoolPath);
-      return false;
-    }
   }
 
   public static int getTimeBetweenSteps() {
@@ -498,8 +454,7 @@ public class Configuration {
       boolean start = true;
       File file = new File(Utils.concatPaths(userDataDir, "config/domainfix.txt"));
       String[] lines = (file.exists()) ? getNonBlankLines(Utils.readCachedFile(file)) : new String[0];
-      for (int i = 0; i < lines.length; i++) {
-        String line = lines[i];
+      for (String line : lines) {
         if (line.startsWith("#"))
           continue;
         String[] split = line.split("[\\s]+");
@@ -534,28 +489,12 @@ public class Configuration {
     enableKeepAlive--;
   }
 
-  public static int getRemoteSocketTimeout() {
-    try {
-      return Integer.parseInt(getUserProperty("proxy.remote_socket_timeout"));
-    } catch (Exception e) {
-      return 120000;
-    }
-  }
-
   public static boolean modifyActiveX() {
     return "true".equals(getUserProperty("response.modify_activex"));
   }
 
   public static boolean spanVariablesAcrossSuite() {
     return "true".equals(getUserProperty("suite.global_variables"));
-  }
-
-  public static int getMaxReAttemptsOnNotMyWindowError() {
-    try {
-      return Integer.parseInt(getUserProperty("script.max_reattempts_on_window_not_found_error"));
-    } catch (Exception e) {
-      return 30;
-    }
   }
 
   public static Pattern getDownloadContentTypesRegExp() {
@@ -602,42 +541,18 @@ public class Configuration {
   protected static String[] getNonBlankLines(String s) {
     s = s.trim().replaceAll("\\\r", "");
     String[] tokens = s.split("\n");
-    ArrayList<String> l = new ArrayList<String>();
-    for (int i = 0; i < tokens.length; i++) {
-      String token = tokens[i].trim();
+    ArrayList<String> l = new ArrayList<>();
+    for (String token1 : tokens) {
+      String token = token1.trim();
       if (!token.equals("")) {
         l.add(token);
       }
     }
-    return (String[]) l.toArray(new String[]{});
+    return l.toArray(new String[l.size()]);
   }
 
   public static String tempDownloadDir() {
     return Utils.concatPaths(userDataDir, TMP_DOWNLOAD_DIR);
-  }
-
-  public static String getPIDListCommand() {
-    return getUserProperty("processhelper.pid_list_cmd", "");
-  }
-
-  public static String getPIDKillCommand() {
-    return getUserProperty("processhelper.pid_kill_cmd", "");
-  }
-
-  public static int getPIDListColumnNo() {
-    try {
-      return Integer.parseInt(getUserProperty("processhelper.pid_list_pid_column_no"));
-    } catch (Exception e) {
-      return 2;
-    }
-  }
-
-  public static int getScriptMaxIdleTime() {
-    try {
-      return Integer.parseInt(getUserProperty("script.max_idle_time"));
-    } catch (Exception e) {
-      return 1000;
-    }
   }
 
   public static void setProxyProperties() {
@@ -652,14 +567,7 @@ public class Configuration {
       systemProperties.setProperty("https.proxyPort", "" + getHttpsProxyPort());
       systemProperties.setProperty("http.nonProxyHosts", "" + getHttpsNonProxyHosts());
       systemProperties.setProperty("https.nonProxyHosts", "" + getHttpsNonProxyHosts());// ?
-      // Is
-      // this
-      // used?
     }
-  }
-
-  public static String getBasePath() {
-    return basePath;
   }
 
   public static boolean isHttpProxyEnabled() {
@@ -675,7 +583,7 @@ public class Configuration {
   }
 
   public static String getHttpProxyPort() {
-    return (String) getUserProperty("ext.http.proxy.port");
+    return getUserProperty("ext.http.proxy.port");
   }
 
   public static String getHttpNonProxyHosts() {
@@ -691,7 +599,7 @@ public class Configuration {
   }
 
   public static String getHttpsProxyPort() {
-    return (String) getUserProperty("ext.https.proxy.port");
+    return getUserProperty("ext.https.proxy.port");
   }
 
   public static String getHttpsProxyHost() {
@@ -734,10 +642,6 @@ public class Configuration {
     userProperties.setProperty("debug.traffic.log.unmodified", "" + flag);
   }
 
-  public static void main(String args[]) {
-    String[] scriptRoots = Configuration.getScriptRoots();
-  }
-
   public static boolean downloadIfContentDispositionIsAttachment() {
     return "true".equals(getUserProperty("download.download_if_contentdisposition_is_attachment"));
   }
@@ -748,11 +652,6 @@ public class Configuration {
 
   public static String getAbsolutePath(String relPath) {
     return Utils.concatPaths(basePath, relPath);
-  }
-
-  public static String getAbsoluteTestDataPath(String relPath) {
-    final String testDataPath = Utils.concatPaths(basePath, "testdata");
-    return Utils.concatPaths(testDataPath, relPath);
   }
 
   public static String getAbsoluteUserPath(String relPath) {
@@ -790,10 +689,6 @@ public class Configuration {
     return getUserProperty("ssl.client.keystore.type", "PKCS12");
   }
 
-  public static boolean isSSLSingleKeyStoreFile() {
-    return "true".equals(getUserProperty("ssl.single.keystore"));
-  }
-
   public static String getControllerMode() {
     if (overriddenControllerMode == null) {
       return getUserProperty("controller.mode", "sahi");
@@ -825,10 +720,6 @@ public class Configuration {
     return Configuration.getAbsolutePath("config/inject_bottom.txt");
   }
 
-  public static String getSSLCommandFile() {
-    return Utils.concatPaths(getConfigPath(), "ssl.txt");
-  }
-
   public static String getJiraPropertyPath() {
     return Utils.concatPaths(userDataDir, "config/jira.properties");
   }
@@ -844,8 +735,7 @@ public class Configuration {
   public static File getOSPropertiesFile() throws Exception {
     String filename = "os.properties";
     if (tempDir == null) tempDir = Files.createTempDir();
-    File tempProp = FileUtils.copyToTempFile(filename, Configuration.class, tempDir);
-    return tempProp;
+    return FileUtils.copyToTempFile(filename, Configuration.class, tempDir);
   }
 
   public static String getVersion() {

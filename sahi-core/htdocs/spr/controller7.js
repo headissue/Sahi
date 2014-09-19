@@ -909,7 +909,6 @@ function displayInfoTab(){
 	$("isTasklistAvailable").innerHTML = getDiagnostics("istasklistavailable");
 	$("javaDirectory").innerHTML = getDiagnostics("javadir");
 	$("javaVersion").innerHTML = getDiagnostics("javaversion");
-	$("isKeytoolAvailable").innerHTML = getDiagnostics("iskeytoolavailable");	
 }
 var _version;
 function getVersion(){

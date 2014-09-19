@@ -86,7 +86,6 @@ public class ControllerUI {
     StringBuffer sb = new StringBuffer();
     sb.append("javadir_$sahi$_:" + System.getProperty("java.home") + "_$sahi$_;");
     sb.append("javaversion_$sahi$_:" + System.getProperty("java.version") + "_$sahi$_;");
-    sb.append("iskeytoolavailable_$sahi$_:" + Configuration.isKeytoolFound());
     return new SimpleHttpResponse(sb.toString());
   }
 
