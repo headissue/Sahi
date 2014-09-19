@@ -97,8 +97,6 @@ public class ConfigurationTest {
   public void initReadsUserProperties() throws IOException {
    Configuration.init(".", Files.createTempDir().getPath());
     String scripts = Configuration.userProperties.getProperty("scripts.dir");
-    String keytool = Configuration.userProperties.getProperty("keytool.path");
     assertEquals("forConfigTesting", scripts);
-    assertEquals("keytool", keytool);
   }
 }
