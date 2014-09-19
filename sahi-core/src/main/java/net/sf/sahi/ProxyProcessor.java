@@ -105,9 +105,9 @@ public class ProxyProcessor implements Runnable {
         new Thread(new ProxyProcessor(client)).start();
       }
     } catch (SSLHandshakeException ssle) {
-      logger.info(ssle.getMessage());
+      logger.warn(ssle.getMessage());
     } catch (Exception e) {
-      logger.info(e.getMessage());
+      logger.debug(e.getMessage());
       try {
         // should close only in case of exception. Do not move this to finally. Will cause sockets to not be reused.
         client.close();
