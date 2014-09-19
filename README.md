@@ -27,7 +27,7 @@ sahi-test-webapp:
 Run
 
     cd sahi-core
-    mvn package verify
+    mvn clean package verify
     cd bin
     sh dashboard.sh
 
