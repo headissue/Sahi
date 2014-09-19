@@ -6,6 +6,13 @@
 // so load the compatibility library
 load("nashorn:mozilla_compat.js");
 
+logger = Java.type("org.apache.log4j.Logger").getLogger("lib.js");
+Utils = Java.type("net.sf.sahi.util.Utils");
+FileUtils = Java.type("net.sf.sahi.util.FileUtils");
+Configuration = Java.type("net.sf.sahi.config.Configuration");
+ScriptFactory = Java.type("net.sf.sahi.playback.ScriptFactory");
+DBClient = Java.type("net.sf.sahi.plugin.DBClient");
+
 Sahi.prototype.getSahiScriptStackTrace = function(isBreadCrumb){
   var err = new Error();
   return err.stack;
@@ -25,7 +32,7 @@ function indexBinder(index){
 /*
 function xfunctionBinder(nodeName){
 	return function () {return this.getNodesArrayFn(nodeName);};
-}
+}net.sf
 */
 var stubGetters = ['ATTRIBUTE_NODE', 'CDATA_SECTION_NODE', 'COMMENT_NODE', 'Components', 'DOCUMENT_FRAGMENT_NODE', 
                    'DOCUMENT_NODE', 'DOCUMENT_POSITION_CONTAINED_BY', 'DOCUMENT_POSITION_CONTAINS', 'DOCUMENT_POSITION_DISCONNECTED', 'DOCUMENT_POSITION_FOLLOWING', 
@@ -390,14 +397,14 @@ Sahi.prototype.start = function(){
 Sahi.prototype._execute = function (cmd, isSync, timeout) {
 	isSync = ""+isSync == "true";
 	if (timeout == null) timeout = 5*60*1000;
-	return net.sf.sahi.util.Utils.executeCommand(cmd, isSync, timeout);
+	return Utils.executeCommand(cmd, isSync, timeout);
 };
 Sahi.prototype._dynamicInclude = function ($fileName) {
 	var thisPath = this._scriptPath().replace(/\\/g, "/");
-	var filePath = "" + net.sf.sahi.util.Utils.concatPaths(thisPath, $fileName);
+	var filePath = "" + Utils.concatPaths(thisPath, $fileName);
 	if (this.includedFiles[filePath]) return;
 	this.includedFiles[filePath] = true;
-	var includedScript = (new net.sf.sahi.playback.ScriptFactory()).getScript(filePath);
+	var includedScript = (new ScriptFactory()).getScript(filePath);
 	var script = NashornScriptRunner.getScript();
 	var includedJS = "" + includedScript.jsString();
 	script.addIncludeInfo(includedScript);
@@ -411,17 +418,17 @@ Sahi.prototype._removeRecovery = function (){
 }
 Sahi.prototype._readFile = function (filePath) {
 	filePath = this._resolvePath(filePath);
-    return "" + Packages.net.sf.sahi.util.Utils.readFileAsString(filePath);
+    return "" + Utils.readFileAsString(filePath);
 };
 Sahi.prototype._readURL = function (url) {
-    return "" + Packages.net.sf.sahi.util.Utils.getString(net.sf.sahi.util.Utils.readURL(url)); 
+    return "" + Utils.getString(Utils.readURL(url));
 };
 
 Sahi.prototype.xfocusWindow = function (newTitle) {
 	// do not add any waits in this function.
 	// IE will freeze and not come into focus.
-	if (Packages.net.sf.sahi.util.Utils.isWindows()) {
-		var cmd = "cmd /C " + ("" + net.sf.sahi.config.Configuration.getAbsolutePath("tools/windowfocus.exe")).replace('/', '\\') + " \"" + newTitle + "\"";
+	if (Utils.isWindows()) {
+		var cmd = "cmd /C " + ("" + Configuration.getAbsolutePath("tools/windowfocus.exe")).replace('/', '\\') + " \"" + newTitle + "\"";
 		this.print(cmd);
 		this._execute(cmd, true);
 	}
@@ -432,14 +439,14 @@ Sahi.prototype._log = function (s, type){
 Sahi.prototype._writeFile = function (str, filePath, overwrite) {
 	filePath = this._resolvePath(filePath);
 	overwrite = (overwrite == true);
-    return "" + Packages.net.sf.sahi.util.Utils.writeFile(str, filePath, overwrite);
+    return "" + Utils.writeFile(str, filePath, overwrite);
 };
 Sahi.prototype._writeToFile = Sahi.prototype._writeFile;
 Sahi.prototype._deleteFile = function (filePath) {
-	return "" + Packages.net.sf.sahi.util.Utils.deleteFile(filePath) == "true";
+	return "" + Utils.deleteFile(filePath) == "true";
 };
 Sahi.prototype._renameFile = function (oldPath, newPath) {
-	return "" + Packages.net.sf.sahi.util.FileUtils.renameFile(oldPath, newPath) == "true";
+	return "" + FileUtils.renameFile(oldPath, newPath) == "true";
 };
 Sahi.prototype._scriptStatus = function(){
 	return NashornScriptRunner.hasErrors() ? "FAILURE" : "SUCCESS";
@@ -453,7 +460,7 @@ Sahi.prototype._continueOnError = function(){
     NashornScriptRunner.setStopOnError(false);
 };
 Sahi.prototype._setSpeed = function(ms){
-	net.sf.sahi.config.Configuration.setTimeBetweenSteps(ms);
+	Configuration.setTimeBetweenSteps(ms);
 }
 Sahi.prototype.makeAssociative = function(array2d){
 	array2d.set = function(rowHeader, colHeader, newValue){
@@ -575,7 +582,7 @@ Sahi.dB = function (driver, jdbcurl, username, password) {
 		this.props = username;
 	}
     this.select = function (sql, includeHeader) {
-        var dbclient = new Packages.net.sf.sahi.plugin.DBClient();
+        var dbclient = new DBClient();
         if (this.usingProps) {
         	var json = dbclient.select(this.driver, this.jdbcurl, this.props, sql);        	
         } else {
@@ -596,7 +603,7 @@ Sahi.dB = function (driver, jdbcurl, username, password) {
         return this.select(sql, true);
     };
     this.update = function (sql) {
-        var dbclient = new Packages.net.sf.sahi.plugin.DBClient();
+        var dbclient = new DBClient();
         if (this.usingProps) {
         	var error = dbclient.execute(this.driver, this.jdbcurl, this.props, sql);
         } else {
@@ -723,7 +730,7 @@ Sahi.prototype.splitUnQuoted = function(s, wordSeparator){
 }
 Sahi.prototype._resolvePath = function(path){
 	var thisPath = this._scriptPath().replace(/\\/g, "/");
-	return "" + net.sf.sahi.util.Utils.concatPaths(thisPath, path);
+	return "" + Utils.concatPaths(thisPath, path);
 }
 Sahi.CSV_NEWLINE = "\r\n";
 Sahi.prototype._writeCSVFile = function(array2d, filePath, overwrite, separator) {
@@ -758,10 +765,10 @@ Sahi.prototype.convertJavaArrayToJS = function(javaAr){
 	return jsAr;
 }
 Sahi.prototype._userDataDir = function(){
-	return "" + net.sf.sahi.config.Configuration.getUserDataDir();
+	return "" + Configuration.getUserDataDir();
 }
 Sahi.prototype._userDataPath = function(relPath){
-	return "" +  net.sf.sahi.config.Configuration.getAbsoluteUserPath(relPath);
+	return "" +  Configuration.getAbsoluteUserPath(relPath);
 }
 Sahi.prototype._collect = function (apiType, id, inEl) {
 	var count = this._count.apply(this, arguments);
@@ -811,13 +818,15 @@ Sahi.prototype._runUnitTests = function(testAr){
 	if (!testAr){
 		testAr = [];
     for (var $n in _sahi.global) {
-      var $v = _sahi.global[$n];
-			if (typeof v == 'function' && $n.indexOf("test") == 0 && $n.indexOf("_sahiorig") == -1) {
-				testAr[testAr.length] = $n;
+      if ($n.indexOf("test") == 0 && $n.indexOf("_sahiorig") == -1) {
+        var $v = eval($n);
+        if (typeof  $v == "function") {
+          testAr[testAr.length] = $n;
+        }
 			}
 		}
 	}
-	for(var i=0; i<testAr.length; i++){
+  for(var i=0; i<testAr.length; i++){
 		var fnName = testAr[i];
 		var $status = "success";
 		if (typeof setUp != "undefined") setUp();

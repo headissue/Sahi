@@ -1,3 +1,7 @@
+_include("pages/includeAll.js");
+
+$Index.goTo();
+
 _debug("-----------------------------------------");
 var $xx = "Link Test";
 _click(_link($xx));
@@ -7,8 +11,7 @@ _assertNotNull(_textbox("t1"));
 
 _setGlobal("ix", 0);
 while (true) {
-    _condition(parseInt(_getGlobal("ix")) < 2);
-    if ("true" != _getGlobal("condn" + (_sahiCmds.length))) return;
+    if (_condition((!(_getGlobal("ix")  < 2)))) break;
     _debug("----");
     _setValue(_textbox("t1"), _textbox("t1") + "a");
     _setValue(_textbox(1), "There");
@@ -29,7 +32,6 @@ function insideWhile() {
     _setGlobal("ix", 0);
     while (true) {
         _condition(parseInt(_getGlobal("ix")) < 2);
-        if ("true" != _getGlobal("condn" + (_sahiCmds.length))) return;
         _debug("----");
         _setValue(_textbox("t1"), _textbox("t1") + "a");
         _setValue(_textbox(1), "There");

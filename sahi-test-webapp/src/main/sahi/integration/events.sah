@@ -1,3 +1,5 @@
+_include("pages/includeAll.js");
+
 var $events = new Object();
 
 function commonEvents(){
@@ -73,7 +75,7 @@ if (_isFF4()){
 }
 
 function setUp(){
-	_navigateTo("/demo/eventSequence.htm");
+	_navigateTo($Root.url + "/eventSequence.htm");
 	if (_isIE9()){
 		_click(_radio(0, _near(_label("attachEvent"))));
 	}else{
@@ -85,37 +87,33 @@ function setUp(){
 	_click(_button("Clear"));
 }
 
-function testBlurChangeSequence(){
+setUp();
 	_click(_checkbox(0, _in(_label("textbox value"))));
 	_setValue(_textbox("t1"), "ab");
 	_click(_button("Button"));
 	_click(document.body);
 	_assertEqual($browserEventSeq.blurChange, _textarea("logs").value);
-}
 
-function testCheckboxEvents(){
+setUp();
 	_assert(!_checkbox("cb1").checked);
 	_click(_checkbox("cb1"));
 	_assert(_checkbox("cb1").checked);
 	_click(document.body);
 	_assertEqual($browserEventSeq.checkbox, _textarea("logs").value);
-}
 
-function testRadioEvents(){
+setUp();
 	_assert(!_radio("r11").checked);
 	_click(_radio("r11"));
 	_assert(_radio("r11").checked);
 	_click(document.body);
 	_assertEqual($browserEventSeq.radio, _textarea("logs").value);
-}
 
-function testButtonEvents(){
+setUp();
 	_click(_button("b1"));
 	_click(document.body);
 	_assertEqual($browserEventSeq.button, _textarea("logs").value);
-}
 
-function testDivDblClick(){
+setUp();
 	_click(_button("Add event listeners"));
 	_click(_checkbox(0, _in(_label("e.button"))));
 	_click(_checkbox(0, _in(_label("e.which"))));
@@ -124,9 +122,8 @@ function testDivDblClick(){
 	_doubleClick(_div("Div"));
 	_click(document.body);
 	_assertEqual($browserEventSeq.divdblclick, _getValue(_textarea("logs")));
-}
 
-function testTextboxDblClick(){
+setUp();
 	_click(_button("Add event listeners"));
 	_click(_checkbox(0, _in(_label("e.button"))));
 	_click(_checkbox(0, _in(_label("e.which"))));
@@ -135,9 +132,8 @@ function testTextboxDblClick(){
 	_doubleClick(_textbox("t1"));
 	_click(document.body);
 	_assertEqual($browserEventSeq.textboxdblclick, _getValue(_textarea("logs")));
-}
 
-function testDivRightClick(){
+setUp();
 	_click(_button("Add event listeners"));
 	_click(_checkbox(0, _in(_label("e.button"))));
 	_click(_checkbox(0, _in(_label("e.which"))));
@@ -146,9 +142,8 @@ function testDivRightClick(){
 	_rightClick(_div("Div"));
 	_click(document.body);
 	_assertEqual($browserEventSeq.divrightclick, _getValue(_textarea("logs")));
-}
 
-function testTextboxRightClick(){
+setUp();
 	_click(_button("Add event listeners"));
 	_click(_checkbox(0, _in(_label("e.button"))));
 	_click(_checkbox(0, _in(_label("e.which"))));
@@ -157,6 +152,4 @@ function testTextboxRightClick(){
 	_rightClick(_textbox("t1"));
 	_click(document.body);
 	_assertEqual($browserEventSeq.textboxrightclick, _getValue(_textarea("logs")));	
-}
-_runUnitTests();
 

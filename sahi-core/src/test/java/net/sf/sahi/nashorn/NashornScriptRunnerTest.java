@@ -166,4 +166,20 @@ public class NashornScriptRunnerTest {
     }
     assertNotNull(result);
   }
+
+  @Test
+  public void getUserDataDir() {
+    Configuration.init();
+    NashornScriptRunner scriptRunner = new NashornScriptRunner("");
+    scriptRunner.initializeEngine();
+    String result = null;
+    try {
+      scriptRunner.loadSahiLibary();
+      result = scriptRunner.eval("_sahi._userDataDir()");
+      result = (String) scriptRunner.getEngine().eval("_sahi._userDataDir()");
+    } catch (ScriptException e) {
+     fail();
+    }
+    assertTrue(result.endsWith("sahi-core/userdata"));
+  }
 }
