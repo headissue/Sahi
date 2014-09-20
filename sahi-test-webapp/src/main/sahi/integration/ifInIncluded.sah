@@ -1,4 +1,8 @@
-_include("ifInIncluded.sah");
+_include("pages/includeAll.js");
+
+$Index.goTo();
+
+_include("if_include.js");
 _debug("-----------------------------------------");
 _click(_link("Link Test"));
 _click(_link("Back"));

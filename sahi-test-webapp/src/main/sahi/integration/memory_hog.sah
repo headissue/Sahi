@@ -11,4 +11,4 @@ function a(){
 	}
 	var $mem2 = $memoryHog.join("");
 }
-//a();
+a();

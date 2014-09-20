@@ -1,4 +1,6 @@
-_navigateTo("map.htm");
+_include("pages/includeAll.js");
+
+_navigateTo($Root.url + "/map.htm");
 _assertExists(_area("Record"));
 _assertExists(_area("Playback"));
 _assertExists(_area("Info"));

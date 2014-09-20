@@ -7,8 +7,12 @@ _assertEqual('{"a":"a"}', $json);
 var x = new Object();
 x.a = "a";
 x.x = x;
-$json = _sahi.toJSON(x);
-_assertEqual('{"a":"a","x":"recursive_access"}', $json);
+try {
+  $json = _sahi.toJSON(x);
+} catch ($e) {
+  _logException($e);
+  _assertEqual($e.message, "JSON.stringify got a cyclic data structure")
+}
 
 
 var x = new Object();

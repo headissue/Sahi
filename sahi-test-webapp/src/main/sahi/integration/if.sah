@@ -1,3 +1,5 @@
+_include("pages/includeAll.js");
+
 
 function testIfWorksWithoutCondition(){
 	_log("testIfWorksWithoutCondition");
@@ -35,7 +37,7 @@ function testFnNameWith _condition(){
 */
 
 function testCondition(){
-	_navigateTo("/demo/ifTest.htm");
+	_navigateTo($Root.url + "/ifTest.htm");
 	if (_condition(_textbox("t1").value == "")){
 		_log("True");
 	} else {
@@ -44,7 +46,7 @@ function testCondition(){
 }
 
 function testEscapedDollarInIf(){
-	_navigateTo("/demo/ifTest.htm");
+	_navigateTo($Root.url + "/ifTest.htm");
 	if(_condition(_textbox("\$V_Id").value == "")){
 		_log("True");
 	} else {

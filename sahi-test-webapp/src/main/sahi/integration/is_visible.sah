@@ -1,3 +1,5 @@
+_include("pages/includeAll.js");
+
 function checkVisible(){
 	_assertTrue(_isVisible(_spandiv("using display")));
 	
@@ -23,7 +25,7 @@ function checkVisible(){
 
 _click(_link("Visible Test"));
 checkVisible();
-_navigateTo("/demo/iframesTest.htm");
+_navigateTo($Root.url + "/iframesTest.htm");
 _wait(2000);
 _click(_link("Visible Test[1]"));
 checkVisible();

@@ -1,3 +1,6 @@
+_include("pages/includeAll.js");
+$Index.goTo();
+
 function run(){
 	_assertEqual(_link("Go back"), _link("Go back", _in(_parentRow(_cell("a1")))));
 	_assertEqual(_link("Go back"), _link(0, _in(_parentRow(_cell("a1")))));
@@ -83,12 +86,10 @@ function run(){
 _click(_link("Frames Test"));
 _click(_link("Table Test"));
 run();
-_navigateTo("index.htm");
-_wait(4000);
+$Index.goTo();
 _click(_link("Table Test"));
 run();
-_navigateTo("index.htm");
-_wait(1000);
+$Index.goTo();
 _click(_link("Frames Test"));
 _click(_link("Table Test[1]"));
 run();

@@ -4,11 +4,11 @@ function bad($run){
 	_log("Run "+ $run);
 	if (a == 10){
 		try{
-			_assertsEqual("123", "45");
 			y = x + 1;
-		} catch (e) {
+		} catch ($e) {
 			_log("In catch");
-			_logExceptionAsFailure(e);
+			_logException($e);
+      _assertEqual($e.message, "\"x\" is not defined")
 			//throw e;
 		}
 	}

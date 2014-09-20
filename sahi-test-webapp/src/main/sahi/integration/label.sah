@@ -1,4 +1,6 @@
-_navigateTo("/demo/");
+_include("pages/includeAll.js");
+$Index.goTo();
+
 _click(_link("Label Page"));
 _assertNotTrue(_checkbox("c1").checked);
 _click(_label("abcd"));

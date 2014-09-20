@@ -1,3 +1,6 @@
+_include("pages/includeAll.js");
+_navigateTo($Root.url + "/onchange.htm");
+
 _setValue(_textbox("t1"), "aaa");
 _click(document.body);
 _assertEqual("[FIRED]", _textarea("t2").value);

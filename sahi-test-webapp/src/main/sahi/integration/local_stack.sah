@@ -1,7 +1,11 @@
+_include("pages/includeAll.js");
+
+$Index.goTo();
+
 var $linkText = "Link Test";
 _click(_link($linkText));
 
-_include("includes/sahi_demo_include.sah");
+_include("sahi_demo_include.js");
 _click(_link("Form Test"));
 
 <browser>
@@ -19,15 +23,15 @@ function testAccessors(){
     f2();
 }
 function f1(){
-    _assertEqual('', _checkbox("c1").value);
+    _assertEqual('cv1', _checkbox("c1").value);
 	_assertNotNull(_checkbox(1));
-	_assertEqual('', _checkbox(1).value);
+	_assertEqual('cv2', _checkbox(1).value);
 	_assertNotNull(_checkbox("c1[1]"));
-	_assertEqual('', _checkbox("c1[1]").value);
+	_assertEqual('cv3', _checkbox("c1[1]").value);
 	_assertNotNull(_checkbox(3));
 	_assertEqual('', _checkbox(3).value);
 	_assertNotNull(_radio("r1"));
-	_assertEqual('', _radio("r1").value);
+	_assertEqual('rv1', _radio("r1").value);
 	_assertNotNull(_password("p1"));
 	_assertEqual('', _password("p1").value);
 	_assertNotNull(_password(1));

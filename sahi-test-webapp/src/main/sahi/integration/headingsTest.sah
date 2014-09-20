@@ -1,3 +1,5 @@
+_include("pages/includeAll.js");
+
 _click(_link("Headings Test"));
 _assertExists(_heading1("Heading A"));
 _assertEqual("Heading A", _getText(_heading1("Heading A")));
