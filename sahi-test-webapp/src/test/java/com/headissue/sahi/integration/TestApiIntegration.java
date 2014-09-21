@@ -37,7 +37,7 @@ public class TestApiIntegration extends SahiIntegrationTest {
   /* just for dev use /
   @Test
   public void singletest() {
-    String suitePath = getSuitePath("/integration/date.sah");
+    String suitePath = getSuitePath("/integration/language.sah");
     runSuite(suitePath);
   }
   //*/

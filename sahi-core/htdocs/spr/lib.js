@@ -12,6 +12,9 @@ FileUtils = Java.type("net.sf.sahi.util.FileUtils");
 Configuration = Java.type("net.sf.sahi.config.Configuration");
 ScriptFactory = Java.type("net.sf.sahi.playback.ScriptFactory");
 DBClient = Java.type("net.sf.sahi.plugin.DBClient");
+Runtime = Java.type("java.lang.Runtime");
+System = Java.type("java.lang.System");
+Thread = Java.type("java.lang.Thread");
 
 Sahi.prototype.getSahiScriptStackTrace = function(isBreadCrumb){
   var err = new Error();
@@ -244,10 +247,10 @@ Sahi.prototype.escapeMap = {
         '\\': '\\\\'
 };
 Sahi.prototype.print = function (s){
-    java.lang.System.out.println("Nashorn lib:" + s);
+    System.out.println("Nashorn lib:" + s);
 }
 Sahi.prototype.wait = function (n){
-    java.lang.Thread.sleep(n);
+    Thread.sleep(n);
 }
 
 Sahi.prototype.__noSuchMethod__ = function(/*fnName, args...*/){
@@ -379,7 +382,7 @@ Sahi.prototype.schedule2 = function(cmd, debugInfo, cycles, stepType, throwExcep
 Sahi.prototype.start = function(){
 	if (this.started) return;
 	this.started = true;
-	this.initialMemory = java.lang.Runtime.getRuntime().totalMemory();
+	this.initialMemory = Runtime.getRuntime().totalMemory();
     var i=0;
     var cycles = this.maxCycles;
     while(i++ < cycles){
@@ -916,7 +919,7 @@ if (new RegExp("/").toString() == "///"){
 
 /* fetch APIs start */
 Sahi.prototype._fetch = function(stub){
-	var d = java.lang.System.currentTimeMillis();
+	var d = System.currentTimeMillis();
 	var key = "___lastValue___" + d.toString(); 
 	this.scheduleNoLog("_sahi.setServerVar('" +key+ "', " + stub + ");");
 	return this.getServerVar(key);	
@@ -959,7 +962,7 @@ Sahi.prototype._selectDomain = function(domain){
 /* callbacks start */
 Sahi.prototype.callOnScriptEnd = function (){
 	try{
-		var rt = java.lang.Runtime.getRuntime();
+		var rt = Runtime.getRuntime();
 		_sahi._log("Total Memory in JVM (Xmx) is: " + rt.maxMemory()/(1024*1024) + " MB;<br/>" +
 				"Memory currently in use is: " + rt.totalMemory()/(1024*1024) + " MB;<br/>" +
 				"Memory increment during this test is: " + ((rt.totalMemory() - this.initialMemory)/(1024*1024)) + " MB", "CUSTOM2");
