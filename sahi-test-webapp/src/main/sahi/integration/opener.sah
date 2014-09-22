@@ -1,4 +1,6 @@
-_navigateTo("/demo/window_opener.htm");
+_include("pages/includeAll.js");
+
+_navigateTo($Root.url + "/window_opener.htm");
 
 _click(_link("No target"));
 _assertEqual("null", _textbox("tx").value);

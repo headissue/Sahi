@@ -1,3 +1,7 @@
+_include("pages/includeAll.js");
+
+$Index.goTo();
+
 function check(){
 	_click(_link("Prompt Page"));
 	_expectPrompt("Some prompt?", "abc")

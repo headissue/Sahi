@@ -1,3 +1,7 @@
+_include("pages/includeAll.js");
+
+$Index.goTo();
+
 _click(_link("Window Open Test"));
 _click(_link("Window Open Test With Title"));
 _click(_link("Table Test"));

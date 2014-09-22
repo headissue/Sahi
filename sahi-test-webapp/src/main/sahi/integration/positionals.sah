@@ -1,3 +1,7 @@
+_include("pages/includeAll.js");
+
+$Index.goTo();
+
 //TESTS FOR POSITIONALS
 _navigateTo("positionals.htm");
 
