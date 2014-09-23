@@ -1,3 +1,7 @@
+_include("pages/includeAll.js");
+
+$Index.goTo();
+
 _click(_link("Window Open Test"));
 
 _selectWindow("popWin");
@@ -9,7 +13,6 @@ _selectWindow("popWin");
 	_click(_link("Close Self"));
 _selectWindow();
 
-_click(_cell("Link Test Form Test Table Test Select Test Frames Test IFrames Test Window Open Test Window Open Test With Title Show Modal Test"));
 _click(_link("Link Test"));
 _setValue(_textbox("t1"), "aa");
 _click(_link("Back"));

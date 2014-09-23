@@ -1,4 +1,6 @@
-_navigateTo("/demo/selectTest.htm");
+_include("pages/includeAll.js");
+
+_navigateTo($Root.url + "/selectTest.htm");
 
 function testSelectOneByText(){
 	_setSelected(_select("s1Id"), "o1");
