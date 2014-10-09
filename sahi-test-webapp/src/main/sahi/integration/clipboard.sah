@@ -1,5 +1,7 @@
 // http://www.javapractices.com/topic/TopicAction.do?Id=82
 function readClipboard() {
+  var System = java.lang.System;
+  System.setProperty("java.awt.headless", "false");
 	var robot = new java.awt.Robot();
 	var clipboard = java.awt.Toolkit.getDefaultToolkit().getSystemClipboard();
 	var contents = clipboard.getContents(null);
