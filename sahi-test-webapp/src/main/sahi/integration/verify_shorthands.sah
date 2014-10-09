@@ -8,4 +8,4 @@ function getAccessorString(s){
 }
 </browser>
 _navigateTo("formTest.htm");
-_include("verify_shorthands_inc.sah");
+_include("verify_shorthands_inc.js");
