@@ -7,5 +7,5 @@ function getAccessorString(s){
     return "_sahi."+  _sahi.getAccessor1(_sahi.identify(s).apis[0]);
 }
 </browser>
-_navigateTo("/demo/formTest.htm")
+_navigateTo("formTest.htm");
 _include("verify_shorthands_inc.sah");

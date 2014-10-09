@@ -1,7 +1,7 @@
 _include("pages/includeAll.js");
 
 function testSetWorksWithArrays(){
-	_navigateTo($Root.url + "/index.htm");
+	_navigateTo("index.htm");
 	var $linkArray = new Array();
 	for(var $i = 0; $i < 5; $i++){
 		_set($linkArray[$i], top.document.links[$i].href);
@@ -15,7 +15,7 @@ function testSetWorksWithArrays(){
 
 
 function testSetWorksWithVariableInValue(){
-	_navigateTo($Root.url + "/formTest.htm");
+	_navigateTo("formTest.htm");
 	var $values = [];
 	for (var $i=0; $i<2; $i++){
 	   _set($values[$i], _checkbox("c1["+$i+"]").value);
@@ -24,7 +24,7 @@ function testSetWorksWithVariableInValue(){
 }
 
 function testSetWorksOnPopups(){
-	_navigateTo($Root.url + "/index.htm");
+	_navigateTo("index.htm");
 	_click(_link("Window Open Test"));
 	_popup("popWin")._click(_link("Link Test"));
 	_click(_link("Form Test"));
@@ -34,7 +34,7 @@ function testSetWorksOnPopups(){
 }
 
 function testSetWorksOnPopupsWithVariableNames(){
-	_navigateTo($Root.url + "/index.htm");
+	_navigateTo("index.htm");
 	_click(_link("Window Open Test"));
 	_popup("popWin")._click(_link("Link Test"));
 	_click(_link("Form Test"));

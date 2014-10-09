@@ -2,7 +2,7 @@ _include("pages/includeAll.js");
 
 $Index.goTo();
 
-_navigateTo($Root.url + "/doc_written_popup.htm");
+_navigateTo("doc_written_popup.htm");
 _setValue(_textbox("textbox"), "aaa");
 _click(_button("Open Write"));
 //_wait(4000);

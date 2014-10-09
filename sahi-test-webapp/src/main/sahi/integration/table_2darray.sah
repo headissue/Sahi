@@ -1,3 +1,5 @@
+_include("pages/includeAll.js");
+
 // Use this browser function to fetch table contents.
 <browser>
 // Fetches table contents. contents will be accessible via indexes. 
@@ -117,7 +119,7 @@ function makeAssociative(array2d){
 var $ar2 = ["a\nb", "c"];
 _assertEqualArrays($ar2, $ar2);
 
-_navigateTo("/demo/tableTest.htm");
+_navigateTo("tableTest.htm");
 _assertEqualArrays(getTableContents(_table("t2")), getTableContents(_table("t2")), "s");
 _set($table1, getTableContents(_table("t2")));
 _set($table2, getTableContents(_table("t2")));

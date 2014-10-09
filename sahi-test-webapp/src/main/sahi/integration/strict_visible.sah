@@ -1,4 +1,6 @@
-_navigateTo("/demo/strict_visible.htm");
+_include("pages/includeAll.js");
+
+_navigateTo("strict_visible.htm");
 
 function testFormElement(){
 	_assertExists(_textbox("q"));

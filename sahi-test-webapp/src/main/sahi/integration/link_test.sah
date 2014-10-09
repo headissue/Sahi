@@ -17,7 +17,7 @@ _click(_link("Back"));
 _click(_link("Back"));
 
 function setUp(){
-	_navigateTo($Root.url + "/linkTest.htm");
+	_navigateTo("linkTest.htm");
 	_setValue(_textbox("t1"), "");
 }
 
@@ -82,7 +82,7 @@ function testIframeLoadedViaLinkClickDoesNotStopTest(){
 _runUnitTests();
 // Test using base tag and page loading target as the iframe
 
-_navigateTo($Root.url + "/base.html");
+_navigateTo("base.html");
 _click(_link("Link Test"));
 _assertExists(_heading2("Link Test"));
 _click(_link("Form Test"));

@@ -1,6 +1,6 @@
 _include("pages/includeAll.js");
 
-_navigateTo($Root.url + "/training/index.htm");
+_navigateTo("training/index.htm");
 _setValue(_textbox("user"), "test");
 _setValue(_password("password"), "secret");
 _click(_submit(0));

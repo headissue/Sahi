@@ -2,34 +2,34 @@ _include("pages/includeAll.js");
 
 
 function testGetText(){
-	_navigateTo($Root.url + "/index.htm");
+	_navigateTo("index.htm");
 	var $text = _getText(_link(0));
 	_assertEqual("Link Test", $text);
 }
 function testGetValue(){
-	_navigateTo($Root.url + "/formTest.htm");
+	_navigateTo("formTest.htm");
 	_assertEqual("", _textbox("t1").value);
 	_setValue(_textbox("t1"), "abcd");
 	var $text = _getValue(_textbox("t1"));
 	_assertEqual("abcd", $text);
 }
 function testGetAttribute(){
-	_navigateTo($Root.url + "/index.htm");
+	_navigateTo("index.htm");
 	var $text = _getAttribute(_link(0), "href");
 	_assertTrue($text.indexOf("linkTest.htm") != -1);
 }
 function testContainsText(){
-	_navigateTo($Root.url + "/index.htm");
+	_navigateTo("index.htm");
 	var $c = _containsText(_link(1), "orm Te"); // Form Test
 	_assertTrue($c);
 }
 function testContainsHTML(){
-	_navigateTo($Root.url + "/index.htm");
+	_navigateTo("index.htm");
 	var $c = _containsHTML(_link(1), "orm Te"); // Form Test
 	_assertTrue($c);
 }
 function testStyle(){
-	_navigateTo($Root.url + "/index.htm");
+	_navigateTo("index.htm");
 	var $c = _style(_link(0), "text-decoration")
 	_assertEqual("underline", $c);
 }
@@ -46,7 +46,7 @@ function testAPIs(){
 	}
 }
 function testFetch(){
-	_navigateTo($Root.url + "/formTest.htm");
+	_navigateTo("formTest.htm");
 	_assertEqual("", _textbox("t1").value);
 	_setValue(_textbox("t1"), "abcd");
 	var $text = _fetch(_textbox("t1").value);
@@ -54,7 +54,7 @@ function testFetch(){
 }
 
 function testIsVisible(){
-	_navigateTo($Root.url + "/tableTest.htm");
+	_navigateTo("tableTest.htm");
 	var $visible = _isVisible(_cell("CellWithId"));
 	_assertTrue($visible);
 }

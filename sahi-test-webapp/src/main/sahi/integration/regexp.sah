@@ -1,6 +1,6 @@
 _include("pages/includeAll.js");
 
-_navigateTo($Root.url + "/regexp.htm");
+_navigateTo("regexp.htm");
 
 _assertEqual(_div("Inner"), _div(/Inner/));
 _assertEqual("Inner", _getText(_div(/Inner/)));

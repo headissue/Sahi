@@ -1,4 +1,4 @@
-_navigateTo("/demo/window_opener_close.htm");
+_navigateTo("window_opener_close.htm");
 _setValue(_textbox("t1"), "dda");
 _click(_button("Click me"));
 _popup("abcd")._setValue(_textbox("t1"), "dad");

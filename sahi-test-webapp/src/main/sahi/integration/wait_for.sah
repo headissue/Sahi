@@ -1,3 +1,6 @@
+_include("pages/includeAll.js");
+$Index.goTo();
+
 _click(_link("Wait For Condition"));
 
 _click(_button("Click me"));
@@ -14,7 +17,7 @@ _assertNotNull(_textbox("t1"));
 _wait(990, _byId("id2"));
 _assertEqual("", _textbox("t1").value);
 
-_navigateTo("/demo/waitFor.htm")
+_navigateTo("waitFor.htm")
 
 _click(_button("Click me"));
 _assertNotNull(_textbox("t1"));

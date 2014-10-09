@@ -1,4 +1,8 @@
-_navigateTo("/demo/");
+_include("pages/includeAll.js");
+_navigateTo("formTest.htm");
+$Index.goTo();
+
+_setXHRReadyStatesToWaitFor("1,2,3");
 _assert(_sahi.waitWhenXHRReadyState1);
 _assert(_sahi.waitWhenXHRReadyState2);
 _assert(_sahi.waitWhenXHRReadyState3);

@@ -1,7 +1,7 @@
 _include("pages/includeAll.js");
 
 
-_navigateTo($Root.url + "/showModal.htm");
+_navigateTo("showModal.htm");
 
 if (_isOpera()){
 	// Opera does not support Modal Dialogs

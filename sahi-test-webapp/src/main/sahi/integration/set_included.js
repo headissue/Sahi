@@ -1,13 +1,22 @@
-//<browser>
 function getRawLinks(){
-	return document.links;
+  var $links;
+  _set($links, document.links);
+  return document.links;
 }
-//</browser>
+
+function getLinks(){
+  var retVal = [];
+  var $links = getRawLinks();
+  for (var i=0; i<2; i++){
+    retVal[i] = _getText($links[i]);
+  }
+  return retVal;
+}
 
 function f1(){
 	var $links = [];
 	_assertExists(_link("Link Test"));
-	_set($links, getLinks());
+	$links = getLinks();
 	for (var i=0; i<$links.length; i++){
 		var $linkText = $links[i];
 		_click(_link($linkText));
@@ -18,3 +27,4 @@ function f1(){
 		}
 	}
 }
+

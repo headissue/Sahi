@@ -1,4 +1,5 @@
-_debug("-----------------------------------------");
+_include("pages/includeAll.js");
+$Index.goTo();
 _click(_link("Link Test"));
 _click(_link("Back"));
 _click(_link("Form Test"));
@@ -29,7 +30,6 @@ function insideWhile() {
     _setGlobal("ix", 0);
 
     while (_condition(parseInt(_getGlobal("ix")) < 2)) {
-        _debug("----");
         _setValue(_textbox("t1"), _textbox("t1") + "a");
         _setValue(_textbox(1), "There");
         _setValue(_textbox("name"), "EveryWhere");

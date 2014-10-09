@@ -1,6 +1,6 @@
 _include("pages/includeAll.js");
 
-_navigateTo($Root.url + "/RegExp_toString_Fix.htm");
+_navigateTo("RegExp_toString_Fix.htm");
 
 var $logindate = "04/14/2010";
 

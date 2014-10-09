@@ -1,3 +1,6 @@
+_include("pages/includeAll.js");
+$Index.goTo();
+
 var $linkTest = _link("Link Test");
 _click($linkTest);
 _click(_link("link with return true"));

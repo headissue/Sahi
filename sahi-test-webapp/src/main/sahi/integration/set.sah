@@ -1,0 +1,5 @@
+_include("pages/includeAll.js");
+$Index.goTo();
+_include("set_included.js");
+f1();
+f1();

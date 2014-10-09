@@ -1,3 +1,6 @@
+_include("pages/includeAll.js");
+$Index.goTo();
+
 function w(){
     _wait(1000);
     _wait(1000);

@@ -1,3 +1,6 @@
+_include("pages/includeAll.js");
+$Index.goTo();
+
 _click(_link("Link Test"));
 try{
   _click(_link("does not exist"));

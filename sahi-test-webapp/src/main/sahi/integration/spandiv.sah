@@ -1,3 +1,6 @@
+_include("pages/includeAll.js");
+$Index.goTo();
+
 _click(_link("Span and Div Page"));
 
 function testNewLineIsIgnored(){

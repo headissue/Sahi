@@ -75,7 +75,7 @@ if (_isFF4()){
 }
 
 function setUp(){
-	_navigateTo($Root.url + "/eventSequence.htm");
+	_navigateTo("eventSequence.htm");
 	if (_isIE9()){
 		_click(_radio(0, _near(_label("attachEvent"))));
 	}else{

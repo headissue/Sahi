@@ -1,3 +1,5 @@
+_include("pages/includeAll.js");
+
 _navigateTo("under.htm");
 
 function testFormElement(){

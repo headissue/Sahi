@@ -37,7 +37,7 @@ function testFnNameWith _condition(){
 */
 
 function testCondition(){
-	_navigateTo($Root.url + "/ifTest.htm");
+	_navigateTo("ifTest.htm");
 	if (_condition(_textbox("t1").value == "")){
 		_log("True");
 	} else {
@@ -46,7 +46,7 @@ function testCondition(){
 }
 
 function testEscapedDollarInIf(){
-	_navigateTo($Root.url + "/ifTest.htm");
+	_navigateTo("ifTest.htm");
 	if(_condition(_textbox("\$V_Id").value == "")){
 		_log("True");
 	} else {

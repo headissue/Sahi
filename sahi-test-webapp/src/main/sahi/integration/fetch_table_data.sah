@@ -15,7 +15,7 @@ function getTableData(){
 }
 </browser>
 
-_navigateTo($Root.url + "/tableTest.htm");
+_navigateTo("tableTest.htm");
 _set($tableData, getTableData());
 
 for (var $i=0; $i<$tableData.length; $i++){
