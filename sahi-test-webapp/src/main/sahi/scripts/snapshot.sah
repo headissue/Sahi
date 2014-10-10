@@ -1,4 +1,9 @@
-_navigateTo("/demo/index.htm");
+// cant be tested headless -.-
+
+_include("pages/includeAll.js");
+$Index.goTo();
+
+
 <browser>
 function getFocus(){
 	if (window.showModalDialog)
@@ -8,16 +13,22 @@ function getFocus(){
 _call(getFocus());
 function takeSnapShot(){
 	try {
-		var robot = new java.awt.Robot();
-		var toolkit = new java.awt.Toolkit.getDefaultToolkit();
-		var screenSize = toolkit.getScreenSize();
-		var screenRect = new java.awt.Rectangle(0, 0, screenSize.width, screenSize.height);
-		var image = robot.createScreenCapture(screenRect);
+    var $Robot = Java.type("java.awt.Robot")
+    var $Toolkit = Java.type("java.awt.Toolkit");
+    var $File = Java.type("java.io.File");
+    var ImageIO = Java.type("javax.imageio.ImageIO");
+    var $Rectangle = Java.type("java.awt.Rectangle");
 
-		var file = new java.io.File("C:/snapshot.png");
-		javax.imageio.ImageIO.write(image, "png", file);
+    var $robot = new $Robot();
+    var $toolkit = $Toolkit.getDefaultToolkit();
+    var $screenSize = $toolkit.getScreenSize();
+		var $screenRect = new $Rectangle(0, 0, $screenSize.width, $screenSize.height);
+		var image = $robot.createScreenCapture($screenRect);
+
+		var file = new $File("/tmp/snapshot.png");
+		ImageIO.write(image, "png", file);
 	} catch (e) {
-		_sahi.print(e);
+		_logExceptionAsFailure(e);
 	}
 }
 takeSnapShot();

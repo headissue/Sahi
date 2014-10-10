@@ -372,11 +372,15 @@ public class NashornScriptRunner implements Runnable {
     nashornEngine.eval(js);
   }
 
-  protected void loadSahiLibary() throws ScriptException {
+  protected void loadSahiLibary() {
     String lib = Configuration.getSahiJavascriptLib();
     nashornEngine.put(ScriptEngine.FILENAME, Utils.concatPaths(Configuration.getHtdocsRoot(),
         "spr/lib.js"));
-    nashornEngine.eval(lib);
+    try {
+      nashornEngine.eval(lib);
+    } catch (ScriptException e) {
+      logger.error("could not eval lib.js", e);
+    }
   }
 
   private void assertIsSahiPresent() {

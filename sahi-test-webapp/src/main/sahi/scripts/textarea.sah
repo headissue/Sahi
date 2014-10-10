@@ -1,4 +1,7 @@
-_navigateTo("/demo/formTest.htm");
+_include("pages/includeAll.js");
+
+_navigateTo($Root.url + "/formTest.htm");
+
 function checkTA($value, $expected){
 	if (!$expected) $expected = $value;
 	_setValue(_textarea("ta1"), $value);

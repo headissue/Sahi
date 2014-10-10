@@ -1,0 +1,18 @@
+_include("pages/includeAll.js");
+
+$Index.goTo();
+
+_click(_link("Window Open Test"));
+
+_selectWindow("popWin");
+	_click(_link("Form Test"));
+	_setValue(_textbox("t1"), "asd");
+	_setValue(_textbox("name"), "aa");
+	_click(_link("Back"));
+	_click(_link("Break Frames"));
+	_click(_link("Close Self"));
+_selectWindow();
+
+_click(_link("Link Test"));
+_setValue(_textbox("t1"), "aa");
+_click(_link("Back"));

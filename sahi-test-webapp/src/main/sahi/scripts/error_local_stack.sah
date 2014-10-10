@@ -1,7 +1,11 @@
+_include("pages/includeAll.js");
+
+$Index.goTo();
+
 var $linkText = "Link Test";
 _click(_link($linkText));
 
-_include("includes/sahi_demo_include.sah");
+_include("sahi_demo_include.js");
 _click(_link("Form Test"));
 
 function testAccessors(){

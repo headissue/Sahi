@@ -1,0 +1,23 @@
+_include("pages/includeAll.js");
+_include("set_included.js");
+
+$Index.goTo();
+
+function getLinks(){
+	return getLinks2();
+}
+
+_log("abcd");
+
+function getLinks2(){
+	var retVal = [];
+	var $links = getRawLinks();
+  for (var i=0; i<2; i++){
+  	retVal[i] = _getText($links[i]);
+	}
+	return retVal;
+}
+
+var $links= getLinks();
+_assertEqual($links[0], "Link Test");
+_assertEqual($links[1], "Form Test");

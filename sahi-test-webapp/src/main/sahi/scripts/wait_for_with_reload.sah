@@ -1,5 +1,0 @@
-_navigateTo("/demo/waitCondition1.htm");
-_debug(new Date());
-_wait(10000, (_textbox('t1').value == "populated"));
-_assertEqual("populated", _textbox("t1").value);
-_debug(new Date());

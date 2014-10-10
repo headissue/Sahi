@@ -1,0 +1,7 @@
+_include("pages/includeAll.js");
+$Index.goTo();
+_click(_link("Link Test"));
+var $link;
+_set($link, _link("linkByHtml"));
+_click($link);
+_assertContainsText("Link By HTML Test Back", document.body);

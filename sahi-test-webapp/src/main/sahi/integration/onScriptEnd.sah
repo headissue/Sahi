@@ -1,0 +1,24 @@
+_include("pages/includeAll.js");
+
+_navigateTo("training/index.htm");
+_setValue(_textbox("user"), "test");
+_setValue(_password("password"), "secret");
+_click(_submit(0));
+_setValue(_textbox("q"), "2");
+_setValue(_textbox("q[1]"), "1");
+_setValue(_textbox("q[2]"), "1");
+_click(_button("Add"));
+_assertExists(_textbox("total"));
+_assert(_isVisible(_textbox("total")));
+
+function onScriptEnd(){
+	_click(_button("Logout"));
+}
+
+function onScriptError($s){
+	_sahi.print(">> Error: " + $s);
+}
+
+function onScriptFailure($s){
+	_sahi.print(">> Failure: " + $s);
+}

@@ -14,7 +14,7 @@ confirm.sah
 prompt.sah 
 reset.sah formTest.htm
 popup_title.sah
-if_include.sah index.htm
+if_include.js index.htm
 while.sah index.htm
 alert.sah alertTest.htm
 wait_for.sah

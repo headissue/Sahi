@@ -4,7 +4,7 @@ $Index.goTo();
 
 
 function check(close){
-	_navigateTo($Root.url + "/docWriteIFrame.htm");
+	_navigateTo("docWriteIFrame.htm");
 	_setValue(_textbox("t1"), "aa");
 	_click(_button("Click me " + (close ? "(doc closed)" : "(doc not closed)")));
 	_click(_link("My link"));
@@ -15,7 +15,7 @@ function check(close){
 	_assertEqual("false", ""+_lastAlert());
 }
 
-_navigateTo($Root.url + "/index.htm")
+_navigateTo("index.htm")
 _click(_link("Link Test"));
 _click(_link("Back"));
 

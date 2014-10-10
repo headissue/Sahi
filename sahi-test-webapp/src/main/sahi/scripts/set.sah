@@ -1,3 +1,0 @@
-_include("set_included.sah");
-f1();
-f1();

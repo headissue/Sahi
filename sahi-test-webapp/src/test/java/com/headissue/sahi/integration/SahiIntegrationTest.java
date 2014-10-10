@@ -30,7 +30,7 @@ public class SahiIntegrationTest {
   final protected Thread server = new Thread(demoPageServer);
   final protected Proxy proxy = new Proxy();
   final protected String base = "http://127.0.1.1";
-  final protected boolean isSingleSession = true;
+  final protected boolean isSingleSession = false;
   final protected int threads = 1;
 
   protected Session session;

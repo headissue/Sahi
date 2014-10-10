@@ -1,0 +1,1 @@
+$ErrorPages = new $Page($Root.url + "/errorPages.htm");

@@ -1,0 +1,40 @@
+function testScriptName(){
+  var $scriptname;
+  _set($scriptname, _scriptName());
+	_assertEqual("evalOnProxy.sah", $scriptname);
+}
+function testScriptPath(){
+	var $path = _scriptPath();
+	_assert($path.indexOf("evalOnProxy.sah") != -1);
+	_assertNotEqual(_scriptName(), _scriptPath());
+}
+function testUserDataPath(){
+	var $path;
+  _set($path, _userDataPath("123"));
+	_assertEqual($path, _userDataPath("123"));
+}
+function testReadFile(){
+	var $fileContents;
+  _set($fileContents, _readFile("./values.txt"));
+	_assertEqual($fileContents, _readFile("./values.txt"));
+}
+function testReadCSVFile(){
+	var $fileContents;
+  var $path;
+  _set($path, _resolvePath("./values.txt"));
+  _set($fileContents, _readCSVFile("./values.txt"));
+  _assertEqual($fileContents[0][0], "Link Test");
+}
+var $x = 20;
+function xtestLocalVariable(){
+	var $x = 10;
+	_assertEqual(20, _evalOnProxy("$x"));
+}
+var $y = 10;
+function testGlobalVariable(){
+	_assertEqual(10, _evalOnProxy("$y"));
+	$y = 20;
+	_assertEqual(20, _evalOnProxy("$y"));
+}
+
+_runUnitTests();
