@@ -17,6 +17,12 @@
  */
 package net.sf.sahi.response;
 
+import net.sf.sahi.StreamHandler;
+import net.sf.sahi.config.Configuration;
+import net.sf.sahi.util.TrafficLogger;
+import net.sf.sahi.util.Utils;
+import org.apache.log4j.Logger;
+
 import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -25,12 +31,6 @@ import java.net.HttpURLConnection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
-import net.sf.sahi.StreamHandler;
-import net.sf.sahi.config.Configuration;
-import net.sf.sahi.util.TrafficLogger;
-import net.sf.sahi.util.Utils;
-import org.apache.log4j.Logger;
 
 /**
  * User: nraman
@@ -123,6 +123,7 @@ public class HttpResponse extends StreamHandler {
     // The Transfer-Encoding should never be chunked, since we are sending it sequentially
     removeHeader("Transfer-Encoding");
     removeHeader("Transfer-encoding");
+    removeHeader("Content-Security-Policy");
     setContentLength(getModifiedContentLength());
   }
 
