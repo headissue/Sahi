@@ -1,7 +1,6 @@
 package net.sf.sahi.workspace;
 
 import com.google.common.io.Files;
-import net.sf.sahi.util.Utils;
 import org.junit.Test;
 
 import java.io.File;
@@ -35,6 +34,7 @@ public class WorkspaceBuilderTest {
     assertTrue(new File(workingDirectory, "config/userdata.properties").exists());
     assertTrue(new File(workingDirectory, "config/browser_types.xml").exists());
     assertTrue(new File(workingDirectory, "phantomscript/phantom.js").exists());
+    assertTrue(new File(workingDirectory, "config/domainfix.txt").exists());
   }
 
   @Test

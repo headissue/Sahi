@@ -134,6 +134,7 @@ public class WorkspaceBuilder {
     resources.add("jira.properties");
     resources.add("log.properties");
     resources.add("userdata.properties");
+    resources.add("domainfix.txt");
     File destDir = new File(Utils.concatPaths(target, USER_CONFIG_ROOT));
     copyResources(resources, destDir);
   }

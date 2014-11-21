@@ -124,6 +124,9 @@ public class HttpResponse extends StreamHandler {
     removeHeader("Transfer-Encoding");
     removeHeader("Transfer-encoding");
     removeHeader("Content-Security-Policy");
+    removeHeader("X-Frame-Options");
+    removeHeader("X-Content-Type-Options");
+    removeHeader("X-XSS-Protection");
     setContentLength(getModifiedContentLength());
   }
 
