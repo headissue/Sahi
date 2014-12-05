@@ -15,4 +15,5 @@ net.sf.sahi.test.TestRunner \
 -test $script -browserType phantomjs \
 -baseURL http://sahi.example.com/_s_/dyn/Driver_initialized \
 -threads 1 \
--consoleLog true
+-consoleLog true \
+-htmlLog true
