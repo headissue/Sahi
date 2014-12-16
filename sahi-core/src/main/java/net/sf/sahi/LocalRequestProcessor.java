@@ -19,6 +19,7 @@
 package net.sf.sahi;
 
 import net.sf.sahi.command.CommandExecuter;
+import net.sf.sahi.command.Driver;
 import net.sf.sahi.command.Hits;
 import net.sf.sahi.config.Configuration;
 import net.sf.sahi.report.LogViewer;
@@ -55,7 +56,7 @@ public class LocalRequestProcessor {
     } else if (uri.indexOf("/userdata") != -1) {
       httpResponse = new HttpFileResponse(Configuration.getRootCaPath());
     } else {
-      httpResponse = new HttpFileResponse(Configuration.getHtdocsRoot() + "/spr/launch.htm");
+      httpResponse = getLocalResponse(Driver.INITIALIZE_CALL, requestFromBrowser);
     }
     return httpResponse;
   }

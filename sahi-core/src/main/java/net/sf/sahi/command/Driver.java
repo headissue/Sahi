@@ -15,7 +15,6 @@ import net.sf.sahi.session.Status;
 import net.sf.sahi.test.BrowserLauncher;
 import net.sf.sahi.util.BrowserType;
 import net.sf.sahi.util.BrowserTypesLoader;
-import net.sf.sahi.util.ProxySwitcher;
 import net.sf.sahi.util.Utils;
 import org.apache.log4j.Logger;
 
@@ -41,6 +40,8 @@ import org.apache.log4j.Logger;
 public class Driver {
   private static Logger logger = Logger.getLogger(Driver.class);
   private Boolean useSystemProxy = false;
+  public static final String INITIALIZE_CALL = "/_s_/dyn/Driver_initialized";
+
 
 
   public void setControllerMode(final HttpRequest request) {
@@ -88,10 +89,10 @@ public class Driver {
 //		}
 //		
     final BrowserLauncher launcher = new BrowserLauncher(browser, browserProcessName, browserOption, useProxy);
-    String url = "http://" + Configuration.getCommonDomain() + "/_s_/dyn/Driver_start?sahisid="
+    String url = "http://" + Configuration.getCommonDomain() + "/_s_/dyn/Driver_start" + "?sahisid="
       + session.id()
       + "&startUrl="
-      + Utils.encode("http://" + Configuration.getCommonDomain() + "/_s_/dyn/Driver_initialized?startUrl=" + Utils.encode(startUrl));
+      + Utils.encode("http://" + Configuration.getCommonDomain() + INITIALIZE_CALL +  "?startUrl=" + Utils.encode(startUrl));
     launcher.openURL(url);
     session.setLauncher(launcher);
   }
