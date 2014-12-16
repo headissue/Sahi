@@ -270,7 +270,7 @@ public class SSLHelper {
     X500Name issuer = buildRootIssuer();
     X500Name subject = buildName(domain);
     Date startDate = new Date();
-    long aYear = 1000 * 60 * 60 * 24 * 365;
+    long aYear = (long) 1000 * 60 * 60 * 24 * 365;
     Date expiryDate = new Date(startDate.getTime() + aYear);
     SubjectPublicKeyInfo subjectPublicKeyInfo = getSubjectPublicKeyInfo(_keyPair);
     return new X509v3CertificateBuilder(issuer, BigInteger.valueOf(new Date().getTime()), new Date(), expiryDate, subject, subjectPublicKeyInfo);
