@@ -241,24 +241,4 @@ public class Driver {
       e.printStackTrace();
     }
   }
-
-  public void toggleIEProxy(final boolean enable) {
-    String cmd = Configuration.getAbsolutePath("tools/toggle_IE_proxy.exe " + (enable ? "enable" : "disable"));
-    String[] tokens = Utils.getCommandTokens(cmd.replaceAll("%20", " "));
-    try {
-      Utils.executeAndGetProcess(tokens);
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-  }
-
-  public void enableIEProxy(final HttpRequest request) {
-    ProxySwitcher.setSahiAsProxy();
-//		toggleIEProxy(true);
-  }
-
-  public void disableIEProxy(final HttpRequest request) {
-    ProxySwitcher.revertSystemProxy();
-//		toggleIEProxy(false);
-  }
 }
