@@ -5,7 +5,6 @@ import net.sf.sahi.config.Configuration;
 import net.sf.sahi.test.BrowserLauncher;
 import net.sf.sahi.util.BrowserType;
 import net.sf.sahi.util.BrowserTypesLoader;
-import net.sf.sahi.util.ProxySwitcher;
 import net.sf.sahi.util.Utils;
 import org.apache.log4j.Logger;
 
@@ -227,7 +226,6 @@ public class Dashboard extends JFrame {
     addWindowListener(new WindowAdapter() {
       public void windowClosing(WindowEvent we) {
         stopProxy();
-        ProxySwitcher.revertSystemProxy(true);
         System.exit(0);
       }
     });
@@ -282,14 +280,6 @@ public class Dashboard extends JFrame {
 
   private void stopProxy() {
     currentInstance.stop();
-  }
-
-  private void toggleProxy(boolean selected) {
-    if (selected) {
-      ProxySwitcher.setSahiAsProxy();
-    } else {
-      ProxySwitcher.revertSystemProxy();
-    }
   }
 
   public static void main(String args[]) {

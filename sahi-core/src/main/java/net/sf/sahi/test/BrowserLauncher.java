@@ -2,7 +2,6 @@ package net.sf.sahi.test;
 
 import net.sf.sahi.config.Configuration;
 import net.sf.sahi.util.BrowserType;
-import net.sf.sahi.util.ProxySwitcher;
 import net.sf.sahi.util.Utils;
 import org.apache.log4j.Logger;
 
@@ -51,9 +50,6 @@ public class BrowserLauncher {
   }
 
   public ProcessHelper openURL(final String url) throws Exception {
-    if (useProxy) {
-      toggleProxy(true);
-    }
     String cmd = buildCommand(url);
     logger.info("start browser: " + cmd);
     cmd = cmd.replaceAll("%20", " ").replaceAll("[&]", "__SahiAmpersandSahi__");
@@ -68,22 +64,7 @@ public class BrowserLauncher {
 
   private void addShutDownHook() {
     ProcessExitDetector processExitDetector = new ProcessExitDetector(process.getActiveProcess());
-    processExitDetector.addProcessListener(new ProcessListener() {
-      public void processFinished(Process process) {
-        if (useProxy) {
-          toggleProxy(false);
-        }
-      }
-    });
     processExitDetector.start();
-  }
-
-  private void toggleProxy(boolean selected) {
-    if (selected) {
-      ProxySwitcher.setSahiAsProxy();
-    } else {
-      ProxySwitcher.revertSystemProxy();
-    }
   }
 
   private String buildCommand(final String url) {
@@ -117,8 +98,6 @@ public class BrowserLauncher {
   public void kill() {
     try {
       if (process != null) {
-        if (useProxy)
-          ProxySwitcher.revertSystemProxy();
         process.kill();
       }
     } catch (Exception e) {

@@ -25,7 +25,6 @@ import net.sf.sahi.report.SahiReporter;
 import net.sf.sahi.nashorn.NashornScriptRunner;
 import net.sf.sahi.session.Session;
 import net.sf.sahi.session.Status;
-import net.sf.sahi.util.ProxySwitcher;
 import net.sf.sahi.util.Utils;
 import org.apache.log4j.Logger;
 
@@ -236,9 +235,6 @@ public class SahiTestSuite {
   public void run() {
     Session session = Session.getInstance(this.sessionId);
     session.setStatus(Status.RUNNING);
-    if (useSystemProxy) {
-      ProxySwitcher.setSahiAsProxy();
-    }
     new Thread(new Culler(this)).start();
     executeSuite();
   }
@@ -250,9 +246,6 @@ public class SahiTestSuite {
       createIssues();
       cullInactiveTests();
     } finally {
-      if (useSystemProxy) {
-        ProxySwitcher.revertSystemProxy();
-      }
       suites.remove(sessionId);
     }
   }

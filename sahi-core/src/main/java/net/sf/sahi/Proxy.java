@@ -22,7 +22,6 @@ import net.sf.sahi.config.Configuration;
 import net.sf.sahi.ssl.SSLHelper;
 import net.sf.sahi.util.BrowserTypesLoader;
 import net.sf.sahi.util.Diagnostics;
-import net.sf.sahi.util.ProxySwitcher;
 import net.sf.sahi.util.Utils;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
@@ -88,13 +87,6 @@ public class Proxy {
     }
     final Proxy proxy = new Proxy(Configuration.getPort());
     currentInstance = proxy;
-    try {
-      Thread thread = new Thread(new ResetProxy());
-      Runtime.getRuntime().addShutdownHook(thread);
-      logger.debug("Added shutdown hook.");
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
     proxy.start(false);
   }
 
@@ -193,12 +185,5 @@ public class Proxy {
       if (server != null)
         server.close();
     }
-  }
-}
-
-class ResetProxy implements Runnable {
-  @Override
-  public void run() {
-    ProxySwitcher.revertSystemProxy(true);
   }
 }
