@@ -64,10 +64,6 @@ public class RemoteRequestProcessor {
   }
 
   public HttpResponse processHttp(HttpRequest requestFromBrowser) {
-    return processHttp(requestFromBrowser, true);
-  }
-
-  public HttpResponse processHttp(HttpRequest requestFromBrowser, boolean modify) {
     try {
       Session session = requestFromBrowser.session();
       ThreadLocalMap.put("session", session);
@@ -144,15 +140,24 @@ public class RemoteRequestProcessor {
           logger.warn("Returning CannotConnectResponse for: " + urlStr);
           logger.debug(Utils.getStackTraceString(uhe));
       }
+
+      if (response == null || responseCode == -1) {
+        logger.warn("No response or response code not set");
+        response = getNoConnectionResponse(requestFromBrowser);
+      }
+
       if (responseCode != 204 && responseCode != 304) {
-        String contentTypeHeader = response.contentTypeHeader();
+
+        boolean attachment;
+        String contentTypeHeader;
+        String contentDisposition;
+
+        contentTypeHeader = response.contentTypeHeader();
+        attachment = response.isAttachment();
+        contentDisposition = response.getLastSetValueOfHeader("Content-Disposition");
+
         boolean downloadContentType = isDownloadContentType(contentTypeHeader);
-        boolean attachment = response.isAttachment();
-
-        String fileName = null;
-        boolean contentDispositionForcesDownload = false;
-
-        if (fileName == null) fileName = requestFromBrowser.fileName();
+        String fileName = requestFromBrowser.fileName();
 
         boolean downloadURL = isDownloadURL(urlStr);
         logger.debug("downloadURL = " + downloadURL);
@@ -160,21 +165,18 @@ public class RemoteRequestProcessor {
         logger.debug("fileName = " + fileName);
         logger.debug("contentTypeHeader = " + contentTypeHeader);
         logger.debug("downloadContentType = " + downloadContentType);
-        logger.debug("Content-Disposition=" + response.getLastSetValueOfHeader("Content-Disposition"));
-        if (responseCode == 200
-          && (downloadContentType ||
-          contentDispositionForcesDownload ||
-          downloadURL)) {
+        logger.debug("Content-Disposition=" + contentDisposition);
+        if (responseCode == 200 && (downloadContentType || downloadURL)) {
           StringBuilder sb = new StringBuilder();
           sb.append("\n-- Calling downloadFile --\n");
           sb.append(requestFromBrowser.url());
-          sb.append("\ndownloadURL = " + downloadURL);
-          sb.append("\nresponse.isAttachment() = " + attachment);
-          sb.append("\nfileName = " + fileName);
-          sb.append("\ncontentTypeHeader = " + contentTypeHeader);
-          sb.append("\ndownloadContentType = " + downloadContentType);
-          sb.append("\nContent-Disposition=" + response.getLastSetValueOfHeader("Content-Disposition"));
-          sb.append("\ncontentDispositionForcesDownload = " + contentDispositionForcesDownload);
+          sb.append("\ndownloadURL = ").append(downloadURL);
+          sb.append("\nresponse.isAttachment() = ").append(attachment);
+          sb.append("\nfileName = ").append(fileName);
+          sb.append("\ncontentTypeHeader = ").append(contentTypeHeader);
+          sb.append("\ndownloadContentType = ").append(downloadContentType);
+          sb.append("\nContent-Disposition=").append(contentDisposition);
+          sb.append("\ncontentDispositionForcesDownload = " + false);
           sb.append("\n--");
           logger.info(sb.toString());
           downloadFile(requestFromBrowser, response, fileName);
@@ -185,7 +187,7 @@ public class RemoteRequestProcessor {
             return new NoContentResponse();
           }
         }
-        response = addFilters(requestFromBrowser, modify, response, responseCode);
+        response = addFilters(requestFromBrowser, response, responseCode);
       }
       if (responseCode == 204) {
         session.set204(true);
@@ -215,22 +217,14 @@ public class RemoteRequestProcessor {
     return response;
   }
 
-  private HttpResponse addFilters(HttpRequest requestFromBrowser, boolean modify, HttpResponse response, int responseCode) {
+  private HttpResponse addFilters(HttpRequest requestFromBrowser, HttpResponse response, int responseCode) {
     if (response instanceof StreamingHttpResponse) {
       StreamingHttpResponse streamingResponse = (StreamingHttpResponse) response;
-//			if (modify && !requestFromBrowser.isExcluded() && !requestFromBrowser.session().isAjaxRedirect(requestFromBrowser.url())) {
-//				if (logger.isLoggable(Level.FINER)){
-//					logger.finer("Modifying response with HttpModifiedResponse");
-//				}
-//				streamingResponse = new HttpModifiedResponse(streamingResponse, requestFromBrowser.isSSL(), requestFromBrowser
-//						.fileExtension(), responseCode);
-//			}
-//			streamingResponse.addFilter(new TrafficLoggerFilter(TrafficLogger.getLoggerForThread()));
       streamingResponse.addFilter(new ChunkedFilter());
       return streamingResponse;
     } else {
       final Session session = requestFromBrowser.session();
-      if (modify && !requestFromBrowser.isExcluded() && !session.isAjaxRedirect(requestFromBrowser.url())) {
+      if (!requestFromBrowser.isExcluded() && !session.isAjaxRedirect(requestFromBrowser.url())) {
         return new HttpModifiedResponse2(response, requestFromBrowser.isSSL(), requestFromBrowser.fileExtension(), responseCode);
       }
     }
@@ -363,6 +357,18 @@ public class RemoteRequestProcessor {
 
     return new HttpFileResponse(
       Configuration.getHtdocsRoot() + "spr/5xx.htm",
+      props, false, true);
+  }
+
+  private HttpResponse getNoConnectionResponse(HttpRequest requestFromBrowser) {
+    Properties props = new Properties();
+    props.put("time", "" + (new Date()));
+
+    String message = "No response for " + requestFromBrowser;
+    props.put("message", message);
+
+    return new HttpFileResponse(
+      Configuration.getHtdocsRoot() + "spr/cannotConnect.htm",
       props, false, true);
   }
 

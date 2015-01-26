@@ -175,7 +175,7 @@ public class SSLHelper {
 
   public KeyManagerFactory getKeyManagerFactoryForRemoteFetch() throws UnrecoverableKeyException, NoSuchAlgorithmException, KeyStoreException, CertificateException, IOException {
     String fileWithPath = Configuration.getSSLClientCertPath();
-    logger.info(fileWithPath == null ? "No SSL Client Cert specified" : ("\n----\nSSL Client Cert Path = " + fileWithPath + "\n----"));
+    if (fileWithPath != null) logger.info("Using SSL Cient Cert path at: " + fileWithPath);
     return getKeyManagerFactory(clientCertKeystore, Configuration.getSSLClientCertPassword());
   }
 
