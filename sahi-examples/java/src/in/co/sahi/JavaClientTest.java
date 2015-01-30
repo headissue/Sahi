@@ -42,7 +42,7 @@ public class JavaClientTest {
 
 	
 	public void testSahiDemoSite(){
-		browser.navigateTo("http://sahi.co.in/demo/training/");
+		browser.navigateTo("http://sahipro.com/demo/training/");
 		browser.textbox("user").setValue("test");
 		browser.password("password").setValue("secret");
 		browser.submit("Login").click();

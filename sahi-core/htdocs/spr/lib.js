@@ -676,7 +676,12 @@ Sahi.prototype._scriptPath = function(){
     return "" + NashornScriptRunner.getScript().getFilePath();
 };
 Sahi.prototype._scriptStartTime = function(){
-	return "" + NashornScriptRunner.getReport().getStartTime();
+	var currentTime = NashornScriptRunner.getReport().getStartTime();
+	var date = new Date(currentTime);
+	return date;
+};
+Date.prototype.getMonth2 = function(){
+	return this.getMonth() + 1;
 };
 Sahi.prototype._sessionInfo = function(){
     var info = eval("(" + NashornScriptRunner.getSession().getInfoJSON() + ")");

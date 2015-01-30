@@ -21,6 +21,12 @@
 <script>__sahiDebugStr__="";__sahiDebug__=function(s){__sahiDebugStr__+=(s+"\n");};</script>
 <script type="text/javascript" src="/_s_/dyn/SessionState_domainfix/domainfix.js"></script>
 <script>
+function setVersion(){
+	var ver = document.getElementById("sahiOSVersion").innerHTML;
+	document.getElementById("sahiVersion").innerHTML = ver.split(" ")[2];
+}
+</script>
+<script>
 function informOpen(){
 	//alert("here");
     var ishttps = location.href.indexOf("https") == 0;
@@ -86,24 +92,21 @@ div.content{
 }
 .comment {
     color: darkred;
-    font-weight: bolder;
     font-size: 10px;
 }
 .comment0 {
     color: darkred;
-    font-weight: bolder;
-    font-size: 11px;
+    font-size: 12px;
 }
 .centpc{
 	width:100%;
 }
 .comment1 {
     color: darkred;
-    font-weight: bolder;
     font-size: 14px;
 }
 .button {
-	width: 50px;
+	width: 65px;
 }
 a{
     xtext-decoration:none;
@@ -118,16 +121,17 @@ hr{
 .suggestDD{display:none;border:1px solid grey;}
 </style>
 </head>
-<body onload="pageOnLoad();" onresize="resizeTAs()" onclick="Suggest.hideAll()" onbeforeunload="pageUnLoad()">
+<body onload="pageOnLoad(); setVersion();" onresize="resizeTAs()" onclick="Suggest.hideAll()" onbeforeunload="pageUnLoad()">
 <div style="float:right;padding-right:10px;">
-<a href="http://sahi.co.in" target="_blank">Sahi</a> (Build: <script>document.write(getVersion());</script>) &nbsp; 
-<!--<a href="http://sahi.co.in/w/paid-support" target="_blank">Support</a>-->
+Sahi OS v5.0 &nbsp;
+<a class='comment0' href='http://sahipro.com/docs/using-sahi/sahi-controller.html' target='_blank' title="Enhanced Sahi Pro Controller">?</a>
+<!--<a href="http://sahipro.com/w/paid-support" target="_blank">Support</a>-->
 </div>
 <div style="margin:5px 0px 10px 5px;">
-<span  id="trecorder" class="hiTab" onclick="resizeTAs();recOnClick();">&nbsp;Record&nbsp;</span>
-<span  id="tplay" class="dimTab" onclick="resizeTAs();playbackOnClick();">&nbsp;Playback&nbsp;</span>
-<span  id="tinfo" class="dimTab" onclick="resizeTAs();infoOnClick();">&nbsp;Info&nbsp;</span>
-<span  id="tpromo" class="dimTab" onclick="resizeTAs();infoOnClick();">&nbsp;New!&nbsp;</span>
+<span  id="trecorder" title='Recorder tab' class="hiTab" onclick="resizeTAs();recOnClick();">&nbsp;Record&nbsp;</span>
+<span  id="tplay" title='Playback tab' class="dimTab" onclick="resizeTAs();playbackOnClick();">&nbsp;Playback&nbsp;</span>
+<span  id="tinfo" title='Info tab' class="dimTab" onclick="resizeTAs();infoOnClick();">&nbsp;Info&nbsp;</span>
+<span  id="tpromo" title="See what's new!" class="dimTab" onclick="resizeTAs();infoOnClick();">&nbsp;New!&nbsp;</span>
 </div>
 <div class="content" id="trecorderbox" style="display:none;padding:5px;">
 <div class="comment0 centpc" style="margin-bottom: 5px;">
@@ -139,7 +143,7 @@ Script will be generated in sahi/userdata/scripts directory.
         <tr>
             <td>Script Directory:</td>
             <td>
-                <select id="recdir" name="dir" style="width:300px" onchange="setSelectedScriptDir(this.options[this.selectedIndex].value)">
+                <select id="recdir" name="dir" style="width:336px" onchange="setSelectedScriptDir(this.options[this.selectedIndex].value)">
                     <option value="../scripts">../scripts</option>
                 </select>
             </td>
@@ -147,9 +151,9 @@ Script will be generated in sahi/userdata/scripts directory.
         <tr>
             <td>Script Name:</td>
             <td>
-                <input type="text" id="recfile" name="file" value="" style="width:190px">
-                <input type="button" id="record" name="record" value="Record" onclick="onRecordStartFormSubmit(this)">
-                <input type="button" value="Stop" onclick="stopRec()">
+                <input type="text" title="Enter the name of the script to record" id="recfile" name="file" value="" style="width:224px">
+                <input type="button" id="record" title='Click to start recording' name="record" value="Record" onclick="onRecordStartFormSubmit(this)">
+                <input type="button" value="Stop" title='Click to stop recording' onclick="stopRec()">
             </td>
         </tr>
     </table>
@@ -169,12 +173,12 @@ Press CTRL key and hover mouse over any HTML element.
     </tr>
 
     <tr>
-        <td width="85px">Accessor:</td>
+        <td width="95px">Accessor:</td>
         <td>
-            <input id="accessor" name="accessor" value="" style="width:265px"  autocomplete="off">
+            <input id="accessor" title='Accessor of HTML element being pointed' name="accessor" value="" style="width:269px"  autocomplete="off">
             <select id="accessorDD" class="suggestDD"></select>
         </td>
-        <td><input type="button" class="button" value=" Click " onclick=
+        <td><input title="Simulates a click on the HTML element pointed by 'Accessor'" type="button" class="button" value=" Click " onclick=
                 "demoClick()"></td>
     </tr>
 
@@ -186,35 +190,35 @@ Press CTRL key and hover mouse over any HTML element.
 
     <tr>
         <td>Alternatives:</td>
-        <td><select name="alternative" onchange="$('accessor').value=this.value;" style="width:265px"></select></td>
-        <td><input type="button" class="button" value="Hilight" onclick=
+        <td><select name="alternative" title='Alternative ways of accessing Accessor' onchange="$('accessor').value=this.value;" style="width:269px"></select></td>
+        <td><input title="Brings element in 'Accessor' field into focus and highlights" type="button" class="button" value="Hilight" onclick=
                 "demoHighlight()"></td>
     </tr>
 
     <tr>
         <td>Value:</td>
-        <td><input id="elValue" name="elValue" value="" style="width:265px"></td>
-        <td><input type="button" class="button" value=" Set " onclick=
+        <td><input title='Value of HTML from element being pointed' id="elValue" name="elValue" value="" style="width:269px"></td>
+        <td><input type="button" title="Sets the value of element pointed in 'Accessor' field" class="button" value=" Set " onclick=
                 "demoSetValue()"></td>
     </tr>
     <tr>
         <td>Prefix:</td>
-        <td><input name="winName" value="" style="width:265px"></td>
-		<td><input type="button" class="button" value="Hover" onclick=
+        <td><input title="Creates prefix statements for popups and pages from different domains" name="winName" value="" style="width:269px"></td>
+		<td><input title="Performs a mouseover action on the element in 'Accessor' field" type="button" class="button" value="Hover" onclick=
 		                "demoHover()"></td>        
     </tr>
     
     <tr>
 
 </table>  
-<div style="padding-right:20px;">
+<div style="padding-right:10px;">
 <div style="float:left">
-<input type="button" class="button" value="Assert" onclick="sahi().doAssert($('accessor').value, $('elValue').value)"/> 
-<input type="button" style="width:100px;" value=" List Properties " onclick="showProperties()">
+<input title="Creates assertion statements using values in 'Accessors' and 'Values' fields. Need to use 'Append to Script' to add to script" type="button" class="button" value="Assert" onclick="sahi().doAssert($('accessor').value, $('elValue').value)"/>
+<input type="button" title="Click to get the properties of an element" style="width:100px;" value=" List Properties " onclick="showProperties()">
 </div>
 <div style="float:right">
-Other Actions:        
-<select style="background-color:#F3F3EF; padding:1px; border:1px solid #003C74;" onchange="demoAction(this)">
+ Other Actions:
+<select style="width:154px;background-color:#F3F3EF; padding:1px; border:1px solid #003C74;" title='Click for other browser actions' onchange="demoAction(this)">
 	<option>-- Choose --</option>
 	<option value="_doubleClick">Double Click</option>
 	<option value="_rightClick">Right Click</option>
@@ -224,7 +228,6 @@ Other Actions:
 	<option value="svon">Strict Visibility On</option>
 	<option value="svoff">Strict Visibility Off</option>
 </select>&nbsp;
-<a class='comment0' href='sahi_recorder_help.htm' target='_blank' title="Help">?</a>
 </div>
 <div style="clear:both"></div>
 </div>
@@ -245,9 +248,9 @@ commands[commands.length] = "_rightClick(<accessor>)";
 
 <hr>
 <div style="float:left;padding-top:3px">APIs List:</div>
-<div style="float:right;padding-right:2px;"> 
-<input type="text" id="apiTextbox" autocomplete="off" style="width:350px;">
-<select id="apiSelect" class="suggestDD" style="width:350px;"></select>
+<div style="float:right;padding-right:8px;">
+<input type="text" title='List all Sahi apis available on browser. Press Enter to append the selected API to Evaluate Expression.' id="apiTextbox" autocomplete="off" style="width:340px;">
+<select id="apiSelect" class="suggestDD" style="width:340px;"></select>
 
 <script>
     var apiSuggest = new Suggest($("apiTextbox"), $("apiSelect"), "api", true);
@@ -258,15 +261,17 @@ commands[commands.length] = "_rightClick(<accessor>)";
 </div>
 <br style="clear:both"/>
 <hr/>
-Evaluate expression: <a href="javascript:showHistory()">History</a>
+Evaluate expression: <a title='Click to view history of recording actions' href="javascript:showHistory()">History</a>
 <br/>
 <input type="hidden" id="history" name="history">
-<textarea name="debug" id="taDebug" style="white-space:normal;height:52px;width:99%" spellcheck="false"></textarea><br/>
-<input type="button" onclick="evaluateExpr(true)" value="Test --&gt; ">
-<input type="button" onclick="append()" value="Append to Script">
-<input type="button" onmousedown="demoHighlight2()" value="Highlight">
-<input type="button" onmousedown="demoClick2()" value="Click"><br/>
-<textarea name="result" id="taResult" spellcheck="false" style="white-space:normal;background:url(/_s_/spr/images/sahi_os_logo2.png) no-repeat bottom right silver;height:52px;width:99%" readonly="readonly"></textarea>
+<textarea name="debug" id="taDebug" style="height:52px;width:99%" spellcheck="false"></textarea><br/>
+<input type="button" title="Click to evalute what is in the above 'Evalute expression' text box" onclick="evaluateExpr(true)" value="Test --&gt; ">
+<input type="button" onclick="append()" title="Appends the contents of 'Evalute expression' textbox to the script being recorded" value="Append to Script">
+<input type="button" title="Higlights any element in a page" onmousedown="demoHighlight2()" value="Highlight">
+<input type="button" onmousedown="demoClick2()" title="Simulates a click on the HTML element specified in 'Evaluate expression'" value="Click"><br/>
+
+<textarea name="result" id="taResult" spellcheck="false" style="white-space:normal;height:52px;width:99%" readonly="readonly"></textarea>
+
 </form>
 
 </div>
@@ -286,7 +291,7 @@ Evaluate expression: <a href="javascript:showHistory()">History</a>
             <tr>
               <td>Script Directory: </td>
               <td>
-                <select id="pbdir" name="dir" onchange="populateScripts(this.options[this.selectedIndex].value)" style="width:300px">
+                <select id="pbdir" name="dir" onchange="populateScripts(this.options[this.selectedIndex].value)" style="width:250pt">
                   <option value="../scripts">../scripts</option>
                 </select>
               </td>
@@ -296,8 +301,8 @@ Evaluate expression: <a href="javascript:showHistory()">History</a>
               <td bgcolor="">File:</td>
               <td><!--<select name="file" style="width:300px" 
               	  onchange="setSelectedScript(this.options[this.selectedIndex].value)"></select>-->
-              	  <input id="filebox" name="filebox" style="width:300px" autocomplete="off">
-            	  <select id="fileboxDD" name="suggestScriptFile" class="suggestDD" style="width:300px"></select>
+              	  <input title='Enter the script name' id="filebox" name="filebox" style="width:250pt" autocomplete="off">
+            	  <select id="fileboxDD" name="suggestScriptFile" class="suggestDD" style="width:333px"></select>
             	  <script>
             	  	var fileboxSuggest = new Suggest($("filebox"), $("fileboxDD"), "filebox", true);
         			fileboxSuggest.getOptions = getScriptFiles;
@@ -311,12 +316,12 @@ Evaluate expression: <a href="javascript:showHistory()">History</a>
             </tr>
             <tr>
               <td>Start URL:</td>
-              <td><input type="text" id="script_starturl" name="starturl" value="" style="width:250pt"></td>
+              <td><input type="text" title='Enter the start URL of the script' id="script_starturl" name="starturl" value="" style="width:250pt"></td>
             </tr>
 
             <tr>
-              <td><input type="button" value="Set" onclick="onScriptFormSubmit(this)"></td>
-              <td class="comment">Click 'Set', wait till page refreshes, then
+              <td><input type="button" title='Set the script for playback' value="Set" onclick="onScriptFormSubmit(this)"></td>
+              <td class="comment0">Click 'Set', wait till page refreshes, then
                 click 'Play'.</td>
             </tr>
           </table>
@@ -334,17 +339,17 @@ Evaluate expression: <a href="javascript:showHistory()">History</a>
 			<tr><td></td></tr>
             <tr>
               <td bgcolor="">Script:</td>
-              <td><input type="text" id="url" name="url" size="50"></td>
+              <td><input type="text" title="Enter the script URL (eg: http://localhost/demo/sahi_demo.sah)" id="url" name="url" size="50"></td>
             </tr>
 			<tr><td></td></tr>
             <tr>
               <td>Start URL:</td>
-              <td><input type="text" id="url_starturl" name="starturl" value="" size="50"></td>
+              <td><input type="text" title='Enter the start URL of the script' id="url_starturl" name="starturl" value="" size="50"></td>
             </tr>
 			<tr><td></td></tr>
             <tr>
               <td><input type="button" value="Set" onclick="onScriptFormSubmit(this)"></td>
-              <td class="comment">Click 'Set', wait till page refreshes, then
+              <td class="comment0">Click 'Set', wait till page refreshes, then
                 click 'Play'.</td>
             </tr>
           </table>
@@ -359,7 +364,7 @@ Evaluate expression: <a href="javascript:showHistory()">History</a>
 <table width="99%">
   <tr>
     <td>Replay:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class=
-        "comment">Set script above, before clicking on 'Play'.</span></td>
+        "comment0">Set script above, before clicking on 'Play'.</span></td>
   </tr>
 
   <tr>
@@ -380,11 +385,10 @@ Evaluate expression: <a href="javascript:showHistory()">History</a>
 
                 <tr>
                   <td>
-                  <input class="button" type="button" value="Play" onclick="play()">
-                  <input class="button" type="button" value="Pause" onclick="pause()">
-                  <input class="button" type="button" value="Step" onclick="stepWisePlay()">
-                  <input class="button" type="button" value="Stop" onclick="stopPlay()">
-                  <input class="button" type="button" value="Reset" onclick="replay()">
+                  <input title='Play the script' class="button" type="button" value="Play" onclick="play()">
+                  <input title='Pause the script'class="button" type="button" value="Pause" onclick="pause()">
+                  <input title='Step through the script one step at a time' class="button" type="button" value="Step" onclick="stepWisePlay()">
+                  <input title='Stop the script' class="button" type="button" value="Stop" onclick="stopPlay()">
                   </td>
                 </tr>
               </table>
@@ -402,22 +406,22 @@ Evaluate expression: <a href="javascript:showHistory()">History</a>
   <tr>
     <td bgcolor="">
       <form name="logForm">Statements:<br>
-        <textarea spellcheck="false" id="talogs" name="logs" style="width:99%;height:230px;background:url(/_s_/spr/images/sahi_os_logo2.png) no-repeat bottom right silver;"></textarea></form>
+        <textarea spellcheck="false" id="talogs" name="logs" style="width:99%;height:230px;"></textarea></form>
   		&nbsp;
-		<a href="/_s_/dyn/Player_currentScript/" target="_blank">View Script</a>&nbsp;&nbsp;&nbsp;
-		<a href="/_s_/dyn/Player_currentParsedScript" target="_blank">View Parsed Script</a>&nbsp;&nbsp;&nbsp;
-		<a href="/_s_/dyn/Player_currentBrowserScript" target="_blank">View Browser Script</a>&nbsp;&nbsp;&nbsp;
-		<a href="/_s_/dyn/Log_viewLogs" target="_blank">View Logs</a>
+		<a title='A copy of the test script currently loaded for play back is displayed in the web browser' href="/_s_/dyn/Player_currentScript/" target="_blank">View Script</a>&nbsp;&nbsp;&nbsp;
+		<a title='Displays the actual code that will be executed by Sahi' href="/_s_/dyn/Player_currentParsedScript" target="_blank">View Parsed Script</a>&nbsp;&nbsp;&nbsp;
+		<a title='The browser script included in the Sahi script' href="/_s_/dyn/Player_currentBrowserScript" target="_blank">View Browser Script</a>&nbsp;&nbsp;&nbsp;
+		<a title='HTML based results of tests, stored in database' href="/_s_/dyn/Log_viewLogs" target="_blank">View Logs</a>
   	</td>
   </tr>
 </table>
 </div>
 <div class="content" id="tinfobox" style="display:none;overflow-y:auto;height:90%;"> 
-<a href="http://sahi.co.in/" target="_blank"><img src="/_s_/spr/images/sahi_os_logo2.png" style="border:0px;float:right;margin:5px 10px;"/></a>
+<a href="http://sahipro.com/" target="_blank"><img src="/_s_/spr/images/sahi_os_logo2.png" style="border:0px;float:right;margin:5px 10px;"/></a>
 <table>
-	<tr><td class="comment1" colspan="3"><u>Sahi</u><br></td></tr>
-	<tr><td><b>Version</b></td><td>:&nbsp;</td><td><div id="sahiVersion">V4.4</div></td></tr>
-	<tr><td><b>Build</b></td><td>:&nbsp;</td><td><div id="sahiBuild"><script>document.write(getVersion());</script> (<a href="/_s_/dyn/ControllerUI_getChangeLog" target="_blank">change log</a>) </div></td></tr>
+	<tr><td class="comment1" colspan="3"><u style="font-weight:bold" id="sahiOSVersion">Sahi OS 5.0</u><br/><br/></td></tr>
+	<tr><td><b>Version</b></td><td>:&nbsp;</td><td><div id="sahiVersion"></div></td></tr>
+	<tr><td><b>Build</b></td><td>:&nbsp;</td><td><div id="sahiBuild"><script>document.write(getVersion());</script></div></td></tr>
 	<tr><td class="comment" colspan="3">
 	<a href="#" id="updatesahi" target="_blank" onclick="updateVersion();return false;">Check for updates</a>
 	</td></tr>
@@ -452,39 +456,46 @@ Evaluate expression: <a href="javascript:showHistory()">History</a>
 <br><hr>
 </div>
 <div class="content" id="tpromobox" style="display:none;overflow-y:auto;height:90%;"> 
-<a href="http://sahi.co.in/" target="_blank"><img src="/_s_/spr/images/sahi_pro_logo2.png" style="border:0px;float:right;margin:5px 10px;"/></a>
+<a href="http://sahipro.com/" target="_blank"><img src="/_s_/spr/images/sahi_pro_logo2.png" style="border:0px;float:right;margin:5px 10px;"/></a>
 <div style="margin:10px;">
 <h3>Sahi Pro - Released!</h3>
 More productivity with Sahi Pro!
 <br/><br/>
 Sahi Pro adds the following features:
 <ol class="newOne">
-<li>DSahi - Distribute tests across machines, on the cloud</li>
+<li>Distributed Playback - Distribute tests across machines. Sahi will schedule, execute and collate results into one database report.</li>
+<li>Data Driven Suites - Pass data to scripts, add tags and run subsets of suites which match particular tags</li>
+<li>Editor - The editor allows you to view all the scripts in the scripts directories and edit them from the browser based editor. The editor supports normal Sahi scripts, Scenario files (.s.csv) and Data-driven Suite files (.dd.csv).</li>
 <li>Automatically accept SSL certificates</li>
 <li>Easily record _near and _in based accessors from the Controller</li>
 <li>Automatically build a repository of elements</li>
 <li>Easily parametrize recorded script into functions</li>
 <li>Log results to database</li>
 <li>Use the in-built Excel Framework</li>
+<li>Create documentation during recording or recreate documentation during playback!</li>
+<li>Load test your web application</li>
+<li>Object Repository</li>
+<li>Better Jenkins Integration</li>
 </ol>
-<a href="http://sahi.co.in/w/sahi_pro" target="_blank" style="margin-left:250px">Read more on Sahi Pro</a> 
+<a href="http://sahipro.com/docs/introduction/index.html#Full feature list" target="_blank" style="margin-left:250px">Read more on Sahi Pro</a>
 <style>
 .newOne li{margin:8px 5px;}
 </style>
 <h3>Useful Links</h3>
 <ul class="newOne">
-<li><a href="http://sahi.co.in/w/" target="_blank">Go to the Sahi Website</a></li>
-<li><a href="http://sahi.co.in/w/sahi" target="_blank">Read the Sahi documentation</a></li>
-<li><a href="http://sahi.co.in/forums/" target="_blank">Get free support on Sahi Forums</a></li>
-<li><a href="http://www.linkedin.com/groups?home=&gid=989367" target="_blank">Join the Sahi LinkedIn Group</a></li>
-<li><a href="http://twitter.com/_sahi" target="_blank">Follow Sahi on twitter: _sahi</a></li>
-<li><a href="http://www.facebook.com/pages/Sahi/132288696813329" target="_blank">Like Sahi on Facebook</a></li>
-<li><a href="http://blog.sahi.co.in/" target="_blank">Follow our views on the Sahi Blog</a></li>
-<li><a href="http://groups.google.com/group/sahi/" target="_blank">Join the Sahi Google Group</a></li>
-<li><a href="http://sahi.co.in/forums/viewforum.php?id=5" target="_blank">See and leave a testimonial</a>
+<li><a href="http://sahipro.com/compare-sahi-with-others/" target="_blank">Compare Sahi with Other Tools</a></li>
+<li><a href="http://sahipro.com/pricing-licensing/" target="_blank">Sahi Pro Pricing and Licensing</a></li>
+<li><a href="http://sahipro.com/request-a-demo/" target="_blank">Request a Free Sahi Pro Demo</a></li>
 </ul>
-</div>
-</div>
+<br/>
+<ul class="newOne">
+<li><a href="http://sahipro.com/" target="_blank">Go to the Sahi Website</a></li>
+<li><a href="http://sahipro.com/docs/" target="_blank">Read the Sahi documentation</a></li>
+<li><a href="http://sahipro.com/forums/" target="_blank">Get free support on Sahi Forums</a></li>
+<li><a href="http://sahipro.com/blog/" target="_blank">Follow our views on the Sahi Blog</a></li>
+<li><a href="http://sahipro.com/forums/categories/customer-stories-and-testimonials/" target="_blank">See and leave a testimonial</a>
+</ul>
+
 <script>
 var tabGroup = new TabGroup("tabGroup", ["tplay", "trecorder","tinfo", "tpromo"], "trecorder");
 </script>

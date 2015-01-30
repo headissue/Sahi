@@ -40,22 +40,31 @@ import java.util.List;
 public class FileUpload {
   private static Logger logger = Logger.getLogger(FileUpload.class);
 
-  @SuppressWarnings("unchecked")
-  public HttpResponse setFile(final HttpRequest request) {
-    Session session = request.session();
-    String key = "file:" + request.getParameter("n");
-    ArrayList<String> list = (ArrayList<String>) session.getObject(key);
-    if (list == null) list = new ArrayList<String>();
-    String filePath = request.getParameter("v");
-    list.add(filePath);
-    session.setObject(key, list);
-    session.mockResponder().add(request.getParameter("action").replaceAll("[.]", "[.]") + ".*", "FileUpload_appendFiles");
-    if (new File(Configuration.getAbsoluteUserPath(filePath)).exists()) {
-      return new SimpleHttpResponse("true");
-    } else {
-      return new SimpleHttpResponse("File not found: " + filePath + "; Base directory is userdata directory: " + Configuration.getUserDataDir());
+    @SuppressWarnings("unchecked")
+	public HttpResponse setFile(final HttpRequest request) {
+        Session session = request.session();
+		String key = "file:" + request.getParameter("n");
+		ArrayList<String> list = (ArrayList<String>) session.getObject(key);
+		if (list == null) list = new ArrayList<String>();
+		String filePath = request.getParameter("v");
+		list.add(filePath);
+		session.setObject(key, list);
+		String urlPattern = request.getParameter("action");
+        if (urlPattern.startsWith("/") && (urlPattern.endsWith("/"))) {
+        	urlPattern = urlPattern.substring(1,urlPattern.length()-1);
+        } else {
+        	boolean addDotStarAtStart = !(urlPattern.startsWith("http://") || urlPattern.startsWith("https://"));
+        	urlPattern = (addDotStarAtStart ? ".*" : "") + urlPattern.replaceAll("[.]", "[.]") + ".*";
+        }
+        logger.info("Adding pattern: " + urlPattern);
+//        System.out.println("Adding pattern: " + urlPattern);
+		session.mockResponder().add(urlPattern.toLowerCase(), "FileUpload_appendFiles");
+        if (new File(Configuration.getAbsoluteUserPath(filePath)).exists()) {
+        	return new SimpleHttpResponse("true");
+        } else {
+        	return new SimpleHttpResponse("File not found: " + filePath + "; Base directory is userdata directory: " + Configuration.getUserDataDir());
+        }
     }
-  }
 
   @SuppressWarnings("unchecked")
   public HttpResponse appendFiles(final HttpRequest request) {
@@ -90,7 +99,7 @@ public class FileUpload {
         part.setFileName(new File(fileName).getName());
       }
       rebuiltRequest = multiPartRequest.getRebuiltRequest();
-      session.mockResponder().remove(request.url().replaceAll("[.]", "[.]"));
+            session.mockResponder().remove(request.matchedPattern());
     }
     return new RemoteRequestProcessor().processHttp(rebuiltRequest);
   }

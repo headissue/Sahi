@@ -62,4 +62,11 @@ public class OSUtils {
     return Integer.parseInt(properties.getProperty(identifyOS() + ".processhelper.pid_list_pid_column_no"));
   }
 
+  public static boolean getPIDListExcludeImageExtension() {
+    return Boolean.parseBoolean(properties.getProperty(identifyOS()+".processhelper.pid_list_cmd_exclude_imagename_extension"));
+  }
+
+ 	public static String getKillAllCommand() {
+    return properties.getProperty(identifyOS()+".processhelper.pid_kill_all_cmd");
+  }
 }

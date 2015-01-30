@@ -8,6 +8,7 @@ import java.util.StringTokenizer;
 import java.util.concurrent.Semaphore;
 
 
+import net.sf.sahi.config.Configuration;
 import net.sf.sahi.util.OSUtils;
 import net.sf.sahi.util.Utils;
 import org.apache.log4j.Logger;
@@ -35,32 +36,33 @@ public class ProcessHelper {
   private static final Logger logger = Logger.getLogger(ProcessHelper.class);
   private String cmd;
 
-  private enum Status {
-    INITIALIZED, RUNNING, STOPPED
-  }
+	private ArrayList<String> pids = new ArrayList<String>();
+
+	private enum Status {
+	    INITIALIZED, RUNNING, STOPPED
+	}
 
   private Process process;
-  private int maxTimeToWaitForPIDs;
-  private Status status;
-  private ArrayList<String> pids;
+	private int maxTimeToWaitForPIDs;
+	private Status status;
 
-  private String imageName;
+	private String imageName;
+	public ProcessHelper(String cmd, String imageName, int maxTimeToWaitForPIDs) {
+		this.cmd = cmd;
+		this.imageName = imageName;
+		this.maxTimeToWaitForPIDs = maxTimeToWaitForPIDs;
+	}
 
-  public ProcessHelper(String cmd, String imageName) {
-    this.cmd = cmd;
-    this.imageName = imageName;
-  }
-
-  public ProcessHelper(String cmd, String imageName, int maxTimeToWaitForPIDs) {
-    this.cmd = cmd;
-    this.imageName = imageName;
-    this.maxTimeToWaitForPIDs = maxTimeToWaitForPIDs;
-  }
+	public ProcessHelper(String cmd, String imageName) {
+		this(cmd, imageName, Configuration.getMaxTimeForPIDGather());
+	}
 
   static Semaphore lock = new Semaphore(1, true);
   static long t;
 
   private static boolean hasProcessStarted;
+	private int maxRetryCount = Configuration.getMaxBrowserRelaunchCount();
+	private int retryCount = 0;
 
   public void execute() throws Exception {
     try {
@@ -71,29 +73,24 @@ public class ProcessHelper {
       } catch (InterruptedException e1) {
         e1.printStackTrace();
       }
-      ArrayList<String> allPIDsBefore = getPIDs();
+			ArrayList<String> allPIDsBefore = getAllPIDs();
       logger.info("execute: "+ cmd);
       String[] tokens = Utils.getCommandTokens(cmd.replaceAll("%20", " "));
       process = Utils.executeAndGetProcess(tokens);
-      new Thread(new PIDGatherer(allPIDsBefore)).start();
-
+			new Thread(new PIDGatherer(allPIDsBefore, this)).start();
     } catch (Exception e) {
       lock.release();
       throw e;
     }
 
   }
-
-  protected Process getActiveProcess() {
-    return this.process;
-  }
-
   class PIDGatherer implements Runnable {
-    private final ArrayList<String> allPIDsBefore;
-
-    PIDGatherer(ArrayList<String> allPIDsBefore) {
-      this.allPIDsBefore = allPIDsBefore;
-    }
+		private final ArrayList<String> allPIDsBefore;
+		private ProcessHelper processHelper;
+		PIDGatherer(ArrayList<String> allPIDsBefore, ProcessHelper processHelper){
+			this.allPIDsBefore = allPIDsBefore;
+			this.processHelper = processHelper;
+		}
 
     public void run() {
       status = ProcessHelper.Status.INITIALIZED;
@@ -109,10 +106,24 @@ public class ProcessHelper {
         time += interval;
       }
       try {
-        ArrayList<String> allPIDsAfter = getPIDs();
-        pids = getNewlyAdded(allPIDsBefore, allPIDsAfter);
+				ArrayList<String> allPIDsAfter = getAllPIDs();
+				pids = getNewlyAdded(allPIDsBefore, allPIDsAfter);
       } catch (Exception e) {
+				e.printStackTrace();
       }
+			//System.out.println("time == " + time);
+			//System.out.println("boolean == " + (!hasProcessStarted && time >= maxTime && retryCount++ < maxRetryCount));
+			if(!hasProcessStarted && time >= maxTime && retryCount++ < maxRetryCount){
+				try {
+					processHelper.kill();
+					lock.release();
+					System.out.println(">>> ProcessHelper Retry Count: " + retryCount);
+					processHelper.execute();
+					return;
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
       logger.info("PIDs: " + pids + "; " + (System.currentTimeMillis() - t) + " ms");
       status = ProcessHelper.Status.RUNNING;
       lock.release();
@@ -131,22 +142,23 @@ public class ProcessHelper {
     return newlyAdded;
   }
 
-  ArrayList<String> getPIDs() {
-    ArrayList<String> ar = new ArrayList<String>();
-    try {
-      String listCmd = OSUtils.getPIDListCommand().replaceAll("\\$imageName", imageName);
-      Process p = Runtime.getRuntime().exec(Utils.getCommandTokens(listCmd));
-      InputStream in = p.getInputStream();
-      StringBuffer sb = new StringBuffer();
-      byte c;
-      while ((c = (byte) in.read()) != -1) {
-        sb.append((char) c);
-      }
-      String output = sb.toString();
-      StringTokenizer tokenizer = new StringTokenizer(output, "\r\n");
-      while (tokenizer.hasMoreTokens()) {
-        String line = tokenizer.nextToken();
-        line = line.replaceAll("\\s+", " ").trim();
+	ArrayList<String> getAllPIDs() {
+		ArrayList<String> ar = new ArrayList<String>();
+		try {
+			String imageNameToUse = (OSUtils.getPIDListExcludeImageExtension() ? imageName.substring(0, imageName.lastIndexOf(".")) : imageName);
+			String listCmd = OSUtils.getPIDListCommand().replaceAll("\\$imageName", imageNameToUse);
+			Process p = Runtime.getRuntime().exec(Utils.getCommandTokens(listCmd));
+			InputStream in = p.getInputStream();
+			StringBuffer sb = new StringBuffer();
+			byte c;
+			while ((c = (byte) in.read()) != -1) {
+				sb.append((char) c);
+			}
+			String output = sb.toString();
+			StringTokenizer tokenizer = new StringTokenizer(output, "\r\n");
+			while (tokenizer.hasMoreTokens()) {
+				String line = tokenizer.nextToken();
+				line = line.replaceAll("\\s+", " ").trim();
         if (line.equals(""))
           break;
         StringTokenizer spaceTokenizer = new StringTokenizer(line);
@@ -158,7 +170,11 @@ public class ProcessHelper {
           i++;
           pid = spaceTokenizer.nextToken();
           if (i == colNo) {
-            hasCol = true;
+						// Ensure that pid contains an int value.
+						try {
+							hasCol = (Integer.parseInt(pid) > 0);
+						}
+						catch (NumberFormatException e) {}
             break;
           }
         }
@@ -178,6 +194,12 @@ public class ProcessHelper {
   }
 
   public void kill() {
+		int max = Configuration.getWaitTimeForPIDsBeforeKill()/1000;
+		for (int i = 0; i<max; i++){
+			if (pids.size() != 0) break;
+			logger.info("PIDs not available yet. Waiting for 1 sec");
+			Utils.sleep(1000);
+		}
     logger.info("Kill: " + pids);
     for (int i = 0; i < 4; i++) {
       killPIDs();
@@ -187,6 +209,7 @@ public class ProcessHelper {
 
   private void killPIDs() {
 //		process.destroy();
+		if(pids == null) return;
     Iterator<String> it = pids.iterator();
     while (it.hasNext()) {
       String pid = (String) it.next();
@@ -206,7 +229,9 @@ public class ProcessHelper {
     int time = 0;
     int interval = 0;
     while (time <= maxTime) {
-      ArrayList<String> allPIDs = getPIDs();
+			ArrayList<String> allPIDs = getAllPIDs();
+//			logger.finest(pids2 + " " + allPIDs);
+//			System.out.println(pids2 + " " + allPIDs);
       Iterator<String> it = pids2.iterator();
       boolean allDone = true;
       while (it.hasNext()) {
@@ -231,23 +256,10 @@ public class ProcessHelper {
     hasProcessStarted = true;
   }
 
-  public void waitTillAlive() {
-    while (true) {
-      try {
-        Thread.sleep(200);
-      } catch (InterruptedException e) {
-        e.printStackTrace();
-      }
-      if (!isProcessAlive()) {
-        break;
-      }
-    }
-  }
-
   public boolean isProcessAlive() {
     if (status == ProcessHelper.Status.STOPPED) return false;
     if (status == ProcessHelper.Status.INITIALIZED) return true;
-    ArrayList<String> pidArray = getPIDs();
+		ArrayList<String> pidArray = getAllPIDs();
     for (String pid : pids) {
       if (pidArray.contains(pid)) {
         return true;
@@ -256,4 +268,22 @@ public class ProcessHelper {
     status = ProcessHelper.Status.STOPPED;
     return false;
   }
+
+	public void waitTillAlive() {
+		 while(true){
+			 try {
+				Thread.sleep(200);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			 if(!isProcessAlive()){
+				 break;
+			 }
+		 }
+	}
+
+	public ArrayList<String> getPIDs() {
+		return pids;
+	}
+
 }

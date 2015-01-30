@@ -67,6 +67,8 @@ public class HttpRequest extends StreamHandler {
 
   private String sahiCookie = "";
 
+  private String pattern;
+
   HttpRequest() {
   }
 
@@ -225,6 +227,10 @@ public class HttpRequest extends StreamHandler {
     if (lastSlashIx != -1) {
       if (lastSlashIx + 1 < uriWithoutQueryString.length()) {
         fileName = uriWithoutQueryString.substring(lastSlashIx + 1);
+        // Replace all invalid characters in file name with underscore("_")
+        if (fileName != null) {
+        	fileName = fileName.replaceAll("[\\\\/:*?\"<>|]","_");
+        }
       } else {
         fileName = "no_filename";
       }
@@ -398,4 +404,12 @@ public class HttpRequest extends StreamHandler {
     }
     return false;
   }
+
+  public String matchedPattern() {
+    return pattern;
+  }
+  public void setMatchedPattern(String pattern) {
+    this.pattern = pattern;
+  }
+
 }

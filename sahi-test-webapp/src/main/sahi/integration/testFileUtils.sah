@@ -1,0 +1,20 @@
+_include("pages/includeAll.js");
+
+$Index.goTo();
+
+_writeFile("Test Line", "tempFile.txt", true);
+var $rename = _renameFile("tempFile.txt", "tempFile2.txt");
+_assertTrue($rename);
+var $content = _readFile("tempFile2.txt");
+_assertEqual("Test Line", $content);
+_copyFile("tempFile2.txt", "tempFile3.txt");
+var $copiedContent = _readFile("tempFile3.txt");
+_assertEqual("Test Line", $copiedContent);
+var $delete1 = _deleteFile("tempFile2.txt");
+var $delete2 = _deleteFile("tempFile3.txt");
+_assertTrue($delete1);
+_assertTrue($delete2);
+var $file1 = new java.io.File(_userDataDir() + "/scripts/demo/tempFile2.txt");
+var $file2 = new java.io.File(_userDataDir() + "/scripts/demo/tempFile3.txt");
+_assertFalse($file1.exists());
+_assertFalse($file2.exists());

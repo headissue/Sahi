@@ -1,0 +1,39 @@
+function testHTML5TextBox() {
+	_navigateTo("html5_form_fields.htm");
+	_setValue(_textbox("username"), "HTML 5 Elements");
+	_selectRange(_textbox("username"), 1,5);
+	_assertEqual("TML ",_getSelectionText());
+}
+function testHTML5TelephoneBox() {
+	_navigateTo("html5_form_fields.htm");
+	_selectRange(_telephonebox("tel2"), 2,4);
+	_assertEqual("03",_getSelectionText());
+}
+function testHTML5URLBox() {
+	_navigateTo("html5_form_fields.htm");
+	_selectRange(_urlbox("url2"), 2,4);
+	_assertEqual("tp",_getSelectionText());
+}
+function testHTML5SearchBox() {
+	_navigateTo("html5_form_fields.htm");
+	_setValue(_searchbox("withPattern"), "HTML 5 Elements");
+	_selectRange(_searchbox("withPattern"), 2,4);
+	_assertEqual("ML",_getSelectionText());
+}
+function testHTML5EMailBox() {
+	
+		_navigateTo("html5_form_fields.htm");
+		_selectRange(_emailbox("em"), 0,4);
+		_assertEqual("a@ex",_getSelectionText());
+
+}
+function testHTML5NumberBox() {
+	
+		_navigateTo("html5_form_fields.htm");
+		_setValue(_numberbox("num"), "1234567");
+		_selectRange(_numberbox("num"), 2,4);
+		_assertEqual("34",_getSelectionText());
+	
+}
+_navigateTo("http://sahipro.com/demo");
+_runUnitTests();

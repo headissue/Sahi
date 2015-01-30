@@ -135,6 +135,7 @@ public class WorkspaceBuilder {
     resources.add("log.properties");
     resources.add("userdata.properties");
     resources.add("domainfix.txt");
+    resources.add("user_extensions.js");
     File destDir = new File(Utils.concatPaths(target, USER_CONFIG_ROOT));
     copyResources(resources, destDir);
   }

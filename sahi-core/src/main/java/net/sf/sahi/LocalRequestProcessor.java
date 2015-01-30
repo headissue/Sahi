@@ -21,6 +21,7 @@ package net.sf.sahi;
 import net.sf.sahi.command.CommandExecuter;
 import net.sf.sahi.command.Driver;
 import net.sf.sahi.command.Hits;
+import net.sf.sahi.command.Log;
 import net.sf.sahi.config.Configuration;
 import net.sf.sahi.report.LogViewer;
 import net.sf.sahi.request.HttpRequest;
@@ -52,7 +53,7 @@ public class LocalRequestProcessor {
       String fileName = URLParser.fileNamefromURI(requestFromBrowser.uri().replace("/sprm/", "/spr/"));
       httpResponse = new HttpModifiedResponse2(new HttpFileResponse(fileName, null, true, true), requestFromBrowser.isSSL(), requestFromBrowser.fileExtension());
     } else if (uri.indexOf("/logs") != -1) {
-      httpResponse = new NoCacheHttpResponse(LogViewer.getLogsList(Configuration.getPlayBackLogsRoot()));
+      httpResponse = new Log().getLogIndexResponse();
     } else if (uri.indexOf("/userdata") != -1) {
       httpResponse = new HttpFileResponse(Configuration.getRootCaPath());
     } else {

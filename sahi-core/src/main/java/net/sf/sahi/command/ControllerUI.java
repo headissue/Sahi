@@ -30,6 +30,8 @@ import net.sf.sahi.util.Diagnostics;
 import net.sf.sahi.util.Utils;
 
 public class ControllerUI {
+private static String updateHTML = null;
+
   //    private static final Logger logger = Logger.getLogger("net.sf.sahi.command.ControllerUI");
   public void opened(final HttpRequest request) {
     request.session().setIsWindowOpen(true);

@@ -58,14 +58,14 @@ public class BrowserLauncher {
     cmd = Utils.expandSystemProperties(cmd);
     process = new ProcessHelper(cmd, browserProcessName, maxTimeToWaitForPIDs);
     process.execute();
-    addShutDownHook();
+    //addShutDownHook();
     return process;
   }
 
-  private void addShutDownHook() {
+  /*private void addShutDownHook() {
     ProcessExitDetector processExitDetector = new ProcessExitDetector(process.getActiveProcess());
     processExitDetector.start();
-  }
+  }*/
 
   private String buildCommand(final String url) {
     if (Utils.isWindows()) {

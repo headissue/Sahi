@@ -699,4 +699,20 @@ public class ElementStub {
   public void highlight() throws ExecutionException {
     browser.highlight(this);
   }
+
+  public void setFile2(String value, String URL) throws ExecutionException  {
+    browser.setFile2(this, value, URL);
+  }
+
+  /**
+   * Sets the value of this file upload element.<br/>
+   * This method will do nothing for elements which are not file upload fields.<br/>
+   * Internally calls browser.setFile(this, value);
+   *
+   * @param value
+   * @throws ExecutionException
+   */
+  public void setFile2(String value) throws ExecutionException  {
+    browser.setFile2(this, value);
+  }
 }

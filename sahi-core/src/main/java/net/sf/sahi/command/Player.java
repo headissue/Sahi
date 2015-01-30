@@ -120,9 +120,11 @@ public class Player {
   public void markStepDone(final HttpRequest request) {
     Session session = request.session();
     NashornScriptRunner scriptRunner = session.getScriptRunner();
-    String failureMessage = request.getParameter("failureMsg");
-    String type = request.getParameter("type");
-    scriptRunner.markStepDone(request.getParameter("stepId"), ResultType.getType(type), failureMessage);
+    if (scriptRunner != null) {
+      String failureMessage = request.getParameter("failureMsg");
+      String type = request.getParameter("type");
+      scriptRunner.markStepDone(request.getParameter("stepId"), ResultType.getType(type), failureMessage);
+    }
     session.set204(false);
 //        try{
 //        	new TestReporter().logTestResult(request);

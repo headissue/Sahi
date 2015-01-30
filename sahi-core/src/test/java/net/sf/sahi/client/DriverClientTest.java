@@ -33,7 +33,7 @@ import static org.junit.Assert.*;
  */
 public class DriverClientTest extends SahiTestCase {
   //	protected String baseURL = "http://gramam";
-  protected String baseURL = "http://sahi.co.in";
+  protected String baseURL = "http://sahipro.com";
 
   @Test
   @Ignore("Move to integration test phase")
@@ -364,7 +364,7 @@ public class DriverClientTest extends SahiTestCase {
   @Test
   @Ignore("Move to integration test phase")
   public void xtestForumsExists() throws Exception {
-    browser.navigateTo("http://sahi.co.in/forums/");
+    browser.navigateTo(baseURL+"/forums/");
     browser.link("Login").click();
     assertTrue(browser.textbox("req_username").exists());
   }
@@ -863,6 +863,49 @@ public class DriverClientTest extends SahiTestCase {
     browser.waitFor(10000);
     assertEquals("key downed charCode=[0] keyCode=[65] NONE", browser.getText(browser.textbox("t1")));
 
+  }
+
+  @Test
+  @Ignore("Move to integration test phase")
+  public void testSettingAndGettingSelectionText() {
+    browser.navigateTo(baseURL + "/demo/");
+    browser.click(browser.link("Form Test"));
+    browser.setValue(browser.textarea("ta1"), "abcdefgh");
+    browser.selectRange(browser.textarea("ta1"), 2, 4);
+    String value = browser.getSelectionText();
+    assertEquals("cd", value);
+    browser.navigateTo(baseURL + "/demo/", true);
+    browser.click(browser.link("IFrames Test"));
+    browser.click(browser.link("Form Test"));
+    browser.setValue(browser.textarea("ta1"), "abcdefgh");
+    browser.selectRange(browser.textarea("ta1"), 2, 4);
+    String value2 = browser.getSelectionText();
+    assertEquals("cd", value2);
+  }
+
+  public void testFileSingleWith3rdParamWithSetFile2(){
+    browser.navigateTo(baseURL +"/demo/php/fileUpload.htm");
+    browser.setFile2(browser.file("file4"), "scripts/demo/uploadme.txt", "fileUpload.php");
+    browser.click(browser.submit("Submit Single"));
+    browser.exists(browser.span("size"));
+    browser.containsText(browser.span("size"), "0.3046875 Kb");
+    browser.containsText(browser.span("type"), "Single");
+    browser.navigateTo(baseURL +"/demo/php/fileUpload.htm");
+    browser.file("file4").setFile2( "scripts/demo/uploadme.txt", "fileUpload.php");
+    browser.click(browser.submit("Submit Single"));
+    browser.exists(browser.span("size"));
+    browser.containsText(browser.span("size"), "0.3046875 Kb");
+    browser.containsText(browser.span("type"), "Single");
+  }
+
+  public void testSetFile2(){
+    browser.navigateTo(baseURL + "/demo/php/fileUpload.htm");
+    browser.file("file").setFile2("scripts/demo/uploadme.txt");
+    browser.submit("Submit Single").click();
+    assertTrue(browser.span("size").exists());
+    assertTrue(browser.span("size").text().indexOf("0.3046875 Kb") != -1);
+    assertTrue(browser.span("type").text().indexOf("Single") != -1);
+    browser.link("Back to form").click();
   }
 
   @Override

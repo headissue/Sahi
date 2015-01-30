@@ -82,15 +82,15 @@ public class Dashboard extends JFrame {
   }
 
   private Component getLinksPanel1() {
-    LinkButton link = new LinkButton("Configure", "http://localhost:9999/_s_/dyn/ConfigureUI");
+    LinkButton link = new LinkButton("Configure", "http://localhost:9999/_s_/dyn/ConfigureUI", null);
     String scriptsPath = Configuration.getScriptRoots()[0];
     if (scriptsPath.endsWith("/") || scriptsPath.endsWith("\\"))
       scriptsPath = scriptsPath.substring(0, scriptsPath.length() - 1);
     LinkButton link2;
     if (System.getProperty("os.name").startsWith("Windows")) {
-      link2 = new LinkButton("Scripts", "explorer /e,\"" + scriptsPath + "\"");
+      link2 = new LinkButton("Scripts", "explorer /e,\"" + scriptsPath + "\"", null);
     } else {
-      link2 = new LinkButton("Scripts", "\"" + scriptsPath + "\"");
+      link2 = new LinkButton("Scripts", "\"" + scriptsPath + "\"", null);
     }
 
     JPanel buttonPane = new JPanel();
@@ -103,8 +103,8 @@ public class Dashboard extends JFrame {
   }
 
   private Component getLinksPanel2() {
-    LinkButton link3 = new LinkButton("Logs", "http://localhost:9999/logs/");
-    LinkButton link4 = new LinkButton("DB Logs", "http://localhost:9999//_s_/dyn/pro/DBReports");
+    LinkButton link3 = new LinkButton("Logs", "http://localhost:9999/logs/", null);
+    LinkButton link4 = new LinkButton("DB Logs", "http://localhost:9999//_s_/dyn/pro/DBReports", null);
 
 
     JPanel buttonPane = new JPanel();
@@ -115,7 +115,7 @@ public class Dashboard extends JFrame {
     buttonPane.add(link4);
 
     if (System.getProperty("os.name").startsWith("Windows")) {
-      LinkButton link5 = new LinkButton("Bin", "cmd.exe /K cd " + Configuration.getAbsoluteUserPath("bin"));
+      LinkButton link5 = new LinkButton("Bin", "cmd.exe /K cd " + Configuration.getAbsoluteUserPath("bin"), null);
       buttonPane.add(Box.createRigidArea(new Dimension(10, 0)));
       buttonPane.add(link5);
     }

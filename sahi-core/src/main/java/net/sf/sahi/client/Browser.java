@@ -2,6 +2,7 @@ package net.sf.sahi.client;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -38,26 +39,25 @@ import org.apache.log4j.Logger;
  * A Browser instance is associated with a specific session on the Sahi proxy.
  * <p/>
  * <pre>
- * Eg.
- *
- * String sahiBasePath = "D:\\path\\to\\sahi_dir";
- * Sting userDataDirectory = "D:\\path\\to\\userdata_dir"; // userdata_dir is in sahiBasePath/userdata by default
- *
- * net.sf.sahi.config.Configuration.initJava(sahiBasePath, userDataDirectory);
- *
- * String browserName = "ie"; // default values are "ie", "firefox", "safari", "chrome", "opera" - specified in userdata/config/browser_types.xml
- * Browser browser = new Browser(browserName);
- * browser.open();
- * browser.navigateTo("http://www.google.com");
- * browser.textbox("q").setValue("sahi forums");
- * browser.submit("Google Search").click();
- * browser.link("Sahi - Web Automation and Test Tool").click();
- * browser.link("Login").click();
- * assertTrue(browser.textbox("req_username").exists());
- *
- * browser.close();
- *
- *
+ Eg.
+
+ String sahiBasePath = "D:\\path\\to\\sahi_dir";
+ Sting userDataDirectory = "D:\\path\\to\\userdata_dir"; // userdata_dir is in sahiBasePath/userdata by default
+
+ net.sf.sahi.config.Configuration.initJava(sahiBasePath, userDataDirectory);
+
+ String browserName = "ie"; // default values are "ie", "firefox", "safari", "chrome", "opera" - specified in userdata/config/browser_types.xml
+ Browser browser = new Browser(browserName);
+ browser.open();
+ browser.navigateTo("http://www.google.com");
+ browser.textbox("q").setValue("sahi forums");
+ browser.submit("Google Search").click();
+ browser.link("Sahi - Web Automation and Test Tool").click();
+ browser.link("Login").click();
+ assertTrue(browser.textbox("req_username").exists());
+
+ browser.close();
+
  * </pre>
  */
 public class Browser extends BrowserElements {
@@ -73,11 +73,14 @@ public class Browser extends BrowserElements {
   private String browserOption;
   private String browserProcessName;
   private static Logger logger = Logger.getLogger(Browser.class);
+  private ArrayList<String> steps = new ArrayList<String>();
+  private boolean translationMode = false;
 
   /**
    * Constructs a Browser object and associates it with a session on Sahi Proxy
    *
    * @param browserName - Name of the browser as it is in browser_types.xml
+   *
    */
   public Browser(String browserName) {
     this(browserName, "localhost", Configuration.getPort());
@@ -86,9 +89,10 @@ public class Browser extends BrowserElements {
   /**
    * Constructs a Browser object and associates it with a session on Sahi Proxy
    *
-   * @param browserPath        The browser executable path
+   * @param browserPath The browser executable path
    * @param browserProcessName The process name to look for to run a kill command
-   * @param browserOption      Any browser options. Leave blank if not required.
+   * @param browserOption Any browser options. Leave blank if not required.
+   *
    */
   public Browser(String browserPath, String browserProcessName, String browserOption) {
     this(browserPath, browserProcessName, browserOption, "localhost", Configuration.getPort());
@@ -97,9 +101,10 @@ public class Browser extends BrowserElements {
   /**
    * Constructs a Browser object and associates it with a session on Sahi Proxy
    *
-   * @param browserPath        The browser executable path
+   * @param browserPath The browser executable path
    * @param browserProcessName The process name to look for to run a kill command
-   * @param browserOption      Any browser options. Leave blank if not required.
+   * @param browserOption Any browser options. Leave blank if not required.
+   *
    */
   public Browser(String browserPath, String browserProcessName, String browserOption, String host, int port) {
     this.host = host;
@@ -119,15 +124,19 @@ public class Browser extends BrowserElements {
     super.browser = this;
   }
 
-  public Browser() {
+  public Browser(){
     super.browser = this;
   }
 
-  private String getProxyURL(String command, QueryStringBuilder qs) {
+  private String getProxyURL(String string, QueryStringBuilder queryStringBuilder) {
+    return getProxyURL(string, queryStringBuilder, false);
+  }
+
+  private String getProxyURL(String command, QueryStringBuilder qs, boolean addSahi) {
     if (qs == null)
       qs = new QueryStringBuilder();
     qs.add("sahisid", sessionId);
-    return "http://" + host + ":" + port + "/_s_/dyn/Driver_" + command + qs.toString();
+    return "http://" + host + ":" + port + "/_s_/dyn/Driver_" + command + qs.toString() + "&addSahi=" + addSahi;
   }
 
 
@@ -138,6 +147,7 @@ public class Browser extends BrowserElements {
    * For NTLM/Windows authentication, java stores the first supplied valid <br/>
    * credentials. To logout of such a system, the proxy needs to be restarted <br/>
    * and then browser.restartPlayback() needs to be called. <br/>
+   *
    */
   public void restartPlayback() {
     String url = getProxyURL("restart", new QueryStringBuilder());
@@ -149,7 +159,17 @@ public class Browser extends BrowserElements {
   }
 
   private String execCommand(String command, QueryStringBuilder qs) {
-    return new String(Utils.readURL(getProxyURL(command, qs)));
+    return execCommand(command, qs, false);
+  }
+
+  private String execCommand(String command, QueryStringBuilder qs, boolean addSahi) {
+    try {
+      return new String(Utils.readURL(getProxyURL(command, qs, addSahi)),"UTF-8");
+    } catch (UnsupportedEncodingException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    return null;
   }
 
   /**
@@ -170,8 +190,55 @@ public class Browser extends BrowserElements {
    * @throws ExecutionException
    */
   public void navigateTo(String url, boolean forceReload) throws ExecutionException {
-    executeStep("_sahi._navigateTo(\"" + url + "\", " + forceReload + ")");
+    executeStep("_sahi._navigateTo(\"" + url + "\", "+ forceReload +")");
     fetch("_sahi.loaded");
+  }
+
+
+  public void selectRange(ElementStub element, int rangeStart, int rangeEnd) throws ExecutionException {
+    execute("_sahi._selectRange(" + element  + ", " + rangeStart + ", " + rangeEnd +  ")");
+  }
+
+  /**
+   * Getting the selected text
+   *
+   * @param window
+   *
+   * Eg. browser.selectRange(browser.div("s4Id"), 1, 4);
+   *
+   */
+  public String getSelectionText(ElementStub window) {
+    return fetch("_sahi._getSelectionText(" + window + ")");
+  }
+  public String getSelectionText() {
+    return getSelectionText(null);
+  }
+
+  /**
+   * Selecting text for manipulation (like selecting text in a Rich Text Editor to change font to bold)
+   *
+   * @param element
+   * @param searchText
+   * @param position
+   *
+   * Eg. browser.selectTextRange(_rte(1), "red apple", "before");
+   *
+   */
+  public void selectTextRange(ElementStub element, String searchText, String position) throws ExecutionException {
+    execute("_sahi._selectRange(" + element  + ", " + searchText + ", " + position +  ")");
+  }
+
+  /**
+   * Selecting text for manipulation (like selecting text in a Rich Text Editor to change font to bold)
+   *
+   * @param element
+   * @param searchText
+   *
+   * Eg. browser.selectTextRange(_rte(1), "red apple");
+   *
+   */
+  public void selectTextRange(ElementStub element, String searchText) throws ExecutionException {
+    selectTextRange(element, searchText, null);
   }
 
   /**
@@ -194,11 +261,27 @@ public class Browser extends BrowserElements {
    * @throws ExecutionException
    */
   public void execute(String step) throws ExecutionException {
-    String prefix = "";
-    if (isDomain()) prefix = "_sahi._domain(\"" + domainName.replaceAll("\"", "\\\"") + "\").";
-    if (isPopup()) prefix += "_sahi._popup(\"" + popupName.replaceAll("\"", "\\\"") + "\").";
-    step = prefix + step;
+    step = addPrefixToStep(step);
     executeStep(step);
+  }
+
+  /**
+   * Executes any sahi code and javascript on the browser.
+   *
+   * @param step
+   * @throws ExecutionException
+   */
+  public void executeSahi(String step) throws ExecutionException {
+    step = addPrefixToStep(step);
+    executeStep(step, true);
+  }
+
+  private String addPrefixToStep(String step) {
+    String prefix = "";
+    if (isDomain()) prefix = "_sahi._domain(\""+ domainName.replaceAll("\"", "\\\"") + "\").";
+    if (isPopup()) prefix += "_sahi._popup(\""+ popupName.replaceAll("\"", "\\\"") + "\").";
+    step = prefix + step;
+    return step;
   }
 
   private boolean isPopup() {
@@ -210,12 +293,18 @@ public class Browser extends BrowserElements {
   }
 
   public void executeStep(String step) throws ExecutionException {
+    executeStep(step, false);
+  }
+
+  public void executeStep(String step, boolean addSahi) throws ExecutionException {
+    steps.add(step);
+    if (translationMode) return;
     QueryStringBuilder qs = new QueryStringBuilder();
-    logger.debug("executeStep: " + step);
+    // System.out.println("step=" + step);
     qs.add("step", step);
-    execCommand("setStep", qs);
+    execCommand("setStep", qs, addSahi);
     int i = 0;
-    while (i < 4000) {
+    while (i < 1500) {
       try {
         Thread.sleep(Configuration.getTimeBetweenSteps());
       } catch (InterruptedException e) {
@@ -225,17 +314,40 @@ public class Browser extends BrowserElements {
       i++;
       String checkDone = execCommand("doneStep");
       boolean done = "true".equals(checkDone);
-      logger.debug(checkDone);
+//			System.out.println(checkDone);
       boolean error = checkDone.startsWith("error:");
       if (done)
         return;
-      if (error) {
-      logger.debug(checkDone);
+      if (error){
+//				System.out.println(checkDone);
         throw new ExecutionException(checkDone);
       }
     }
+    throw new BrowserUnresponsiveException("did not complete in "+(1500*getTimeBetweenSteps()/1000)+" seconds.");
   }
 
+  /**
+   * Returns the time taken between each step
+   * @return
+   */
+  public long getTimeBetweenSteps() {
+    return 100;
+  }
+
+  /**
+   * Returns the array of steps executed
+   * @return
+   */
+  public String[] getSteps(){
+    return steps.toArray(new String[0]);
+  }
+
+  /**
+   * Sets the translation mode as true or false
+   */
+  public void setTranslationMode(boolean b){
+    this.translationMode = b;
+  }
 //	public void reset() {
 //		try {
 //			navigateTo(getResetURL());
@@ -254,8 +366,8 @@ public class Browser extends BrowserElements {
     while (i < 500) {
       i++;
       String isReady = execCommand("isReady");
-    	logger.debug("isReady: " +isReady);
-      if ("true".equals(isReady)) {
+//			System.out.println(isReady);
+      if ("true".equals(isReady)){
         opened = true;
         ProcessHelper.setProcessStarted();
         return;
@@ -269,13 +381,14 @@ public class Browser extends BrowserElements {
     opened = true;
   }
 
-  private void openURL() {
+  private void openURL(){
     QueryStringBuilder qs = new QueryStringBuilder();
-    if (this.browserName != null) {
+    if(this.browserName != null){
       qs.add("browserType", this.browserName);
       qs.add("startUrl", "http://" + Configuration.getCommonDomain() + "/_s_/dyn/Driver_initialized");
       execCommand("launchPreconfiguredBrowser", qs);
-    } else {
+    }
+    else{
       qs.add("browser", this.browserPath);
       qs.add("browserOption", this.browserOption);
       qs.add("browserProcessName", this.browserProcessName);
@@ -283,7 +396,7 @@ public class Browser extends BrowserElements {
       execCommand("launchAndPlayback", qs);
     }
   }
-
+	
 	/*
 	private String getInitialURL(){
 		QueryStringBuilder qs = new QueryStringBuilder();
@@ -313,9 +426,10 @@ public class Browser extends BrowserElements {
    * If called on a popup it works
    */
   public void close() {
-    if (isPopup()) {
+    if (isPopup()){
       execute("_sahi._closeWindow()");
-    } else kill();
+    }
+    else kill();
   }
 
   /**
@@ -324,7 +438,6 @@ public class Browser extends BrowserElements {
   public void kill() {
     execCommand("kill");
   }
-
   /**
    * Sets the value in a form element
    *
@@ -341,7 +454,7 @@ public class Browser extends BrowserElements {
    * This method instructs the proxy to inject the file contents directly in the request.
    * The browser's input field will not be populated, though data will be submitted.
    *
-   * @param elementStub
+   * @param textbox
    * @param value
    * @throws ExecutionException
    */
@@ -354,9 +467,9 @@ public class Browser extends BrowserElements {
    * This method instructs the proxy to inject the file contents directly in the request.
    * The browser's input field will not be populated, though data will be submitted.
    *
-   * @param elementStub
+   * @param textbox
    * @param value
-   * @param url         String The form "action" url pattern to which this upload request is submitted
+   * @param URL String The form "action" url pattern to which this upload request is submitted
    * @throws ExecutionException
    */
   public void setFile(ElementStub textbox, String value, String URL) throws ExecutionException {
@@ -364,12 +477,41 @@ public class Browser extends BrowserElements {
   }
 
   /**
+   * Sets the file to be posted to the server via a file input field.
+   * This method instructs the proxy to inject the file contents directly in the request.
+   * setFile2 also changes the file field to an input field and sets the value.
+   * This helps in cases where there is javascript validation on the file field being populated
+   *
+   * @param textbox
+   * @param value
+   * @param URL String The form "action" url pattern to which this upload request is submitted
+   * @throws ExecutionException
+   */
+  public void setFile2(ElementStub textbox, String value, String URL) throws ExecutionException {
+    execute("_sahi._setFile2(" + textbox + ", " + quoted(value) + ", " + quoted(URL) + ")");
+  }
+
+  /**
+   * Sets the file to be posted to the server via a file input field.
+   * This method instructs the proxy to inject the file contents directly in the request.
+   * setFile2 also changes the file field to an input field and sets the value.
+   * This helps in cases where there is javascript validation on the file field being populated
+   *
+   * @param textbox
+   * @param value
+   * @throws ExecutionException
+   */
+  public void setFile2(ElementStub textbox, String value) throws ExecutionException {
+    execute("_sahi._setFile2(" + textbox + ", " + quoted(value) + ")");
+  }
+
+  /**
    * Simulates a key down event on the given element with a combo value ie. ALT/CTRL/SHIFT etc.
    *
-   * @param element
-   * @param keysequence Key to be pressed down
-   * @param combo       String can be "ALT", "META", "SHIFT", "CTRL" or a combination of these with | as the separator
-   *                    eg. "ALT|SHIFT" or "CTRL|ALT|SHIFT"
+   * @param elementStub
+   * @param keySequence Key to be pressed down
+   * @param combo String can be "ALT", "META", "SHIFT", "CTRL" or a combination of these with | as the separator
+   * eg. "ALT|SHIFT" or "CTRL|ALT|SHIFT"
    * @throws ExecutionException
    */
   public void keyDown(ElementStub elementStub, String keySequence, String combo) throws ExecutionException {
@@ -379,16 +521,13 @@ public class Browser extends BrowserElements {
   /**
    * Simulates a key down event on the given element with a combo value ie. ALT/CTRL/SHIFT etc.
    *
-   * @param element
-   * @param keysequence Key to be pressed down
-   * @param combo       String can be "ALT", "META", "SHIFT", "CTRL" or a combination of these with | as the separator
-   *                    eg. "ALT|SHIFT" or "CTRL|ALT|SHIFT"
+   * @param elementStub
+   * @param keySequence Key to be pressed down
    * @throws ExecutionException
    */
   public void keyDown(ElementStub elementStub, String keySequence) throws ExecutionException {
-    execute("_sahi._keyDown(" + elementStub + ", " + quoted(keySequence) + ")");
+    execute("_sahi._keyDown(" + elementStub + ", " + quoted(keySequence) +")");
   }
-
   /**
    * Highlights the given element
    *
@@ -398,14 +537,13 @@ public class Browser extends BrowserElements {
   public void highlight(ElementStub element) throws ExecutionException {
     execute("_sahi._highlight(" + element + ")");
   }
-
   /**
    * Simulates a key press event on the given element with a combo value ie. ALT/CTRL/SHIFT etc.
    *
-   * @param element
-   * @param keysequence Key to be pressed
-   * @param combo       String can be "ALT", "META", "SHIFT", "CTRL" or a combination of these with | as the separator
-   *                    eg. "ALT|SHIFT" or "CTRL|ALT|SHIFT"
+   * @param elementStub
+   * @param keySequence Key to be pressed
+   * @param combo String can be "ALT", "META", "SHIFT", "CTRL" or a combination of these with | as the separator
+   * eg. "ALT|SHIFT" or "CTRL|ALT|SHIFT"
    * @throws ExecutionException
    */
   public void keyPress(ElementStub elementStub, String keySequence, String combo) throws ExecutionException {
@@ -415,14 +553,13 @@ public class Browser extends BrowserElements {
   /**
    * Simulates a key press event on the given element.
    *
-   * @param element
-   * @param keysequence Key to be pressed
+   * @param elementStub
+   * @param keySequence Key to be pressed
    * @throws ExecutionException
    */
   public void keyPress(ElementStub elementStub, String keySequence) throws ExecutionException {
     execute("_sahi._keyPress(" + elementStub + ", " + quoted(keySequence) + ")");
   }
-
   /**
    * Clicks the given element
    *
@@ -432,16 +569,13 @@ public class Browser extends BrowserElements {
   public void click(ElementStub element) throws ExecutionException {
     execute("_sahi._click(" + element + ")");
   }
-
   /**
    * Simulates a blur event on the element
-   *
    * @param elementStub
    */
   public void blur(ElementStub elementStub) {
     execute("_sahi._blur(" + elementStub + ")");
   }
-
   public String getAttribute(ElementStub el, String attribute) throws ExecutionException {
     return fetch("_sahi._getAttribute(" + el + ", " + quoted(attribute) + ")");
   }
@@ -553,8 +687,8 @@ public class Browser extends BrowserElements {
    * Simulates a drag and drop event
    *
    * @param dragElement Element to drag
-   * @param x           X coordinate
-   * @param y           Y coordinate
+   * @param x X coordinate
+   * @param y Y coordinate
    * @throws ExecutionException
    */
   public void dragDropXY(ElementStub dragElement, int x, int y) throws ExecutionException {
@@ -569,16 +703,17 @@ public class Browser extends BrowserElements {
    * @throws ExecutionException
    */
   public String fetch(String expression) throws ExecutionException {
+    if (translationMode) return expression;
     Date d = new Date();
     String key = "___lastValue___" + d.toString();
-    execute("_sahi.setServerVarPlain('" + key + "', " + expression + ")");
+    execute("_sahi.setServerVarPlain('"+key+"', " + expression + ")");
     return execCommand("getVariable", new QueryStringBuilder().add("key", key));
   }
 
   /**
    * Fetches the string value of an element stub by performing an eval on the browser
    *
-   * @param element
+   * @param el
    * @return
    * @throws ExecutionException
    */
@@ -613,27 +748,26 @@ public class Browser extends BrowserElements {
    * Retries a few times if the return value is false. This can be controlled with script.max_reattempts_on_error in sahi.properties.
    * Use exists(el, true) to return in a single try.
    *
-   * @param elementStub
+   * @param el
    * @return
    */
   public boolean exists(ElementStub el) {
     return exists(el, false);
   }
-
   /**
    * Returns true if the element exists on the browser<br/>
    * Retries a few times if optimistic is false. Retry count can be controlled with script.max_reattempts_on_error in sahi.properties. <br/>
    * Use exists(el, true) to return in a single try.
    *
-   * @param elementStub
-   * @param optimistic  boolean. If true returns in a single try. If false, retries a few times.
+   * @param el
+   * @param optimistic boolean. If true returns in a single try. If false, retries a few times.
    * @return
    */
   public boolean exists(ElementStub el, boolean optimistic) {
     if (optimistic)
       return exists1(el);
     else {
-      for (int i = 0; i < Configuration.getMaxReAttemptsOnError(); i++) {
+      for (int i=0; i<Configuration.getMaxReAttemptsOnError(); i++){
         if (exists1(el)) return true;
       }
       return false;
@@ -642,7 +776,7 @@ public class Browser extends BrowserElements {
 
   private boolean exists1(ElementStub el) {
     try {
-      String fetched = fetch("_sahi._exists(" + el + ")");
+      String fetched = fetch("_sahi._exists("+el+")");
       return ("true".equals(fetched));
     } catch (ExecutionException e) {
       return false;
@@ -652,7 +786,7 @@ public class Browser extends BrowserElements {
   /**
    * Returns true if the element is visible on the browser
    *
-   * @param elementStub
+   * @param el
    * @return
    */
   public boolean isVisible(ElementStub el) throws ExecutionException {
@@ -668,15 +802,15 @@ public class Browser extends BrowserElements {
    * Retries a few times if optimistic is false. Retry count can be controlled with script.max_reattempts_on_error in sahi.properties.<br/>
    * Use exists(el, true) to return in a single try.
    *
-   * @param elementStub
-   * @param optimistic  boolean. If true returns in a single try. If false, retries a few times.
+   * @param el
+   * @param optimistic boolean. If true returns in a single try. If false, retries a few times.
    * @return
    */
   public boolean isVisible(ElementStub el, boolean optimistic) throws ExecutionException {
     if (optimistic)
       return isVisible1(el);
     else {
-      for (int i = 0; i < Configuration.getMaxReAttemptsOnError(); i++) {
+      for (int i=0; i<Configuration.getMaxReAttemptsOnError(); i++){
         if (isVisible1(el)) return true;
       }
       return false;
@@ -684,10 +818,11 @@ public class Browser extends BrowserElements {
   }
 
 
+
   /**
    * Returns the selected text visible in a select box (&lt;select&gt; tag)
    *
-   * @param selectElement
+   * @param el
    * @return
    */
   public String getSelectedText(ElementStub el) throws ExecutionException {
@@ -730,7 +865,7 @@ public class Browser extends BrowserElements {
    *
    * @param timeout in milliseconds
    */
-  public void waitFor(long timeout) {
+  public void waitFor(long timeout){
     try {
       Thread.sleep(timeout);
     } catch (InterruptedException e) {
@@ -742,24 +877,25 @@ public class Browser extends BrowserElements {
    * Waits till the condition is satisfied or till timeout
    *
    * @param condition BrowserCondition
-   * @param timeout   in milliseconds
-   *                  <p/>
-   *                  <blockquote>
-   *                  BrowserCondition condition = new BrowserCondition(browser){@Override
-   *                  public boolean test() throws ExecutionException {
-   *                  return "populated".equals(browser.textbox("t1").value());
-   *                  }};
-   *                  browser.waitFor(condition, 5000);
-   *                  </blockquote>
-   *                  <p/>
-   *                  The above code will make the browser wait till the textbox's value becomes "populated".
-   *                  If it does not become "populated", the browser will wait for max 5000 ms
-   *                  before moving to the next step
+   * @param timeout in milliseconds
+   *
+   * <blockquote>
+  BrowserCondition condition = new BrowserCondition(browser){@Override
+  public boolean test() throws ExecutionException {
+  return "populated".equals(browser.textbox("t1").value());
+  }};
+  browser.waitFor(condition, 5000);
+  </blockquote>
+   *
+   * The above code will make the browser wait till the textbox's value becomes "populated".
+   * If it does not become "populated", the browser will wait for max 5000 ms
+   * before moving to the next step
+   *
    */
   public void waitFor(BrowserCondition condition, int timeout) {
     int total = 0;
     int interval = 500;
-    while (total < timeout) {
+    while (total < timeout){
       waitFor(interval);
       total += interval;
       try {
@@ -773,9 +909,9 @@ public class Browser extends BrowserElements {
   /**
    * Chooses the given option in a select box (&lt;select&gt; tag).
    *
-   * @param selectElement
+   * @param elementStub
    * @param value
-   * @param append:       if true, option is selected without unselecting previous option in multi-select box
+   * @param append: if true, option is selected without unselecting previous option in multi-select box
    * @throws ExecutionException
    */
   public void choose(ElementStub elementStub, String value, boolean append) throws ExecutionException {
@@ -786,9 +922,9 @@ public class Browser extends BrowserElements {
   /**
    * Chooses the given options in a multi select box (&lt;select&gt; tag).
    *
-   * @param selectElement
+   * @param elementStub
    * @param values
-   * @param append:       if true, options are selected without unselecting previous options in multi-select box
+   * @param append: if true, options are selected without unselecting previous options in multi-select box
    * @throws ExecutionException
    */
   public void choose(ElementStub elementStub, String[] values, boolean append) throws ExecutionException {
@@ -800,7 +936,7 @@ public class Browser extends BrowserElements {
    * It tells the browser to record events and post the steps
    * which will be available via getRecordedSteps()
    */
-  public void startRecording() {
+  public void startRecording(){
     execCommand("startRecording");
   }
 
@@ -808,16 +944,15 @@ public class Browser extends BrowserElements {
    * Stops recording.
    * Tells the browser to stop monitoring events.
    */
-  public void stopRecording() {
+  public void stopRecording(){
     execCommand("stopRecording");
   }
 
   /**
    * Gets the recorded steps from the last time getRecordedSteps() was called.
-   *
    * @return String array of recorded steps
    */
-  public String[] getRecordedSteps() {
+  public String[] getRecordedSteps(){
     return execCommand("getRecordedSteps").split("__xxSAHIDIVIDERxx__");
   }
 
@@ -851,7 +986,7 @@ public class Browser extends BrowserElements {
    * Prompts are generated in javascript via window.prompt(message)
    *
    * @param message String visible message prompted by the browser
-   * @param input   String input to enter in the prompt dialog
+   * @param input String input to enter in the prompt dialog
    * @throws ExecutionException
    */
 
@@ -865,7 +1000,7 @@ public class Browser extends BrowserElements {
    * Prompts are generated in javascript via window.confirm(message)
    *
    * @param message String visible message prompted by the browser
-   * @param input   boolean true to click on 'OK', false to click on 'Cancel'
+   * @param input boolean true to click on 'OK', false to click on 'Cancel'
    * @throws ExecutionException
    */
 
@@ -889,6 +1024,7 @@ public class Browser extends BrowserElements {
   /**
    * Clears the lastAlert message
    *
+   *
    * @throws ExecutionException
    */
   public void clearLastAlert() throws ExecutionException {
@@ -898,6 +1034,7 @@ public class Browser extends BrowserElements {
   /**
    * Clears the lastPrompt message
    *
+   *
    * @throws ExecutionException
    */
   public void clearLastPrompt() throws ExecutionException {
@@ -906,6 +1043,7 @@ public class Browser extends BrowserElements {
 
   /**
    * Clears the lastConfirm message
+   *
    *
    * @throws ExecutionException
    */
@@ -917,7 +1055,7 @@ public class Browser extends BrowserElements {
     return fetch("_sahi._title()");
   }
 
-  private String quoted(String s) {
+  private String quoted(String s){
     return "\"" + Utils.escapeDoubleQuotesAndBackSlashes(s).replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r") + "\"";
   }
 
@@ -945,7 +1083,7 @@ public class Browser extends BrowserElements {
   /**
    * Force Sahi to return a dynamic response returned by responseClass.methodName
    *
-   * @param urlPattern           a javascript regular expression as a string
+   * @param urlPattern a javascript regular expression as a string
    * @param responseClass_method The class which will respond to matching requests
    */
   public void addURLMock(String urlPattern, String responseClass_method) {
@@ -967,14 +1105,14 @@ public class Browser extends BrowserElements {
    *
    * @return fileName of last downloaded file
    */
-  public String lastDownloadedFileName() {
+  public String lastDownloadedFileName(){
     return new ElementStub("lastDownloadedFileName", this).fetch();
   }
 
   /**
    * Resets the lastDownloadedFileName to null
    */
-  public void clearLastDownloadedFileName() {
+  public void clearLastDownloadedFileName(){
     execute("_sahi._clearLastDownloadedFileName()");
   }
 
@@ -984,7 +1122,7 @@ public class Browser extends BrowserElements {
    *
    * @param newFilePath
    */
-  public void saveDownloadedAs(String newFilePath) {
+  public void saveDownloadedAs(String newFilePath){
     execute("_sahi._saveDownloadedAs(" + quoted(newFilePath) + ")");
   }
 
@@ -997,23 +1135,22 @@ public class Browser extends BrowserElements {
    * @param interval time in milliseconds
    */
   public void setSpeed(int interval) {
-    execCommand("setSpeed", new QueryStringBuilder().add("speed", "" + interval));
+    execCommand("setSpeed", new QueryStringBuilder().add("speed", ""+interval));
   }
 
   /**
    * Sets strict visibility check.<br/>
    * If true, Sahi APIs will ignore hidden elements.<br/>
    * Useful when similar widgets are generated but only one widget is displayed at any time <br/>
-   * <p/>
+   *
    * Can set to true globally from sahi.properties/userdata.properties by setting <br/>
    * element.visibility_check.strict=true<br/>
    *
-   * @param boolean
+   * @param check
    */
   public void setStrictVisibilityCheck(boolean check) {
     execute("_sahi._setStrictVisibilityCheck(" + check + ")");
   }
-
   /**
    * Returns true if the element contains the input text
    *
@@ -1084,14 +1221,13 @@ public class Browser extends BrowserElements {
    * <code>
    * browser.setBrowserJS("function myFinderFn(i){return document.links[i];}");<br/>
    * // The above code defines a function myFinderFn, which will be available on each page of the application.<br/>
-   * <p/>
+   *
    * browser.setBrowserJS("function checkFileFieldIsPopulated(){return true}");<br/>
    * // The above code will redefine checkFileFieldIsPopulated function so that it will always return true<br/>
    * </code>
-   *
    * @param browserJS
    */
-  public void setBrowserJS(String browserJS) {
+  public void setBrowserJS(String browserJS){
     QueryStringBuilder qs = new QueryStringBuilder();
     qs.add("browserJS", browserJS);
     execCommand("setBrowserJS", qs);
@@ -1099,7 +1235,6 @@ public class Browser extends BrowserElements {
 
   /**
    * Checks for Google Chrome browser
-   *
    * @return
    */
   public boolean isChrome() {
@@ -1108,7 +1243,6 @@ public class Browser extends BrowserElements {
 
   /**
    * Checks for Firefox browser
-   *
    * @return
    */
   public boolean isFirefox() {
@@ -1117,7 +1251,6 @@ public class Browser extends BrowserElements {
 
   /**
    * Checks for Firefox browser
-   *
    * @return
    */
   public boolean isFF() {
@@ -1126,7 +1259,6 @@ public class Browser extends BrowserElements {
 
   /**
    * Checks for Internet Explorer browser
-   *
    * @return
    */
   public boolean isIE() {
@@ -1135,7 +1267,6 @@ public class Browser extends BrowserElements {
 
   /**
    * Checks for Safari browser
-   *
    * @return
    */
   public boolean isSafari() {
@@ -1144,7 +1275,6 @@ public class Browser extends BrowserElements {
 
   /**
    * Checks for Opera browser
-   *
    * @return
    */
   public boolean isOpera() {
@@ -1153,9 +1283,9 @@ public class Browser extends BrowserElements {
 
   /**
    * Returns a count of all matching elements <br/><br/>
-   * <p/>
+   *
    * Eg.<br/>
-   * <p/>
+   *
    * <pre>
    * browser.count("div", "css-class-name")
    * </pre>
@@ -1170,33 +1300,30 @@ public class Browser extends BrowserElements {
   }
 
   public void keyDown(ElementStub element, int keyCode, int charCode) {
-    execute("_sahi._keyDown(" + element + ", [" + keyCode + ", " + charCode + "])");
+    execute("_sahi._keyDown(" + element + ", ["+ keyCode + ", " + charCode + "])");
   }
 
   public void keyUp(ElementStub element, int keyCode, int charCode) {
-    execute("_sahi._keyUp(" + element + ", [" + keyCode + ", " + charCode + "])");
+    execute("_sahi._keyUp(" + element + ", ["+ keyCode + ", " + charCode + "])");
   }
-
   /**
    * Clears the window print statement i.e. resets the value of _printCalled
-   *
    * @return
    */
-  public String clearPrintCalled() {
+  public String clearPrintCalled(){
     return fetch("_sahi._clearPrintCalled()");
   }
-
   /**
    * Returns true if window print statement was executed
-   *
    * @return
    */
-  public Boolean printCalled() {
+  public Boolean printCalled(){
 
     String fetched = fetch("_sahi._printCalled()");
-    if ("true".equals(fetched)) {
+    if("true".equals(fetched)){
       return true;
-    } else return false;
+    }
+    else return false;
   }
 
 }

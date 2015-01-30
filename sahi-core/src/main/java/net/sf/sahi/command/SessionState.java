@@ -193,4 +193,7 @@ public class SessionState {
     session.removeAllRequestCredentials();
   }
 
+  public HttpResponse userExtensions(final HttpRequest request){
+    return new HttpFileResponse(Configuration.getUserDataDir() + "/config/user_extensions.js");
+  }
 }

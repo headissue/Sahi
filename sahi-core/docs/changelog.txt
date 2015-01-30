@@ -1,3 +1,33 @@
+04 Jun 2014
+-----------
+Sahi 5.0
+
+* Features
+	* New APIs:
+		    _copyFile
+			_frame, _fieldset
+			_setXHRReadyStatesToWaitFor
+			_getSelectionText, _selectRange, _selectTextRange
+			_isIE6, _isIE7, _isIE10, _isIE11, _isIE11Plus support
+	* New and improved Sahi Start Page, Sahi Dashboard and Sahi Controller
+	* Added Sahi Pro DOCS link on the Sahi Dashboard
+	* Added notepad++/textpad support for syntax highlighting and Autocomplete features
+	* Added "domainfix.txt" to the configure link page through the Dashboard
+	* Added support for Enabling Traffic Logs
+	* Added support for user_extension.js
+	* Added "Bin" link on dashboard for MAC
+	* Added executeSahi API support for Java and Ruby
+	
+	
+* Bugfixes
+	* Sahi compatibility issue with ie 10,11
+	* Sahi compatibility issue with firefox 20+
+	* Elements can now be identified with custom attributes using Sahi Controller.
+	* Proxy setting for Opera browser
+	* Modified _scriptStartTime() API
+	* Fixed improper closing dashboard for Mac and Linux.
+	* Added support to set the proxy on safari browser automatically on Mac.
+
 29 Apr 2013
 -----------
 Sahi 4.4
@@ -822,7 +852,7 @@ This is a nightly release. Use at own risk.
 
 31 Aug 2008
 -----------
-NOTE: THIS RELEASE MAY REQUIRE CHANGES TO YOUR EXISTING SCRIPTS (http://sahi.co.in/w/scripting-changes-in-sahi-v2)
+NOTE: THIS RELEASE MAY REQUIRE CHANGES TO YOUR EXISTING SCRIPTS (http://sahipro.com/w/scripting-changes-in-sahi-v2)
 Sahi-v2
 * Features added
 	rhino based script execution on the proxy rather than on browser - helps remove a lot of scripting confusion

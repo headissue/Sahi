@@ -57,13 +57,28 @@ public class MockResponder {
 
   public HttpResponse getResponse(final HttpRequest request) throws Exception {
     String url = request.url();
-    final String command = getCommand(url);
-    if (command == null) {
-      return null;
-    }
+        final String[] commandAndPattern = getCommandAndPattern(url);
+        if (commandAndPattern == null) {
+            return null;
+        }
+        final String command = commandAndPattern[0];
+        final String pattern = commandAndPattern[1];
+		request.setMatchedPattern(pattern);
     logger.info("url: " + url);
     logger.info("command: " + command);
     return new CommandExecuter(command, request, false).execute();
+    }
+
+    String[] getCommandAndPattern(String url) {
+    	url = url.toLowerCase();
+        final Iterator<String> iterator = map.keySet().iterator();
+        while (iterator.hasNext()) {
+            String pattern = iterator.next();
+            if (url.matches(pattern)) {
+                return new String[]{map.get(pattern), pattern};
+            }
+        }
+        return null;
   }
 
   public void remove(final HttpRequest request) {

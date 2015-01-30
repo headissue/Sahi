@@ -18,6 +18,7 @@
 package net.sf.sahi.command;
 
 import java.io.UnsupportedEncodingException;
+import java.util.Properties;
 
 import net.sf.sahi.config.Configuration;
 import net.sf.sahi.playback.SahiScript;
@@ -37,13 +38,17 @@ public class Log {
   public HttpResponse viewLogs(final HttpRequest request) {
     String fileName = URLParser.logFileNamefromURI(request.uri());
     if ("".equals(fileName)) {
-      String logsList = LogViewer.getLogsList(Configuration.getPlayBackLogsRoot());
-      NoCacheHttpResponse response = new NoCacheHttpResponse(logsList);
-      return response;
+            return getLogIndexResponse();
     } else {
       return new HttpFileResponse(fileName, null, false, false);
     }
   }
+
+	public HttpResponse getLogIndexResponse() {
+		Properties p = new Properties();
+		p.setProperty("logsList", LogViewer.getLogsList(Configuration.getPlayBackLogsRoot()));
+		return new HttpFileResponse(Utils.concatPaths(Configuration.getHtdocsRoot(), "spr/logs_template.htm"), p, false, true);
+	}
 
   public HttpResponse getBrowserScript(final HttpRequest request) {
     HttpResponse httpResponse;

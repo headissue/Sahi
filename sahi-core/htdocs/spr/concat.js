@@ -7,8 +7,9 @@
 __sahiDebug__("concat.js: start");
 var Sahi = function(){
 	// if triggerType is set to mousedown, textbox _setValues will be recorded AFTER button clicks. Is wrong
-    this.triggerType = "click";
-    this.cmds = [];
+		this.triggerType = "mouseup";
+		this.mouseDownEl = null;
+		this.cmds = [];
     this.cmdDebugInfo = [];
 
     this.cmdsLocal = [];
@@ -62,7 +63,7 @@ var Sahi = function(){
     this.ADs = [];
     this.controllerURL = "/_s_/spr/controller7.htm";
     this.controllerHeight = 550;
-    this.controllerWidth = 480;
+    this.controllerWidth = 485;
     this.recorderClass = "Recorder";
     this.stabilityIndex = this.STABILITY_INDEX;
     this.xyoffsets = new Sahi.Dict();
@@ -811,6 +812,10 @@ Sahi.prototype.simulateDoubleClick = function (el, isRight, isDouble, combo) {
 	    this.simulateMouseEvent(el, "mouseover");
 	    this.simulateMouseEvent(el, "mousedown", isRight, false, combo);
 	    this.invokeLastBlur();
+	    if(this._isIE11Plus()){
+	    	this.simulateEvent(el, "beforeactivate");
+	    	this.simulateEvent(el, "activate");
+    	}
 	    if (this._isIE()) this.simulateEvent(el, "focusin");
 	    this.simulateMouseEvent(el, "focus");
 	    this.simulateMouseEvent(el, "mouseup", isRight, false, combo);
@@ -819,6 +824,9 @@ Sahi.prototype.simulateDoubleClick = function (el, isRight, isDouble, combo) {
 	    this.simulateMouseEvent(el, "mouseup", isRight, isDouble, combo);
 	    this.simulateMouseEvent(el, "click", isRight, isDouble, combo);
 	    this.simulateMouseEvent(el, "dblclick", isRight, isDouble, combo);
+	    if(this._isIE11Plus()){
+	    	this.simulateEvent(el, "deactivate");
+	    }
     } 
     if (callBlur){
 		this.setLastBlurFn(function(){
@@ -842,6 +850,7 @@ Sahi.prototype.simulateRightClick = function (el, isRight, isDouble, combo) {
 	    this.simulateMouseEvent(el, "mouseover");
 	    this.simulateMouseEvent(el, "mousedown", isRight, false, combo);
 	    this.invokeLastBlur();
+	    
 	    callBlur = this.isFocusableFormElement(el);
 	    if (callBlur)  {
 	    	this.simulateEvent(el, "focus");
@@ -853,10 +862,17 @@ Sahi.prototype.simulateRightClick = function (el, isRight, isDouble, combo) {
 	    this.simulateMouseEvent(el, "mouseover");
 	    this.simulateMouseEvent(el, "mousedown", isRight, false, combo);
 	    this.invokeLastBlur();
+	    if(this._isIE11Plus()){
+	    	this.simulateEvent(el, "beforeactivate");
+	    	this.simulateEvent(el, "activate");
+    	}
 	    this.simulateEvent(el, "focusin");
 	    this.simulateMouseEvent(el, "focus");
 	    this.simulateMouseEvent(el, "mouseup", isRight, false, combo);
 	    this.simulateMouseEvent(el, "contextmenu", isRight, false, combo);
+	    if(this._isIE11Plus()){
+	    	this.simulateEvent(el, "deactivate");
+    	}
     }
     if (callBlur){
 		this.setLastBlurFn(function(){
@@ -897,6 +913,10 @@ Sahi.prototype.simulateClick = function (el, isRight, isDouble, combo) {
     this.simulateMouseEvent(el, "mouseover");
     this.simulateMouseEvent(el, "mousedown", isRight, false, combo);
     this.invokeLastBlur();
+    if(this._isIE11Plus()){
+    	this.simulateEvent(el, "beforeactivate");
+    	this.simulateEvent(el, "activate");
+    }
     var focusBlur = this.isFocusableFormElement(el);
     if (focusBlur) {
     	if (this._isIE()) this.simulateEvent(el, "focusin");
@@ -938,6 +958,9 @@ Sahi.prototype.simulateClick = function (el, isRight, isDouble, combo) {
         	}
         }
     } catch(e) {
+    }
+    if(this._isIE11Plus()){
+    	this.simulateEvent(el, "deactivate");
     }
     if (focusBlur){
 		this.setLastBlurFn(function(){
@@ -987,7 +1010,7 @@ Sahi.prototype.simulateDragEventXY = function (el, type, x, y, dataTransfer, com
     var isAlt = combo.indexOf("ALT")!=-1;
     var isMeta = combo.indexOf("META")!=-1;
     
-    if (this._isIE()) {
+    if (this._isIE() && !this._isIE11Plus()) {
     	var evt = el.ownerDocument.createEventObject();
         evt.clientX = x;
         evt.clientY = y;
@@ -1022,7 +1045,7 @@ Sahi.prototype.simulateDragEventXY = function (el, type, x, y, dataTransfer, com
         dataTransfer
         );
         el.dispatchEvent(evt);
-    } else if (this._isChrome()) {
+    } else if (this._isChrome() || this._isIE11Plus()) {
         var evt = el.ownerDocument.createEvent("HTMLEvents");
         evt.initEvent(
         type,
@@ -1060,8 +1083,8 @@ Sahi.prototype.simulateMouseEventXY = function (el, type, x, y, isRight, isDoubl
 	            evt.initEvent(type, true, true);
 	            evt.clientX = x;
 	            evt.clientY = y;
-	            evt.pageX = x;
-	            evt.pageY = y;
+	            evt.pageX = x + this.getScrollOffsetX();
+	            evt.pageY = y + this.getScrollOffsetY();
 	            evt.screenX = x;
 	            evt.screenY = y;
 	            evt.button = isRight ? 2 : 0;
@@ -1083,8 +1106,8 @@ Sahi.prototype.simulateMouseEventXY = function (el, type, x, y, isRight, isDoubl
             true, //cancelable
             el.ownerDocument.defaultView, //view
             (isDouble ? 2 : 1), //detail
-            x, //screen x
-            y, //screen y
+            x + this.getScrollOffsetX(), //screen x
+            y + this.getScrollOffsetY(), //screen y
             x, //client x
             y, //client y
             isCtrl,
@@ -1097,11 +1120,11 @@ Sahi.prototype.simulateMouseEventXY = function (el, type, x, y, isRight, isDoubl
             el.dispatchEvent(evt);
         }
     } 
-    if (this.checkForDuplicateEventsOnIE9Plus(el, type)) {
+    if (this.checkForDuplicateEventsOnIE9Plus(el, type) && !this._isIE11Plus()) {
         // IE
         var evt = el.ownerDocument.createEventObject();
-        evt.clientX = x;
-        evt.clientY = y;
+        evt.clientX = x + this.getScrollOffsetX();
+        evt.clientY = y + this.getScrollOffsetY();
         evt.ctrlKey = isCtrl;
         evt.altKey = isAlt;
         evt.metaKey = isMeta;            
@@ -1134,8 +1157,47 @@ Sahi.prototype.addOffset = function(el, origin){
     	y += oy;
     }	
     return [x,y];
+}
+Sahi.prototype.isWindowAccessible = function(win) {
+	if (window == win) return true;
+	try {
+		var x = win.location.protocol;
+		if (x) return true;
+	} catch(e){e=null;}
+	return false;
 };
-
+Sahi.prototype._getSelectionText = function (win) {
+	if (!win) win = this.top();
+	if (this.isWindowAccessible(win)) {
+		var el = win.document.activeElement;
+		var selectedText = null;
+		if ((this._isFF() || this._isIE11Plus()) && el && ((this.findInArray(this.textboxTypes, el.type) != -1) || el.type == "textarea")) {
+			var startPos = el.selectionStart;
+			var endPos = el.selectionEnd;
+			selectedText = el.value.substring(startPos, endPos);
+		} else {
+			var userSelection;
+			if (win.getSelection && (!this._isIE9PlusStrictMode() || this._isIE11Plus()) ) {
+				userSelection = win.getSelection();
+			}
+			else if (win.document.selection) { 
+				userSelection = win.document.selection.createRange();
+			}
+			selectedText = userSelection;
+			if (userSelection.text != undefined)
+				selectedText = userSelection.text;
+			else 
+				selectedText = "" + userSelection;
+		}
+		if (!this.isBlankOrNull(selectedText)) return selectedText;
+	}
+	for (var i=0; i<win.frames.length; i++) {
+		var f = win.frames[i];
+		var t = this._getSelectionText(f);
+		if (!this.isBlankOrNull(t)) return t;
+	}
+	return "";
+}
 Sahi.pointTimer = 0;
 Sahi.prototype._highlight = function (el) {
 	if (this.isFlexObj(el)) return el.highlight();
@@ -1148,7 +1210,7 @@ Sahi.prototype._highlight = function (el) {
     var oldOutline = el.style.outline;
     el.style.border = "1px solid red";
     el.style.outline = "1px solid red";
-    Sahi.lastUnhighlight = function(){el.style.border = oldBorder;el.style.outline = oldOutline;Sahi.lastUnhighlight=null;};
+    Sahi.lastUnhighlight = function(){el.style.border = oldBorder;el.style.outline = oldOutline;Sahi.lastUnhighlight=null;}
     Sahi.unhighlightTimer = window.setTimeout(Sahi.lastUnhighlight, 1000);
 };
 Sahi.prototype._position = function (el){
@@ -1318,15 +1380,24 @@ Sahi.prototype.setValue = function (el, val) {
 //    try{
 //    	this.getWindow(el).focus();
 //    }catch(e){}
-    if (this._isIE()) this.simulateEvent(el, "focusin");
+    if (this._isIE()) { 
+    	
+    	el.setActive();
+    	this.simulateEvent(el, "focusin");
+    }
     this.simulateEvent(el, "focus");
-    
     val = "" + val;
     var ua = this.navigator.userAgent.toLowerCase();
     if (ua.indexOf("windows") != -1) {
     	val = val.replace(/\r/g, '');
     	if (!this._isFF() || this._getFFVersion() >= 12) val = val.replace(/\n/g, '\r\n');
-    } 
+    } else if (ua.indexOf("macintosh")) {
+		val = val.replace(/\r\n/g, '\r');
+		val = val.replace(/\n/g, '\r');
+	} else if (ua.indexOf("linux") != -1){
+		val = val.replace(/\r\n/g, '\n');
+		val = val.replace(/\r/g, '\n');
+	}
     var prevVal = el.value;
     //if (!window.document.createEvent) el.value = val;
     if (this._isFF4Plus()) this._focus(el); // test with textarea.sah
@@ -1353,15 +1424,44 @@ Sahi.prototype.setValue = function (el, val) {
     var triggerOnchange = prevVal != val;
     this.setLastBlurFn(function(){
     	try{
-    		// on IE9, sequence is change, focusout, blur
+    		// on IE9, sequence is change, deactivate, focusout, blur
+    		// others change, blur, focusout
+usout, blur
     	    if (triggerOnchange) {
     	        if (!_sahi._isFF3()) 
     	        	_sahi.simulateEvent(el, "change"); 		
     	    }     		
-    		if (_sahi._isIE()) _sahi.simulateEvent(el, "focusout");
+    		if (_sahi._isIE()) {
+    			_sahi.simulateEvent(el, "deactivate");
+    			_sahi.simulateEvent(el, "focusout");
+    		}
+    		if (_sahi._isIE()) {
+    			el.blur(); 
+    		} 
     		_sahi.simulateEvent(el, "blur");
+    		if (!_sahi._isIE()) _sahi.simulateEvent(el, "focusout");
     	}catch(e){}
     });
+};
+Sahi.prototype._setFile = function (el, v, url) {
+	if (v == null) return;
+    if (!url) {
+    	url = (!el.form || this.isBlankOrNull(el.form.action) || (typeof el.form.action != "string")) ? this.getWindow(el).location.href : el.form.action;
+    if (url && (q = url.indexOf("?")) != -1) url = url.substring(0, q);
+    if (url.indexOf("http") != 0) {
+        var loc = window.location;
+        if (url.indexOf("/") == 0){
+            url = loc.protocol+ "//" +  loc.hostname + (loc.port ? (':'+loc.port) : '') + url;
+        }else{
+            var winUrl = loc.href;
+            url = winUrl.substring(0, winUrl.lastIndexOf ('/') + 1) + url;
+        }
+    }
+    }
+    var msg = this._callServer("FileUpload_setFile", "n=" + el.name + "&v=" + this.encode(v) + "&action=" + this.encode(url));
+    if (msg != "true") {
+    	throw new Error(msg);
+    }
 };
 Sahi.prototype._setFile2 = function (el, v, url) {
 	this._setFile(el, v, url);
@@ -1379,32 +1479,14 @@ Sahi.prototype._setFile2 = function (el, v, url) {
 		this._setValue(el, v);
 		this._blur(el);
 	}
-};
-Sahi.prototype._setFile = function (el, v, url) {
-	if (v == null) return;
-    if (!url) url = (!el.form || this.isBlankOrNull(el.form.action) || (typeof el.form.action != "string")) ? this.getWindow(el).location.href : el.form.action;
-    if (url && (q = url.indexOf("?")) != -1) url = url.substring(0, q);
-    if (url.indexOf("http") != 0) {
-        var loc = window.location;
-        if (url.indexOf("/") == 0){
-            url = loc.protocol+ "//" +  loc.hostname + (loc.port ? (':'+loc.port) : '') + url;
-        }else{
-            var winUrl = loc.href;
-            url = winUrl.substring(0, winUrl.lastIndexOf ('/') + 1) + url;
-        }
-    }
-    var msg = this._callServer("FileUpload_setFile", "n=" + el.name + "&v=" + this.encode(v) + "&action=" + this.encode(url));
-    if (msg != "true") {
-    	throw new Error(msg);
-    }
-};
-
+}
 Sahi.prototype.simulateEvent = function (target, evType) {
-//    if (!this._isIE() || this._isIE9PlusStrictMode()) { // fix for tramada IE9 onchange not triggered.
-	var useCreateEvent = !this._isIE() || this._isIE9PlusStrictMode();
-	var useCreateEventObject = this._isIE();
+	// fix for tramada IE9 onchange not triggered.
+	// IE9 in strict mode requires both useCreateEvent and useCreateEventObject
+	var useCreateEvent = !this._isIE() || this._isIE11Plus(); // IE 9 in strict mode or any non IE browser
+	var useCreateEventObject = this._isIE() && !this._isIE11Plus();
     if (useCreateEvent) {
-        var evt = {};
+        var evt = new Object();
         evt.type = evType;
         evt.button = 0;
         evt.bubbles = true;
@@ -1477,7 +1559,7 @@ Sahi.prototype.simulateKeyEvent = function (codes, target, evType, combo) {
             target.dispatchEvent(event);
         }
     } 
-    if (this._isIE()) { // IE
+    if (this._isIE() && !this._isIE11Plus()) { // IE
         var evt = target.ownerDocument.createEventObject();
         evt.type = evType;
         evt.bubbles = true;
@@ -1822,7 +1904,8 @@ Sahi.prototype._getTextNoTrim = function (el) {
     		return this.getSelectBoxText(el, false);
     	}
     }
-    if (this._isIE() || this.isSafariLike()) return el.innerText;
+//    if (this._isIE() || this.isSafariLike()) return el.innerText;
+    if (this._isIE() || (this.isSafariLike() && !this._isChrome())) return el.innerText || el.textContent || "";
     var html = el.innerHTML;
     if (!html) return el.textContent; // text nodes
     if (html.indexOf("<br") == -1 && html.indexOf("<BR") == -1) return el.textContent;
@@ -2349,31 +2432,36 @@ Sahi.prototype.getBlankResult = function () {
     res.element = null;
     return res;
 };
-Sahi.prototype.getArrayNameAndIndex = function (id) {
-    var o = new Object();
-    if (!(id instanceof RegExp)) {
-    	if (typeof id == "object") {
-    		o.index = (id.sahiIndex != null) ? id.sahiIndex : -1;
-    		o.name = {};
-    		for (var k in id) {
-    			if (k != "sahiIndex") o.name[k] = this.checkRegex(id[k]);
-    		}
-    		return o;
-    	} else {
-	    	var m = id.match(/(.*)\[([0-9]*)\]$/);
-	    	if (m){
-		        o.name = this.checkRegex(m[1]);
-		        o.index = m[2];
-		        return o;
-	    	}
-    	}
-    }
-	o.name = this.checkRegex(id);
+Sahi.prototype.getArrayNameAndIndex = function (id, makeRegexGlobal) {
+		var o = new Object();
+		if (!(id instanceof RegExp)) {
+				if (typeof id == "object") {
+						o.index = (id.sahiIndex != null) ? id.sahiIndex : -1;
+					o.name = {};
+						for (var k in id) {
+								if (k != "sahiIndex") o.name[k] = this.checkRegex(id[k], makeRegexGlobal);
+							}
+						return o;
+					} else {
+						var m = id.match(/(.*)\[([0-9]*)\]$/);
+						if (m){
+								o.name = this.checkRegex(m[1], makeRegexGlobal);
+								o.index = m[2];
+								return o;
+							}
+					}
+			}
+	o.name = this.checkRegex(id, makeRegexGlobal);
 	o.index = -1;
     return o;
 };
 Sahi.prototype.checkRegex = function(s){
-	return ((typeof s) == "string" && s.match(this.CHECK_REGEXP)) ?  eval(s) : s;
+	try{
+		return ((typeof s) == "string" && s.match(this.CHECK_REGEXP)) ?  eval(s + ((!s.match(/\/i$/))?"i":"") + (makeRegexGlobal?"g":"")) : s;
+		}
+	catch(e){
+			return s;
+	}
 };
 Sahi.prototype.findInForms = function (id, win, type) {
     var fms = win.document.forms;
@@ -2650,7 +2738,7 @@ Sahi.prototype.recordStep = function (step, OREntry, fromController) {
 	if (!fromController) this.showStepsInController(step, true);
 	var recordQS = 'step=' + this.encode(step) + (OREntry ? "&orname=" + this.encode(OREntry["name"]) + "&orvalue=" 
 	               + this.encode(OREntry["value"]) : "");
-	this.sendToServer('/_s_/dyn/' + this.recorderClass + '_record?' + recordQS, true);
+	this.sendToServer('/_s_/dyn/' + this.recorderClass + '_record?' + recordQS, false);
 };
 Sahi.prototype.isRecording = function () {
     if (this.topSahi()._isRecording == null)
@@ -2705,13 +2793,19 @@ var SahiNotMyDomainException = function (n) {
         this.message = "Base domain not found!";
     }
 };
+
+Sahi.prototype.onMouseDownEv = function (e) {
+	var targ = this.getKnownTags(this.getTarget(e));
+	this.mouseDownEl = targ;
+}
+
 Sahi.prototype.onEv = function (e) {
     if (e.handled == true) return; //FF
 //    if (this.doNotRecord || this.getServerVar("sahiEvaluateExpr") == true) return;
     if (this.doNotRecord) return;
     var targ = this.getKnownTags(this.getTarget(e));
     if (targ.id && targ.id.indexOf("_sahi_ignore_") != -1) return;
-    if (e.type == this.triggerType) {
+    if (e.type == this.triggerType || e.type == "click") {
         if (targ.type) {
             var type = targ.type;
             if (type == "text" || type == "textarea" || type == "password"
@@ -2725,7 +2819,13 @@ Sahi.prototype.onEv = function (e) {
 	var script = this.getScript(ids, targ, e.type, e);
 	if (script == null) return;
 	if (this.hasEventBeenRecorded(script)) return; //IE
-	this.recordStep(script, OREntry);
+	if(e.type == this.triggerType){
+		if(targ == this.mouseDownEl){
+			this.recordStep(script, OREntry);
+			}
+		} else{
+			this.recordStep(script, OREntry);
+		}
 	//this.sendIdsToController(elInfo, "RECORD");
     e.handled = true;
     //this.showInController(ids[0]);
@@ -2896,7 +2996,8 @@ Sahi.prototype.attachEvents = function (el) {
 };
 Sahi.prototype.attachFormElementEvents = function (el) {
     var type = el.type;
-    var wrapped = this.wrappedOnEv; 
+    var wrapped = this.wrappedOnEv;
+	  var wrappedOnMouseDown = this.wrappedOnMouseDownEv;
     if (el.onchange == wrapped || el.onblur == wrapped || el.onclick == wrapped) return;
     if (type == "text" || type == "file" || type == "textarea" || type == "password") {
         this.addEvent(el, "change", wrapped);
@@ -2905,13 +3006,19 @@ Sahi.prototype.attachFormElementEvents = function (el) {
         this.addEvent(el, "change", wrapped);
     } else if (type == "button" || type == "submit" || type == "reset" || type == "checkbox" || type == "radio" || type == "image") {
         this.addEvent(el, this.triggerType, wrapped);
+			  this.addEvent(el, "dblclick", wrapped);
+			  this.addEvent(el, "mousedown", wrappedOnMouseDown);
     }
     this.addEvent(el, "contextmenu", wrapped);
 };
 Sahi.prototype.attachLinkEvents = function (el) {
+	this.addWrappedEvent(el, "mousedown", this.onMouseDownEv);
     this.addWrappedEvent(el, this.triggerType, this.onEv);
+	this.addWrappedEvent(el, "dblclick", this.onEv);
 };
 Sahi.prototype.attachImageEvents = function (el) {
+	this.addWrappedEvent(el, "mousedown", this.onMouseDownEv);
+	this.addWrappedEvent(el, "click", this.onEv);
     this.addWrappedEvent(el, this.triggerType, this.onEv);
     this.addWrappedEvent(el, "contextmenu", this.onEv);
 };
@@ -3340,30 +3447,47 @@ Sahi.prototype.skipTill = function(n){
 };
 // This is needed for non Sahi drivers.
 Sahi.prototype.ping = function () {
-	if (this.controllerMode == "sahi") return;
-	if (!this.pinger){
-		this.pinger = this.createRequestObject();
-		this.pinger.onreadystatechange = function(){
-			 if(this.readyState==4){
-			    	try{
-				    	if ( this.status == 200 ){
-				    		var s = this.responseText;
-				    		var obj = eval("(" + s + ")");
-//				    		alert(s);
-				    		_sahi.setState(obj);
-				    		window.setTimeout("_sahi.ping()", 1000);
-				    	}else{
-				    		//_sahi._alert( "HTTP "+req.status+".  An error was encountered: "+ req.statusText );
-				    	}	
-			    	}catch(e){
-			    		//throw(e);
-			    	}
-				}	
-		}	
+	try {
+		_sahi.pingTimer = window.setTimeout(function(){_sahi.ping()}, 5000); // as backup
+		// Should be top window, or first frame of particular domain
+		var topWin = this.top();
+		if (topWin != window) { // not top window, or first frame of particular domain
+			// if frame domain is same as _sahi_top, stop pinging totally
+			if (topWin == _sahi_top) {
+				if (_sahi.pingTimer) window.clearTimeout(_sahi.pingTimer); // remove backup
+				return;
+			}
+			// cancel ping
+			this.pingReset();
+			return;
+		}
+		try {
+			if (this._isChrome() && window.document.readyState == "complete") {
+				this.onWindowLoad();
+			}}catch(e){}
+		var pinger = this.createRequestObject();
+		pinger.onreadystatechange = function(){
+			if(pinger.readyState==4){
+				try{
+					if (pinger.status == 200){
+						var s = pinger.responseText;
+						var obj = window.eval("(" + s + ")");
+						_sahi.pingCallback(obj);
+					}else{
+//				    	_sahi._alert( "HTTP "+req.status+".  An error was encountered: "+ req.statusText );
+					}
+				}catch(e){
+//			    	console.log(e);
+				}
+			}
+		}
+		pinger.open("POST", this.makeFullURL("/_s_/dyn/SessionState_ping"), true);
+		var rand = (new Date()).getTime() + Math.floor(Math.random() * (10000));
+		pinger.send("sahisid=" + encodeURIComponent(this.sid) + "&t=" + encodeURIComponent(rand) + "&" + this.getWindowDomainQS());
+	} catch (e) {
+//		console.log(e);
 	}
-	this.pinger.open("GET", "/_s_/dyn/SessionState_ping", true);
-	this.pinger.send(null);	
-};
+}
 Sahi.prototype.setState = function(o){
 	if (this.topSahi()._isRecording != o.isRecording){
 		if (o.isRecording)
@@ -3372,11 +3496,11 @@ Sahi.prototype.setState = function(o){
 			this.stopRecording();
 	}
 	this.topSahi()._isRecording = o.isRecording;
-	
+
 	this.topSahi()._isPaused = o.isPaused;
-	
+
 	var wasPlaying = this.topSahi()._isPlaying;
-	this.topSahi()._isPlaying = o.isPlaying;	
+	this.topSahi()._isPlaying = o.isPlaying;
 	if (o.isPlaying && wasPlaying != o.isPlaying){
 		this.play();
 	}
@@ -3395,7 +3519,7 @@ Sahi.prototype.ex = function (isStep) {
         if (this.isPaused() && !isStep) return;
         //this._debug(this.areWindowsLoaded(this.top()));
         if (!this.byPassWaitMechanism && ((!this.areWindowsLoaded(this.top()) || !this.areXHRsDone() || !this.areFlexAppsLoaded(this.top())) && this.waitForLoad > 0)){
-            this.stabilityIndex = 0; 
+            this.stabilityIndex = 0;
         }
         if (this.stabilityIndex < this.STABILITY_INDEX){
         	this.stabilityIndex = this.stabilityIndex + 1;
@@ -3404,7 +3528,7 @@ Sahi.prototype.ex = function (isStep) {
                 this.check204Response(this.top());
             }
             this.execNextStep(isStep, this.interval);
-            return;        	
+            return;
         }
         if (this.__jsError){
             var msg = this.getJSErrorMessage(this.__jsError);
@@ -3463,7 +3587,7 @@ Sahi.prototype.ex = function (isStep) {
 //    	this.alignY = this.alignX = null;
     	if (step.indexOf("_sahi._assert") != -1) this.lastAssertStatus = "success";
     	this.currentStepId = stepId;
-    	this.currentType = type; 
+    	this.currentType = type;
 //    	this._alert(this.loaded);
         if (this.getServerVar("screenCapture")) {
         	this._takeScreenShot();
@@ -3471,10 +3595,10 @@ Sahi.prototype.ex = function (isStep) {
         }
         if (step.indexOf("_assertSnapShot") != -1) {
         	// img compare takes much longer than normal steps. should not auto proceed
-        	this.markStepInProgress(stepId, type, 30000);        
+        	this.markStepInProgress(stepId, type, 30000);
         	// Force no retrying
         	this.setRetries(this.MAX_RETRIES + 1);
-        	
+
         }
         this.forked = false;
         eval(step);
@@ -3507,7 +3631,7 @@ Sahi.prototype.ex = function (isStep) {
     }
 };
 Sahi.prototype.fork = function(timeout){
-//	this.markStepInProgress(this.currentStepId, this.currentType, timeout?timeout:3000); 
+//	this.markStepInProgress(this.currentStepId, this.currentType, timeout?timeout:3000);
 	this.forked = true;
 };
 Sahi.prototype.afterEval = function () {
@@ -3543,7 +3667,7 @@ Sahi.prototype.getWinDimensions = function(){
 		if (window.innerWidth && window.innerHeight) {
 			winW = window.innerWidth;
 			winH = window.innerHeight;
-		}	
+		}
 	}
 	return [winW, winH];
 };
@@ -3562,7 +3686,7 @@ Sahi.prototype.xgetWinDimensions = function(){
 	if (window.innerWidth && window.innerHeight) {
 		winW = window.innerWidth;
 		winH = window.innerHeight;
-	}	
+	}
 	return [winW, winH];
 };
 Sahi.prototype.getWinPosition = function(){
@@ -3587,7 +3711,7 @@ Sahi.prototype.checkForScrollAndCapture = function(stepId){
 	var d = this.getWinDimensions();
 	var w = d[0];
 	var h = d[1];
-	
+
 	window.scrollTo(0,0);
 	var i=0;
 	//this._debug("t="+t+" l="+l+" h="+h +" w=" + w);
@@ -3665,7 +3789,7 @@ Sahi.prototype.check204Response = function(win){
         for (var j = 0; j < frs.length; j++) {
         	try{this.check204Response(frs[j]);}catch(e){}
         }
-    }  
+    }
 };
 Sahi.prototype.xcanEvalInBase = function (cmd) {
     return  (this.top().opener == null && !this.isForPopup(cmd)) || (this.top().opener && this.top().opener._sahi.top() == this.top());
@@ -3842,11 +3966,18 @@ Sahi.prototype.findInArray = function (ar, el) {
     }
     return -1;
 };
-Sahi.prototype._isIE = function () {return this.navigator.appName == "Microsoft Internet Explorer";};
+Sahi.prototype._isIE = function () {return this.navigator.appName == "Microsoft Internet Explorer" || (this.navigator.appVersion && this.navigator.appVersion.indexOf("Trident") != -1);}
+Sahi.prototype._isIE6 = function () {return /MSIE 6[.]/.test(this.navigator.userAgent);};
+Sahi.prototype._isIE7 = function () {return /MSIE 7[.]/.test(this.navigator.userAgent);};
 Sahi.prototype._isIE8 = function () {return /MSIE 8[.]/.test(this.navigator.userAgent);};
 Sahi.prototype._isIE9 = function () {return /MSIE 9[.]/.test(this.navigator.userAgent);};
+Sahi.prototype._isIE10 = function () {return /MSIE 10[.]/.test(this.navigator.userAgent);};
+Sahi.prototype._isIE11 = function () {return !this._isChrome() && this._isIE() && document.documentMode==11;};
+Sahi.prototype._isIE11Plus = function () {return !this._isChrome() && this._isIE() && document.documentMode>=11;};
 Sahi.prototype._isIE9Plus = function () {return this._isIE() && !(/MSIE [0-8][.]/.test(this.navigator.userAgent));};
+Sahi.prototype._isIE9StrictMode = function () {return this._isIE() && document.documentMode==9;};
 Sahi.prototype._isIE9PlusStrictMode = function () {return this._isIE() && document.documentMode>=9;};
+
 Sahi.prototype._isFF2 = function () {return /Firefox\/2[.]|Iceweasel\/2[.]|Shiretoko\/2[.]/.test(this.navigator.userAgent);};
 Sahi.prototype._isFF3 = function () {return /Firefox\/3[.]|Iceweasel\/3[.]|Shiretoko\/3[.]/.test(this.navigator.userAgent);};
 Sahi.prototype._isFF4 = function () {return /Firefox\/4[.]|Iceweasel\/4[.]|Shiretoko\/4[.]/.test(this.navigator.userAgent);};
@@ -3979,8 +4110,8 @@ Sahi.prototype.addSlashU = function (num) {
 Sahi.prototype.reAttachEvents = function () {
 	if (!this.areWindowsLoaded(this.top())) return;
     this.reAttachSahi(this.top());
-    if (this.isRecording()) 
-        this.addHandlersToAllFrames(this.top());    
+    if (this.isRecording())
+        this.addHandlersToAllFrames(this.top());
 };
 
 if (_sahi.top() == window){
@@ -4000,7 +4131,7 @@ Sahi.prototype.reAttachSahi = function (win) {
             	this.reAttachSahi(fs[i]);
             }catch(e){}
         }
-    } 
+    }
 };
 Sahi.prototype.reAttachSahiToWin = function(win){
 	this.mockDialogs(win);
@@ -4019,7 +4150,7 @@ Sahi.prototype.onWindowLoad = function (e){
     if (this.self() == this.top()) {
     	__sahiDebug__("onWindowLoad: this.self() == this.top(), play()");
         this.play();
-        this.ping();
+        //this.ping();
     }
     if (this.isRecording()) {
     	__sahiDebug__("init: isRecording() addHandlersToAllFrames");
@@ -4034,7 +4165,7 @@ Sahi.prototype.init = function (e) {
 	__sahiDebug__("init: start");
 	if (this.initTimer) window.clearTimeout(this.initTimer);
     if (this.initialized) return;
-    this.initialized = true;	
+    this.initialized = true;
     try {
         this.activateHotKey();
     } catch(ex) {
@@ -4059,11 +4190,12 @@ Sahi.prototype.init = function (e) {
         this.handleException(ex);
     }
 	__sahiDebug__("init: before isHTMLUnit");
-    
+
     this.wrappedOnEv = this.wrap(this.onEv);
+    this.wrappedOnMouseDownEv = this.wrap(this.onMouseDownEv);
 //	this.isHTMLUnit = this._isHTMLUnit();
 //    alert("Cookies: " + document.domain + " " + document.cookie);
-//    this.listen();    
+//    this.listen();
 	__sahiDebug__("init: end");
 };
 Sahi.prototype.activateHotKey = function (win) {
@@ -4119,8 +4251,159 @@ Sahi.prototype.isRecordabeKeyDown = function (el, e){
 		|| (k >= 33 && k <= 40)
 		|| k == 27
 		|| k == 13);
-		
-};
+
+}
+Sahi.prototype.getDocumentNode = function(el) {
+	if (el.tagName.toLowerCase() == 'iframe') {
+		el = el.contentWindow.document.body;
+	} else if (this.isWindow(el)) {
+		el = el.document.body;
+	}
+	return el;
+}
+Sahi.prototype._selectTextRange = function(el, text, type) {
+	this.checkNull(el, "_selectTextRange");
+	var start = 0;
+	var end = 0;
+	var el = this.getDocumentNode(el);
+	if (this.findInArray(this.textboxTypes, el.type) != -1  || el.type == "textarea") {
+		var s = el.value;
+	} else {
+		var s = el.textContent;
+	}
+	if (s) {
+		var ixes = this.getStartEndIndexes(text, s);
+		start = ixes[0];
+		end = ixes[1];
+	}
+	this._selectRange(el, start, end, type);
+
+}
+Sahi.prototype.getTextNodesIn = function(node) {
+	var textNodes = [];
+	if (node.nodeType == 3) {
+		textNodes.push(node);
+	} else {
+		var children = node.childNodes;
+		for ( var i = 0, len = children.length; i < len; ++i) {
+			textNodes.push.apply(textNodes, this.getTextNodesIn(children[i]));
+		}
+	}
+	return textNodes;
+}
+Sahi.prototype.getStartEndIndexes = function(searchFor, searchIn) {
+	var start = -1;
+	var end = -1;
+    var o = this.getArrayNameAndIndex(searchFor, true);
+    var ix = o.index;
+    var toMatch = o.name;
+    if (ix == -1) ix = 0;
+	if (toMatch instanceof RegExp) {
+		var res = null;
+		for (var i=0; i<=ix; i++) {
+			res = toMatch.exec(searchIn);
+			if (res == null) break;
+		}
+		if (res) {
+			start = res.index;
+			end = toMatch.lastIndex;
+		}
+
+	} else {
+		var startIx = -1;
+		for (var i=0; i<=ix; i++) {
+			startIx = searchIn.indexOf(toMatch, startIx+1);
+			if (startIx == -1) break;
+		}
+		if (startIx != -1) {
+			start = startIx;
+			end = start + toMatch.length;
+		}
+	}
+	return [start, end];
+}
+Sahi.prototype._selectRange = function(el, start, end, type) {
+	if (start == -1 || end == -1) return;
+	if (type == "after") start = end;
+	this.checkNull(el, "_selectRange");
+	var el = this.getDocumentNode(el);
+	var win = this.getWindow(el);
+	if (this.findInArray(this.textboxTypes, el.type) != -1  || el.type == "textarea") {
+		if (type == "before") end = start;
+		if (el.createTextRange) {
+			// IE10
+			var selRange = el.createTextRange();
+			selRange.collapse(true);
+			selRange.moveStart('character', start);
+			if (this._isIE()) end = end - start;
+			selRange.moveEnd('character', end);
+			selRange.select();
+			el.focus();
+		} else if (typeof el.selectionStart != 'undefined') {
+			el.selectionStart = start;
+			el.selectionEnd = end;
+			el.focus();
+		} else if (el.setSelectionRange) {
+			el.focus();
+			el.setSelectionRange(start, end);
+		}
+		return;
+	}
+
+	if (document.createRange && window.getSelection) {
+		var range = win.document.createRange();
+		range.selectNodeContents(el);
+
+		var textNodes = this.getTextNodesIn(el);
+		var foundStart = false;
+		var charCount = 0, endCharCount;
+
+		for ( var i = 0, textNode; textNode = textNodes[i++];) {
+			endCharCount = charCount + textNode.length;
+
+			if (!foundStart
+					&& start >= charCount
+					&& (start < endCharCount || (start == endCharCount && i < textNodes.length))) {
+				if (type == "before") {
+					if (start - charCount == textNode.length && end != start) {
+						if (i+1 < textNodes.length) {
+							var nextTextNode = textNodes[i];
+							range.setStartBefore(nextTextNode);
+							range.setEnd(nextTextNode, 0);
+							range.collapse(true);
+							break;
+						}
+					}
+					range.setStart(textNode, start - charCount);
+					range.setEnd(textNode, start - charCount);
+					break;
+				}
+				range.setStart(textNode, start - charCount);
+				foundStart = true;
+			}
+
+			if (foundStart && end <= endCharCount) {
+				range.setEnd(textNode, end - charCount);
+				break;
+			}
+
+			charCount = endCharCount;
+		}
+
+		var sel = win.getSelection();
+
+		sel.removeAllRanges();
+		sel.addRange(range);
+	} else if (document.selection && document.body.createTextRange) {
+		var textRange = this.getWindow(el).document.body.createTextRange();
+
+		textRange.moveToElementText(el);
+		textRange.collapse(true);
+		textRange.moveEnd('character', end);
+		textRange.moveStart('character', start);
+		textRange.select();
+	}
+}
 Sahi.prototype.getScript = function (infoAr, el, evType, e) {
 	var info = infoAr[0];
     var accessor = this.escapeDollar(this.getAccessor1(info));
@@ -4129,7 +4412,7 @@ Sahi.prototype.getScript = function (infoAr, el, evType, e) {
     var value = info.value;
     var type = info.type;
     if (evType != null) evType = evType.toLowerCase();
-    
+
     var cmd = null;
     if (value == null)
         value = "";
@@ -4172,11 +4455,11 @@ Sahi.prototype.addPopupDomainPrefixes = function(cmd){
 };
 Sahi.prototype.getPopupDomainPrefixes = function(){
     var popup = this.getPopupName();
-    var domain = this.getDomainContext();	
+    var domain = this.getDomainContext();
     var prefix = "";
     if (prefix != null && domain != null && domain != "") {
     	prefix = this.language.DOMAIN.replace(/<domain>/g, this.quoted(domain)); //"_domain(\"" + domain + "\").";
-    }	
+    }
     if (prefix != null && popup != null && popup != "") {
     	prefix += this.language.POPUP.replace(/<window_name>/g, this.quoted(popup));
     }
@@ -4252,7 +4535,7 @@ Sahi.onBeforeUnLoad = function(e){
 };
 // ff xhr start
 if (!_sahi._isIE()){
-	if ((XMLHttpRequest.prototype.__sahiModified__ == null)){ 
+	if ((XMLHttpRequest.prototype.__sahiModified__ == null)){
 	    XMLHttpRequest.prototype._sahi_openOld = XMLHttpRequest.prototype.open;
 	    XMLHttpRequest.prototype.__sahiModified__ = true;
 	    XMLHttpRequest.prototype.open = function(method, url, async, username, password){
@@ -4377,7 +4660,7 @@ SahiHashMap = function(){
 	this.getIndex = function(ar, k){
 		for (var i=0; i<ar.length; i++){
 			if (k === ar[i]) return i;
-		}		
+		}
 		return -1;
 	}
 };
@@ -4386,7 +4669,7 @@ Sahi.prototype.toJSON = function(el, map){
 		if (!map) map = new SahiHashMap();
 		var j = map.get(el);
 		if (j && j == "___in_progress___") {
-			return '"recursive_access"'; 
+			return '"recursive_access"';
 		}
 		map.put(el, '___in_progress___');
 		var v = this.toJSON2(el, map);
@@ -4518,9 +4801,9 @@ Sahi.prototype.getDoc2 = function(relations){
 					// inner element
 					inEl = relEl;
 				}
-			}			
+			}
 		}
-		if (inEl == null) return new SahiDocProxy(nodes); 
+		if (inEl == null) return new SahiDocProxy(nodes);
 		if (nodes.length == 0) return inEl;
 		var narrowed = [];
 		for (var i=0; i<nodes.length; i++){
@@ -4529,9 +4812,9 @@ Sahi.prototype.getDoc2 = function(relations){
 			}
 			if (this._contains(nodes[i], inEl)){
 				narrowed.push(inEl);
-			}			
-		}		
-		return new SahiDocProxy(narrowed); 
+			}
+		}
+		return new SahiDocProxy(narrowed);
 	}
     if (relations.relation){
     	if (relations.relation == "_in") return relations.element;
@@ -4565,7 +4848,7 @@ SahiDocProxy.prototype.getElementsByTagName = function(tag){
 			if (!alreadyAdded){
 				tags[tags.length] = childNode;
 			}
-		}		
+		}
 	}
 	return tags;
 };
@@ -4592,8 +4875,8 @@ Sahi.prototype._under = function(el, offset, limitUnder){
 	var h = el.offsetHeight;
 	var limitY = xy[1] + (isNaN(h) ? 0 : h/2);
 	var underOffset = offset == null ? 0 : offset;
-	if(this.is_defined(limitUnder)) limitUnder+=limitY;	
-	return {"element":el, "relation":"_under", "type": "position", 
+	if(this.is_defined(limitUnder)) limitUnder+=limitY;
+	return {"element":el, "relation":"_under", "type": "position",
 		alignX: (alignX - underOffset),
 		alignXOuter: (alignXOuter + underOffset),
 		limitY: limitY,
@@ -4610,12 +4893,12 @@ Sahi.prototype._above = function(el, offset, limitTop){
 	var limitY = xy[1] - (isNaN(h) ? 0 : h/2);
 	var aboveOffset = offset == null ? 0 : offset;
 	if(this.is_defined(limitTop)) limitTop = limitY - limitTop;
-	return {"element":el, "relation":"_above", "type": "position", 
+	return {"element":el, "relation":"_above", "type": "position",
 		alignX: (alignX - aboveOffset),
 		alignXOuter: (alignXOuter + aboveOffset),
 		limitY: limitY,
 		limitTop : limitTop};
-	  
+
 };
 
 Sahi.prototype._leftOf = function(el, offset){
@@ -4626,11 +4909,11 @@ Sahi.prototype._leftOf = function(el, offset){
 	var alignYOuter = alignY + el.offsetHeight;
 	var w = el.offsetWidth;
 	var limitX = xy[0];
-	var leftOffset = offset == null ? 0 : offset;
+	offset = this.fixOffset(offset);
 
-	return {"element":el, "relation":"_leftOf", "type": "position", 
-		alignY: (alignY - leftOffset),
-		alignYOuter: (alignYOuter + leftOffset),
+	return {"element":el, "relation":"_leftOf", "type": "position",
+		alignY: (alignY - offset[0]),
+		alignYOuter: (alignYOuter + offset[1]),
 		limitX: limitX};
 };
 
@@ -4642,11 +4925,12 @@ Sahi.prototype._rightOf = function(el, offset){
 	var alignYOuter = alignY + el.offsetHeight;
 	var w = el.offsetWidth;
 	var limitX = xy[0] + (isNaN(w) ? 0 : w/2);
-	var rightOffset = offset == null ? 0 : offset;
 
-	return {"element":el, "relation":"_rightOf", "type": "position", 
-		alignY: (alignY - rightOffset),
-		alignYOuter: (alignYOuter + rightOffset),
+
+	offset = this.fixOffset(offset);
+	return {"element":el, "relation":"_rightOf", "type": "position",
+		alignY: (alignY - offset[0]),
+		alignYOuter: (alignYOuter + offset[1]),
 		limitX: limitX};
 };
 
@@ -4655,11 +4939,11 @@ Sahi.prototype._leftOrRightOf = function(el, offset){
 
 	var alignY = this.getLeftTop(el)[1];
 	var alignYOuter = alignY + el.offsetHeight;
-	var rightOffset = offset == null ? 0 : offset;
+	offset = this.fixOffset(offset);
 
-	return {"element":el, "relation":"_rowOf", "type": "position", 
-		alignY: (alignY - rightOffset),
-		alignYOuter: (alignYOuter + rightOffset)};
+	return {"element":el, "relation":"_rowOf", "type": "position",
+		alignY: (alignY - offset[0]),
+		alignYOuter: (alignYOuter + offset[1])};
 };
 Sahi.prototype._aboveOrUnder = function(el, offset){
 	this.checkNull(el, "_aboveOrUnder");
@@ -4668,10 +4952,18 @@ Sahi.prototype._aboveOrUnder = function(el, offset){
 	var alignXOuter = alignX + el.offsetWidth;
 	var aboveOffset = offset == null ? 0 : offset;
 
-	return {"element":el, "relation":"_colOf", "type": "position", 
+	return {"element":el, "relation":"_colOf", "type": "position",
 		alignX: (alignX - aboveOffset),
 		alignXOuter: (alignXOuter + aboveOffset)};
 };
+
+Sahi.prototype.fixOffset = function(offset){
+	if (offset == null) offset = [0,0];
+	else if (typeof offset == 'number') {
+		offset = [offset, offset];
+	}
+	return offset;
+}
 
 Sahi.prototype._xy = function(el, x, y){
 	this.checkNull(el, "_xy");
@@ -4693,13 +4985,13 @@ if (_sahi._isIE()){
 	_sahi.real_execCommand = document.execCommand;
 	document.execCommand = function(){return _sahi_dummyExecCommand.apply(document, arguments);};
 }
-Sahi.prototype.encode = function(str) {  
-	  return encodeURIComponent(str).replace(/%20/g, '+').replace(/!/g, '%21').replace(/'/g, '%27').replace(/\(/g, '%28').  
+Sahi.prototype.encode = function(str) {
+	  return encodeURIComponent(str).replace(/%20/g, '+').replace(/!/g, '%21').replace(/'/g, '%27').replace(/\(/g, '%28').
 	                                 replace(/\)/g, '%29').replace(/\*/g, '%2A');
 };
 Sahi.prototype.decode = function(msg){
 	if (!msg) return msg;
-	return decodeURIComponent(msg.replace(/[+]/g, ' '));	
+	return decodeURIComponent(msg.replace(/[+]/g, ' '));
 };
 function _sahi_dummyExecCommand(){
 	if (arguments[0] == 'ClearAuthenticationCache'){
@@ -4722,10 +5014,10 @@ Sahi.prototype.addADAr = function(a){
 Sahi.prototype.getAD = function(el){
 	var defs = [];
 	for (var i=0; i<this.ADs.length; i++){
-		var d = this.ADs[i];  
+		var d = this.ADs[i];
 		if (this.areTagNamesEqual(d.tag, el.tagName)){
 			if (!el.type) defs[defs.length] = d;
-			else if (!d.type || this.getElementType(el) == d.type) defs[defs.length] = d; 
+			else if (!d.type || this.getElementType(el) == d.type) defs[defs.length] = d;
 		}
 	}
 	return defs;
@@ -4793,7 +5085,7 @@ Sahi.prototype.identify = function(el, ignoreEncaps){
 			relation = this._near(anchor);
 			relationStr = "_near(" + this.topSahi().anchorStr + ")";
 		}
-	} 
+	}
 	for (var k=0; k<accs.length; k++){
 		var acc = accs[k];
 		if (acc && acc.attributes){
@@ -4805,7 +5097,7 @@ Sahi.prototype.identify = function(el, ignoreEncaps){
 						var ix = this.getIdentifyIx(null, el, null, relation);
 						if (ix != -1 && this[acc.name](ix) == el){
 							apis[apis.length] = this.buildAccessorInfo(el, acc, ix, relationStr);
-						}				
+						}
 					} else if (typeof attr == "string" && !ignoreEncaps && attr.indexOf("encaps") == 0) {
 						var parentTag = attr.substring(attr.indexOf("_") + 1);
 						var p = this._parentNode(el, parentTag);
@@ -4835,11 +5127,11 @@ Sahi.prototype.identify = function(el, ignoreEncaps){
 			}
 		}
 	}
-	
+
 	if (apis.length > 0) {
 		assertions = assertions.concat(this.getAssertions(accs, apis[0]));
 	}
-	
+
 	return {apis: apis, assertions: assertions};
 };
 Sahi.prototype.buildAccessorInfo = function(el, acc, identifier, relationStr){
@@ -4853,7 +5145,7 @@ Sahi.prototype.getIdentifyIx = function(val, el, attr, inEl){
 		return this.findElementIxHelper(val, el.type, el, inEl, res, attr, tagLC).cnt;
 	} else {
 		return this.findTagIxHelper(val, el, inEl, tagLC, res, attr).cnt;
-	}	
+	}
 };
 Sahi.prototype.isFormElement = function(el){
 	var n = el.tagName.toLowerCase();
@@ -4877,11 +5169,11 @@ Sahi.prototype.getAttribute = function (el, attr){
 	}
 };
 Sahi.prototype.makeLibFunctionsAvailable = function(){
-	var fns = ["_scriptName", "_scriptPath", "_suiteInfo", "_userDataDir", 
-	           "_sessionInfo", "_userDataPath", "_readFile", "_readCSVFile", 
-	           "_readURL", "_scriptStatus", "_stackTrace", "_selectWindow", 
+	var fns = ["_scriptName", "_scriptPath", "_suiteInfo", "_userDataDir",
+	           "_sessionInfo", "_userDataPath", "_readFile", "_readCSVFile",
+	           "_readURL", "_scriptStatus", "_stackTrace", "_selectWindow",
 	           "_resolvePath"];
-	for (var i=0; i<fns.length; i++){		
+	for (var i=0; i<fns.length; i++){
 		this.addNashornFn(fns[i]);
 	}
 };
@@ -4890,7 +5182,7 @@ Sahi.prototype.addNashornFn = function(fnName){
 		var s = "";
 		for (var i=0; i<arguments.length; i++){
 			if (i != 0) s += ", ";
-			s += this.toJSON(arguments[i]); 
+			s += this.toJSON(arguments[i]);
 		}
 		return this._evalOnProxy(fnName + "(" + s + ")");
 	};
@@ -4902,7 +5194,7 @@ Sahi.prototype._evalOnProxy = function (s){
 	}catch(e){return null;}
 };
 Sahi.prototype.getFileFromURL = function(el){
-	var src = el.src; 
+	var src = el.src;
 	src = src.replace(/[;?].*$/, '');
 	return src.substring(src.lastIndexOf("/")+1);
 };
@@ -4911,7 +5203,7 @@ Sahi.prototype.getFileFromURL = function(el){
 //			A:["sahiText", "link="],
 //			ANY: ["id", ]
 //			}
-//	if (el.id) return el.tagName "[@id=" + 
+//	if (el.id) return el.tagName "[@id=" +
 //}
 Sahi.prototype.getXPath = function(el){
 	var n = el;
@@ -4927,11 +5219,11 @@ Sahi.prototype.getXPath = function(el){
 	return "/" + s;
 };
 Sahi.prototype.prepareADs = function(){
-//	this.addAD({tag: "SPAN", type: null, event:"click", name: "_spanWithImage", 
+//	this.addAD({tag: "SPAN", type: null, event:"click", name: "_spanWithImage",
 //		attributes: [function(el){ if (el.parentNode.tagName == "TD"){return _sahi._getText(el);}}], action: "_click", value: "sahiText"});
 
 	this.addAD({tag: "A", type: null, event:"click", name: "_link", attributes: ["sahiText", "title|alt", "id", "index", "href", "className"], action: "_click", value: "sahiText"});
-	this.addAD({tag: "IMG", type: null, event:"click", name: "_image", attributes: ["title|alt", "id", 
+	this.addAD({tag: "IMG", type: null, event:"click", name: "_image", attributes: ["title|alt", "id",
 	                  this.getFileFromURL, "index", "className"], action: "_click"});
 	this.addAD({tag: "LABEL", type: null, event:"click", name: "_label", attributes: ["sahiText", "id", "className", "index"], action: "_click", value: "sahiText"});
 	this.addAD({tag: "LI", type: null, event:"click", name: "_listItem", attributes: ["sahiText", "id", "className", "index"], action: "_click", value: "sahiText"});
@@ -4946,26 +5238,26 @@ Sahi.prototype.prepareADs = function(){
 
 	this.addAD({tag: "INPUT", type: "button", event:"click", name: "_button", attributes: ["value", "name", "id", "index", "className"], action: "_click", value: "value"});
 	this.addAD({tag: "BUTTON", type: "button", event:"click", name: "_button", attributes: ["sahiText", "name", "id", "className", "index"], action: "_click", value: "sahiText"});
-	
+
 	this.addAD({tag: "INPUT", type: "checkbox", event:"click", name: "_checkbox", attributes: ["name", "id", "value", "className", "index"], action: "_click", value: "checked",
 			assertions: function(value){return [("true" == ("" + value)) ? _sahi.language.ASSERT_CHECKED : _sahi.language.ASSERT_NOT_CHECKED];}});
 	this.addAD({tag: "INPUT", type: "password", event:"change", name: "_password", attributes: ["name", "id", "index", "className"], action: "_setValue", value: "value"});
-	this.addAD({tag: "INPUT", type: "radio", event:"click", name: "_radio", attributes: ["id", "name", "value", "className", "index"], action: "_click", value: "checked", 
-			assertions: function(value){return [("true" == ("" + value)) ? _sahi.language.ASSERT_CHECKED : _sahi.language.ASSERT_NOT_CHECKED];}});	
-	
-	this.addAD({tag: "INPUT", type: "submit", event:"click", name: "_submit", attributes: ["value", "name", "id", "className", "index"], action: "_click", value: "value"});	
-	this.addAD({tag: "BUTTON", type: "submit", event:"click", name: "_submit", attributes: ["sahiText", "name", "id", "className", "index"], action: "_click", value: "sahiText"});	
+	this.addAD({tag: "INPUT", type: "radio", event:"click", name: "_radio", attributes: ["id", "name", "value", "className", "index"], action: "_click", value: "checked",
+			assertions: function(value){return [("true" == ("" + value)) ? _sahi.language.ASSERT_CHECKED : _sahi.language.ASSERT_NOT_CHECKED];}});
+
+	this.addAD({tag: "INPUT", type: "submit", event:"click", name: "_submit", attributes: ["value", "name", "id", "className", "index"], action: "_click", value: "value"});
+	this.addAD({tag: "BUTTON", type: "submit", event:"click", name: "_submit", attributes: ["sahiText", "name", "id", "className", "index"], action: "_click", value: "sahiText"});
 
 	this.addAD({tag: "INPUT", type: "text", event:"change", name: "_textbox", attributes: ["name", "id", "index", "className"], action: "_setValue", value: "value"});
-	
-	this.addAD({tag: "INPUT", type: "reset", event:"click", name: "_reset", attributes: ["value", "name", "id", "className", "index"], action: "_click", value: "value"});	
-	this.addAD({tag: "BUTTON", type: "reset", event:"click", name: "_reset", attributes: ["sahiText", "name", "id", "className", "index"], action: "_click", value: "sahiText"});	
 
-	this.addAD({tag: "INPUT", type: "hidden", event:"", name: "_hidden", attributes: ["name", "id", "className", "index"], action: "_setValue", value: "value"});	
-	
-	this.addAD({tag: "INPUT", type: "file", event:"click", name: "_file", attributes: ["name", "id", "index", "className"], action: "_setFile", value: "value"});	
-	this.addAD({tag: "INPUT", type: "image", event:"click", name: "_imageSubmitButton", attributes: ["title|alt", "name", "id", 
-	                  this.getFileFromURL, "index", "className"], action: "_click"});	
+	this.addAD({tag: "INPUT", type: "reset", event:"click", name: "_reset", attributes: ["value", "name", "id", "className", "index"], action: "_click", value: "value"});
+	this.addAD({tag: "BUTTON", type: "reset", event:"click", name: "_reset", attributes: ["sahiText", "name", "id", "className", "index"], action: "_click", value: "sahiText"});
+
+	this.addAD({tag: "INPUT", type: "hidden", event:"", name: "_hidden", attributes: ["name", "id", "className", "index"], action: "_setValue", value: "value"});
+
+	this.addAD({tag: "INPUT", type: "file", event:"click", name: "_file", attributes: ["name", "id", "index", "className"], action: "_setFile", value: "value"});
+	this.addAD({tag: "INPUT", type: "image", event:"click", name: "_imageSubmitButton", attributes: ["title|alt", "name", "id",
+	                  this.getFileFromURL, "index", "className"], action: "_click"});
 	this.addAD({tag: "INPUT", type: "date", event:"change", name: "_datebox", attributes: ["name", "id", "index", "className"], action: "_setValue", value: "value"});
 	this.addAD({tag: "INPUT", type: "datetime", event:"change", name: "_datetimebox", attributes: ["name", "id", "index", "className"], action: "_setValue", value: "value"});
 	this.addAD({tag: "INPUT", type: "datetime-local", event:"change", name: "_datetimelocalbox", attributes: ["name", "id", "index", "className"], action: "_setValue", value: "value"});
@@ -4978,12 +5270,15 @@ Sahi.prototype.prepareADs = function(){
 	this.addAD({tag: "INPUT", type: "time", event:"change", name: "_timebox", attributes: ["name", "id", "index", "className"], action: "_setValue", value: "value"});
 	this.addAD({tag: "INPUT", type: "url", event:"change", name: "_urlbox", attributes: ["name", "id", "index", "className"], action: "_setValue", value: "value"});
 	this.addAD({tag: "INPUT", type: "week", event:"change", name: "_weekbox", attributes: ["name", "id", "index", "className"], action: "_setValue", value: "value"});
+	this.addAD({tag: "FIELDSET", type: null , event:"", name: "_fieldset", attributes: ["name", "id", "className",this.getAssociatedLegendName, "index", "disabled"], action: "", value: "sahiText"});
+	this.addAD({tag: "IFRAME", type: null, event:"", name: "_iframe", attributes: ["id", "name", "className", "index"], action: "", value: ""});
+	this.addAD({tag: "FRAME", type: null, event:"", name: "_frame", attributes: ["id", "name", "className", "index"], action: "", value: ""});
 
-	
-	
+
+
 	this.addAD({tag: "SELECT", type: null, event:"change", name: "_select", attributes: ["name", "id", "index", "className"], action: "_setSelected", value: function(el){return _sahi._getSelectedText(el) || _sahi.getOptionId(el, el.value) || el.value;},
-		assertions: function(value){return [_sahi.language.ASSERT_SELECTION];}});	
-	this.addAD({tag: "OPTION", type: null, event:"none", name: "_option", attributes: ["encaps_SELECT", "sahiText", "value", "id", "index"], action: "", value: "sahiText"});	
+		assertions: function(value){return [_sahi.language.ASSERT_SELECTION];}});
+	this.addAD({tag: "OPTION", type: null, event:"none", name: "_option", attributes: ["encaps_SELECT", "sahiText", "value", "id", "index"], action: "", value: "sahiText"});
 	this.addAD({tag: "TEXTAREA", type: null, event:"change", name: "_textarea", attributes: ["name", "id", "index", "className"], action: "_setValue", value: "value"});
 	this.addAD({tag: "H1", type: null, event:"click", name: "_heading1", attributes: ["sahiText", "id", "className", "index"], action: "_click", value: "sahiText"});
 	this.addAD({tag: "H2", type: null, event:"click", name: "_heading2", attributes: ["sahiText", "id", "className", "index"], action: "_click", value: "sahiText"});
@@ -4991,7 +5286,7 @@ Sahi.prototype.prepareADs = function(){
 	this.addAD({tag: "H4", type: null, event:"click", name: "_heading4", attributes: ["sahiText", "id", "className", "index"], action: "_click", value: "sahiText"});
 	this.addAD({tag: "H5", type: null, event:"click", name: "_heading5", attributes: ["sahiText", "id", "className", "index"], action: "_click", value: "sahiText"});
 	this.addAD({tag: "H6", type: null, event:"click", name: "_heading6", attributes: ["sahiText", "id", "className", "index"], action: "_click", value: "sahiText"});
-	
+
 	this.addAD({tag: "AREA", type: null, event:"click", name: "_area", attributes: ["id", "title|alt", "href", "shape", "className", "index"], action: "_click"});
 	this.addAD({tag: "MAP", type: null, event:"click", name: "_map", attributes: ["name", "id", "title", "className", "index"], action: "_click"});
 
@@ -5005,7 +5300,8 @@ Sahi.prototype.prepareADs = function(){
 	this.addAD({tag: "BLOCKQUOTE", type: null, event:"click", name: "_blockquote", attributes: ["sahiText", "id", "className", "index"], action: "_click", value: "sahiText"});
 	this.addAD({tag: "CANVAS", type: null, event:"click", name: "_canvas", attributes: ["sahiText", "id", "className", "index"], action: "_click", value: "sahiText"});
 	this.addAD({tag: "ABBR", type: null, event:"click", name: "_abbr", attributes: ["encaps_A", "sahiText", "title", "id", "className", "index"], action: "_click", value: "sahiText"});
-
+	this.addAD({tag: "HR", type: null, event:"click", name: "_hr", attributes: ["id", "className", "index"], action: "_click", value: ""});
+	this.addAD({tag: "FONT", type: null, event:"none", name: "_font", attributes: ["sahiText", "color", "face", "size"], action: "none", value: ""});
 	var o_fn1 = function(o){try{return o._sahi_getFlexId();}catch(e){}};
 	var o_fn2 = function(o){try{return o._sahi_getUID();}catch(e){}};
 	this.addAD({tag: "OBJECT", type: null, event:"click", name: "_object", attributes: ["id", "name", "data", o_fn1, o_fn2], action: "_click", value: ""});
@@ -5032,10 +5328,10 @@ Sahi.prototype.getAssertions = function(accs, info){
 			a = a.concat(acc.assertions(info.value));
 	}
 	if (info.valueType == "sahiText"){
-		a[a.length] = this.language.ASSERT_EQUAL_TEXT; 
-		a[a.length] = this.language.ASSERT_CONTAINS_TEXT; 
+		a[a.length] = this.language.ASSERT_EQUAL_TEXT;
+		a[a.length] = this.language.ASSERT_CONTAINS_TEXT;
 	} else if (info.valueType == "value"){
-		a[a.length] = this.language.ASSERT_EQUAL_VALUE; 
+		a[a.length] = this.language.ASSERT_EQUAL_VALUE;
 	}
 	return a;
 };
@@ -5086,7 +5382,7 @@ Sahi.prototype.loadScript = function(src, id){
 	var newcontent = document.createElement('script');
 	newcontent.src = src;
 	var bef = document.getElementById(id);
-	bef.parentNode.insertBefore(newcontent, bef);	
+	bef.parentNode.insertBefore(newcontent, bef);
 };
 //document.body.onclick = function(){alert(window.event.clientX + " " + window.event.clientY)}
 Sahi.prototype.setLastHTMLSnapShotFile = function(filePath){
@@ -5128,7 +5424,7 @@ function SflWrapper(o){
 	this.id = o._sahi_getFlexId();
 	this.accessorAPINames = [];
 	this.addAccessorFns();
-	
+
 }
 __fl_debugStr = "";
 SflWrapper.prototype.debug = function(s){
@@ -5146,10 +5442,10 @@ SflWrapper.prototype.display = function(s){
 			var item = ar[i];
 			alts.push(SflWrapper.convertToFn(item));
 		}
-		_sahi.sendIdentifierInfo(alts, 
-				alts[0], 
-				ar[0].value, 
-				"", 
+		_sahi.sendIdentifierInfo(alts,
+				alts[0],
+				ar[0].value,
+				"",
 				[]);
 	}
 };
@@ -5180,12 +5476,12 @@ SflWrapper.prototype.xgetFlexApp = function(id){
 };
 SflWrapper.prototype.addAccessorFns = function(){
 	var actionMethodNames = ["click", "mouseDown", "mouseOver", "mouseUp", "dragDrop", "dragDropXY", "setAsDroppable",
-	                         "setValue", "choose", "listProperties", 
-	                         "introspect", "fetch", "executeFn", 
-	                         "set", "get", "highlight", "getValue", 
-	                         "getText", "getRowNo", "getColumnNo", "getGridData", 
-	                         "getTextOrToolTip", "getDataProviderData", 
-	                         "rightClick", "doubleClick"];	
+	                         "setValue", "choose", "listProperties",
+	                         "introspect", "fetch", "executeFn",
+	                         "set", "get", "highlight", "getValue",
+	                         "getText", "getRowNo", "getColumnNo", "getGridData",
+	                         "getTextOrToolTip", "getDataProviderData",
+	                         "rightClick", "doubleClick"];
 	for (var i=0; i<actionMethodNames.length; i++){
 		var methodName = actionMethodNames[i];
 		this[methodName] = this.getFlexFn(methodName, true);
@@ -5232,7 +5528,7 @@ SflWrapper.prototype.getAccessorAPIName = function(qn){
 	var ix = qn.indexOf("::");
 	if (ix != -1) {
 		var a = qn.substring(ix+2).toLowerCase();
-		return (qn.indexOf("spark") == 0) ? ("s_"+a) : a; 
+		return (qn.indexOf("spark") == 0) ? ("s_"+a) : a;
 	}
 	return qn;
 };
@@ -5256,10 +5552,10 @@ SflWrapper.prototype.currentCursorID = function(){
 };
 SflWrapper.prototype.addAllMetaData = function(){
 //	this.addMetaData({qn: "mx.core::UIComponent", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
-	this.addMetaData({qn: "mx.core::UITextField", attributes: ["encaps_mx.controls::DateField", "encaps_mx.controls::DateChooser", "encaps_mx.controls::ComboBox", 
+	this.addMetaData({qn: "mx.core::UITextField", attributes: ["encaps_mx.controls::DateField", "encaps_mx.controls::DateChooser", "encaps_mx.controls::ComboBox",
 	                                                           "encaps_mx.controls::TextInput", "encaps_mx.controls::TextArea",
 	                                                           "label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "", value: "text"});
-	
+
 	this.addMetaData({qn: "mx.controls::AdvancedDataGrid", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
 	this.addMetaData({qn: "mx.controls::AdvancedDataGridBaseEx", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
 	this.addMetaData({qn: "mx.controls::AdvancedDataGridGroupItemRenderer", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
@@ -5333,12 +5629,12 @@ SflWrapper.prototype.addAllMetaData = function(){
 	this.addMetaData({qn: "mx.charts.renderers::WedgeItemRenderer", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
 	this.addMetaData({qn: "mx.charts.series::ColumnSet", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
 	this.addMetaData({qn: "mx.charts.series::ColumnSeries", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
-	
+
 	// move this to user_ext.js
 	this.addMetaData({qn: "siteAnalysis.view.components::SiteColumnChart", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
 	this.addMetaData({qn: "categoryAnalysis.view.components::CategoryColumnChart", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
-	
-	
+
+
 	this.addMetaData({qn: "mx.controls.listClasses::ListItemRenderer", attributes: ["data", "label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "data"});
 	this.addMetaData({qn: "mx.controls.listClasses::ListBaseContentHolder", attributes: ["text", "data", "label", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "data"});
 	this.addMetaData({qn: "mx.controls.listClasses::AdvancedListBaseContentHolder", attributes: ["text", "data", "label", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "data"});
@@ -5346,7 +5642,7 @@ SflWrapper.prototype.addAllMetaData = function(){
 	this.addMetaData({qn: "mx.controls.buttonBarClasses::ButtonBarButton", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
 	this.addMetaData({qn: "mx.controls.sliderClasses::SliderLabel", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
 	this.addMetaData({qn: "mx.controls.sliderClasses::SliderThumb", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
-	
+
 	this.addMetaData({qn: "mx.containers::Accordion", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
 	this.addMetaData({qn: "mx.containers::ApplicationControlBar", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
 	this.addMetaData({qn: "mx.containers::Box", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
@@ -5372,7 +5668,7 @@ SflWrapper.prototype.addAllMetaData = function(){
 	this.addMetaData({qn: "mx.containers::VDividedBox", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
 	this.addMetaData({qn: "mx.containers::ViewStack", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
 	this.addMetaData({qn: "mx.charts::ColumnChart", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "label"});
-	
+
 	//Spark Components Start
 	this.addMetaData({qn: "spark.components::Panel", attributes: ["title", "label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "", value: "label"});
 	this.addMetaData({qn: "spark.components::Label", attributes: ["encaps_spark.components::FormItem","encaps_spark.components::DropDownList","encaps_spark.components::ComboBox","encaps_spark.components::FormHeading", "label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "", value: "text"});
@@ -5387,7 +5683,7 @@ SflWrapper.prototype.addAllMetaData = function(){
 	this.addMetaData({qn: "spark.components::CheckBox", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "selected"});
 //	this.addMetaData({qn: "mx.controls::Text", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value: "text"});
 //	this.addMetaData({qn: "mx.controls::TextArea", attributes: ["label", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "setValue", value: "text"});
-	
+
 	//Theeran Start
 	this.addMetaData({qn: "spark.components::TextArea", attributes: ["label","text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "setValue", value: "name"});
 	this.addMetaData({qn: "spark.components::ButtonBar", attributes: ["label", "text", "name", "automationName", "toolTip", "id", "autoGeneratedName", "index"], action: "click", value:"label"});
@@ -5435,7 +5731,7 @@ SflWrapper.prototype.addAllMetaData = function(){
 	//Theeran End
 	//Spark Components End
 	SflWrapper.prototype.cell = this.getFlexFn("cell");
-	
+
 	this.addCustomMetaData();
 };
 Sahi.prototype.getFlexWrapper = function(o){

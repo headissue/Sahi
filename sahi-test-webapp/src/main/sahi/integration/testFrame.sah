@@ -1,0 +1,8 @@
+_include("pages/includeAll.js");
+
+$Index.goTo();
+
+_click(_link("Frames Test"));
+_assert(_exists(_frame("top")));
+_assert(_exists(_frame(0)));
+_assert(_exists(_frame(1)));

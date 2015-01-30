@@ -1,0 +1,19 @@
+_navigateTo("http://batiste.dosimple.ch/blog/posts/2007-09-11-1/rich-text-editor-jquery.html");
+_selectTextRange(_rte(1), "/R.E/[0]");
+var $text = _getSelectionText();
+_assertEqual("RTE", $text);
+_selectTextRange(_rte(1),  "/R.E/[0]", "after");
+_selectTextRange(_rte(1),  "/R.E/[0]", "before");
+
+_navigateTo("http://sahipro.com/demo/");
+_click(_link("Frames Test"));
+_click(_link("IFrames Test"));
+_click(_link("Combo Clicks Page[2]"));
+_setValue(_textbox("tb"), "experiment");
+_selectTextRange(_textbox("tb"), "erimen");
+_assertEqual("erimen", _getSelectionText());
+_click(_heading2("Sahi Tests"));
+_click(_link("Combo Clicks Page"));
+_setValue(_textbox("tb"), "Zone");
+_selectTextRange(_textbox("tb"), "one");
+_assertEqual("one", _getSelectionText());

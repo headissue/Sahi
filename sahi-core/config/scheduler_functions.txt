@@ -71,3 +71,4 @@ _mouseUp
 _setStrictVisibilityCheck
 _setFile2
 _setXHRReadyStatesToWaitFor
+_selectTextRange

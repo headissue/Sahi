@@ -157,7 +157,16 @@ public class RemoteRequestProcessor {
         contentDisposition = response.getLastSetValueOfHeader("Content-Disposition");
 
         boolean downloadContentType = isDownloadContentType(contentTypeHeader);
-        String fileName = requestFromBrowser.fileName();
+        String fileName = null;
+        boolean contentDispositionForcesDownload = false;
+
+        if (attachment) {
+          fileName = response.getAttachmentFileName();
+          contentDispositionForcesDownload = !isMatchingContentTypes(contentTypeHeader, Configuration.attachmentOverrideContentTypes());
+        }
+        if (fileName == null) {
+          fileName = requestFromBrowser.fileName();
+        }
 
         boolean downloadURL = isDownloadURL(urlStr);
         logger.debug("downloadURL = " + downloadURL);

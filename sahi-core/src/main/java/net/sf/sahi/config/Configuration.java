@@ -259,6 +259,34 @@ public class Configuration {
     }
   }
 
+	public static String getMacProxyResetCommand() {
+		return getUserProperty("mac.proxy.revert.cmd").replace("$toolsBasePath", getToolsPath()) + " "+getUserProperty("mac.networkserviceorder");
+	}
+
+	public static long getDelayInBrowserLaunchAfterProxyChange() {
+		try {
+			return Integer.parseInt(getUserProperty("browser_launch.delay_after_proxy_change"));
+		} catch (Exception e) {
+			return 0;
+		}
+	}
+
+	public static String getMacProxySetCommand() {
+		return getUserProperty("mac.proxy.set.cmd").replace("$toolsBasePath", getToolsPath())  + " "+getUserProperty("mac.networkserviceorder");
+	}
+
+	public static boolean isWindowsContinuousProxyReset() {
+		return "true".equals(getUserProperty("windows.proxy.continuous.reset"));
+	}
+
+	public static int getWindowsContinuousProxyResetInterval() {
+		try {
+			return Integer.parseInt(getUserProperty("windows.proxy.continuous.reset.interval"));
+		} catch (Exception e) {
+			return 300;
+		}
+	}
+
   public static int getPort() {
     try {
       return Integer.parseInt(getUserProperty("proxy.port"));
@@ -497,26 +525,48 @@ public class Configuration {
     return "true".equals(getUserProperty("suite.global_variables"));
   }
 
-  public static Pattern getDownloadContentTypesRegExp() {
-    String[] downloadables = getNonBlankLines(Utils.readCachedFile(Utils.concatPaths(userDataDir,
-      "config/download_contenttypes.txt")));
-    if (downloadables.length != 0) {
-      try {
-        StringBuilder sb = new StringBuilder("(?:.*");
-        for (int i = 0; i < downloadables.length; i++) {
-          sb.append(downloadables[i]);
-          if (i != downloadables.length - 1) {
-            sb.append(".*)|(?:");
-          }
-        }
-        sb.append(".*)");
-        return Pattern.compile(sb.toString());
-      } catch (Exception e) {
-        e.printStackTrace();
-      }
-    }
-    return Pattern.compile("");
-  }
+	public static Pattern getDownloadContentTypesRegExp() {
+		String[] downloadables = getNonBlankLines(Utils.readCachedFile(Utils.concatPaths(userDataDir,
+				"config/download_contenttypes.txt")));
+		return getPattern(downloadables);
+//		String[] downloadables = getNonBlankLines(Utils.readCachedFile(Utils.concatPaths(userDataDir,
+//				"config/download_contenttypes.txt")));
+//		if (downloadables.length != 0) {
+//			try {
+//				StringBuilder sb = new StringBuilder("(?:.*");
+//				for (int i = 0; i < downloadables.length; i++) {
+//					sb.append(downloadables[i]);
+//					if (i != downloadables.length - 1) {
+//						sb.append(".*)|(?:");
+//					}
+//				}
+//				sb.append(".*)");
+//				return Pattern.compile(sb.toString());
+//			} catch (Exception e) {
+//				e.printStackTrace();
+//			}
+//		}
+//		return Pattern.compile("");
+	}
+
+	private static Pattern getPattern(String[] tokens) {
+		if (tokens.length != 0) {
+			try {
+				StringBuilder sb = new StringBuilder("(?:.*");
+				for (int i = 0; i < tokens.length; i++) {
+					sb.append(tokens[i]);
+					if (i != tokens.length - 1) {
+						sb.append(".*)|(?:");
+					}
+				}
+				sb.append(".*)");
+				return Pattern.compile(sb.toString());
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return Pattern.compile("");
+	}
 
   public static String[] getDownloadURLList() {
     if (downloadURLList == null) {
@@ -815,6 +865,18 @@ public class Configuration {
     }
   }
 
+	public static String getBaseDir() {
+		return basePath;
+	}
+
+  public static int getWaitTimeForPIDsBeforeKill() {
+    try {
+      return Integer.parseInt(getUserProperty("kill.max_time_for_pid_gather_before_kill"));
+    } catch (Exception e) {
+      return 60000;
+    }
+  }
+
   public static int getMaxTimeForPIDGather() {
     try {
       return Integer.parseInt(getUserProperty("script.max_time_for_pid_gather", "60000"));
@@ -823,6 +885,29 @@ public class Configuration {
     }
   }
 
+  public static Pattern attachmentOverrideContentTypes() {
+    return getPattern(getUserProperty("download.contentdispostion.override_contenttypes").split(","));
+  }
+
+	public static boolean isControllerStateRemembered() {
+		return "true".equals(getUserProperty("controller.remember_state.enabled"));
+	}
+
+	public static boolean isSahiExpressFlagOn() {
+		return "true".equals(getUserProperty("sahi.express.flag"));
+	}
+
+	public static String getVersionNumber() {
+		return "5.0";
+	}
+
+  public static int getMaxBrowserRelaunchCount() {
+    try {
+      return Integer.parseInt(getUserProperty("browser.max_relaunch_count"));
+    } catch (Exception e) {
+      return 2;
+    }
+  }
 
   // Pro start
 }

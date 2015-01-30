@@ -156,4 +156,40 @@ public class HttpResponse extends StreamHandler {
   public void cleanUp() {
 
   }
+
+  public String getAttachmentFileName() {
+    String contentDisposition = getLastSetValueOfHeader("Content-Disposition");
+    return extractFileName(contentDisposition);
+  }
+
+  String extractFileName(String contentDisposition) {
+    int ix = contentDisposition.toLowerCase().indexOf("filename");
+    if (ix == -1) return null;
+
+    String fileName = null;
+    String[] tokens = contentDisposition.split(";");
+
+    for (String token : tokens) {
+      if (token.indexOf("filename") != -1) {
+        String[] filenameTokens = token.split("=");
+
+        if ((filenameTokens.length == 2) && (filenameTokens[0].trim().equalsIgnoreCase("filename"))) {
+          fileName = filenameTokens[1].trim();
+        }
+
+        break;
+      }
+    }
+
+    if ((fileName != null) && fileName.startsWith("\"") && fileName.endsWith("\""))
+      fileName = fileName.substring(1, fileName.length() - 1).trim();
+
+    // Replace all invalid characters in file name with underscore("_").
+    if (fileName != null) {
+      fileName = fileName.replaceAll("[\\\\/:*?\"<>|]", "_");
+    }
+
+    return fileName;
+  }
 }
+
