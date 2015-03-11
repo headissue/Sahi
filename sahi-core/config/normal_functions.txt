@@ -10,6 +10,8 @@ _select
 _submit
 _textarea
 _textbox
+_datebox
+_rangebox
 _hidden
 _event
 _cell
@@ -36,6 +38,7 @@ _in
 _near
 _rte
 _iframe
+_frame
 _tableHeader
 _heading1
 _heading2
@@ -45,6 +48,12 @@ _heading5
 _heading6
 _hidden
 _area
+_nav
+_header
+_footer
+_section
+_article
+_addres
 _map
 _italic
 _bold
@@ -92,6 +101,7 @@ _isChrome
 _isSafari
 _isOpera
 _isHTMLUnit
+_fieldset
 
 
 _fetch
@@ -164,13 +174,9 @@ _dTerm
 _dDesc
 _paragraph
 _scriptStartTime
-
-_section
-_header
-_nav
-_aside
-_footer
-_article
-_main
-_figure
-_address
+_isIE11
+_isIE11Plus
+_font
+_hr
+_getSelectionText
+_copyFile

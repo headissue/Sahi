@@ -1157,7 +1157,7 @@ Sahi.prototype.addOffset = function(el, origin){
     	y += oy;
     }	
     return [x,y];
-}
+};
 Sahi.prototype.isWindowAccessible = function(win) {
 	if (window == win) return true;
 	try {
@@ -1180,13 +1180,13 @@ Sahi.prototype._getSelectionText = function (win) {
 			if (win.getSelection && (!this._isIE9PlusStrictMode() || this._isIE11Plus()) ) {
 				userSelection = win.getSelection();
 			}
-			else if (win.document.selection) { 
+			else if (win.document.selection) {
 				userSelection = win.document.selection.createRange();
 			}
 			selectedText = userSelection;
 			if (userSelection.text != undefined)
 				selectedText = userSelection.text;
-			else 
+			else
 				selectedText = "" + userSelection;
 		}
 		if (!this.isBlankOrNull(selectedText)) return selectedText;
@@ -1197,7 +1197,7 @@ Sahi.prototype._getSelectionText = function (win) {
 		if (!this.isBlankOrNull(t)) return t;
 	}
 	return "";
-}
+};
 Sahi.pointTimer = 0;
 Sahi.prototype._highlight = function (el) {
 	if (this.isFlexObj(el)) return el.highlight();

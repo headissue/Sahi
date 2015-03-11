@@ -449,7 +449,9 @@ Sahi.prototype._deleteFile = function (filePath) {
 	return "" + Utils.deleteFile(filePath) == "true";
 };
 Sahi.prototype._renameFile = function (oldPath, newPath) {
-	return "" + FileUtils.renameFile(oldPath, newPath) == "true";
+  var absoluteOldPath = this._resolvePath(oldPath);
+  var absoluteNewPath = this._resolvePath(newPath);
+  return "" + FileUtils.renameFile(absoluteOldPath, absoluteNewPath) == "true";
 };
 Sahi.prototype._scriptStatus = function(){
 	return NashornScriptRunner.hasErrors() ? "FAILURE" : "SUCCESS";
