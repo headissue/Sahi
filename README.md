@@ -31,7 +31,6 @@ Run
     cd bin
     sh dashboard.sh
 
-Then the required jars are built to run sahi with the scripts under sahi-core/bin.
 
 Licenses
 --------
