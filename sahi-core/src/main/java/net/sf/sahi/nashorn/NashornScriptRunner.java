@@ -153,7 +153,7 @@ public class NashornScriptRunner implements Runnable {
 
   public void setSession(Session session) {
     this.session = session;
-    this.logFileNameBase = Utils.createLogFileName(script.getScriptName()); //Utils.getFormattedDateForFile();
+    if (script != null) this.logFileNameBase = Utils.createLogFileName(script.getScriptName()); //Utils.getFormattedDateForFile();
   }
 
   private String getFromStep(String step, String prefix) {
