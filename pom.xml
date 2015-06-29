@@ -9,7 +9,7 @@
     <packaging>pom</packaging>
     <version>1.0</version>
     <properties>
-      <SAHI_VERSION>4.4.0-H7E7-SNAPSHOT</SAHI_VERSION>
+      <SAHI_VERSION>4.4.0-H7E8</SAHI_VERSION>
       <TESTRUNNER_VERSION>4.4.0-H7E4</TESTRUNNER_VERSION>
     </properties>
     <modules>
