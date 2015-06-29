@@ -24,19 +24,17 @@
     <displayName>PhantomJS</displayName>
     <icon>safari.png</icon>
     <path>phantomjs</path>
-    <options>--proxy=localhost:9999 --ssl-certificates-path=$userDir/certs $userDir/phantomscript/phantom.js</options>
+    <options> --ssl-protocol=tlsv1 --proxy=localhost:9999 --ssl-certificates-path=$userDir/certs $userDir/phantomscript/phantom.js</options>
     <processName>phantomjs</processName>
     <capacity>100</capacity>
     <useSystemProxy>false</useSystemProxy>
   </browserType>
-</browserTypes>
-
-<browserType>
+  <browserType>
     <name>phantomjs-small</name>
     <displayName>PhantomJS small</displayName>
     <icon>safari.png</icon>
     <path>phantomjs</path>
-    <options>--proxy=localhost:9999 --ssl-certificates-path=$userDir/certs $userDir/phantomscript/phantom-small.js</options>
+    <options>--ssl-protocol=tlsv1 --proxy=localhost:9999 --ssl-certificates-path=$userDir/certs $userDir/phantomscript/phantom-small.js</options>
     <processName>phantomjs</processName>
     <capacity>100</capacity>
     <useSystemProxy>false</useSystemProxy>

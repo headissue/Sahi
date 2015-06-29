@@ -157,7 +157,7 @@ public class SSLHelper {
   private SSLSocketFactory createSocketFactory(String domain) throws Exception {
     SSLSocketFactory factory;
     KeyManagerFactory keyManagerFactory = getKeyManagerFactory(keystore, KEYSTORE_PASSWORD);
-    SSLContext sslContext = SSLContext.getInstance("SSLv3");
+    SSLContext sslContext = SSLContext.getInstance("TLS");
     KeyManager[] keyManagers = keyManagerFactory.getKeyManagers();
     keyManagers = wrapKeyManagers(keyManagers, domain);
     sslContext.init(keyManagers, getAllTrustingManager(), secureRandom);
