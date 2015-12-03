@@ -17,4 +17,4 @@ echo SAHI_USERDATA_DIR: $SAHI_USERDATA_DIR
 echo --------
 
 SAHI_CLASS_PATH=$SAHI_HOME/lib/sahi-jar-with-dependencies.jar
-java -classpath $SAHI_CLASS_PATH net.sf.sahi.Proxy "${SAHI_HOME}" "${SAHI_USERDATA_DIR}"
+java -Dsun.net.http.allowRestrictedHeaders=true -classpath $SAHI_CLASS_PATH net.sf.sahi.Proxy "${SAHI_HOME}" "${SAHI_USERDATA_DIR}"
