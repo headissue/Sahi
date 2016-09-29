@@ -8,6 +8,7 @@
         <groupId>net.sf.sahi</groupId>
         <artifactId>sahi-parent</artifactId>
         <version>1.0</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
     <groupId>net.sf.sahi</groupId>
     <artifactId>sahi-test-runner</artifactId>
@@ -17,7 +18,7 @@
       <dependency>
           <groupId>net.sf.sahi</groupId>
           <artifactId>sahi-core</artifactId>
-          <version>${SAHI_VERSION}</version>
+          <version>${project.parent.version}</version>
       </dependency>
         <dependency>
             <groupId>javax.mail</groupId>

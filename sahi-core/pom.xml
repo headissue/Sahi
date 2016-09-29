@@ -7,10 +7,11 @@
         <groupId>net.sf.sahi</groupId>
         <artifactId>sahi-parent</artifactId>
         <version>1.0</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
     <groupId>net.sf.sahi</groupId>
     <artifactId>sahi-core</artifactId>
-    <version>${SAHI_VERSION}</version>
+    <version>4.4.0-H7E9-SNAPSHOT</version>
     <packaging>jar</packaging>
     <dependencies>
         <dependency>
