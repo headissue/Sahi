@@ -259,7 +259,22 @@ public class Configuration {
     }
   }
 
+  /**
+   * Gets Port for the proxy.
+   * Using system environment variable, jdk property, user properties to find one.
+   * If none is found, 9999 is used.
+   **/
   public static int getPort() {
+    try {
+      if (System.getenv("PORT") != null) {
+        return Integer.parseInt(System.getenv("PORT"));
+      }
+    } catch (Exception e) {}
+    try {
+      if (System.getProperty("proxy.port") != null) {
+        return Integer.parseInt(System.getProperty("proxy.port"));
+      }
+    } catch (Exception e) {}
     try {
       return Integer.parseInt(getUserProperty("proxy.port"));
     } catch (Exception e) {

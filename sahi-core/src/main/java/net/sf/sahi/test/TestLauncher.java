@@ -102,8 +102,12 @@ public class TestLauncher {
   }
 
   private void launchBrowser() throws Exception {
-    browserOption = (browserOption == null) ? "" : browserOption.replaceAll("[$]threadNo", "" + threadNo)
-      .replaceAll("[$]userDir", Configuration.getAbsoluteUserPath(".").replace('\\', '/'));
+    if (browserOption != null) {
+      browserOption = browserOption
+        .replaceAll("[$]threadNo", "" + threadNo)
+        .replaceAll("[$]userDir", Configuration.getAbsoluteUserPath(".").replace('\\', '/'))
+        .replaceAll("[$]port", String.valueOf(Configuration.getPort()));
+    }
     browserLauncher = new BrowserLauncher(browser, browserProcessName, browserOption, useSystemProxy);
     browserLauncher.openURL(browserLauncher.getPlayerAutoURL(childSessionId, startURL, isSingleSession));
   }

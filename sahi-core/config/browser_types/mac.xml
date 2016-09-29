@@ -26,7 +26,7 @@
 		<displayName>Chrome</displayName>
 		<icon>chrome.png</icon>
 		<path>open -n -a "Google Chrome.app"</path>  
-		<options>--args --user-data-dir=$userDir/browser/chrome/profiles/sahi$threadNo --proxy-server=localhost:9999 --disable-popup-blocking</options>  
+		<options>--args --user-data-dir=$userDir/browser/chrome/profiles/sahi$threadNo --proxy-server=localhost:$port --disable-popup-blocking</options>
 		<processName>"Google Chrome"</processName> 
 		<capacity>5</capacity>
 		<force>true</force>  
