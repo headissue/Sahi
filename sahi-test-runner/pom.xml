@@ -7,12 +7,12 @@
     <parent>
         <groupId>net.sf.sahi</groupId>
         <artifactId>sahi-parent</artifactId>
-        <version>1.0</version>
+        <version>4.4.0-H7E9</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <groupId>net.sf.sahi</groupId>
     <artifactId>sahi-test-runner</artifactId>
-    <version>${TESTRUNNER_VERSION}</version>
+    <version>4.4.0-H7E9</version>
     <packaging>jar</packaging>
     <dependencies>
       <dependency>
