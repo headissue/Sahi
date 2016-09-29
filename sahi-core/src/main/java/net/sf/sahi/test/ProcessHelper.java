@@ -72,7 +72,7 @@ public class ProcessHelper {
         e1.printStackTrace();
       }
       ArrayList<String> allPIDsBefore = getPIDs();
-      logger.info("execute: "+ cmd);
+      logger.trace("execute: "+ cmd);
       String[] tokens = Utils.getCommandTokens(cmd.replaceAll("%20", " "));
       process = Utils.executeAndGetProcess(tokens);
       new Thread(new PIDGatherer(allPIDsBefore)).start();
@@ -113,7 +113,7 @@ public class ProcessHelper {
         pids = getNewlyAdded(allPIDsBefore, allPIDsAfter);
       } catch (Exception e) {
       }
-      logger.info("PIDs: " + pids + "; " + (System.currentTimeMillis() - t) + " ms");
+      logger.trace("PIDs: " + pids + "; " + (System.currentTimeMillis() - t) + " ms");
       status = ProcessHelper.Status.RUNNING;
       lock.release();
     }
@@ -178,7 +178,7 @@ public class ProcessHelper {
   }
 
   public void kill() {
-    logger.info("Kill: " + pids);
+    logger.trace("Kill: " + pids);
     for (int i = 0; i < 4; i++) {
       killPIDs();
       if (waitTillPIDsGone(pids, 3000)) return;

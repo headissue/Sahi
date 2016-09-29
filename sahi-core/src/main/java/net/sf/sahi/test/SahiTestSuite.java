@@ -140,8 +140,8 @@ public class SahiTestSuite {
 
   public void loadScripts() {
     this.tests = new SuiteLoader(suitePath, base).getListTest();
-    logger.info("Suite = " + suitePath);
-    logger.info("Tests size = " + this.tests.size());
+    logger.debug("Suite = " + suitePath);
+    logger.debug("Tests size = " + this.tests.size());
     for (Iterator<TestLauncher> iterator = tests.iterator(); iterator.hasNext(); ) {
       TestLauncher launcher = (TestLauncher) iterator.next();
       prepareTestLauncher(launcher);

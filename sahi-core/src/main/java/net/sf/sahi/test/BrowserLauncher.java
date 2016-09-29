@@ -51,7 +51,7 @@ public class BrowserLauncher {
 
   public ProcessHelper openURL(final String url) throws Exception {
     String cmd = buildCommand(url);
-    logger.info("start browser: " + cmd);
+    logger.trace("start browser: " + cmd);
     cmd = cmd.replaceAll("%20", " ").replaceAll("[&]", "__SahiAmpersandSahi__");
     cmd = cmd.replaceAll("[$]userDir", Configuration.getUserDataDir().replace('\\', '/'));
     cmd = cmd.replaceAll("[$]threadNo", "0"); // if this has not been substituted, change it to 0.

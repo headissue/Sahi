@@ -320,12 +320,9 @@ public class TestRunner {
         if (this.sessionId == null)
         	this.sessionId = Utils.generateId();
         String urlStr = buildURL(command);
-
-
         try {
             Thread thread = new Thread(new ShutDownHook(sahiHost, port, sessionId));
             Runtime.getRuntime().addShutdownHook(thread);
-            System.out.println("Added shutdown hook.");
         } catch (Exception e) {
             e.printStackTrace();
         }

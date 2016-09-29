@@ -91,7 +91,7 @@ public class TestLauncher {
   }
 
   public void execute(Session session, boolean async, boolean setDefaultReporters) throws Exception {
-    logger.info("Running Script: " + scriptName);
+    logger.debug("Running Script: " + scriptName);
     scriptRunner = new NashornScriptRunner(new ScriptFactory().getScript(scriptName), session.getSuite(), this, setDefaultReporters);
     session.setScriptRunner(scriptRunner);
     if (!isSingleSession) {
@@ -109,7 +109,7 @@ public class TestLauncher {
   }
 
   public void kill() {
-    logger.info("Killing " + scriptName);
+    logger.debug("Killing " + scriptName);
     if (!isSingleSession) browserLauncher.kill();
   }
 
