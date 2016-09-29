@@ -72,7 +72,7 @@ public class HttpHeaders {
     if (newHeaders == null) return;
     CaseInsensitiveString keyIgnoreCase = new CaseInsensitiveString(key);
     List<String> entry = headers.get(keyIgnoreCase);
-    if (entry == null) {
+    if (entry == null || entry.size() == 0) {
       entry = new ArrayList<String>();
       headers.put(keyIgnoreCase, entry);
     }
@@ -81,7 +81,7 @@ public class HttpHeaders {
 
   public String getLastHeader(String key) {
     List<String> entry = headers.get(new CaseInsensitiveString(key));
-    if (entry == null)
+    if (entry == null || entry.size() == 0)
       return null;
     return (String) entry.get(entry.size() - 1);
   }
